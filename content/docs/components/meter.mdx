@@ -1,0 +1,106 @@
+---
+title: Meter
+description: A graphical display of a numeric value within a range.
+
+links:
+  doc: https://base-ui.com/react/components/meter#api-reference
+---
+
+<ComponentPreview
+  name="meter-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use Meter to show a known numeric value within a known range.
+
+Meter is useful for storage usage, quota, health, score, strength, capacity, and other measured values. Use Progress instead when a task is actively moving toward completion.
+
+## Anatomy
+
+A meter has a value, minimum, maximum, optional label, optional formatted value, and visual bar.
+
+## Usage guidance
+
+Use a label and value when the number matters. Use range styling when different portions of the range have meaning, such as low, normal, and high.
+
+## Accessibility
+
+Expose the value in text when precision matters. Do not rely only on bar length or color.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add meter
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="meter" title="components/ui/meter.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Meter, MeterLabel, MeterValue } from "@/components/ui/meter"
+```
+
+```tsx
+<Meter value={40}>
+  <MeterLabel>Progress</MeterLabel>
+  <MeterValue />
+</Meter>
+```
+
+## Examples
+
+Our examples cover a simple meter, formatted value, and range-based display.
+
+### Without Label and Value
+
+<ComponentPreview
+  name="meter-simple"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Formatted Value
+
+<ComponentPreview
+  name="meter-with-formatted-value"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Range
+
+<ComponentPreview
+  name="meter-with-range"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>

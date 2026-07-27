@@ -1,0 +1,30 @@
+import { Badge } from "@/registry/default/ui/badge"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/registry/default/ui/avatar"
+
+export default function AvatarProfileBadge() {
+  return (
+    <div className="flex items-center gap-1.5">
+      <Avatar>
+        <AvatarImage
+          src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=96&h=96&dpr=2&q=80"
+          alt="Alex Johnson"
+        />
+        <AvatarFallback>AJ</AvatarFallback>
+      </Avatar>
+
+      <div className="flex flex-col">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-semibold">Alex Johnson</span>
+          <Badge variant="default" size="sm">
+            Pro
+          </Badge>
+        </div>
+        <span className="text-xs text-muted-foreground">Founder & CEO</span>
+      </div>
+    </div>
+  )
+}

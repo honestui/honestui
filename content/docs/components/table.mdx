@@ -1,0 +1,100 @@
+---
+title: Table
+description: A simple table component for displaying tabular data.
+
+links:
+  doc: https://base-ui.com/react/components/table#api-reference
+---
+
+<ComponentPreview name="table-demo" />
+
+## Overview
+
+Use Table for structured data arranged in rows and columns.
+
+Tables are useful for invoices, users, orders, logs, permissions, metrics, and any data where users compare values across rows.
+
+## Anatomy
+
+A table has a caption or surrounding heading, header rows, body rows, cells, and optional footer. Headers should describe the data in each column.
+
+## Usage guidance
+
+Use tables for comparison. Use cards or lists when each item has varied content and users do not need column alignment.
+
+## Accessibility
+
+Use table headers correctly so screen readers can understand row and column relationships. Keep action buttons inside rows clearly labeled.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add table
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="table" title="components/ui/table.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+```
+
+```tsx
+<Table>
+  <TableCaption>Caption</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Header</TableHead>
+      <TableHead>Header</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Cell</TableCell>
+      <TableCell>Cell</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+## Examples
+
+Our examples cover a basic table and a framed table surface.
+
+### Framed Table
+
+<ComponentPreview name="table-framed" />

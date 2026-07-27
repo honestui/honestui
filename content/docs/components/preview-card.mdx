@@ -1,0 +1,83 @@
+---
+title: Preview Card
+description: A popup that appears when a link is hovered, showing a preview for sighted users.
+
+links:
+  doc: https://base-ui.com/react/components/preview-card#api-reference
+---
+
+<ComponentPreview name="preview-card-demo" />
+
+## Overview
+
+Use Preview Card to show a small preview when a user hovers or focuses a link.
+
+Preview cards are useful for profiles, documents, issues, pages, and references where a quick summary helps users decide whether to open the link.
+
+## Anatomy
+
+A preview card has a trigger link and popup content. The popup usually includes a title, short description, metadata, and sometimes media.
+
+## Usage guidance
+
+Keep preview content brief. It should help users understand the destination, not replace the destination page.
+
+## Accessibility
+
+The link must still work without the preview. Do not put essential actions only inside hover-only content.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add preview-card
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="preview-card" title="components/ui/preview-card.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import {
+  PreviewCard,
+  PreviewCardPopup,
+  PreviewCardTrigger,
+} from "@/components/ui/preview-card"
+```
+
+```tsx
+<PreviewCard>
+  <PreviewCardTrigger>Open Preview Card</PreviewCardTrigger>
+  <PreviewCardPopup>Preview Card Content</PreviewCardPopup>
+</PreviewCard>
+```

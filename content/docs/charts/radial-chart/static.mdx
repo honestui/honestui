@@ -1,0 +1,238 @@
+---
+title: Radial Chart
+description: Our radial chart with full-circle, semicircle, and gradient variants.
+image: /og/radial-chart.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/radial-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html
+---
+
+<ComponentPreview title="Basic Chart" name="ex-echarts-radial-chart"  />
+
+## Overview
+
+Use a radial chart for compact progress, completion, or categorical magnitude displays where the circular form supports the surrounding interface. Use a bar chart when readers need precise comparisons.
+
+## Anatomy
+
+`RadialChart` owns the data, configuration, geometry, selection, and loading state. `RadialBar` defines the measured series, while optional `Legend` and `Tooltip` parts provide labels and detail.
+
+## Accessibility
+
+Canvas charts need a nearby text summary or data table when the exact values are important. Show the measured values in text and pair every ring color with a visible label.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+Our radial chart is composable. `<RadialChart>` is the container, and every part hangs off it as a compound member, `<RadialChart.Legend>`, `<RadialChart.Tooltip>`, and a `<RadialChart.RadialBar>`, so a single import gives you the whole chart. `<RadialBar>` carries its own `isClickable`, so styling and interactivity live with the series.
+
+```tsx
+import { RadialChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const data = [
+  { browser: "chrome", visitors: 275 },
+  { browser: "safari", visitors: 200 },
+  { browser: "firefox", visitors: 187 },
+];
+
+const chartConfig = {
+  chrome: {
+    label: "Chrome",
+    colors: { light: ["#3b82f6"], dark: ["#60a5fa"] },
+  },
+  safari: {
+    label: "Safari",
+    colors: { light: ["#10b981"], dark: ["#34d399"] },
+  },
+  firefox: {
+    label: "Firefox",
+    colors: { light: ["#f59e0b"], dark: ["#fbbf24"] },
+  },
+} satisfies ChartConfig;
+```
+
+```tsx
+<RadialChart data={data} nameKey="browser" config={chartConfig} variant="full">
+  <RadialChart.Legend isClickable />
+  <RadialChart.Tooltip />
+  <RadialChart.RadialBar dataKey="visitors" isClickable />
+</RadialChart>
+```
+
+ECharts renders each ring as a polar `bar` series on a `<canvas>`, so these children never mount as DOM. The root reads their props and compiles them into the ECharts option, same JSX, same presence semantics (omit a part and it doesn't render), same behavior, just declarative config instead of live DOM nodes.
+
+The `config` is the same contract as every Honest UI chart, each key matches a `nameKey` value and maps it to a `label` and a per-theme `colors` array. See <Link href="/docs/charts/chart-config">Chart Config</Link> for the full shape. Colors resolve from your CSS variables at runtime, so dark mode just works.
+
+<Alert>
+  <AlertContent>
+    Canvas rendering has a few implementation details to keep in mind: multi-color bars use a diagonal canvas gradient (visually equivalent), and corner rounding becomes a rounded cap on each ring's ends.
+  </AlertContent>
+</Alert>
+
+### Interactive Selection
+
+Add `isClickable` to `<RadialBar>` (and `<Legend>`) to make bars selectable. Handle selection with the `onSelectionChange` callback on `<RadialChart>`:
+
+```tsx
+<RadialChart
+  data={data}
+  nameKey="browser"
+  config={chartConfig}
+  onSelectionChange={(selection) => {
+    if (selection) {
+      console.log("Selected:", selection.dataKey, "Value:", selection.value);
+    } else {
+      console.log("Deselected");
+    }
+  }}
+>
+  <RadialChart.Legend isClickable />
+  <RadialChart.Tooltip />
+  <RadialChart.RadialBar dataKey="visitors" isClickable />
+</RadialChart>
+```
+
+### Loading State
+
+<ComponentPreview className="mb-0" title="isLoading='true'" name="ex-loading-state-echarts-radial-chart"  />
+<Alert>
+  <AlertContent>
+    Pass the `isLoading` prop to show an animated skeleton of shimmering rings while your data loads.
+  </AlertContent>
+</Alert>
+
+## Examples
+
+Radial chart examples with different configurations. Customize `variant`, `innerRadius`, `outerRadius`, and more.
+
+### Semi-Circle Variant
+
+<ComponentPreview className="mb-0" title="variant='semi'" name="ex-semi-variant-echarts-radial-chart"  />
+<Alert>
+  <AlertContent>
+    Set `variant="semi"` for a half-circle chart, useful for progress or gauges in a compact space.
+  </AlertContent>
+</Alert>
+
+### Gradient Colors
+
+<ComponentPreview title="gradient colors" name="ex-gradient-colors-echarts-radial-chart"  />
+
+## API Reference
+
+The chart is composed of several parts; the props below are grouped by part. On canvas each part is declarative config the root compiles.
+
+<ApiHeading>RadialChart</ApiHeading>
+
+The root container. It owns the data, shared selection state, loading skeleton, and chart-wide arc shape. Everything visual is composed as children and compiled into the ECharts option.
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    The chart data. An array of objects, each representing one radial bar (`TData extends Record<string, unknown>`).
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Defines the chart's bars. Each key matches a `nameKey` value, with a `label` and a per-theme `colors` array. Same contract as every Honest UI chart, see <Link href="/docs/charts/chart-config">Chart Config</Link>.
+  </ApiRow>
+  <ApiRow name="nameKey" type="keyof TData & string" required>
+    Data key used for bar names (string values for labels and the legend).
+  </ApiRow>
+  <ApiRow name="children" type="ReactNode" required>
+    The composed chart parts, `<Legend />`, `<Tooltip />`, and a `<RadialBar />`.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Additional CSS classes for the chart container.
+  </ApiRow>
+  <ApiRow name="variant" type='"full" | "semi"' default='"full"'>
+    The chart's arc shape. `"full"` is a full circle (360°); `"semi"` is a half circle (180°).
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    Value a full sweep represents. Without it the scale is derived from the data, so the largest bar always fills the arc, set it (e.g. `100`) for gauges, where a single value has to read against a fixed total.
+  </ApiRow>
+  <ApiRow name="innerRadius" type="number | string" default='"30%"'>
+    Inner radius of the bars, as a number (pixels) or percentage string.
+  </ApiRow>
+  <ApiRow name="outerRadius" type="number | string" default='"100%"'>
+    Outer radius of the bars, as a number (pixels) or percentage string.
+  </ApiRow>
+  <ApiRow name="defaultSelectedDataKey" type="string | null" default="null">
+    Bar name selected by default.
+  </ApiRow>
+  <ApiRow name="onSelectionChange" type="(selection: { dataKey: string; value: number } | null) => void">
+    Fires when a bar is selected or deselected by clicking a clickable `<RadialBar />` or `<Legend />` entry. Receives an object with `dataKey` (bar name) and `value` (bar value), or `null` when deselected.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Shows a placeholder animation while data loads.
+  </ApiRow>
+  <ApiRow name="backgroundVariant" type="BackgroundVariant">
+    Decorative background pattern behind the chart (`"dots"`, `"grid"`, `"cross-hatch"`, and more).
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the underlying ECharts option. See the <Link href="https://echarts.apache.org/en/option.html" _blank>ECharts option documentation</Link>.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>RadialBar</ApiHeading>
+
+The radial bar series. Each data row becomes one concentric ring. Its presence renders the bars; omit it and only the background (if any) shows.
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string" required>
+    Data key used for bar values (numbers that set each bar's arc length).
+  </ApiRow>
+  <ApiRow name="cornerRadius" type="number" default="5">
+    The corner rounding for each bar. On canvas this maps to a rounded cap on the bar's ends, pass `0` for square ends.
+  </ApiRow>
+  <ApiRow name="barSize" type="number" default="14">
+    Thickness of each bar, in pixels.
+  </ApiRow>
+  <ApiRow name="showBackground" type="boolean" default="true">
+    Renders the background track (the unfilled portion of each bar).
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Lets bars be clicked to select/deselect them. Unselected bars dim while a selection is active.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+The hover tooltip, labeling each bar by name. Its presence enables the tooltip; omit it and none shows. Hidden automatically while loading.
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Visual style of the tooltip surface.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Border-radius of the tooltip.
+  </ApiRow>
+  <ApiRow name="defaultIndex" type="number">
+    Shows the tooltip by default at this data point index.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    How the tooltip is anchored. `"variable"` lets it follow the pointer (the default). `"fixed"` pins the tooltip near the top of the chart and only tracks the pointer's X.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+The bar legend, rendered as HTML alongside the canvas. Its presence enables the legend; omit it and none shows. With `isClickable`, each entry toggles selection of its bar.
+
+<ApiTable>
+  <ApiRow name="variant" type='"square" | "circle" | "circle-outline" | "rounded-square" | "rounded-square-outline" | "vertical-bar" | "horizontal-bar"'>
+    Visual style of the legend indicators.
+  </ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>
+    Horizontal placement of the legend.
+  </ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "middle" | "bottom"' default='"bottom"'>
+    Vertical placement of the legend.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    When enabled, each entry toggles selection of its bar, driving the shared selection state read by `<RadialBar />`.
+  </ApiRow>
+</ApiTable>

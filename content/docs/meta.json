@@ -1,0 +1,19 @@
+{
+  "title": "Overview",
+  "pages": [
+    "---Overview---",
+    "index",
+    "get-started",
+    "component-guide",
+    "styling",
+    "accessibility",
+    "contributing",
+    "icons",
+    "---Charts---",
+    "chart-index",
+    "chart-config",
+    "charts",
+    "---Components---",
+    "...components"
+  ]
+}

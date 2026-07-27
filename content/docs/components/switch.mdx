@@ -1,0 +1,97 @@
+---
+title: Switch
+description: A control that indicates whether a setting is on or off.
+
+links:
+  doc: https://base-ui.com/react/components/switch#api-reference
+---
+
+<ComponentPreview name="switch-demo" />
+
+## Overview
+
+Use Switch for an on/off setting that takes effect immediately or changes a persistent preference.
+
+Switches are useful for feature settings, notifications, privacy choices, and simple enabled or disabled states. Use Checkbox when the option is part of a form submission or a list of independent choices.
+
+## Anatomy
+
+A switch has a track, thumb, label, optional description, and checked state.
+
+## Behavior
+
+Use clear labels that describe the enabled state. Avoid labels like `On` or `Enable` without context.
+
+## Accessibility
+
+Connect the switch to a label. If changing the switch has a delayed effect, show feedback so users know the update worked.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add switch
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="switch" title="components/ui/switch.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Switch } from "@/components/ui/switch"
+```
+
+```tsx
+<Switch />
+```
+
+## Examples
+
+Our examples cover disabled, described, card-style, and form-connected switches.
+
+For accessible labelling and validation, prefer using the `Field` component to wrap checkboxes. See the related example: [Switch field](/ui/docs/components/field#switch-field).
+
+### Disabled
+
+<ComponentPreview name="switch-disabled" />
+
+### With Description
+
+<ComponentPreview name="switch-with-description" />
+
+### Card Style
+
+<ComponentPreview name="switch-card" />
+
+### Form Integration
+
+<ComponentPreview name="switch-form" />

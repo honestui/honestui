@@ -1,0 +1,76 @@
+---
+title: Get Started
+description: Install Honest UI, add your first component, and understand the setup.
+---
+
+This guide shows the fastest path to using Honest UI in a React project.
+
+Honest UI components are meant to live in your app. The CLI copies component code, installs required dependencies, and leaves you with files you can edit.
+
+## Project checklist
+
+Before adding components, make sure your project has:
+
+- React.
+- Tailwind CSS v4.
+- A global stylesheet, such as `app/globals.css`.
+- A component import alias, such as `@/components/ui`.
+
+If your app does not use the same import alias, you can still use Honest UI. Update the import paths after copying a component.
+
+## Install the base setup
+
+Run the CLI from your project root:
+
+```bash
+npx honestui@latest add base
+```
+
+This installs the shared setup that most components expect. It may add CSS variables, utility helpers, and dependencies used by Honest UI components.
+
+After installation, check the changed files before committing. The generated files are normal project files, so you can edit them.
+
+## Add a component
+
+Add components one at a time:
+
+```bash
+npx honestui@latest add button
+```
+
+Replace `button` with the component name from the docs. For example, use `dialog`, `select`, `tabs`, or `toast`.
+
+Every Honest UI component page includes the exact CLI command to install it.
+
+## Install manually
+
+Manual setup is useful when you want to review every line before it enters your project.
+
+1. Open a component page in the docs.
+2. Copy the code from the **Code** tab.
+3. Paste it into your project.
+4. Install any listed dependencies.
+5. Copy any required CSS variables.
+6. Update import paths to match your app.
+
+Use [Styling](/docs/styling) when a component relies on shared colors or state tokens.
+
+## Choose your first components
+
+For a basic product screen, start with:
+
+- [Button](/docs/components/button) for actions.
+- [Input](/docs/components/input) and [Field](/docs/components/field) for forms.
+- [Dialog](/docs/components/dialog) for focused tasks.
+- [Table](/docs/components/table) for structured data.
+- [Toast](/docs/components/toast) for short feedback.
+
+For a complete form, combine [Form](/docs/components/form), [Field](/docs/components/field), and the specific controls you need.
+
+## After setup
+
+Browse [Our Components](/docs/component-guide) to understand how the component pages are organized.
+
+Read [Accessibility](/docs/accessibility) before changing keyboard behavior, focus styles, labels, or validation messages.
+
+If you want to contribute back to Honest UI, read the [Contributing Guide](/docs/contributing).

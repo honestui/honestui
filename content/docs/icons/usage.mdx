@@ -1,0 +1,109 @@
+---
+title: Usage
+description: Choose, style, and compose Honest UI icons in React.
+---
+
+Our icon category pages follow the same structure so you can quickly find, inspect, and use each icon.
+
+Select an icon to view its preview, component name, variant, install command, import statement, and basic usage code.
+
+## Basic usage
+
+Import icons by name from `honestui/icons`. Icons inherit the surrounding text color and render at `1em` by default.
+
+```tsx
+import { Bell, Search, Settings } from "honestui/icons";
+
+export function Actions() {
+  return (
+    <div className="flex items-center gap-3">
+      <Search />
+      <Bell />
+      <Settings />
+    </div>
+  );
+}
+```
+
+## Choosing an icon
+
+Use the icon that most directly matches the user's task:
+
+- Use **Search** for finding content.
+- Use **Settings** for configuration.
+- Use **Plus** for creating or adding an item.
+- Use **Trash** for a destructive removal action.
+- Use **Arrow** icons for direction or movement.
+- Use **Chevron** icons for disclosure, selection, or compact navigation.
+- Use **Circle Check** for success and **Circle Alert** for warnings.
+
+Keep one visual style within the same control or surface. Filled icons work well for selected states, while outline icons are usually calmer for default actions.
+
+## Choosing a variant
+
+Variant names are part of the component export. When a concept includes multiple styles, import the version that matches the surrounding interface.
+
+```tsx
+import { Heart, HeartFilled, HeartRounded } from "honestui/icons";
+
+export function FavoriteState({ selected }: { selected: boolean }) {
+  const FavoriteIcon = selected ? HeartFilled : Heart;
+
+  return <FavoriteIcon aria-hidden="true" />;
+}
+```
+
+Use variant changes to reinforce a real state, such as selected or saved. Avoid mixing variants only for decoration.
+
+## Size and stroke
+
+Set `size` when an icon needs an explicit dimension. Outline icons also accept `strokeWidth`.
+
+```tsx
+<Search size={16} strokeWidth={1.5} />
+<Search size={20} strokeWidth={1.75} />
+<Search size="1.5rem" strokeWidth={2} />
+```
+
+Icons that appear together should use the same size and stroke weight unless hierarchy requires a deliberate difference.
+
+## Color
+
+Icons use `currentColor`, so class names and inherited CSS control their color.
+
+```tsx
+<CircleCheck className="text-success" />
+<CircleAlert className="text-warning" />
+<Heart className="text-destructive" />
+```
+
+This keeps hover, disabled, dark-mode, and state colors in the same styling system as the rest of your interface.
+
+## Inside controls
+
+When an icon appears beside visible text, hide the SVG from assistive technology because the text already names the action.
+
+```tsx
+<button type="button">
+  Download report
+  <Download aria-hidden="true" />
+</button>
+```
+
+For icon-only controls, put the accessible name on the control itself.
+
+```tsx
+<button type="button" aria-label="Close dialog">
+  <X aria-hidden="true" />
+</button>
+```
+
+## Metadata
+
+Each icon exports a matching metadata object for custom browsers and internal tooling.
+
+```tsx
+import { Search, SearchMetadata } from "honestui/icons";
+```
+
+The package also exports `allIcons`, grouped by category. Prefer named imports in product code so your application does not include the complete catalog.

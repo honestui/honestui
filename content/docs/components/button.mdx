@@ -1,0 +1,232 @@
+---
+title: Button
+description: A button or a component that looks like a button.
+---
+
+<ComponentPreview name="button-demo" />
+
+## Overview
+
+Use a button for actions. A button should do something on the current page, submit a form, open a menu, start a task, or confirm a choice.
+
+Use a link when the user is navigating to another page. If a link must look like a button, render the link through the button component so the visual style is shared while the semantics stay correct.
+
+## Anatomy
+
+A button has a visible label, optional icon, variant, size, and state. The label should describe the action directly. Prefer `Save changes`, `Invite member`, or `Delete project` over vague labels like `Submit` or `Continue` when the result is specific.
+
+## Variants
+
+Use the default variant for primary actions, secondary for supporting actions, outline for medium emphasis, ghost for low emphasis, link for inline actions, and destructive for dangerous actions.
+
+## Accessibility
+
+Buttons must have accessible names. Icon-only buttons need a label through text, `aria-label`, or an equivalent pattern. Keep disabled and loading states clear so users understand why the action is unavailable.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add button
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Import the following variables into your CSS file</Step>
+
+```css
+@theme inline {
+  --color-destructive-foreground: var(--destructive-foreground);
+}
+
+:root {
+  --destructive-foreground: oklch(0.505 0.213 27.518);
+}
+
+.dark {
+  --destructive-foreground: oklch(0.704 0.191 22.216);
+}
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="button" title="components/ui/button.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+```
+
+```tsx
+<Button>Button</Button>
+```
+
+## Link
+
+You can use the [`render`](https://base-ui.com/react/utils/use-render#migrating-from-radix-ui) prop to make another component look like a button. Here's an example of a link that looks like a button.
+
+```tsx
+import Link from "next/link"
+
+import { Button } from "@/components/ui/button"
+
+export function LinkAsButton() {
+  return <Button render={<Link href="/login" />}>Login</Button>
+}
+```
+
+## Examples
+
+Our examples cover variants, sizes, icon layouts, disabled state, link rendering, and loading behavior.
+
+### Default
+
+<ComponentPreview
+  name="button-default"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Outline
+
+<ComponentPreview
+  name="button-outline"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Secondary
+
+<ComponentPreview
+  name="button-secondary"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Destructive
+
+<ComponentPreview
+  name="button-destructive"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Destructive Outline
+
+<ComponentPreview
+  name="button-destructive-outline"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Ghost
+
+<ComponentPreview
+  name="button-ghost"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Link
+
+<ComponentPreview
+  name="button-link"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Extra-small Size
+
+<ComponentPreview
+  name="button-xs"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Small Size
+
+<ComponentPreview
+  name="button-sm"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Large Size
+
+<ComponentPreview
+  name="button-lg"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Extra-large Size
+
+<ComponentPreview
+  name="button-xl"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Disabled
+
+<ComponentPreview
+  name="button-disabled"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Icon
+
+<ComponentPreview
+  name="button-icon"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Icon Small Size
+
+<ComponentPreview
+  name="button-icon-sm"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Icon Large Size
+
+<ComponentPreview
+  name="button-icon-lg"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### With Icon
+
+<ComponentPreview
+  name="button-with-icon"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### With Link
+
+<ComponentPreview
+  name="button-with-link"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Loading
+
+<ComponentPreview
+  name="button-loading"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>

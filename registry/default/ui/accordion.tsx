@@ -1,0 +1,146 @@
+"use client"
+
+import { Accordion as AccordionPrimitive } from "@base-ui-components/react/accordion"
+import { ChevronDown as ChevronDownIcon } from "love-ui/icons"
+
+import { cn } from "@/lib/utils"
+
+type AccordionValue = NonNullable<AccordionPrimitive.Root.Props["value"]>
+type AccordionChangeDetails = AccordionPrimitive.Root.ChangeEventDetails
+
+type AccordionNativeProps = AccordionPrimitive.Root.Props & {
+  collapsible?: boolean
+  type?: undefined
+}
+
+type AccordionSingleProps = Omit<
+  AccordionPrimitive.Root.Props,
+  "defaultValue" | "multiple" | "onValueChange" | "value"
+> & {
+  type: "single"
+  collapsible?: boolean
+  defaultValue?: string
+  multiple?: false
+  onValueChange?: (value: string, eventDetails: AccordionChangeDetails) => void
+  value?: string
+}
+
+type AccordionMultipleProps = Omit<
+  AccordionPrimitive.Root.Props,
+  "defaultValue" | "multiple" | "onValueChange" | "value"
+> & {
+  type: "multiple"
+  collapsible?: boolean
+  defaultValue?: AccordionValue
+  multiple?: true
+  onValueChange?: AccordionPrimitive.Root.Props["onValueChange"]
+  value?: AccordionValue
+}
+
+type AccordionProps =
+  | AccordionNativeProps
+  | AccordionSingleProps
+  | AccordionMultipleProps
+
+function Accordion({
+  collapsible,
+  defaultValue,
+  multiple,
+  onValueChange,
+  type,
+  value,
+  ...props
+}: AccordionProps) {
+  const isSingle = type === "single"
+  const resolvedMultiple = type ? type === "multiple" : multiple
+  const normalizedDefaultValue: AccordionValue | undefined =
+    isSingle && typeof defaultValue === "string"
+      ? [defaultValue]
+      : Array.isArray(defaultValue)
+        ? defaultValue
+        : undefined
+  const normalizedValue: AccordionValue | undefined =
+    isSingle && typeof value === "string"
+      ? [value]
+      : Array.isArray(value)
+        ? value
+        : undefined
+
+  return (
+    <AccordionPrimitive.Root
+      data-slot="accordion"
+      defaultValue={normalizedDefaultValue}
+      multiple={resolvedMultiple}
+      onValueChange={(nextValue, eventDetails) => {
+        if (isSingle) {
+          if (!collapsible && nextValue.length === 0) {
+            eventDetails.cancel()
+            return
+          }
+
+          onValueChange?.(nextValue[0] ?? "", eventDetails)
+        } else {
+          onValueChange?.(nextValue, eventDetails)
+        }
+      }}
+      value={normalizedValue}
+      {...props}
+    />
+  )
+}
+
+function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
+  return (
+    <AccordionPrimitive.Item
+      data-slot="accordion-item"
+      className={cn("border-b last:border-b-0", className)}
+      {...props}
+    />
+  )
+}
+
+function AccordionTrigger({
+  className,
+  children,
+  ...props
+}: AccordionPrimitive.Trigger.Props) {
+  return (
+    <AccordionPrimitive.Header className="flex">
+      <AccordionPrimitive.Trigger
+        data-slot="accordion-trigger"
+        className={cn(
+          "flex flex-1 cursor-pointer items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-64 [&[data-panel-open]>svg]:rotate-180",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <ChevronDownIcon className="pointer-events-none size-4 shrink-0 translate-y-0.5 opacity-72 transition-transform duration-200 ease-in-out" />
+      </AccordionPrimitive.Trigger>
+    </AccordionPrimitive.Header>
+  )
+}
+
+function AccordionPanel({
+  className,
+  children,
+  ...props
+}: AccordionPrimitive.Panel.Props) {
+  return (
+    <AccordionPrimitive.Panel
+      data-slot="accordion-panel"
+      className="h-(--accordion-panel-height) overflow-hidden text-sm text-muted-foreground transition-[height] duration-200 ease-in-out data-ending-style:h-0 data-starting-style:h-0"
+      {...props}
+    >
+      <div className={cn("pt-0 pb-4", className)}>{children}</div>
+    </AccordionPrimitive.Panel>
+  )
+}
+
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionPanel,
+  AccordionPanel as AccordionContent,
+}

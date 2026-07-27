@@ -1,0 +1,80 @@
+---
+title: Card
+description: A content container for grouping related information.
+---
+
+<ComponentPreview name="card-demo" />
+
+## Overview
+
+Use a card to group related content and actions inside a clear surface.
+
+Cards work well for dashboards, settings groups, pricing items, summaries, and repeated list items. Avoid nesting cards inside cards unless each layer has a clear job.
+
+## Anatomy
+
+A card usually has a container, header, title, description, content, footer, and actions. Not every card needs every part. Keep the structure simple and make the most important information easy to scan first.
+
+## Usage guidance
+
+Use cards for repeated items or self-contained content groups. For broad page sections, prefer normal page layout instead of turning every section into a card.
+
+## Accessibility
+
+Use real headings when the card introduces a section. If the whole card is clickable, make the interactive target clear and preserve keyboard access.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add card
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="card" title="components/ui/card.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardPanel,
+  CardTitle,
+} from "@/components/ui/card"
+```
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+  <CardPanel>Content</CardPanel>
+  <CardFooter>Footer</CardFooter>
+</Card>
+```

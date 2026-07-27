@@ -1,0 +1,126 @@
+---
+title: Accordion
+description: A set of collapsible panels with headings.
+
+links:
+  doc: https://base-ui.com/react/components/accordion#api-reference
+---
+
+<ComponentPreview
+  name="accordion-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[80%] **:[.preview]:min-h-[400px]"
+  align="start"
+/>
+
+## Overview
+
+Use an accordion when the page has related sections that should stay close together, but the user does not need to see every section at the same time.
+
+Accordions work well for settings, FAQs, filters, details panels, and long forms with optional sections. Avoid them when all content must be compared side by side.
+
+## Anatomy
+
+An accordion is made from an accordion root, one or more items, a trigger for each item, and content for each panel. The trigger should clearly describe what will open. The content should be short enough that opening one panel does not make the page hard to scan.
+
+## Behavior
+
+Use a single accordion when only one panel should be open. Use a multiple accordion when several panels can stay open at once. Use controlled state when the open panel needs to sync with routing, saved preferences, or another part of the page.
+
+## Accessibility
+
+Keep triggers as real buttons, use clear headings, and make sure focus remains visible. Keyboard users should be able to tab to the trigger and open or close it with the keyboard.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add accordion
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="accordion" title="components/ui/accordion.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+```
+
+```tsx
+<Accordion>
+  <AccordionItem value="item-1">
+    <AccordionTrigger>Is it accessible?</AccordionTrigger>
+    <AccordionPanel>
+      Yes. It adheres to the WAI-ARIA design pattern.
+    </AccordionPanel>
+  </AccordionItem>
+</Accordion>
+```
+
+## Examples
+
+Our examples cover the main accordion modes: one open panel, many open panels, and externally controlled state.
+
+### Single Accordion
+
+Use this for compact pages where opening one section should close the previous section.
+
+<ComponentPreview
+  name="accordion-single"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[80%] **:[.preview]:min-h-[400px]"
+  align="start"
+/>
+
+### Multiple Accordion
+
+Use this when each section is independent and users may need to keep several answers open.
+
+<ComponentPreview
+  name="accordion-multiple"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[80%] **:[.preview]:min-h-[400px]"
+  align="start"
+/>
+
+### Controlled Accordion
+
+Use this when the open item must be controlled by your application state.
+
+<ComponentPreview
+  name="accordion-controlled"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[80%] **:[.preview]:min-h-[400px]"
+  align="start"
+/>

@@ -1,0 +1,223 @@
+---
+title: Autocomplete
+description: An input that suggests options as you type.
+
+links:
+  doc: https://base-ui.com/react/components/autocomplete#api-reference
+---
+
+<ComponentPreview
+  name="autocomplete-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use autocomplete when users type into an input and need suggestions from a list.
+
+Autocomplete is useful for search, people pickers, command-style inputs, tags, addresses, and large option sets. It keeps typing as the main action while making valid choices easier to find.
+
+## Anatomy
+
+Autocomplete includes an input, popup, list, items, and optional clear or trigger controls. The input owns the typed value. The popup shows matching suggestions. Each item should have clear display text and a stable value.
+
+## Behavior
+
+Use local filtering for small lists. Use async search for remote data. Add a limit when the full list is large. Auto-highlight can speed up keyboard selection, but it should not surprise users by choosing an item before they confirm.
+
+## Accessibility
+
+Provide a label through Field or another visible label. Keep keyboard navigation intact, including arrow keys, Enter, Escape, and focus return. Make empty and loading states clear when suggestions come from a server.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add autocomplete
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="autocomplete" title="components/ui/autocomplete.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Autocomplete,
+  AutocompleteEmpty,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+  AutocompletePopup,
+} from "@/components/ui/autocomplete"
+```
+
+```tsx
+const items = [
+  { value: "apple", label: "Apple" },
+  { value: "banana", label: "Banana" },
+  { value: "orange", label: "Orange" },
+  { value: "grape", label: "Grape" },
+]
+
+<Autocomplete items={items}>
+  <AutocompleteInput placeholder="Search..." />
+  <AutocompletePopup>
+    <AutocompleteEmpty>No results found.</AutocompleteEmpty>
+    <AutocompleteList>
+      {(item) => <AutocompleteItem key={item.value} value={item}>{item.label}</AutocompleteItem>}
+    </AutocompleteList>
+  </AutocompletePopup>
+</Autocomplete>
+```
+
+## API Reference
+
+The `AutocompleteInput` component extends the original Base UI component with a few extra props:
+
+| Prop          | Type                        | Default     | Description                                                                                      |
+| ------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
+| `size`        | `"sm" \| "default" \| "lg"` | `"default"` | The size variant of the input field.                                                             |
+| `showTrigger` | `boolean`                   | `false`     | Whether to display a trigger button (chevron icon) on the right side of the input.               |
+| `showClear`   | `boolean`                   | `false`     | Whether to display a clear button (X icon) on the right side of the input when there is a value. |
+
+## Examples
+
+Our examples cover disabled, sized, labeled, grouped, limited, async, and form-connected autocomplete patterns.
+
+### Disabled
+
+Use disabled when the user cannot search or choose yet.
+
+<ComponentPreview
+  name="autocomplete-disabled"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Small Size
+
+Use the small size in compact toolbars, filters, or dense forms.
+
+<ComponentPreview
+  name="autocomplete-sm"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Large Size
+
+Use the large size when the input is a primary search or selection control.
+
+<ComponentPreview
+  name="autocomplete-lg"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Label
+
+Use a label whenever the autocomplete appears in a form or settings area.
+
+<ComponentPreview
+  name="autocomplete-with-label"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Inline Autocomplete
+
+Autofill the input with the highlighted item while navigating with arrow keys.
+
+<ComponentPreview
+  name="autocomplete-inline"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Auto Highlight
+
+Automatically highlight the first matching option.
+
+<ComponentPreview
+  name="autocomplete-autohighlight"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Clear Button
+
+Use a clear button when users often need to reset the value.
+
+<ComponentPreview
+  name="autocomplete-with-clear"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Trigger and Clear Buttons
+
+Use a trigger button when users may want to browse options without typing.
+
+<ComponentPreview
+  name="autocomplete-with-trigger-clear"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Groups
+
+Use groups when suggestions have meaningful categories.
+
+<ComponentPreview
+  name="autocomplete-grouped"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Limit Results
+
+Limit results to keep the popup quick to scan.
+
+<ComponentPreview
+  name="autocomplete-limit"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Async Search
+
+Use async search when suggestions come from an API or remote index.
+
+<ComponentPreview
+  name="autocomplete-async"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Form Integration
+
+Use form integration when the selected value must be validated and submitted.
+
+<ComponentPreview
+  name="autocomplete-form"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>

@@ -1,0 +1,89 @@
+---
+title: Toolbar
+description: A container for grouping a set of buttons and controls.
+
+links:
+  doc: https://base-ui.com/react/components/toolbar#api-reference
+---
+
+<ComponentPreview name="toolbar-demo" />
+
+## Overview
+
+Use Toolbar to group controls that act on the same surface.
+
+Toolbars are useful in editors, tables, canvases, filters, and dashboards where several commands belong together.
+
+## Anatomy
+
+A toolbar can contain buttons, toggles, toggle groups, separators, menus, and other compact controls.
+
+## Usage guidance
+
+Keep the most common actions visible. Move less common actions into a menu when the toolbar becomes crowded.
+
+## Accessibility
+
+Controls inside the toolbar still need labels and keyboard support. Keep focus order predictable.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add toolbar
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="toolbar" title="components/ui/toolbar.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import { Toggle } from "@/components/ui/toggle"
+import {
+  Toolbar,
+  ToolbarButton,
+  ToolbarGroup,
+  ToolbarSeparator,
+} from "@/components/ui/toolbar"
+```
+
+```tsx
+<Toolbar>
+  <ToolbarGroup>
+    <ToolbarButton render={<Toggle />}>Bold</ToolbarButton>
+    <ToolbarButton render={<Toggle />}>Underline</ToolbarButton>
+  </ToolbarGroup>
+  <ToolbarSeparator />
+  <ToolbarButton render={<Button />}>Save</ToolbarButton>
+</Toolbar>
+```

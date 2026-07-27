@@ -1,0 +1,88 @@
+---
+title: Contributing Guide
+description: How to make focused, useful contributions to Honest UI.
+---
+
+Thank you for helping improve Honest UI.
+
+The best contributions are focused, easy to review, and clear about the user problem they solve.
+
+## What you can contribute
+
+You can help by:
+
+- Fixing bugs.
+- Improving docs.
+- Adding new UI components.
+- Adding examples.
+- Improving accessibility.
+
+## Before you start
+
+Open an issue or discussion for large changes. Small fixes, docs edits, and example improvements can usually go straight to a pull request.
+
+Good first changes include:
+
+- Fixing unclear docs.
+- Adding a missing example state.
+- Improving labels or keyboard behavior.
+- Cleaning up a component prop or class name.
+- Fixing a bug with a small reproduction.
+
+## Quick steps
+
+1. Fork the repo and clone it.
+2. Create a new branch.
+3. Make a small, focused change.
+4. Run formatting and build checks.
+5. Open a pull request with a clear description.
+
+## Commands to run before you open a PR
+
+```bash
+bun run format:write
+bun run registry:build
+```
+
+If you changed core UI components, also run:
+
+```bash
+bun run ui:propagate
+```
+
+If you changed docs, check that the docs site still builds and the changed pages render correctly.
+
+## Write clear pull requests
+
+Please include:
+
+- What changed.
+- Why you changed it.
+- Screenshots if UI changed.
+- Any breaking changes.
+- The checks you ran.
+
+Small pull requests are easier to review and merge quickly.
+
+## Component contribution checklist
+
+When adding or changing a component, check:
+
+- The default example is useful.
+- Important states are documented.
+- The component works with keyboard navigation.
+- Labels, descriptions, and errors are connected where needed.
+- The manual installation block lists required dependencies and CSS variables.
+- The component source and examples use the same import style as the rest of the registry.
+
+## Docs contribution checklist
+
+When changing docs, use simple language.
+
+Prefer short paragraphs and specific examples. Explain when to use a component, when not to use it, and what each example demonstrates.
+
+## Need more details?
+
+For the full technical process, file conventions, and registry details, see:
+
+[Full CONTRIBUTING.md](/api/raw/CONTRIBUTING.md)

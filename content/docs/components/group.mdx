@@ -1,0 +1,85 @@
+---
+title: Group
+description: A component for visually grouping a series of controls.
+---
+
+<ComponentPreview name="group-demo" />
+
+## Overview
+
+Use Group to visually connect controls that work together.
+
+Group is useful for segmented inputs, attached buttons, search boxes with actions, and compact control sets.
+
+## Anatomy
+
+A group wraps multiple controls and adjusts their borders or radius so they read as one unit.
+
+## Usage guidance
+
+Use Group when controls are part of the same action. Do not group unrelated buttons just to save space.
+
+## Accessibility
+
+Grouped controls still need their own labels or accessible names. Keyboard order should follow the visual order.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add group
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="group" title="components/ui/group.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import { Group, GroupItem, GroupSeparator } from "@/components/ui/group"
+```
+
+```tsx
+<Group>
+  <GroupItem render={<Button />}>Button</GroupItem>
+  <GroupSeparator />
+  <GroupItem render={<Button />}>Button</GroupItem>
+</Group>
+```
+
+## Examples
+
+The example shows an input attached to an action.
+
+### With Input
+
+<ComponentPreview name="group-with-input" />

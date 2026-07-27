@@ -1,0 +1,101 @@
+---
+title: Scroll Area
+description: A native scroll container with custom scrollbars.
+
+links:
+  doc: https://base-ui.com/react/components/scroll-area#api-reference
+---
+
+<ComponentPreview
+  name="scroll-area-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use Scroll Area when content needs its own scrollable region with custom scrollbars.
+
+Scroll areas are useful for menus, sidebars, code panes, tables, activity feeds, and fixed-height panels.
+
+## Anatomy
+
+A scroll area has a viewport, content, and optional horizontal or vertical scrollbars.
+
+## Usage guidance
+
+Use scroll areas when the surrounding layout needs to stay fixed. Avoid hiding important content in a small scroll region when the page itself can scroll naturally.
+
+## Accessibility
+
+Make sure keyboard and touch users can reach the content. Keep scrollable regions large enough to use comfortably.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add scroll-area
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="scroll-area" title="components/ui/scroll-area.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { ScrollArea } from "@/components/ui/scroll-area"
+```
+
+```tsx
+<ScrollArea className="h-64 rounded-md border">
+  <div className="p-4">
+    Just as suddenly as it had begun, the sensation stopped, leaving Alice
+    feeling slightly disoriented. She looked around and realized that the room
+    hadn't changed at all - it was she who had grown smaller, shrinking down to
+    a fraction of her previous size. Alice felt herself growing larger and
+    larger, filling up the entire room until she feared she might burst. The
+    sensation was both thrilling and terrifying, as if she were expanding beyond
+    the confines of her own body. She wondered if this was what it felt like to
+    be a balloon, swelling with air until it could hold no more.
+  </div>
+</ScrollArea>
+```
+
+## Examples
+
+Our examples cover horizontal scrolling and combined horizontal and vertical scrolling.
+
+### Horizontal Scroll
+
+<ComponentPreview name="scroll-area-horizontal" />
+
+### Both Scrollbars
+
+<ComponentPreview name="scroll-area-both" />

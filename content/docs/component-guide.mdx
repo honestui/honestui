@@ -1,0 +1,76 @@
+---
+title: Our Components
+description: Explore our source-first React components and choose the right one for your interface.
+---
+
+Our component pages follow the same structure so you can quickly understand, install, and adapt each component.
+
+Each page explains what the component is for, how to install it, how to import it, and which examples show the important states.
+
+## Page structure
+
+Our component pages include:
+
+- **Preview:** a live example of the default component.
+- **Installation:** CLI and manual setup.
+- **Usage:** the smallest useful code example.
+- **Anatomy:** the component parts and how they work together.
+- **Examples:** variants, sizes, states, form usage, and composition patterns.
+- **Accessibility notes:** keyboard, labels, focus, and screen-reader expectations.
+
+If a component is built on Base UI, the page may link to the Base UI API reference for lower-level behavior and props.
+
+## Choosing a component
+
+Use the component that matches the user's task:
+
+- Use **Button** for actions.
+- Use **Link-style Button** only when the action is navigation.
+- Use **Checkbox** for independent yes/no choices.
+- Use **Radio Group** when only one option can be selected.
+- Use **Select** when the user chooses from a known list.
+- Use **Combobox** or **Autocomplete** when search helps the user find an option.
+- Use **Dialog** for focused work that interrupts the page.
+- Use **Sheet** for side panels, details, and secondary workflows.
+- Use **Toast** for short feedback that does not need a response.
+- Use **Alert Dialog** when the user must make a decision before continuing.
+
+## Copying examples
+
+Examples are not only visual demos. They show recommended structure.
+
+When you copy an example:
+
+1. Keep the accessibility parts, such as labels, descriptions, and triggers.
+2. Replace placeholder text with real product copy.
+3. Keep disabled, loading, and error states if the workflow can reach those states.
+4. Update imports to match your project.
+5. Test with keyboard navigation.
+
+## Building larger screens
+
+Combine components by responsibility:
+
+- Use **Field** around form controls so labels and errors stay consistent.
+- Use **Card** or **Frame** to group related content.
+- Use **Tabs** when related views share the same page context.
+- Use **Menu** for compact command lists.
+- Use **Toolbar** when controls act on the same surface.
+- Use **Empty** when a section has no data yet.
+
+Start with the smallest component that solves the interaction. Add more structure only when the user needs it.
+
+## Customizing components
+
+Honest UI components are meant to be edited.
+
+Common customizations include:
+
+- Changing class names.
+- Adjusting color variables.
+- Adding variants.
+- Replacing icons.
+- Renaming files or import paths.
+- Wrapping a component in your app-specific API.
+
+Keep behavior and accessibility intact when customizing. Style changes are usually safe. Changes to focus management, keyboard navigation, roles, labels, and portals need more care.

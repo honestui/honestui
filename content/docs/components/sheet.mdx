@@ -1,0 +1,101 @@
+---
+title: Sheet
+description: A flyout that opens from the side of the screen, based on the dialog component.
+
+links:
+  doc: https://base-ui.com/react/components/dialog#api-reference
+---
+
+<ComponentPreview name="sheet-demo" />
+
+## Overview
+
+Use Sheet for a panel that slides in from the edge of the screen.
+
+Sheets are useful for details panels, filters, side navigation, quick edit forms, carts, and secondary workflows that should keep the current page visible.
+
+## Anatomy
+
+A sheet has a trigger, content panel, header, title, description, body, footer, and close action. It is based on the dialog pattern.
+
+## Behavior
+
+Choose the side based on the workflow. Right-side sheets work well for details and editing. Left-side sheets work well for navigation. Bottom sheets can work well on smaller screens.
+
+## Accessibility
+
+Provide a title, keep focus inside while open, and make sure focus returns to the trigger when closed.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add sheet
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="sheet" title="components/ui/sheet.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+```
+
+```tsx
+<Sheet>
+  <SheetTrigger>Open</SheetTrigger>
+  <SheetPopup>
+    <SheetHeader>
+      <SheetTitle>Are you absolutely sure?</SheetTitle>
+      <SheetDescription>
+        This action cannot be undone. This will permanently delete your account
+        and remove your data from our servers.
+      </SheetDescription>
+    </SheetHeader>
+  </SheetPopup>
+</Sheet>
+```
+
+## Examples
+
+The example shows sheet placement from different screen edges.
+
+### Side sheets
+
+<ComponentPreview name="sheet-position" />

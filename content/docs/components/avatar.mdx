@@ -1,0 +1,111 @@
+---
+title: Avatar
+description: An image element with a fallback for representing the user.
+
+links:
+  doc: https://base-ui.com/react/components/avatar#api-reference
+---
+
+<ComponentPreview name="avatar-demo" />
+
+## Overview
+
+Use an avatar to represent a person, team, account, or organization.
+
+Avatars work best when they support identity, not when they carry critical information by themselves. Always pair them with names in places where identity must be unambiguous.
+
+## Anatomy
+
+An avatar has an image and a fallback. The image is shown when it loads successfully. The fallback is shown when there is no image or the image fails to load.
+
+## Usage guidance
+
+Use initials, an icon, or a neutral placeholder as the fallback. Keep avatar sizes consistent in the same surface. Use grouped avatars when showing a small set of collaborators or participants.
+
+## Accessibility
+
+Use meaningful alt text when the avatar image adds identity. Use empty alt text when the visible name already identifies the person next to the image.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add avatar
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="avatar" title="components/ui/avatar.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+```
+
+```tsx
+<Avatar>
+  <AvatarImage src="/avatars/01.png" alt="User avatar" />
+  <AvatarFallback>CL</AvatarFallback>
+</Avatar>
+```
+
+## Examples
+
+Our examples cover image fallback, size, radius, and grouped avatar patterns.
+
+### Fallback Only
+
+<ComponentPreview
+  name="avatar-fallback"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Different Sizes
+
+<ComponentPreview
+  name="avatar-size"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Different Radius
+
+<ComponentPreview
+  name="avatar-radius"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>
+
+### Group Avatars
+
+<ComponentPreview
+  name="avatar-group"
+  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
+/>

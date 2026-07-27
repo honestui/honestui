@@ -1,0 +1,74 @@
+---
+title: Accessibility
+description: How Honest UI components support keyboard, screen-reader, and form accessibility.
+---
+
+Accessibility is part of the component structure, not a final polish step.
+
+Honest UI uses native HTML whenever possible. For complex interactions such as dialogs, menus, popovers, comboboxes, and tabs, Honest UI uses accessible primitives so keyboard navigation, focus handling, and ARIA state can be handled consistently.
+
+## What Honest UI provides
+
+Honest UI components are designed to support:
+
+- Keyboard navigation.
+- Visible focus states.
+- Labels and descriptions for form controls.
+- Screen-reader-friendly structure.
+- Disabled and invalid states.
+- Dialog and popup focus management.
+- Semantic HTML for common content.
+
+Some components still require correct app-level usage. For example, an input needs a useful label, a destructive button needs clear copy, and a toast should not contain critical information that disappears before the user can act.
+
+## Labels and descriptions
+
+Every form control should have a label.
+
+Use [Field](/docs/components/field) when you need a label, description, validation message, and consistent spacing around a control.
+
+Good labels are short and specific:
+
+- Use `Email address` instead of `Email`.
+- Use `Project visibility` instead of `Visibility`.
+- Use `Receive product updates` instead of `Updates`.
+
+Descriptions should explain constraints, not repeat the label.
+
+## Keyboard behavior
+
+Interactive components should be usable without a mouse.
+
+Check these basics when you customize a component:
+
+- `Tab` reaches the control in a logical order.
+- `Enter` and `Space` activate buttons, checkboxes, switches, and toggles.
+- Arrow keys move through menus, radio groups, tabs, sliders, and list-based controls when expected.
+- `Escape` closes dialogs, menus, popovers, and sheets when the primitive supports it.
+- Focus returns to the trigger after a popup closes.
+
+## Focus styles
+
+Do not remove focus styles.
+
+If you change the visual design, keep a clear focus ring or focus outline with enough contrast. Focus should be visible on buttons, links, inputs, menu items, tab triggers, and any custom interactive element.
+
+## Disabled and loading states
+
+Use disabled states only when the user cannot interact with the control.
+
+If the action is temporarily unavailable, explain why nearby. If the action is waiting for a request to finish, prefer a loading state that keeps the layout stable.
+
+## Validation
+
+Validation messages should be plain and specific.
+
+Use [Field](/docs/components/field) and [Form](/docs/components/form) to keep labels, descriptions, errors, and submission behavior connected.
+
+Write errors like:
+
+- `Enter a valid email address.`
+- `Choose at least one role.`
+- `Password must be at least 12 characters.`
+
+Avoid vague errors like `Invalid`, `Required`, or `Something went wrong` when the fix is known.

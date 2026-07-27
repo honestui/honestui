@@ -1,0 +1,47 @@
+---
+title: Installation
+description: Add Honest UI Icons to your React project.
+---
+
+Our icons are distributed with `honestui` and require no stylesheet or provider.
+
+## Steps
+
+<Steps>
+  <Step>
+    <StepTitle>Install the package</StepTitle>
+    <StepContent>
+      <StepDescription>
+        Install `honestui` from your project root.
+      </StepDescription>
+      <CommandBlock commands={["honestui"]} />
+    </StepContent>
+  </Step>
+
+  <Step>
+    <StepTitle>Choose an icon</StepTitle>
+    <StepContent>
+      <StepDescription>
+        Open a category from the sidebar and select an icon to view its import and usage code.
+      </StepDescription>
+    </StepContent>
+  </Step>
+
+  <Step>
+    <StepTitle>Import the component</StepTitle>
+    <StepContent>
+      <StepDescription>
+        Import icons by name from `honestui/icons`.
+      </StepDescription>
+
+```tsx
+import { Search } from "honestui/icons";
+
+export function SearchIcon() {
+  return <Search aria-hidden="true" />;
+}
+```
+
+    </StepContent>
+  </Step>
+</Steps>

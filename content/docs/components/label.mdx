@@ -1,0 +1,79 @@
+---
+title: Label
+description: Renders an accessible label associated with controls.
+---
+
+<ComponentPreview
+  name="input-with-label"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use Label to name a form control.
+
+Labels help every user understand what a control does. They are also required for good screen-reader and click-target behavior.
+
+## Anatomy
+
+A label is connected to a control. The visible text should be short, specific, and stable.
+
+## Usage guidance
+
+Use Field when you need a label plus description or validation. Use Label directly when you only need the label primitive.
+
+## Accessibility
+
+Do not replace labels with placeholders. A placeholder disappears when the user types and is not enough context for many users.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add label
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="label" title="components/ui/label.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/label"
+```
+
+```tsx
+<Label htmlFor="email">Email</Label>
+```
+
+## Examples
+
+The example shows Label connected to a checkbox.
+
+For accessible labelling and validation, prefer using the `FieldLabel` component. See some [related examples](/ui/docs/components/field).
+
+### With Checkbox
+
+<ComponentPreview name="checkbox-demo" />

@@ -1,0 +1,205 @@
+---
+title: Field
+description: A component that provides labelling and validation for form controls.
+
+links:
+  doc: https://base-ui.com/react/components/field#api-reference
+---
+
+<ComponentPreview
+  name="field-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use Field to wrap a form control with a label, description, validation message, and disabled or invalid state.
+
+Field keeps form layout consistent and helps connect supporting text to the control.
+
+## Anatomy
+
+A field usually includes a label, control, description, and error message. The control can be an input, textarea, select, checkbox, radio group, slider, switch, combobox, or custom form element.
+
+## Behavior
+
+Use required, disabled, invalid, and validity states to match the real form state. Keep validation messages close to the control they explain.
+
+## Accessibility
+
+Field is most useful when it connects labels, descriptions, and errors in a way screen readers can understand. Use clear labels and specific error messages.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add field
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource
+  name="field"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+  title="components/ui/field.tsx"
+/>
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FieldValidity,
+} from "@/components/ui/field"
+```
+
+```tsx
+<Field>
+  <FieldLabel>Name</FieldLabel>
+  <FieldControl type="text" placeholder="Enter your name" />
+  <FieldDescription>Visible on your profile</FieldDescription>
+  <FieldError>Please enter a valid name</FieldError>
+  <FieldValidity>
+    {(validity) => (
+      {validity.error && <p>{validity.error}</p>}
+    )}
+  </FieldValidity>
+</Field>
+```
+
+## Examples
+
+Our examples cover Field with required, disabled, error, validity, and many different form controls.
+
+### Required Field
+
+<ComponentPreview
+  name="field-required"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Disabled Field
+
+<ComponentPreview
+  name="field-disabled"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Error
+
+Enter an invalid email address and press enter to see the error.
+
+<ComponentPreview
+  name="field-error"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Validity
+
+<ComponentPreview
+  name="field-validity"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-80"
+/>
+
+### Autocomplete Field
+
+<ComponentPreview
+  name="field-autocomplete"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Combobox Field
+
+<ComponentPreview
+  name="field-combobox"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Combobox Multiple Field
+
+<ComponentPreview
+  name="field-combobox-multiple"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Textarea Field
+
+<ComponentPreview
+  name="field-textarea"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Select Field
+
+<ComponentPreview
+  name="field-select"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Checkbox Field
+
+<ComponentPreview name="field-checkbox" />
+
+### Checkbox Group Field
+
+<ComponentPreview name="field-checkbox-group" />
+
+### Radio Group Field
+
+<ComponentPreview name="field-radio" />
+
+### Switch Field
+
+<ComponentPreview name="field-switch" />
+
+### Slider Field
+
+<ComponentPreview
+  name="field-slider"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Number Field
+
+<ComponentPreview
+  name="field-number-field"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Complete Form Example
+
+<ComponentPreview
+  name="field-complete-form"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>

@@ -1,0 +1,99 @@
+---
+title: Breadcrumb
+description: Displays the path to the current resource using a hierarchy of links.
+---
+
+<ComponentPreview name="breadcrumb-demo" />
+
+## Overview
+
+Use breadcrumbs to show where the current page sits in a hierarchy.
+
+Breadcrumbs work best for nested products, documentation, settings, folders, and admin sections. They should not replace the main navigation. They help users understand context and move up one or more levels.
+
+## Anatomy
+
+A breadcrumb has a list, items, links, separators, and a current page item. Earlier items are usually links. The current item usually is not a link.
+
+## Usage guidance
+
+Keep labels short. Start with the highest useful parent, not always the site root. Use custom separators only when they still read clearly between items.
+
+## Accessibility
+
+Wrap breadcrumbs in navigation with a clear label. Mark the current page so assistive technology can distinguish it from links.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add breadcrumb
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="breadcrumb" title="components/ui/breadcrumb.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+```
+
+```tsx
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/">Home</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbEllipsis />
+    </BreadcrumbItem>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/components">Components</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
+
+## Examples
+
+The example shows how to change the separator while keeping the same hierarchy.
+
+### With custom separator
+
+<ComponentPreview name="breadcrumb-custom-separator" />

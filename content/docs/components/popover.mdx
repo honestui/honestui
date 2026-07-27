@@ -1,0 +1,97 @@
+---
+title: Popover
+description: An accessible popup anchored to a button.
+
+links:
+  doc: https://base-ui.com/react/components/popover#api-reference
+---
+
+<ComponentPreview name="popover-demo" />
+
+## Overview
+
+Use Popover for contextual content that appears near a trigger.
+
+Popovers are good for lightweight forms, explanations, filters, small pickers, and secondary controls. Use Dialog when the task needs focus trapping or a larger workflow.
+
+## Anatomy
+
+A popover has a trigger, popup, optional title or description, content, and optional close action.
+
+## Behavior
+
+Keep popover content short and directly related to the trigger. Avoid putting complex multi-step workflows inside a popover.
+
+## Accessibility
+
+The trigger should clearly describe what opens. Make sure focus behavior is predictable and that users can dismiss the popover with keyboard controls.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add popover
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="popover" title="components/ui/popover.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Popover,
+  PopoverClose,
+  PopoverDescription,
+  PopoverPopup,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+```
+
+```tsx
+<Popover>
+  <PopoverTrigger>Open Popover</PopoverTrigger>
+  <PopoverPopup>
+    <PopoverTitle>Popover Title</PopoverTitle>
+    <PopoverDescription>Popover Description</PopoverDescription>
+    <PopoverClose>Close</PopoverClose>
+  </PopoverPopup>
+</Popover>
+```
+
+## Examples
+
+The example shows a popover with an explicit close action.
+
+### With Close Button
+
+<ComponentPreview name="popover-with-close" />

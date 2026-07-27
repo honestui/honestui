@@ -1,0 +1,80 @@
+---
+title: Frame
+description: A framed container for grouping related information.
+---
+
+<ComponentPreview name="frame-demo" />
+
+## Overview
+
+Use Frame when you need a simple bordered surface around related content.
+
+Frame is lighter than Card. It works well for previews, examples, media, code-adjacent content, and small grouped regions that do not need card header or footer structure.
+
+## Anatomy
+
+A frame is mainly a container. It gives content a boundary without adding a full card layout.
+
+## Usage guidance
+
+Use Frame for visual grouping. Use Card when the content needs a title, description, content area, and actions.
+
+## Accessibility
+
+Frame does not add meaning by itself. Use headings, labels, and semantic HTML inside it when the grouped content needs structure.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add frame
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="frame" title="components/ui/frame.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Frame,
+  FrameDescription,
+  FrameFooter,
+  FrameHeader,
+  FramePanel,
+  FrameTitle,
+} from "@/components/ui/frame"
+```
+
+```tsx
+<Frame>
+  <FrameHeader>
+    <FrameTitle>Title</FrameTitle>
+    <FrameDescription>Description</FrameDescription>
+  </FrameHeader>
+  <FramePanel>Content</FramePanel>
+  <FrameFooter>Footer</FrameFooter>
+</Frame>
+```

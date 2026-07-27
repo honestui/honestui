@@ -1,0 +1,99 @@
+---
+title: Form
+description: A form wrapper component that simplifies validation and submission.
+
+links:
+  doc: https://base-ui.com/react/components/form#api-reference
+---
+
+<ComponentPreview name="form-demo" />
+
+## Overview
+
+Use Form to handle form submission, validation, and shared form state.
+
+Form is useful when multiple fields need to be submitted together or validated together. It works well with Field and the form examples across the docs.
+
+## Anatomy
+
+A form includes the form root, fields, controls, validation messages, and submit actions. Each field should have a label and a clear error message when validation fails.
+
+## Behavior
+
+Keep submission state clear. Disable or show loading on the submit action while a request is running. Show errors near the fields that need attention.
+
+## Accessibility
+
+Use labels, descriptions, and errors consistently. Make sure keyboard users can reach every field and submit or cancel the form.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add form
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react zod
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="form" title="components/ui/form.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Field,
+  FieldControl,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Form } from "@/components/ui/form"
+```
+
+```tsx
+<Form
+  onSubmit={(e) => {
+    /* handle submit */
+  }}
+>
+  <Field>
+    <FieldLabel>Email</FieldLabel>
+    <FieldControl name="email" type="email" required />
+    <FieldError>Please enter a valid email.</FieldError>
+  </Field>
+</Form>
+```
+
+## Examples
+
+Our examples cover basic form structure and schema validation with Zod.
+
+### Using with Zod
+
+<ComponentPreview name="form-zod" />

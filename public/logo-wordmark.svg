@@ -1,0 +1,32 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 181 48"
+  role="img"
+  aria-labelledby="title description"
+>
+  <title id="title">Honest UI</title>
+  <desc id="description">The Honest UI modular H mark and wordmark.</desc>
+  <g fill="#111111">
+    <rect x="2" y="4.5" width="12.75" height="39" rx="3.75" />
+    <rect x="26.75" y="4.5" width="12.75" height="39" rx="3.75" />
+    <rect x="16.25" y="18" width="9" height="12" rx="2.625" />
+  </g>
+  <text
+    x="50"
+    y="31"
+    fill="#111111"
+    font-family="Geist, Arial, sans-serif"
+    font-size="22"
+    font-weight="600"
+    letter-spacing="-0.55"
+  >Honest</text>
+  <text
+    x="119.5"
+    y="31"
+    fill="#737373"
+    font-family="Geist, Arial, sans-serif"
+    font-size="22"
+    font-weight="500"
+    letter-spacing="-0.55"
+  >UI</text>
+</svg>

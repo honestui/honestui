@@ -1,0 +1,133 @@
+---
+title: Input
+description: A native input element.
+
+links:
+  doc: https://base-ui.com/react/components/input#api-reference
+---
+
+<ComponentPreview
+  name="input-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use Input for short free-form text, numbers, email addresses, URLs, search terms, and file selection.
+
+Input is a low-level control. In forms, wrap it with Field so users get a label, description, error, and disabled state in a consistent layout.
+
+## Anatomy
+
+An input has a value, placeholder, type, size, disabled state, and optional surrounding controls. The placeholder should never replace a real label.
+
+## Usage guidance
+
+Choose the native input type that matches the data. Use `email` for email, `search` for search, `file` for files, and so on. Use Textarea for longer multi-line text.
+
+## Accessibility
+
+Always provide a label. Use clear validation messages and keep focus styles visible.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add input
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="input" title="components/ui/input.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Input } from "@/components/ui/input"
+```
+
+```tsx
+<Input />
+```
+
+## Examples
+
+Our examples cover sizes, disabled state, file input, labels, attached buttons, and form usage.
+
+For accessible labelling and validation, prefer using the `Field` component to wrap inputs, or the `FieldControl` component. See some [related examples](/ui/docs/components/field).
+
+### Small Size
+
+<ComponentPreview
+  name="input-sm"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Large Size
+
+<ComponentPreview
+  name="input-lg"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Disabled
+
+<ComponentPreview
+  name="input-disabled"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### File
+
+<ComponentPreview
+  name="input-file"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Label
+
+<ComponentPreview
+  name="input-with-label"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Button
+
+<ComponentPreview
+  name="input-with-button"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Form Integration
+
+<ComponentPreview
+  name="form-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>

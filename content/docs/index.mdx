@@ -1,0 +1,78 @@
+---
+title: Introduction
+description: A practical introduction to Honest UI and how the docs are organized.
+---
+
+## What is Honest UI?
+
+**Honest UI** is an open-source set of React components, examples, and patterns.
+
+The components are built for product interfaces. They cover common controls like buttons, forms, dialogs, menus, tabs, tables, and feedback messages. Each component is designed to be copied into your app, adjusted, and owned by your codebase.
+
+Honest UI is not a black-box component package. You can inspect the source, change the styles, and keep only the pieces you need.
+
+## What you get
+
+Honest UI includes:
+
+- **Components** for common interface needs.
+- **Examples** that show realistic states, sizes, variants, and form usage.
+- **Styling tokens** based on CSS variables and Tailwind CSS.
+- **Accessibility structure** from native HTML and Base UI where interaction behavior is needed.
+- **Installation paths** for both the CLI and manual copy-paste setup.
+
+## Why Honest UI?
+
+Many UI kits only give you a visual shell. Honest UI gives you the structure, behavior, and examples needed to build real screens faster.
+
+The goal is simple: start with good defaults, then customize without fighting the library.
+
+Honest UI works well when you want:
+
+- Components that are easy to read.
+- Styling that lives in your app.
+- Examples that show the edge cases, not just the happy path.
+- A design system you can grow over time.
+
+## Explore Honest UI
+
+Start with [Get Started](/docs/get-started) to install the base setup. Then browse [Our Components](/docs/component-guide) to understand how component pages are structured.
+
+Our component pages include:
+
+- A live preview.
+- Installation steps.
+- Basic usage.
+- Notes about structure and behavior.
+- Examples for sizes, states, variants, and form integration.
+
+When you copy a component, also check its examples. They often show the small decisions that matter in production, such as disabled states, validation messages, grouped options, or keyboard-friendly composition.
+
+## Design principles
+
+Honest UI follows a few steady rules:
+
+- **Use clear HTML first.** Native elements are preferred when they solve the job.
+- **Compose small parts.** Components expose pieces like header, title, content, trigger, and footer when that makes the UI easier to control.
+- **Keep styles close.** Components use class names and CSS variables so you can tune them in your app.
+- **Respect accessibility.** Interactive components include keyboard and focus behavior where the underlying primitive supports it.
+- **Show real states.** Docs include loading, disabled, destructive, success, error, and empty states where they apply.
+
+## Who should use it?
+
+Honest UI is useful for:
+
+- Product teams building dashboards, SaaS apps, admin tools, and internal tools.
+- Developers who want components they can copy and understand.
+- Teams building a shared design system on top of React and Tailwind CSS.
+- Projects that need accessible interaction patterns without a heavy abstraction layer.
+
+## Open Source and Community
+
+Honest UI is open source under the **MIT license**.
+
+You can read the code, use it in your projects, and contribute improvements.
+
+Read the [Contributing Guide](/docs/contributing) to learn how to file issues, improve docs, or open a pull request.
+
+We welcome focused bug fixes, clearer examples, accessibility improvements, and new components that fit the system.

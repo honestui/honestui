@@ -1,0 +1,211 @@
+---
+title: Alert
+description: A callout for information and a blocking dialog for decisions.
+
+links:
+  doc: https://base-ui.com/react/components/alert-dialog#api-reference
+---
+
+<ComponentPreview name="alert-demo" />
+
+## Overview
+
+Use an alert to call attention to information that affects the current page or task.
+
+Alerts are best for inline feedback, warnings, success messages, errors, and important context. They should be visible near the content they explain. Use a toast instead when the message is temporary and does not need to stay on the page.
+
+Use Alert Dialog when the user must make a decision before the app can continue. Alert dialogs are for high-impact choices such as deleting data, leaving with unsaved changes, confirming a destructive action, or acknowledging a blocking error.
+
+## Anatomy
+
+An alert usually has a container, optional icon, title, description, and optional actions. The title should be short. The description should explain what happened or what the user should do next.
+
+An alert dialog has a trigger, popup, title, description, and actions. The title should state the decision. The description should explain the consequence. The actions should make the safe choice and the risky choice easy to distinguish.
+
+## Variants
+
+Choose the variant by meaning, not by color preference. Use info for neutral guidance, success for completed work, warning for possible risk, error for a failed action, and destructive when the user is dealing with a harmful or irreversible action.
+
+## Behavior
+
+Keep alerts close to the content they explain. Keep alert dialogs short and focused. If a flow needs a form, browsing, or several steps, use Dialog or Sheet instead.
+
+## Accessibility
+
+Do not rely on color alone. Pair state colors with clear text and, when useful, an icon. Keep action buttons keyboard reachable and avoid putting long instructions inside a small alert.
+
+Alert dialogs should have a clear title and description. Keep focus inside the popup while it is open. Make sure the cancel action is easy to reach and that destructive actions use explicit copy such as `Delete project`, not vague copy like `OK`.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add alert
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Import the following variables into your CSS file</Step>
+
+```css
+@theme inline {
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+}
+
+:root {
+  --destructive-foreground: oklch(0.704 0.191 22.216);
+  --info: oklch(0.623 0.214 259.815);
+  --info-foreground: oklch(0.707 0.165 254.624);
+  --success: oklch(0.696 0.17 162.48);
+  --success-foreground: oklch(0.765 0.177 163.223);
+  --warning: oklch(0.769 0.188 70.08);
+  --warning-foreground: oklch(0.828 0.189 84.429);
+}
+
+.dark {
+  --destructive-foreground: oklch(0.704 0.191 22.216);
+  --info: oklch(0.623 0.214 259.815);
+  --info-foreground: oklch(0.707 0.165 254.624);
+  --success: oklch(0.696 0.17 162.48);
+  --success-foreground: oklch(0.765 0.177 163.223);
+  --warning: oklch(0.769 0.188 70.08);
+  --warning-foreground: oklch(0.828 0.189 84.429);
+}
+```
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="alert" title="components/ui/alert.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Alert,
+  AlertDescription,
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertTitle,
+} from "@/components/ui/alert"
+```
+
+```tsx
+<Alert>
+  <AlertTitle>Heads up!</AlertTitle>
+  <AlertDescription>
+    You can add components and dependencies to your app using the cli.
+  </AlertDescription>
+</Alert>
+```
+
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger>Delete Account</AlertDialogTrigger>
+  <AlertDialogPopup>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+      <AlertDialogDescription>
+        This action cannot be undone. This will permanently delete your account
+        and remove your data from our servers.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogClose>Cancel</AlertDialogClose>
+      <AlertDialogClose>Delete Account</AlertDialogClose>
+    </AlertDialogFooter>
+  </AlertDialogPopup>
+</AlertDialog>
+```
+
+## Examples
+
+Our examples cover alerts with icons, actions, and common state variants.
+
+### With Icon
+
+Use an icon to make the alert easier to scan, especially in dense forms or settings pages.
+
+<ComponentPreview name="alert-with-icon" />
+
+### With Icon and Action Buttons
+
+Use actions when the alert can be resolved or explored from the same place.
+
+<ComponentPreview name="alert-with-icon-action" />
+
+### Info Alert
+
+Use info for neutral context or guidance.
+
+<ComponentPreview name="alert-info" />
+
+### Success Alert
+
+Use success when an action completed and the result should remain visible.
+
+<ComponentPreview name="alert-success" />
+
+### Warning Alert
+
+Use warning when the user can continue but should understand a risk.
+
+<ComponentPreview name="alert-warning" />
+
+### Error Alert
+
+Use error when something failed and the user needs to correct it.
+
+<ComponentPreview name="alert-error" />
+
+## Alert Dialog
+
+Alert Dialog is included in the same component file. Use it only when the user must respond before continuing.
+
+### Basic Alert Dialog
+
+Use this pattern before a destructive or high-impact action.
+
+<ComponentPreview name="alert-dialog-demo" />
+
+### Close Confirmation
+
+Use this pattern when closing would discard work, interrupt a process, or hide important state.
+
+<ComponentPreview name="dialog-close-confirmation" />

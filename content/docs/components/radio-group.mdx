@@ -1,0 +1,108 @@
+---
+title: Radio Group
+description: A set of checkable buttons where no more than one of the buttons can be checked at a time.
+
+links:
+  doc: https://base-ui.com/react/components/radio-group#api-reference
+---
+
+<ComponentPreview name="radio-group-demo" />
+
+## Overview
+
+Use Radio Group when the user must choose one option from a set.
+
+Radio groups are useful for plans, visibility, shipping speed, sort order, and settings where choices are mutually exclusive.
+
+## Anatomy
+
+A radio group has a group label, radio items, item labels, optional descriptions, and selection state.
+
+## Behavior
+
+Show all important options when the list is short. Use Select when the list is long or when space is limited.
+
+## Accessibility
+
+Group radio items with a clear label. Each item should have its own label, and keyboard users should be able to move through options with arrow keys.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add radio-group
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="radio-group" title="components/ui/radio-group.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/label"
+import { Radio, RadioGroup } from "@/components/ui/radio-group"
+```
+
+```tsx
+<RadioGroup defaultValue="next">
+  <Label>
+    <Radio value="next" /> Next.js
+  </Label>
+  <Label>
+    <Radio value="vite" /> Vite
+  </Label>
+  <Label>
+    <Radio value="astro" /> Astro
+  </Label>
+</RadioGroup>
+```
+
+## Examples
+
+Our examples cover disabled, described, card-style, and form-connected radio groups.
+
+For accessible labelling and validation, prefer using the `Field` component to wrap radio buttons. See the related example: [Radio Group field](/ui/docs/components/field#radio-group-field).
+
+### Disabled
+
+<ComponentPreview name="radio-group-disabled" />
+
+### With Description
+
+<ComponentPreview name="radio-group-with-description" />
+
+### Card Style
+
+<ComponentPreview name="radio-group-card" />
+
+### Form Integration
+
+<ComponentPreview name="radio-group-form" />

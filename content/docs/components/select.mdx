@@ -1,0 +1,157 @@
+---
+title: Select
+description: A common form component for choosing a predefined value in a dropdown menu.
+
+links:
+  doc: https://base-ui.com/react/components/select#api-reference
+---
+
+<ComponentPreview
+  name="select-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use Select when users choose from a predefined list.
+
+Select is best for known options such as status, role, country, visibility, sort order, and compact settings. Use Combobox when search is important.
+
+## Anatomy
+
+A select has a trigger, value display, popup, items, optional groups, and selection state. Multiple selection is available when the user can choose more than one item.
+
+## Behavior
+
+Keep option labels short and unique. Use groups when a long list has meaningful categories.
+
+## Accessibility
+
+Give the select a label and keep keyboard navigation intact. Users should be able to open, move, select, and close without a mouse.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add select
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="select" title="components/ui/select.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+```
+
+```tsx
+const items = [
+  { label: "Select framework", value: null },
+  { label: "Next.js", value: "next" },
+  { label: "Vite", value: "vite" },
+  { label: "Astro", value: "astro" },
+]
+
+<Select items={items}>
+  <SelectTrigger>
+    <SelectValue />
+  </SelectTrigger>
+  <SelectPopup>
+    {items.map((item) => (
+      <SelectItem key={item.value} value={item}>
+        {item.label}
+      </SelectItem>
+    ))}
+  </SelectPopup>
+  </Select>
+```
+
+## Examples
+
+Our examples cover sizes, disabled state, alignment, groups, multiple selection, and form integration.
+
+For accessible labelling and validation, prefer using the `Field` component to wrap selects. See the related example: [Select field](/ui/docs/components/field#select-field).
+
+### Small Size
+
+<ComponentPreview
+  name="select-sm"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Large Size
+
+<ComponentPreview
+  name="select-lg"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Disabled
+
+<ComponentPreview
+  name="select-disabled"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Without Item Alignment
+
+<ComponentPreview
+  name="select-without-alignment"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Groups
+
+<ComponentPreview
+  name="select-with-groups"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Multiple Selection
+
+<ComponentPreview
+  name="select-multiple"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### Form Integration
+
+<ComponentPreview
+  name="select-form"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>

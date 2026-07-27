@@ -1,0 +1,102 @@
+---
+title: Progress
+description: Displays the status of a task that takes a long time.
+
+links:
+  doc: https://base-ui.com/react/components/progress#api-reference
+---
+
+<ComponentPreview
+  name="progress-demo"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+## Overview
+
+Use Progress to show how far a task has advanced.
+
+Progress is useful for uploads, imports, onboarding steps, generation, installation, and long-running actions. Use Meter for static values like quota or capacity.
+
+## Anatomy
+
+A progress indicator has a value, maximum, optional label, optional formatted value, and visual bar.
+
+## Behavior
+
+Use determinate progress when you know the percentage. Use a separate loading pattern when the duration is unknown.
+
+## Accessibility
+
+Show text when the value matters. Do not communicate progress only through animation or color.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add progress
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="progress" title="components/ui/progress.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress"
+```
+
+```tsx
+<Progress value={40} />
+```
+
+Note: If you render children inside `Progress`, you must also include `ProgressTrack` and `ProgressIndicator` inside it. Without them, the bar will not display. When no children are provided, a default track and indicator are rendered for you.
+
+## Examples
+
+Our examples cover progress with labels and formatted values.
+
+### With Label and Value
+
+<ComponentPreview
+  name="progress-with-label-value"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>
+
+### With Formatted Value
+
+<ComponentPreview
+  name="progress-with-formatted-value"
+  className="[&_.preview>*]:w-full [&_.preview>*]:max-w-64"
+/>

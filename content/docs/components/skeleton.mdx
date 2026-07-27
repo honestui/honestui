@@ -1,0 +1,74 @@
+---
+title: Skeleton
+description: A loading state skeleton for your components.
+---
+
+<ComponentPreview name="skeleton-demo" />
+
+## Overview
+
+Use Skeleton to reserve space while content is loading.
+
+Skeletons are useful for cards, tables, lists, avatars, charts, and forms where the layout is known before the data arrives.
+
+## Anatomy
+
+A skeleton is a neutral placeholder shape. It should roughly match the size and rhythm of the content that will replace it.
+
+## Usage guidance
+
+Use skeletons for short loading states where preserving layout helps. Avoid showing too many animated placeholders at once.
+
+## Accessibility
+
+Do not announce every skeleton as content. Pair long loading states with clear loading text when users need to understand what is happening.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add skeleton
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="skeleton" title="components/ui/skeleton.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Skeleton } from "@/components/ui/skeleton"
+```
+
+```tsx
+<Skeleton className="size-10 rounded-full" />
+```
+
+## Examples
+
+Our examples cover a composed loading layout and a standalone skeleton primitive.
+
+### Skeleton Only
+
+<ComponentPreview name="skeleton-only" />
