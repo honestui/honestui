@@ -11,24 +11,37 @@ export function getRegistryComponent(name: string) {
 }
 
 export async function getRegistryItem(name: string) {
-  if (!/^[a-z0-9-]+$/.test(name)) {
+  if (!/^[a-z0-9-]+(?:\.(?:css|ts|tsx))?$/.test(name)) {
     return null;
   }
 
-  const candidates = [
+  const locations = [
     {
-      path: path.join(process.cwd(), "registry/default/ui", `${name}.tsx`),
+      path: path.join(process.cwd(), "registry/default/ui"),
       type: "registry:ui" as const,
     },
     {
-      path: path.join(process.cwd(), "registry/default/examples", `${name}.tsx`),
+      path: path.join(process.cwd(), "registry/default/ui/charts"),
+      type: "registry:ui" as const,
+    },
+    {
+      path: path.join(process.cwd(), "registry/default/examples"),
       type: "registry:example" as const,
     },
     {
-      path: path.join(process.cwd(), "registry/default/examples/charts", `${name}.tsx`),
+      path: path.join(process.cwd(), "registry/default/examples/charts"),
       type: "registry:example" as const,
     },
   ];
+  const fileNames = path.extname(name)
+    ? [name]
+    : [`${name}.tsx`, `${name}.ts`, `${name}.css`];
+  const candidates = locations.flatMap((location) =>
+    fileNames.map((fileName) => ({
+      path: path.join(location.path, fileName),
+      type: location.type,
+    })),
+  );
 
   let registryFile: (typeof candidates)[number] | undefined;
 
@@ -75,17 +88,74 @@ export async function getRegistryItem(name: string) {
 
   // Fix file paths.
   const finalFiles = fixFilePaths(processedFiles);
+  const source = processedFiles.map((file) => file.content ?? "").join("\n");
+  const { dependencies, registryDependencies } = getDependencies(source);
 
   return {
     ...typedItem,
+    ...(dependencies.length > 0 && { dependencies }),
+    ...(registryDependencies.length > 0 && { registryDependencies }),
     files: finalFiles,
   };
+}
+
+function getDependencies(source: string) {
+  const dependencies = new Set<string>();
+  const registryDependencies = new Set<string>();
+  const imports = source.matchAll(/(?:from\s+|import\s*)["']([^"']+)["']/g);
+
+  for (const match of imports) {
+    const specifier = match[1];
+
+    if (
+      specifier.startsWith("@/registry/default/ui/") ||
+      specifier.startsWith("@/components/ui/") ||
+      specifier.startsWith("@/components/")
+    ) {
+      registryDependencies.add(path.basename(specifier));
+      continue;
+    }
+
+    if (specifier.startsWith("./")) {
+      registryDependencies.add(path.basename(specifier));
+      continue;
+    }
+
+    if (
+      specifier.startsWith("@/") ||
+      specifier === "react" ||
+      specifier.startsWith("react/") ||
+      specifier === "next" ||
+      specifier.startsWith("next/")
+    ) {
+      continue;
+    }
+
+    dependencies.add(getPackageName(specifier));
+  }
+
+  return {
+    dependencies: Array.from(dependencies).sort(),
+    registryDependencies: Array.from(registryDependencies).sort(),
+  };
+}
+
+function getPackageName(specifier: string) {
+  if (specifier.startsWith("@")) {
+    return specifier.split("/").slice(0, 2).join("/");
+  }
+
+  return specifier.split("/")[0];
 }
 
 async function getFileContent(file: { path: string; type?: string }) {
   // Resolve TypeScript path aliases (@/) to actual filesystem paths
   const resolvedPath = file.path.replace(/^@\//, path.join(process.cwd(), "src") + "/");
   const raw = await fs.readFile(resolvedPath, "utf-8");
+
+  if (path.extname(file.path) === ".css") {
+    return raw;
+  }
 
   const project = new Project({
     compilerOptions: {},
