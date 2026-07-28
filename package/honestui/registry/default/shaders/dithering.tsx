@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable react-hooks/immutability */
-import { useRef, useEffect, forwardRef, useMemo } from 'react';
+import { useRef, useEffect, forwardRef, useState } from 'react';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { EffectComposer, wrapEffect } from '@react-three/postprocessing';
 import { Effect } from 'postprocessing';
@@ -209,7 +209,7 @@ function DitheredWaves({
   const mouseRef = useRef(new THREE.Vector2());
   const { viewport, size, gl } = useThree();
 
-  const waveUniforms = useMemo<WaveUniforms>(
+  const [waveUniforms] = useState<WaveUniforms>(
     () => ({
       time: new THREE.Uniform(0),
       resolution: new THREE.Uniform(new THREE.Vector2(0, 0)),
@@ -220,8 +220,7 @@ function DitheredWaves({
       mousePos: new THREE.Uniform(new THREE.Vector2(0, 0)),
       enableMouseInteraction: new THREE.Uniform(enableMouseInteraction ? 1 : 0),
       mouseRadius: new THREE.Uniform(mouseRadius)
-    }),
-    [enableMouseInteraction, mouseRadius, waveAmplitude, waveColor, waveFrequency, waveSpeed],
+    })
   );
 
   useEffect(() => {

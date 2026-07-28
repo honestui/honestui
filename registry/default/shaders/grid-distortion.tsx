@@ -33,10 +33,41 @@ varying vec2 vUv;
 
 void main() {
   vec2 uv = vUv;
-  vec4 offset = texture2D(uDataTexture, vUv);
-  gl_FragColor = texture2D(uTexture, uv - 0.02 * offset.rg);
+  vec2 offset = texture2D(uDataTexture, vUv).rg * 2.0 - 1.0;
+  gl_FragColor = texture2D(uTexture, uv - 0.02 * offset);
 }
 `;
+
+interface GridSimulation {
+  size: number;
+  displacement: Float32Array;
+  data: Uint8Array;
+  dataTexture: THREE.DataTexture;
+  geometry: THREE.PlaneGeometry;
+}
+
+const createSimulation = (grid: number): GridSimulation => {
+  const size = Math.max(2, Math.round(grid));
+  const displacement = new Float32Array(2 * size * size);
+  const data = new Uint8Array(4 * size * size);
+
+  for (let i = 0; i < size * size; i++) {
+    data[i * 4] = 128;
+    data[i * 4 + 1] = 128;
+    data[i * 4 + 3] = 255;
+  }
+
+  const dataTexture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+  dataTexture.needsUpdate = true;
+
+  return {
+    size,
+    displacement,
+    data,
+    dataTexture,
+    geometry: new THREE.PlaneGeometry(1, 1, size - 1, size - 1)
+  };
+};
 
 const GridDistortion: React.FC<GridDistortionProps> = ({
   grid = 15,
@@ -47,22 +78,32 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
   className = ''
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
-  const planeRef = useRef<THREE.Mesh | null>(null);
-  const imageAspectRef = useRef<number>(1);
-  const animationIdRef = useRef<number | null>(null);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const livePropsRef = useRef({ mouse, strength, relaxation });
+  const initialGridRef = useRef(grid);
+  const runtimeRef = useRef<{
+    renderer: THREE.WebGLRenderer;
+    scene: THREE.Scene;
+    camera: THREE.OrthographicCamera;
+    plane: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
+    material: THREE.ShaderMaterial;
+    uniforms: {
+      time: { value: number };
+      resolution: { value: THREE.Vector4 };
+      uTexture: { value: THREE.Texture | null };
+      uDataTexture: { value: THREE.DataTexture };
+    };
+    simulation: GridSimulation;
+  } | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    livePropsRef.current = { mouse, strength, relaxation };
+  }, [mouse, strength, relaxation]);
 
+  useEffect(() => {
     const container = containerRef.current;
+    if (!container) return;
 
     const scene = new THREE.Scene();
-    sceneRef.current = scene;
-
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -70,43 +111,21 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
-    rendererRef.current = renderer;
 
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
     const camera = new THREE.OrthographicCamera(0, 0, 0, 0, -1000, 1000);
     camera.position.z = 2;
-    cameraRef.current = camera;
+
+    const simulation = createSimulation(initialGridRef.current);
 
     const uniforms = {
       time: { value: 0 },
       resolution: { value: new THREE.Vector4() },
       uTexture: { value: null as THREE.Texture | null },
-      uDataTexture: { value: null as THREE.DataTexture | null }
+      uDataTexture: { value: simulation.dataTexture }
     };
-
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(imageSrc, texture => {
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.wrapS = THREE.ClampToEdgeWrapping;
-      texture.wrapT = THREE.ClampToEdgeWrapping;
-      imageAspectRef.current = texture.image.width / texture.image.height;
-      uniforms.uTexture.value = texture;
-      handleResize();
-    });
-
-    const size = grid;
-    const data = new Float32Array(4 * size * size);
-    for (let i = 0; i < size * size; i++) {
-      data[i * 4] = Math.random() * 255 - 125;
-      data[i * 4 + 1] = Math.random() * 255 - 125;
-    }
-
-    const dataTexture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat, THREE.FloatType);
-    dataTexture.needsUpdate = true;
-    uniforms.uDataTexture.value = dataTexture;
 
     const material = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
@@ -116,10 +135,18 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       transparent: true
     });
 
-    const geometry = new THREE.PlaneGeometry(1, 1, size - 1, size - 1);
-    const plane = new THREE.Mesh(geometry, material);
-    planeRef.current = plane;
+    const plane = new THREE.Mesh(simulation.geometry, material);
     scene.add(plane);
+
+    runtimeRef.current = {
+      renderer,
+      scene,
+      camera,
+      plane,
+      material,
+      uniforms,
+      simulation
+    };
 
     const handleResize = () => {
       if (!container || !renderer || !camera) return;
@@ -149,12 +176,10 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       uniforms.resolution.value.set(width, height, 1, 1);
     };
 
+    let resizeObserver: ResizeObserver | null = null;
     if (window.ResizeObserver) {
-      const resizeObserver = new ResizeObserver(() => {
-        handleResize();
-      });
+      resizeObserver = new ResizeObserver(handleResize);
       resizeObserver.observe(container);
-      resizeObserverRef.current = resizeObserver;
     } else {
       window.addEventListener('resize', handleResize);
     }
@@ -178,9 +203,6 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
     };
 
     const handleMouseLeave = () => {
-      if (dataTexture) {
-        dataTexture.needsUpdate = true;
-      }
       Object.assign(mouseState, {
         x: 0,
         y: 0,
@@ -196,52 +218,55 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
 
     handleResize();
 
+    let animationId = 0;
     const animate = () => {
-      animationIdRef.current = requestAnimationFrame(animate);
-
-      if (!renderer || !scene || !camera) return;
+      animationId = requestAnimationFrame(animate);
+      const runtime = runtimeRef.current;
+      if (!runtime) return;
 
       uniforms.time.value += 0.05;
+      const { size, displacement, data, dataTexture } = runtime.simulation;
+      const current = livePropsRef.current;
 
-      if (!(dataTexture.image.data instanceof Float32Array)) {
-        console.error('dataTexture.image.data is not a Float32Array');
-        return;
-      }
-      const data: Float32Array = dataTexture.image.data;
       for (let i = 0; i < size * size; i++) {
-        data[i * 4] *= relaxation;
-        data[i * 4 + 1] *= relaxation;
+        displacement[i * 2] *= current.relaxation;
+        displacement[i * 2 + 1] *= current.relaxation;
       }
 
       const gridMouseX = size * mouseState.x;
       const gridMouseY = size * mouseState.y;
-      const maxDist = size * mouse;
+      const maxDist = size * current.mouse;
 
       for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
           const distSq = Math.pow(gridMouseX - i, 2) + Math.pow(gridMouseY - j, 2);
           if (distSq < maxDist * maxDist) {
-            const index = 4 * (i + size * j);
+            const index = 2 * (i + size * j);
             const power = Math.min(maxDist / Math.sqrt(distSq), 10);
-            data[index] += strength * 100 * mouseState.vX * power;
-            data[index + 1] -= strength * 100 * mouseState.vY * power;
+            displacement[index] += current.strength * 100 * mouseState.vX * power;
+            displacement[index + 1] -= current.strength * 100 * mouseState.vY * power;
           }
         }
+      }
+
+      for (let i = 0; i < size * size; i++) {
+        const x = THREE.MathUtils.clamp(displacement[i * 2], -1, 1);
+        const y = THREE.MathUtils.clamp(displacement[i * 2 + 1], -1, 1);
+        data[i * 4] = Math.round((x * 0.5 + 0.5) * 255);
+        data[i * 4 + 1] = Math.round((y * 0.5 + 0.5) * 255);
       }
 
       dataTexture.needsUpdate = true;
       renderer.render(scene, camera);
     };
 
-    animate();
+    animationId = requestAnimationFrame(animate);
 
     return () => {
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
-      }
+      cancelAnimationFrame(animationId);
 
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
+      if (resizeObserver) {
+        resizeObserver.disconnect();
       } else {
         window.removeEventListener('resize', handleResize);
       }
@@ -257,17 +282,53 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
         }
       }
 
-      if (geometry) geometry.dispose();
-      if (material) material.dispose();
-      if (dataTexture) dataTexture.dispose();
+      const currentSimulation = runtimeRef.current?.simulation;
+      currentSimulation?.geometry.dispose();
+      currentSimulation?.dataTexture.dispose();
+      material.dispose();
       if (uniforms.uTexture.value) uniforms.uTexture.value.dispose();
-
-      sceneRef.current = null;
-      rendererRef.current = null;
-      cameraRef.current = null;
-      planeRef.current = null;
+      runtimeRef.current = null;
     };
-  }, [grid, mouse, strength, relaxation, imageSrc]);
+  }, []);
+
+  useEffect(() => {
+    const runtime = runtimeRef.current;
+    const nextSize = Math.max(2, Math.round(grid));
+    if (!runtime || runtime.simulation.size === nextSize) return;
+
+    const previous = runtime.simulation;
+    const next = createSimulation(nextSize);
+    runtime.simulation = next;
+    runtime.uniforms.uDataTexture.value = next.dataTexture;
+    runtime.plane.geometry = next.geometry;
+    previous.geometry.dispose();
+    previous.dataTexture.dispose();
+  }, [grid]);
+
+  useEffect(() => {
+    const runtime = runtimeRef.current;
+    if (!runtime) return;
+
+    let cancelled = false;
+    new THREE.TextureLoader().load(imageSrc, texture => {
+      if (cancelled || runtimeRef.current !== runtime) {
+        texture.dispose();
+        return;
+      }
+
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      runtime.uniforms.uTexture.value?.dispose();
+      runtime.uniforms.uTexture.value = texture;
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [imageSrc]);
 
   return (
     <div

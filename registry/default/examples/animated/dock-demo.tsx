@@ -6,13 +6,13 @@ import { useState } from "react";
 import { Dock, DockItem, DockSeparator } from "@/registry/default/animated/dock";
 
 const items = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "search", label: "Search", icon: Search },
-  { id: "alerts", label: "Alerts", icon: Bell },
+  { id: "dashboard", label: "Dashboard", icon: Home },
+  { id: "browse", label: "Browse", icon: Search },
+  { id: "updates", label: "Updates", icon: Bell },
 ];
 
 export default function DockDemo() {
-  const [active, setActive] = useState("home");
+  const [active, setActive] = useState("dashboard");
 
   return (
     <Dock>
@@ -22,7 +22,7 @@ export default function DockDemo() {
         </DockItem>
       ))}
       <DockSeparator />
-      <DockItem onClick={() => setActive("settings")} active={active === "settings"} aria-label="Settings">
+      <DockItem onClick={() => setActive("preferences")} active={active === "preferences"} aria-label="Preferences">
         <Settings className="size-5" />
       </DockItem>
     </Dock>

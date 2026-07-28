@@ -11,7 +11,7 @@ export default function CylinderCarouselDemo() {
           className="grid size-full place-items-center rounded-full border-4 border-background text-lg font-semibold text-white shadow-xl"
           style={{ backgroundColor: color }}
         >
-          {index + 1}
+          {(index + 1) * 10}
         </div>
       ))}
     </CylinderCarousel>

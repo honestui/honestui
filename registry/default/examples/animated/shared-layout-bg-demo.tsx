@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 
 import { SharedLayoutBg } from "@/registry/default/animated/shared-layout-bg";
 
-const links = ["Documentation", "Components", "Release notes"];
+const links = ["Guides", "Templates", "Changelog"];
 
 export default function SharedLayoutBgDemo() {
   return (

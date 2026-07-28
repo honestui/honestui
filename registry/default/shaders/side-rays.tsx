@@ -57,6 +57,34 @@ const SideRays = ({
   const cleanupFunctionRef = useRef<(() => void) | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const livePropsRef = useRef({
+    speed,
+    rayColor1,
+    rayColor2,
+    intensity,
+    spread,
+    origin,
+    tilt,
+    saturation,
+    blend,
+    falloff,
+    opacity
+  });
+  useEffect(() => {
+    livePropsRef.current = {
+      speed,
+      rayColor1,
+      rayColor2,
+      intensity,
+      spread,
+      origin,
+      tilt,
+      saturation,
+      blend,
+      falloff,
+      opacity
+    };
+  }, [speed, rayColor1, rayColor2, intensity, spread, origin, tilt, saturation, blend, falloff, opacity]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -89,6 +117,7 @@ const SideRays = ({
 
     const initializeWebGL = async () => {
       if (!containerRef.current) return;
+      const initial = livePropsRef.current;
 
       await new Promise<void>(resolve => setTimeout(resolve, 10));
 
@@ -176,22 +205,22 @@ void main() {
   gl_FragColor = color;
 }`;
 
-      const [flipX, flipY] = originToFlip(origin);
+      const [flipX, flipY] = originToFlip(initial.origin);
       const uniforms = {
         iTime: { value: 0 },
         iResolution: { value: [1, 1] as number[] },
-        iSpeed: { value: speed },
-        iRayColor1: { value: hexToRgb(rayColor1) as number[] },
-        iRayColor2: { value: hexToRgb(rayColor2) as number[] },
-        iIntensity: { value: intensity },
-        iSpread: { value: spread },
+        iSpeed: { value: initial.speed },
+        iRayColor1: { value: hexToRgb(initial.rayColor1) as number[] },
+        iRayColor2: { value: hexToRgb(initial.rayColor2) as number[] },
+        iIntensity: { value: initial.intensity },
+        iSpread: { value: initial.spread },
         iFlipX: { value: flipX },
         iFlipY: { value: flipY },
-        iTilt: { value: tilt },
-        iSaturation: { value: saturation },
-        iBlend: { value: blend },
-        iFalloff: { value: falloff },
-        iOpacity: { value: opacity }
+        iTilt: { value: initial.tilt },
+        iSaturation: { value: initial.saturation },
+        iBlend: { value: initial.blend },
+        iFalloff: { value: initial.falloff },
+        iOpacity: { value: initial.opacity }
       };
       uniformsRef.current = uniforms;
 
@@ -251,7 +280,7 @@ void main() {
         cleanupFunctionRef.current = null;
       }
     };
-  }, [isVisible, speed, rayColor1, rayColor2, intensity, spread, origin, tilt, saturation, blend, falloff, opacity]);
+  }, [isVisible]);
 
   useEffect(() => {
     if (!uniformsRef.current) return;

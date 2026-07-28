@@ -10,6 +10,7 @@ interface ComponentPreviewProps extends Omit<React.ComponentProps<"div">, "ref">
   hideCode?: boolean;
   title?: string;
   containerClassName?: string;
+  playground?: boolean;
 }
 
 export function ComponentPreview({
@@ -19,6 +20,7 @@ export function ComponentPreview({
   hideCode = false,
   title,
   containerClassName,
+  playground = false,
   ...props
 }: ComponentPreviewProps) {
   const Component = Index[name]?.component;
@@ -49,6 +51,7 @@ export function ComponentPreview({
       containerClassName={containerClassName}
       component={<Component />}
       hideCode={hideCode}
+      playground={playground}
       source={<ComponentSource collapsible={false} name={name} />}
       title={title ?? name}
       {...props}

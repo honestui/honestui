@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { TextCascade } from "@/registry/default/animated/text-cascade";
 
-const words = ["Design", "Build", "Ship"];
+const words = ["Plan", "Create", "Launch"];
 
 export default function TextCascadeDemo() {
   const [index, setIndex] = useState(0);

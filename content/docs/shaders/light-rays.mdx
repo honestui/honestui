@@ -3,7 +3,7 @@ title: Light Rays
 description: Cast soft animated rays from any edge with optional pointer influence.
 ---
 
-<ComponentPreview name="light-rays-demo" />
+<ComponentPreview name="light-rays-demo" playground />
 
 ## Overview
 
@@ -22,8 +22,9 @@ import { LightRays } from "honestui/shaders"
   <LightRays
     className="size-full"
     raysColor="#b8d6ff"
-    raysOrigin="top-left"
+    raysOrigin="top-center"
     lightSpread={0.72}
+    followMouse={false}
   />
 </div>
 ```

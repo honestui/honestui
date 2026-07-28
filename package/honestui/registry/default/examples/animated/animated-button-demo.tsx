@@ -23,13 +23,19 @@ export default function AnimatedButtonDemo() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-4 p-6">
       <Button ripple>
-        Continue <ArrowRight className="size-4" />
+        Next step <ArrowRight className="size-4" />
       </Button>
       <MagneticButton variant="outline" strength={0.3}>
-        Magnetic
+        Pull closer
       </MagneticButton>
-      <StatefulButton state={state} onClick={submit} icon={<Send className="size-4" />}>
-        Send invite
+      <StatefulButton
+        state={state}
+        onClick={submit}
+        icon={<Send className="size-4" />}
+        loadingText="Sharing"
+        successText="Update shared"
+      >
+        Share update
       </StatefulButton>
     </div>
   );

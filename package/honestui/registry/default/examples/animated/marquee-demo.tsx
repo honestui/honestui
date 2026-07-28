@@ -1,6 +1,6 @@
 import { Marquee } from "@/registry/default/animated/marquee";
 
-const items = ["Keyboard first", "Reduced motion", "Composable", "Source owned", "Responsive"];
+const items = ["Clear by default", "Motion aware", "Easy to adapt", "Built in React", "Ready for touch"];
 
 export default function MarqueeDemo() {
   return (

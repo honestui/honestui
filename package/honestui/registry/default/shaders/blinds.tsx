@@ -68,13 +68,63 @@ const GradientBlinds: React.FC<GradientBlindsProps> = ({
   const mouseTargetRef = useRef<[number, number]>([0, 0]);
   const lastTimeRef = useRef<number>(0);
   const firstResizeRef = useRef<boolean>(true);
+  const livePropsRef = useRef({
+    dpr,
+    paused,
+    gradientColors,
+    angle,
+    noise,
+    blindCount,
+    blindMinWidth,
+    mouseDampening,
+    mirrorGradient,
+    spotlightRadius,
+    spotlightSoftness,
+    spotlightOpacity,
+    distortAmount,
+    shineDirection
+  });
+  useEffect(() => {
+    livePropsRef.current = {
+      dpr,
+      paused,
+      gradientColors,
+      angle,
+      noise,
+      blindCount,
+      blindMinWidth,
+      mouseDampening,
+      mirrorGradient,
+      spotlightRadius,
+      spotlightSoftness,
+      spotlightOpacity,
+      distortAmount,
+      shineDirection
+    };
+  }, [
+    dpr,
+    paused,
+    gradientColors,
+    angle,
+    noise,
+    blindCount,
+    blindMinWidth,
+    mouseDampening,
+    mirrorGradient,
+    spotlightRadius,
+    spotlightSoftness,
+    spotlightOpacity,
+    distortAmount,
+    shineDirection
+  ]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const initial = livePropsRef.current;
 
     const renderer = new Renderer({
-      dpr: dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1),
+      dpr: initial.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1),
       alpha: true,
       antialias: true
     });
@@ -210,7 +260,7 @@ void main() {
 }
 `;
 
-    const { arr: colorArr, count: colorCount } = prepStops(gradientColors);
+    const { arr: colorArr, count: colorCount } = prepStops(initial.gradientColors);
     const uniforms: {
       iResolution: { value: [number, number, number] };
       iMouse: { value: [number, number] };
@@ -239,15 +289,15 @@ void main() {
       },
       iMouse: { value: [0, 0] },
       iTime: { value: 0 },
-      uAngle: { value: (angle * Math.PI) / 180 },
-      uNoise: { value: noise },
-      uBlindCount: { value: Math.max(1, blindCount) },
-      uSpotlightRadius: { value: spotlightRadius },
-      uSpotlightSoftness: { value: spotlightSoftness },
-      uSpotlightOpacity: { value: spotlightOpacity },
-      uMirror: { value: mirrorGradient ? 1 : 0 },
-      uDistort: { value: distortAmount },
-      uShineFlip: { value: shineDirection === 'right' ? 1 : 0 },
+      uAngle: { value: (initial.angle * Math.PI) / 180 },
+      uNoise: { value: initial.noise },
+      uBlindCount: { value: Math.max(1, initial.blindCount) },
+      uSpotlightRadius: { value: initial.spotlightRadius },
+      uSpotlightSoftness: { value: initial.spotlightSoftness },
+      uSpotlightOpacity: { value: initial.spotlightOpacity },
+      uMirror: { value: initial.mirrorGradient ? 1 : 0 },
+      uDistort: { value: initial.distortAmount },
+      uShineFlip: { value: initial.shineDirection === 'right' ? 1 : 0 },
       uColor0: { value: colorArr[0] },
       uColor1: { value: colorArr[1] },
       uColor2: { value: colorArr[2] },
@@ -276,13 +326,14 @@ void main() {
       renderer.setSize(rect.width, rect.height);
       uniforms.iResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight, 1];
 
-      if (blindMinWidth && blindMinWidth > 0) {
-        const maxByMinWidth = Math.max(1, Math.floor(rect.width / blindMinWidth));
+      const { blindMinWidth: minWidth, blindCount: count } = livePropsRef.current;
+      if (minWidth && minWidth > 0) {
+        const maxByMinWidth = Math.max(1, Math.floor(rect.width / minWidth));
 
-        const effective = blindCount ? Math.min(blindCount, maxByMinWidth) : maxByMinWidth;
+        const effective = count ? Math.min(count, maxByMinWidth) : maxByMinWidth;
         uniforms.uBlindCount.value = Math.max(1, effective);
       } else {
-        uniforms.uBlindCount.value = Math.max(1, blindCount);
+        uniforms.uBlindCount.value = Math.max(1, count);
       }
 
       if (firstResizeRef.current) {
@@ -304,7 +355,7 @@ void main() {
       const x = (e.clientX - rect.left) * scale;
       const y = (rect.height - (e.clientY - rect.top)) * scale;
       mouseTargetRef.current = [x, y];
-      if (mouseDampening <= 0) {
+      if (livePropsRef.current.mouseDampening <= 0) {
         uniforms.iMouse.value = [x, y];
       }
     };
@@ -313,11 +364,12 @@ void main() {
     const loop = (t: number) => {
       rafRef.current = requestAnimationFrame(loop);
       uniforms.iTime.value = t * 0.001;
-      if (mouseDampening > 0) {
+      const { mouseDampening: dampening, paused: isPaused } = livePropsRef.current;
+      if (dampening > 0) {
         if (!lastTimeRef.current) lastTimeRef.current = t;
         const dt = (t - lastTimeRef.current) / 1000;
         lastTimeRef.current = t;
-        const tau = Math.max(1e-4, mouseDampening);
+        const tau = Math.max(1e-4, dampening);
         let factor = 1 - Math.exp(-dt / tau);
         if (factor > 1) factor = 1;
         const target = mouseTargetRef.current;
@@ -327,7 +379,7 @@ void main() {
       } else {
         lastTimeRef.current = t;
       }
-      if (!paused && programRef.current && meshRef.current) {
+      if (!isPaused && programRef.current && meshRef.current) {
         try {
           renderer.render({ scene: meshRef.current });
         } catch (e) {
@@ -358,9 +410,43 @@ void main() {
       meshRef.current = null;
       rendererRef.current = null;
     };
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const renderer = rendererRef.current;
+    const program = programRef.current;
+    if (!container || !renderer || !program) return;
+
+    const uniforms = program.uniforms as Record<string, { value: unknown }>;
+    const { arr: colorArr, count: colorCount } = prepStops(gradientColors);
+    uniforms.uAngle.value = (angle * Math.PI) / 180;
+    uniforms.uNoise.value = noise;
+    uniforms.uSpotlightRadius.value = spotlightRadius;
+    uniforms.uSpotlightSoftness.value = spotlightSoftness;
+    uniforms.uSpotlightOpacity.value = spotlightOpacity;
+    uniforms.uMirror.value = mirrorGradient ? 1 : 0;
+    uniforms.uDistort.value = distortAmount;
+    uniforms.uShineFlip.value = shineDirection === 'right' ? 1 : 0;
+    uniforms.uColorCount.value = colorCount;
+    colorArr.forEach((color, index) => {
+      uniforms[`uColor${index}`].value = color;
+    });
+
+    const rect = container.getBoundingClientRect();
+    const maxByMinWidth = blindMinWidth > 0
+      ? Math.max(1, Math.floor(rect.width / blindMinWidth))
+      : blindCount;
+    uniforms.uBlindCount.value = Math.max(1, Math.min(blindCount, maxByMinWidth));
+
+    const nextDpr = dpr ?? (window.devicePixelRatio || 1);
+    if (renderer.dpr !== nextDpr) {
+      renderer.dpr = nextDpr;
+      renderer.setSize(rect.width, rect.height);
+      uniforms.iResolution.value = [renderer.gl.drawingBufferWidth, renderer.gl.drawingBufferHeight, 1];
+    }
   }, [
     dpr,
-    paused,
     gradientColors,
     angle,
     noise,

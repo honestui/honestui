@@ -5,9 +5,9 @@ import { Bell, BellOff, Volume2 } from "lucide-react";
 import { ActionSwapButton } from "@/registry/default/animated/action-swap";
 
 const items = [
-  { id: "all", label: "All alerts", icon: <Bell className="size-4" /> },
-  { id: "mentions", label: "Mentions", icon: <Volume2 className="size-4" /> },
-  { id: "muted", label: "Muted", icon: <BellOff className="size-4" /> },
+  { id: "every-update", label: "Every update", icon: <Bell className="size-4" /> },
+  { id: "priority-only", label: "Priority only", icon: <Volume2 className="size-4" /> },
+  { id: "paused", label: "Alerts paused", icon: <BellOff className="size-4" /> },
 ];
 
 export default function ActionSwapDemo() {

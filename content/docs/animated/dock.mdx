@@ -19,9 +19,9 @@ Dock groups a small set of high-frequency destinations or actions. The active pi
 import { Dock, DockItem, DockSeparator } from "@/components/animated/dock"
 
 <Dock>
-  <DockItem active onClick={openHome} aria-label="Home"><Home /></DockItem>
+  <DockItem active onClick={openDashboard} aria-label="Dashboard"><Home /></DockItem>
   <DockSeparator />
-  <DockItem onClick={openSettings} aria-label="Settings"><Settings /></DockItem>
+  <DockItem onClick={openPreferences} aria-label="Preferences"><Settings /></DockItem>
 </Dock>
 ```
 

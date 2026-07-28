@@ -1,9 +1,9 @@
 import { PreviewRail } from "@/registry/default/animated/preview-rail";
 
 const items = [
-  { id: "inbox", label: "Inbox", description: "Triage new requests and mentions.", href: "#inbox" },
-  { id: "projects", label: "Projects", description: "Track work across every active project.", href: "#projects" },
-  { id: "reports", label: "Reports", description: "Review progress, health, and delivery trends.", href: "#reports" },
+  { id: "overview", label: "Overview", description: "See what changed across your workspace.", href: "#overview" },
+  { id: "tasks", label: "Tasks", description: "Review the work your team is moving forward.", href: "#tasks" },
+  { id: "insights", label: "Insights", description: "Spot recent patterns in progress and delivery.", href: "#insights" },
 ];
 
 export default function PreviewRailDemo() {

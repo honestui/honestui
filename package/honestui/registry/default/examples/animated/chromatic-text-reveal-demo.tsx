@@ -3,10 +3,10 @@ import { ChromaticTextReveal } from "@/registry/default/animated/chromatic-text-
 export default function ChromaticTextRevealDemo() {
   return (
     <ChromaticTextReveal
-      prefix="Build interfaces that feel"
-      words={["responsive", "deliberate", "alive"]}
+      prefix="Make every interaction feel"
+      words={["clear", "natural", "polished"]}
       once={false}
-      className="px-6 text-center text-2xl font-semibold sm:text-4xl"
+      className="w-full justify-center px-6 text-center text-xl font-semibold sm:text-3xl"
     />
   );
 }
