@@ -376,3 +376,15 @@ export function buildRegistryBase(
     },
   };
 }
+
+export function buildRegistryBaseColor() {
+  const cssVars = {
+    light: LIGHT_VARS,
+    dark: DARK_VARS,
+  };
+
+  return {
+    cssVars,
+    cssVarsV4: cssVars,
+  };
+}

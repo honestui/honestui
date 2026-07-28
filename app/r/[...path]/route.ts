@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { buildRegistryBaseColor } from "@/lib/init-registry";
 import { getRegistryItem } from "@/lib/registry";
 
 type RouteContext = {
@@ -10,6 +11,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
   const fileName = path.at(-1);
   const name = fileName?.replace(/\.json$/, "");
+
+  if (
+    (path.at(-2) === "colors" && name) ||
+    name?.startsWith("colors-")
+  ) {
+    return NextResponse.json(buildRegistryBaseColor());
+  }
 
   if (!name) {
     return NextResponse.json({ error: "Registry item not found" }, { status: 404 });
