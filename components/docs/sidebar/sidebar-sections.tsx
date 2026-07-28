@@ -6,9 +6,10 @@ import {
   ChartStartedOptions,
   DocumentationOptions,
   IconStartedOptions,
+  AnimatedStartedOptions,
 } from "@/globals/constants/docs-sidebar";
 import { RenderDefaultOptions } from "./render-default-options";
-import { DocsTreeNavigation } from "./docs-tree-navigation";
+import { AnimatedTreeNavigation, DocsTreeNavigation } from "./docs-tree-navigation";
 import { areaFromPathname, ProviderSwitcher } from "./provider-switcher";
 import { usePathname } from "next/navigation";
 import { NavMain } from "./nav-main";
@@ -34,10 +35,15 @@ export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
           <RenderDefaultOptions label="Chart Components" options={ChartComponentOptions} />
           <RenderDefaultOptions label="Documentation" options={DocumentationOptions} />
         </>
-      ) : (
+      ) : activeArea === "icons" ? (
         <>
           <RenderDefaultOptions label="Get Started" options={IconStartedOptions} />
           <IconCategoryNavigation categories={ICON_CATEGORIES} />
+        </>
+      ) : (
+        <>
+          <RenderDefaultOptions label="Get Started" options={AnimatedStartedOptions} />
+          <AnimatedTreeNavigation tree={tree} />
         </>
       )}
     </>

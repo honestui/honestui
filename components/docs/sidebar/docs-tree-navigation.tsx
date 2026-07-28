@@ -84,7 +84,12 @@ export function DocsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
     () =>
       pages.filter((page) => {
         if (page.url === "/docs") return true;
-        if (page.url === "/docs/charts" || page.url === "/docs/icons") return false;
+        if (
+          page.url === "/docs/charts" ||
+          page.url === "/docs/icons" ||
+          page.url === "/docs/animated"
+        )
+          return false;
         if (page.url.startsWith("/docs/chart-")) return false;
 
         return page.url.startsWith("/docs/") && page.url.split("/").length === 3;
@@ -119,4 +124,19 @@ export function ChartsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
   );
 
   return <PageGroup label="Get Started" pages={overviewPages} />;
+}
+
+export function AnimatedTreeNavigation({ tree }: { tree: PageTreeRoot }) {
+  const pages = useMemo(() => flattenTree(tree.children), [tree.children]);
+  const componentPages = useMemo(
+    () =>
+      pages.filter(
+        (page) =>
+          page.url.startsWith("/docs/animated/") &&
+          page.url !== "/docs/animated/installation",
+      ),
+    [pages],
+  );
+
+  return <PageGroup label="Components" pages={componentPages} />;
 }

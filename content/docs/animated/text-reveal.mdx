@@ -1,0 +1,39 @@
+---
+title: Text Reveal
+description: Reveal text by word or character with stagger, blur, and spring motion.
+---
+
+<ComponentPreview name="text-reveal-demo" />
+
+## Overview
+
+Text Reveal introduces one or more lines in reading order. Use word splitting for headings and statements; reserve character splitting for short decorative text.
+
+## Installation
+
+<CliBlock commands={["text-reveal"]} />
+
+## Usage
+
+```tsx
+import { TextReveal } from "@/components/animated/text-reveal"
+
+<TextReveal text={["Motion with purpose.", "Details with restraint."]} as="h2" />
+```
+
+## Accessibility
+
+The content remains real text in document order. Reduced motion keeps a short opacity transition, and `whileInView` can defer the effect until the text is visible.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="text" type="string | string[]" required>One line or an ordered list of lines.</ApiRow>
+  <ApiRow name="as" type="ElementType" default='"span"'>Rendered element.</ApiRow>
+  <ApiRow name="split" type='"word" | "char"' default='"word"'>Animation unit.</ApiRow>
+  <ApiRow name="stagger" type="number" default="0.09">Delay between units.</ApiRow>
+  <ApiRow name="delay" type="number" default="0">Delay before the first unit.</ApiRow>
+  <ApiRow name="blur" type="number" default="12">Starting blur in pixels.</ApiRow>
+  <ApiRow name="yOffset" type="string | number" default='"40%"'>Starting vertical offset.</ApiRow>
+  <ApiRow name="whileInView" type="boolean" default="false">Waits for viewport entry.</ApiRow>
+</ApiTable>

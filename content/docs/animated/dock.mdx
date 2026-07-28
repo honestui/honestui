@@ -1,0 +1,39 @@
+---
+title: Dock
+description: A compact action dock with a shared animated active indicator.
+---
+
+<ComponentPreview name="dock-demo" />
+
+## Overview
+
+Dock groups a small set of high-frequency destinations or actions. The active pill moves between items using shared-layout motion while item dimensions remain stable.
+
+## Installation
+
+<CliBlock commands={["dock"]} />
+
+## Usage
+
+```tsx
+import { Dock, DockItem, DockSeparator } from "@/components/animated/dock"
+
+<Dock>
+  <DockItem active onClick={openHome} aria-label="Home"><Home /></DockItem>
+  <DockSeparator />
+  <DockItem onClick={openSettings} aria-label="Settings"><Settings /></DockItem>
+</Dock>
+```
+
+## Accessibility
+
+Items with `onClick` render as buttons and expose `aria-pressed` for the active state. Icon-only items require an `aria-label`. Keep the dock to a short, recognizable action set.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="size" type="number" default="44">Width and height of each Dock Item in pixels.</ApiRow>
+  <ApiRow name="active" type="boolean">Shows the shared active indicator.</ApiRow>
+  <ApiRow name="onClick" type="() => void">Renders the item as a button and handles activation.</ApiRow>
+  <ApiRow name="aria-label" type="string">Accessible name for an icon-only item.</ApiRow>
+</ApiTable>

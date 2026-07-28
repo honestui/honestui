@@ -1,0 +1,39 @@
+---
+title: Number Ticker
+description: Roll changing digits independently while preserving place value.
+---
+
+<ComponentPreview name="number-ticker-demo" />
+
+## Overview
+
+Number Ticker animates each numeric place without re-keying the rest of the value. Use it for metrics whose changes matter, such as balances, counts, scores, or progress totals.
+
+## Installation
+
+<CliBlock commands={["number-ticker"]} />
+
+## Usage
+
+```tsx
+import { NumberTicker } from "@/components/animated/number-ticker"
+
+<NumberTicker value={12480} prefix="$" locale />
+```
+
+## Accessibility
+
+Assistive technology receives the complete formatted value instead of individual visual digits. Keep updates at a readable pace and avoid using rapid rolls for critical live data.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="value" type="number" required>Value to display, rounded to an integer.</ApiRow>
+  <ApiRow name="pad" type="number">Minimum number of digits.</ApiRow>
+  <ApiRow name="duration" type="number" default="0.9">Per-digit roll duration in seconds.</ApiRow>
+  <ApiRow name="stagger" type="number" default="0.04">Delay between digit places.</ApiRow>
+  <ApiRow name="prefix" type="string">Text before the value.</ApiRow>
+  <ApiRow name="suffix" type="string">Text after the value.</ApiRow>
+  <ApiRow name="locale" type="boolean">Adds locale group separators.</ApiRow>
+  <ApiRow name="blur" type="boolean" default="false">Adds a small blur during rolls.</ApiRow>
+</ApiTable>

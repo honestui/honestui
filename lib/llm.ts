@@ -18,6 +18,11 @@ const showcaseItems = [
     description: "Use a consistent, themeable icon set across your interface.",
     url: "/docs/icons",
   },
+  {
+    name: "Animated",
+    description: "Add purposeful, reduced-motion-aware interactions to product interfaces.",
+    url: "/docs/animated",
+  },
 ]
 
 const packageInstallCommands = {
@@ -130,10 +135,15 @@ function renderRegistrySource(
 
   const directories =
     kind === "component"
-      ? ["registry/default/ui"]
-      : ["registry/default/examples", "registry/default/examples/charts"]
+      ? ["registry/default/ui", "registry/default/animated"]
+      : [
+          "registry/default/examples",
+          "registry/default/examples/charts",
+          "registry/default/examples/animated",
+        ]
+  const resolvedName = name === "animated-popover" ? "popover" : name
   const absolutePath = directories
-    .map((directory) => path.join(process.cwd(), directory, `${name}.tsx`))
+    .map((directory) => path.join(process.cwd(), directory, `${resolvedName}.tsx`))
     .find((candidate) => fs.existsSync(candidate))
 
   if (!absolutePath) {

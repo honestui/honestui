@@ -2,7 +2,7 @@
   "name": "honestui-site",
   "private": true,
   "version": "0.1.0",
-  "description": "Accessible React components, charts, and icons from Honest UI.",
+  "description": "Accessible React components, animated interactions, charts, and icons from Honest UI.",
   "license": "MIT",
   "homepage": "https://honestui.com",
   "repository": {
@@ -52,6 +52,7 @@
     "pack:package": "npm --prefix package/honestui pack",
     "start": "next start",
     "lint": "eslint",
+    "registry:animated": "node scripts/generate-animated-index.mjs",
     "registry:charts": "node scripts/generate-chart-index.mjs",
     "prepack": "npm run build:package"
   },

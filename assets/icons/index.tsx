@@ -35,6 +35,111 @@ export function AddMagicIcon({
   );
 }
 
+export function IconLibraryIcon({
+  fill = "currentColor",
+  secondaryfill,
+  width = "1em",
+  height = "1em",
+  ...props
+}: IconProps) {
+  secondaryfill = secondaryfill || fill;
+
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M7.75 1H14.25C15.7688 1 17 2.23122 17 3.75V10.25C17 11.7688 15.7688 13 14.25 13H7.75C6.23122 13 5 11.7688 5 10.25V3.75C5 2.23122 6.23122 1 7.75 1Z"
+        fill={secondaryfill}
+        fillOpacity="0.25"
+      />
+      <path
+        d="M3.75 5H10.25C11.7688 5 13 6.23122 13 7.75V14.25C13 15.7688 11.7688 17 10.25 17H3.75C2.23122 17 1 15.7688 1 14.25V7.75C1 6.23122 2.23122 5 3.75 5Z"
+        fill={secondaryfill}
+        fillOpacity="0.4"
+      />
+      <path
+        d="M7 7.75C7.2926 7.75 7.55854 7.9202 7.68097 8.18595L8.48202 9.92493L10.221 10.726C10.4868 10.8484 10.657 11.1144 10.657 11.407C10.657 11.6996 10.4868 11.9655 10.221 12.0879L8.48202 12.889L7.68097 14.628C7.55854 14.8937 7.2926 15.0639 7 15.0639C6.7074 15.0639 6.44146 14.8937 6.31903 14.628L5.51798 12.889L3.77899 12.0879C3.51323 11.9655 3.34303 11.6996 3.34303 11.407C3.34303 11.1144 3.51323 10.8484 3.77899 10.726L5.51798 9.92493L6.31903 8.18595C6.44146 7.9202 6.7074 7.75 7 7.75Z"
+        fill={fill}
+      />
+    </svg>
+  );
+}
+
+export function MotionIcon({
+  fill = "currentColor",
+  secondaryfill,
+  width = "1em",
+  height = "1em",
+  ...props
+}: IconProps) {
+  secondaryfill = secondaryfill || fill;
+
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M8 3.76084C8 3.14683 8.66691 2.76505 9.19622 3.07683L16.1425 7.16887C16.6636 7.47583 16.6636 8.22991 16.1425 8.53687L9.19622 12.6289C8.66691 12.9407 8 12.5589 8 11.9449V3.76084Z"
+        fill={fill}
+      />
+      <path
+        d="M3.75 4.25H5.25C5.66421 4.25 6 4.58579 6 5C6 5.41421 5.66421 5.75 5.25 5.75H3.75C3.33579 5.75 3 5.41421 3 5C3 4.58579 3.33579 4.25 3.75 4.25ZM1.75 7.25H5.25C5.66421 7.25 6 7.58579 6 8C6 8.41421 5.66421 8.75 5.25 8.75H1.75C1.33579 8.75 1 8.41421 1 8C1 7.58579 1.33579 7.25 1.75 7.25ZM3.75 10.25H5.25C5.66421 10.25 6 10.5858 6 11C6 11.4142 5.66421 11.75 5.25 11.75H3.75C3.33579 11.75 3 11.4142 3 11C3 10.5858 3.33579 10.25 3.75 10.25Z"
+        fill={secondaryfill}
+        fillOpacity="0.4"
+        fillRule="evenodd"
+      />
+      <path
+        d="M6.25 14.25H13.25C13.6642 14.25 14 14.5858 14 15C14 15.4142 13.6642 15.75 13.25 15.75H6.25C5.83579 15.75 5.5 15.4142 5.5 15C5.5 14.5858 5.83579 14.25 6.25 14.25Z"
+        fill={fill}
+      />
+    </svg>
+  );
+}
+
+export function ComponentBlocksIcon({
+  fill = "currentColor",
+  secondaryfill,
+  width = "1em",
+  height = "1em",
+  ...props
+}: IconProps) {
+  secondaryfill = secondaryfill || fill;
+
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M1 3.75C1 2.23122 2.23122 1 3.75 1H14.25C15.7688 1 17 2.23122 17 3.75V5.25C17 6.76878 15.7688 8 14.25 8H3.75C2.23122 8 1 6.76878 1 5.25V3.75Z"
+        fill={fill}
+      />
+      <path
+        d="M1 11.75C1 10.2312 2.23122 9 3.75 9H5.25C6.76878 9 8 10.2312 8 11.75V14.25C8 15.7688 6.76878 17 5.25 17H3.75C2.23122 17 1 15.7688 1 14.25V11.75Z"
+        fill={secondaryfill}
+        fillOpacity="0.4"
+      />
+      <path
+        d="M9 11.75C9 10.2312 10.2312 9 11.75 9H14.25C15.7688 9 17 10.2312 17 11.75V14.25C17 15.7688 15.7688 17 14.25 17H11.75C10.2312 17 9 15.7688 9 14.25V11.75Z"
+        fill={secondaryfill}
+        fillOpacity="0.22"
+      />
+    </svg>
+  );
+}
+
 export function ChartStackedAreaIcon({
   fill = "currentColor",
   secondaryfill,

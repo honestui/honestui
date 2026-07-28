@@ -80,6 +80,8 @@ function buildDocsJsonLd(page: DocsPage) {
     });
   } else if (section === "icons" && page.url !== "/docs/icons") {
     crumbs.push({ name: "Icons", url: absoluteUrl("/docs/icons") });
+  } else if (section === "animated" && page.url !== "/docs/animated") {
+    crumbs.push({ name: "Animated", url: absoluteUrl("/docs/animated") });
   }
   if (page.url !== "/docs") {
     crumbs.push({ name: title, url });

@@ -1,0 +1,34 @@
+---
+title: Shared Layout Background
+description: Move one hover background between related rows.
+---
+
+<ComponentPreview name="shared-layout-bg-demo" />
+
+## Overview
+
+Shared Layout Background adds a single animated pill behind hovered children. Use it to connect a small list of related navigation or action rows without changing their semantics.
+
+## Installation
+
+<CliBlock commands={["shared-layout-bg"]} />
+
+## Usage
+
+```tsx
+import { SharedLayoutBg } from "@/components/animated/shared-layout-bg"
+
+<SharedLayoutBg>{links.map((link) => <a key={link.href} {...link} />)}</SharedLayoutBg>
+```
+
+## Accessibility
+
+The moving background is decorative. Children must provide their own focus indicators, labels, roles, and activation behavior. Reduced motion swaps the background without traveling between rows.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode" required>Rows that receive hover tracking.</ApiRow>
+  <ApiRow name="pillClassName" type="string">Class applied to the moving pill.</ApiRow>
+  <ApiRow name="inset" type="number" default="20">Horizontal pill inset relative to each row, in pixels.</ApiRow>
+</ApiTable>

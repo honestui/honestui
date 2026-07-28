@@ -15,6 +15,7 @@ export async function getRegistryItem(name: string) {
     return null;
   }
 
+  const registryName = name === "animated-popover" ? "popover" : name;
   const locations = [
     {
       path: path.join(process.cwd(), "registry/default/ui"),
@@ -32,16 +33,56 @@ export async function getRegistryItem(name: string) {
       path: path.join(process.cwd(), "registry/default/examples/charts"),
       type: "registry:example" as const,
     },
+    {
+      path: path.join(process.cwd(), "registry/default/animated"),
+      type: "registry:component" as const,
+    },
+    {
+      path: path.join(process.cwd(), "registry/default/examples/animated"),
+      type: "registry:example" as const,
+    },
+    {
+      path: path.join(process.cwd(), "lib/hooks"),
+      type: "registry:hook" as const,
+    },
+    {
+      path: path.join(process.cwd(), "lib"),
+      type: "registry:lib" as const,
+    },
   ];
-  const fileNames = path.extname(name)
-    ? [name]
-    : [`${name}.tsx`, `${name}.ts`, `${name}.css`];
-  const candidates = locations.flatMap((location) =>
-    fileNames.map((fileName) => ({
-      path: path.join(location.path, fileName),
-      type: location.type,
-    })),
-  );
+  const fileNames = path.extname(registryName)
+    ? [registryName]
+    : [`${registryName}.tsx`, `${registryName}.ts`, `${registryName}.css`];
+  const candidates = [
+    ...(name === "animated-button"
+      ? [
+          {
+            path: path.join(
+              process.cwd(),
+              "registry/default/animated/button/index.tsx",
+            ),
+            type: "registry:component" as const,
+          },
+        ]
+      : []),
+    ...(name === "animated-popover"
+      ? [
+          {
+            path: path.join(
+              process.cwd(),
+              "registry/default/animated/popover.tsx",
+            ),
+            type: "registry:component" as const,
+          },
+        ]
+      : []),
+    ...locations.flatMap((location) =>
+      fileNames.map((fileName) => ({
+        path: path.join(location.path, fileName),
+        type: location.type,
+      })),
+    ),
+  ];
 
   let registryFile: (typeof candidates)[number] | undefined;
 
@@ -59,15 +100,48 @@ export async function getRegistryItem(name: string) {
     return null;
   }
 
+  const isAnimatedComponent = registryFile.path.includes(
+    `${path.sep}registry${path.sep}default${path.sep}animated${path.sep}`,
+  );
+  const animatedButtonFiles =
+    name === "animated-button"
+      ? [
+          ...["index.tsx", "base.tsx", "stateful.tsx", "magnetic.tsx"].map(
+            (fileName) => ({
+              path: path.join(
+                process.cwd(),
+                "registry/default/animated/button",
+                fileName,
+              ),
+              type: "registry:component" as const,
+              target: `components/animated/button/${fileName}`,
+            }),
+          ),
+          {
+            path: path.join(
+              process.cwd(),
+              "registry/default/animated/magnetic.tsx",
+            ),
+            type: "registry:component" as const,
+            target: "components/animated/magnetic.tsx",
+          },
+        ]
+      : null;
+
   const typedItem = {
     name,
     type: registryFile.type,
-    files: [
-      {
-        path: registryFile.path,
-        type: registryFile.type,
-      },
-    ],
+    files:
+      animatedButtonFiles ??
+      [
+        {
+          path: registryFile.path,
+          type: registryFile.type,
+          ...(isAnimatedComponent && {
+            target: `components/animated/${path.basename(registryFile.path)}`,
+          }),
+        },
+      ],
   } as RegistryItem;
 
   const files = typedItem.files || [];
@@ -90,11 +164,19 @@ export async function getRegistryItem(name: string) {
   const finalFiles = fixFilePaths(processedFiles);
   const source = processedFiles.map((file) => file.content ?? "").join("\n");
   const { dependencies, registryDependencies } = getDependencies(source);
+  const bundledNames = new Set(
+    processedFiles.map((file) => path.basename(file.path, path.extname(file.path))),
+  );
+  const externalRegistryDependencies = registryDependencies.filter(
+    (dependency) => !bundledNames.has(dependency),
+  );
 
   return {
     ...typedItem,
     ...(dependencies.length > 0 && { dependencies }),
-    ...(registryDependencies.length > 0 && { registryDependencies }),
+    ...(externalRegistryDependencies.length > 0 && {
+      registryDependencies: externalRegistryDependencies,
+    }),
     files: finalFiles,
   };
 }
@@ -109,14 +191,17 @@ function getDependencies(source: string) {
 
     if (
       specifier.startsWith("@/registry/default/ui/") ||
+      specifier.startsWith("@/registry/default/animated/") ||
       specifier.startsWith("@/components/ui/") ||
-      specifier.startsWith("@/components/")
+      specifier.startsWith("@/components/") ||
+      (specifier.startsWith("@/lib/") && specifier !== "@/lib/utils") ||
+      specifier.startsWith("@/hooks/")
     ) {
       registryDependencies.add(path.basename(specifier));
       continue;
     }
 
-    if (specifier.startsWith("./")) {
+    if (specifier.startsWith(".")) {
       registryDependencies.add(path.basename(specifier));
       continue;
     }
@@ -271,7 +356,9 @@ export function fixImport(content: string) {
     return match;
   };
 
-  return content.replace(regex, replacement);
+  return content
+    .replace(regex, replacement)
+    .replaceAll("@/lib/hooks/", "@/hooks/");
 }
 
 type FileTree = {

@@ -1,0 +1,27 @@
+{
+  "title": "Animated",
+  "pages": [
+    "index",
+    "installation",
+    "action-swap",
+    "animated-button",
+    "bouncy-accordion",
+    "chromatic-text-reveal",
+    "cylinder-carousel",
+    "dock",
+    "magnetic",
+    "marquee",
+    "number-ticker",
+    "animated-popover",
+    "preview-rail",
+    "pull-to-refresh",
+    "range-slider",
+    "shared-layout-bg",
+    "text-cascade",
+    "text-reveal",
+    "text-shimmer",
+    "theme-toggle",
+    "tilt-card",
+    "wheel-picker"
+  ]
+}

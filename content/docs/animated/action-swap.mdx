@@ -1,0 +1,48 @@
+---
+title: Action Swap
+description: Cycle an action's label and icon with blur, roll, or letter-cascade transitions.
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/animated/action-swap.tsx
+---
+
+<ComponentPreview name="action-swap-demo" />
+
+## Overview
+
+Use Action Swap when one compact control moves through a small, predictable set of related modes. The button can animate its label, icon, or both while preserving a stable hit target.
+
+## Installation
+
+<CliBlock commands={["action-swap"]} />
+
+## Usage
+
+```tsx
+import { ActionSwapButton } from "@/components/animated/action-swap"
+
+const items = [
+  { id: "on", label: "Notifications on" },
+  { id: "off", label: "Notifications off" },
+]
+
+<ActionSwapButton items={items} animation="cascade" />
+```
+
+Use `ActionSwapText` and `ActionSwapIcon` directly when another control owns the interaction. The `action-swap-blur`, `action-swap-roll`, and `action-swap-cascade` entry points provide fixed-animation wrappers.
+
+## Accessibility
+
+Keep every state label specific. Icon-only items need an `ariaLabel`. Reduced-motion users receive an immediate, legible state change without the full transition.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="items" type="ActionSwapItem[]" required>Ordered states with an `id`, visible `label`, optional `icon`, and optional `ariaLabel`.</ApiRow>
+  <ApiRow name="value" type="string">Controlled active item id.</ApiRow>
+  <ApiRow name="defaultValue" type="string">Initial item id for uncontrolled use.</ApiRow>
+  <ApiRow name="onValueChange" type="(value, item) => void">Runs after the active item changes.</ApiRow>
+  <ApiRow name="animation" type='"blur" | "roll" | "cascade"' default='"blur"'>Transition used for the label and icon.</ApiRow>
+  <ApiRow name="variant" type='"primary" | "secondary" | "outline" | "ghost"' default='"secondary"'>Visual emphasis of the button.</ApiRow>
+  <ApiRow name="size" type='"sm" | "md" | "lg" | "icon"' default='"md"'>Button size.</ApiRow>
+  <ApiRow name="cycle" type="boolean" default="true">Advances to the next item when clicked.</ApiRow>
+</ApiTable>

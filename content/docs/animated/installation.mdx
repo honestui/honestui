@@ -1,0 +1,38 @@
+---
+title: Installation
+description: Add animated Honest UI components to your React project.
+---
+
+Animated components are installed into your project with the Honest UI CLI. The CLI copies the component and its supporting motion utilities, then adds external dependencies such as Motion when required.
+
+## Prerequisites
+
+Set up Honest UI first if your project does not already have a `components.json` file.
+
+```bash
+npx honestui@latest init
+```
+
+## Add a component
+
+Pass the component name to the CLI:
+
+```bash
+npx honestui@latest add text-reveal
+```
+
+The installed source lives under `components/animated` and can be changed directly. Components that need shared easing, hover-capability, or sound helpers also install those files into your configured `lib` or `hooks` aliases.
+
+## Motion dependency
+
+Most components use Motion for React. The CLI adds it automatically when a selected component needs it. For a manual installation:
+
+```bash
+npm install motion
+```
+
+`ThemeToggle` also uses `next-themes`, and icon-bearing components use `lucide-react`.
+
+## Reduced motion
+
+No additional setup is required. Components built with Motion read the operating system's reduced-motion preference and remove or simplify non-essential movement. If you add custom effects, preserve that behavior in your changes.

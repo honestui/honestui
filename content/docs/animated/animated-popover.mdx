@@ -1,0 +1,42 @@
+---
+title: Animated Popover
+description: A popover whose trigger morphs into a connected, gooey panel.
+---
+
+<ComponentPreview name="animated-popover-demo" />
+
+## Overview
+
+Animated Popover coordinates trigger and panel geometry into one connected opening motion. Use it for short supporting content or compact controls that belong to a clear trigger.
+
+## Installation
+
+<CliBlock commands={["animated-popover"]} />
+
+## Usage
+
+```tsx
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/animated/popover"
+
+<Popover>
+  <PopoverTrigger><button>Details</button></PopoverTrigger>
+  <PopoverContent>Supporting content</PopoverContent>
+</Popover>
+```
+
+## Accessibility
+
+The trigger exposes popup state and controls metadata, Escape closes an open panel, and focus remains on the trigger. Use Dialog instead when content requires focus trapping or a multi-step task.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="open" type="boolean">Controlled open state.</ApiRow>
+  <ApiRow name="defaultOpen" type="boolean" default="false">Initial uncontrolled state.</ApiRow>
+  <ApiRow name="onOpenChange" type="(open: boolean) => void">Runs when open state changes.</ApiRow>
+  <ApiRow name="trigger" type='"click" | "hover"' default='"click"'>How the panel opens.</ApiRow>
+  <ApiRow name="side" type='"top" | "bottom"' default='"bottom"'>Panel side.</ApiRow>
+  <ApiRow name="align" type='"start" | "center" | "end"' default='"center"'>Panel alignment.</ApiRow>
+  <ApiRow name="sideOffset" type="number" default="14">Gap and gooey-neck length in pixels.</ApiRow>
+  <ApiRow name="gooStrength" type="number" default="8">Blur radius used by the goo filter.</ApiRow>
+</ApiTable>

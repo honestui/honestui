@@ -83,6 +83,19 @@ export const IconStartedOptions: SidebarOption[] = [
   },
 ];
 
+export const AnimatedStartedOptions: SidebarOption[] = [
+  {
+    name: "Overview",
+    url: "/docs/animated",
+    icon: <AddMagicIcon />,
+  },
+  {
+    name: "Installation",
+    url: "/docs/animated/installation",
+    icon: <SquareAddonIcon />,
+  },
+];
+
 // Pages reachable from the grouped links above; NavMain skips them so they do
 // not appear twice in the chart-family list.
 export const EXCLUDED_PAGE_SUFFIXES: string[] = ["/installation", "/changelog"];

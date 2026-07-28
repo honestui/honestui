@@ -1,0 +1,35 @@
+---
+title: Tilt Card
+description: Add pointer-responsive perspective and optional glare to a card.
+---
+
+<ComponentPreview name="tilt-card-demo" />
+
+## Overview
+
+Tilt Card provides a restrained depth cue for visual or featured content. Its children remain normal document content while the wrapper handles perspective and glare.
+
+## Installation
+
+<CliBlock commands={["tilt-card"]} />
+
+## Usage
+
+```tsx
+import { TiltCard } from "@/components/animated/tilt-card"
+
+<TiltCard max={10} glare><ArticleCard /></TiltCard>
+```
+
+## Accessibility
+
+Pointer tilt and glare disable themselves for touch and reduced motion. The card's content must remain understandable and operable without the effect.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode" required>Card content.</ApiRow>
+  <ApiRow name="max" type="number" default="12">Maximum rotation in degrees.</ApiRow>
+  <ApiRow name="glare" type="boolean" default="true">Shows a pointer-positioned highlight.</ApiRow>
+  <ApiRow name="className" type="string">Card surface and layout classes.</ApiRow>
+</ApiTable>

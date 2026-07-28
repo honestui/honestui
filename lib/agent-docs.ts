@@ -48,10 +48,11 @@ export function generateLlmsTxt() {
       page.url.startsWith("/docs/charts/"),
   );
   const icons = pages.filter((page) => page.url.startsWith("/docs/icons"));
+  const animated = pages.filter((page) => page.url.startsWith("/docs/animated"));
 
   return `# Honest UI Documentation
 
-> Honest UI is an open-source React UI library with source-first components, charts, and icons.
+> Honest UI is an open-source React UI library with source-first components, animated interactions, charts, and icons.
 
 ## Start Here
 ${renderLinks(startHere)}
@@ -64,6 +65,9 @@ ${renderLinks(charts)}
 
 ## Icons
 ${renderLinks(icons)}
+
+## Animated Components
+${renderLinks(animated)}
 
 ## Agent Resources
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})

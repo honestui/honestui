@@ -1,0 +1,35 @@
+---
+title: Text Shimmer
+description: Sweep a theme-aware highlight through a short text label.
+---
+
+<ComponentPreview name="text-shimmer-demo" />
+
+## Overview
+
+Text Shimmer is a lightweight CSS effect for short, temporary states such as generation or loading labels. It inherits theme colors and does not require Motion.
+
+## Installation
+
+<CliBlock commands={["text-shimmer"]} />
+
+## Usage
+
+```tsx
+import { TextShimmer } from "@/components/animated/text-shimmer"
+
+<TextShimmer>Generating your preview…</TextShimmer>
+```
+
+## Accessibility
+
+Use direct status text and pair ongoing work with `aria-busy` on the affected region when appropriate. The shimmer stops for reduced-motion preferences.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode" required>Text content.</ApiRow>
+  <ApiRow name="as" type="ElementType" default='"span"'>Rendered element.</ApiRow>
+  <ApiRow name="duration" type="number" default="2.5">Sweep duration in seconds.</ApiRow>
+  <ApiRow name="className" type="string">Text and layout classes.</ApiRow>
+</ApiTable>

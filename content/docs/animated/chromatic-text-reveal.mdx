@@ -1,0 +1,39 @@
+---
+title: Chromatic Text Reveal
+description: Reveal rotating words with a moving multicolor edge.
+---
+
+<ComponentPreview name="chromatic-text-reveal-demo" />
+
+## Overview
+
+Chromatic Text Reveal keeps a sentence prefix fixed while revealing a sequence of final words. Use it for a focused product statement, not for essential instructions or rapidly changing status.
+
+## Installation
+
+<CliBlock commands={["chromatic-text-reveal"]} />
+
+## Usage
+
+```tsx
+import { ChromaticTextReveal } from "@/components/animated/chromatic-text-reveal"
+
+<ChromaticTextReveal prefix="Built to feel" words={["fast", "clear", "human"]} />
+```
+
+## Accessibility
+
+The current full word remains available to assistive technology while visual gradient layers are hidden. Reduced motion shows the word without the sweep.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="prefix" type="string" required>Text that remains fixed.</ApiRow>
+  <ApiRow name="words" type="string[]" required>Words revealed in order.</ApiRow>
+  <ApiRow name="colors" type="string[]">Colors along the reveal edge.</ApiRow>
+  <ApiRow name="duration" type="number" default="1.2">Sweep duration in seconds.</ApiRow>
+  <ApiRow name="pauseDuration" type="number" default="0.8">Rest between words in seconds.</ApiRow>
+  <ApiRow name="loop" type="boolean" default="true">Returns to the first word.</ApiRow>
+  <ApiRow name="startOnView" type="boolean" default="true">Waits until the text enters the viewport.</ApiRow>
+  <ApiRow name="once" type="boolean" default="true">Observes only the first viewport entry.</ApiRow>
+</ApiTable>

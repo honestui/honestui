@@ -1,0 +1,34 @@
+---
+title: Magnetic
+description: Add subtle pointer attraction to a child element.
+---
+
+<ComponentPreview name="magnetic-demo" />
+
+## Overview
+
+Magnetic is a decorative wrapper that moves toward a fine pointer while hovered. Use it sparingly for prominent actions where the attraction supports focus without changing layout.
+
+## Installation
+
+<CliBlock commands={["magnetic"]} />
+
+## Usage
+
+```tsx
+import { Magnetic } from "@/components/animated/magnetic"
+
+<Magnetic strength={0.3}><button>Explore</button></Magnetic>
+```
+
+## Accessibility
+
+The effect disables itself for touch input and reduced motion. The child remains responsible for semantics, focus styling, accessible naming, and keyboard behavior.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode" required>Element that follows the pointer.</ApiRow>
+  <ApiRow name="strength" type="number" default="0.35">Fraction of the pointer offset applied to the child.</ApiRow>
+  <ApiRow name="className" type="string">Class for the motion wrapper.</ApiRow>
+</ApiTable>

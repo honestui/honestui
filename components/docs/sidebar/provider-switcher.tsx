@@ -15,16 +15,17 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  AddMagicIcon,
   ChartStackedLineIcon,
   CheckIcon,
-  ShapesIcon,
+  ComponentBlocksIcon,
+  IconLibraryIcon,
+  MotionIcon,
 } from "@/assets/icons";
 import { usePathname, useRouter } from "next/navigation";
 import { CaretDown } from "@carbon/icons-react";
 import { cn } from "@/lib/utils";
 
-export type ProductArea = "components" | "charts" | "icons";
+export type ProductArea = "components" | "charts" | "icons" | "animated";
 
 interface ProductAreaMeta {
   id: ProductArea;
@@ -41,7 +42,7 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     name: "UI Components",
     tagline: "Accessible building blocks",
     href: "/docs",
-    icon: ShapesIcon,
+    icon: ComponentBlocksIcon,
     tint: "text-[#E43861]",
   },
   {
@@ -57,8 +58,16 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     name: "Icons",
     tagline: "Consistent interface symbols",
     href: "/docs/icons",
-    icon: AddMagicIcon,
+    icon: IconLibraryIcon,
     tint: "text-amber-400",
+  },
+  {
+    id: "animated",
+    name: "Animated Components",
+    tagline: "Purposeful interaction patterns",
+    href: "/docs/animated",
+    icon: MotionIcon,
+    tint: "text-emerald-400",
   },
 ];
 
@@ -73,6 +82,10 @@ export function areaFromPathname(pathname: string): ProductArea {
 
   if (pathname === "/docs/icons" || pathname.startsWith("/docs/icons/")) {
     return "icons";
+  }
+
+  if (pathname === "/docs/animated" || pathname.startsWith("/docs/animated/")) {
+    return "animated";
   }
 
   return "components";

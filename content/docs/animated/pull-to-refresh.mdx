@@ -1,0 +1,41 @@
+---
+title: Pull to Refresh
+description: Add a resisted pull gesture, status character, and async refresh lifecycle.
+---
+
+<ComponentPreview name="pull-to-refresh-demo" />
+
+## Overview
+
+Pull to Refresh is designed for touch-first, scrollable content. It turns pull distance into progress, holds the content while async work runs, and returns it after completion.
+
+## Installation
+
+<CliBlock commands={["pull-to-refresh"]} />
+
+## Usage
+
+```tsx
+import { PullToRefresh } from "@/components/animated/pull-to-refresh"
+
+<PullToRefresh onRefresh={loadLatest}>
+  <ActivityFeed />
+</PullToRefresh>
+```
+
+## Accessibility
+
+Do not make pull the only way to refresh; provide a visible refresh button where the action is important. Status labels are announced, and reduced motion simplifies the indicator and content movement.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="onRefresh" type="() => void | Promise<void>" required>Runs after a completed pull.</ApiRow>
+  <ApiRow name="refreshing" type="boolean">Externally controlled refresh state.</ApiRow>
+  <ApiRow name="disabled" type="boolean" default="false">Disables the gesture.</ApiRow>
+  <ApiRow name="threshold" type="number" default="76">Resisted distance required to refresh.</ApiRow>
+  <ApiRow name="maxPull" type="number" default="132">Maximum resisted distance.</ApiRow>
+  <ApiRow name="holdDistance" type="number" default="68">Content offset while refreshing.</ApiRow>
+  <ApiRow name="pullingLabel" type="ReactNode" default='"Pull to refresh"'>Label before the threshold.</ApiRow>
+  <ApiRow name="releaseLabel" type="ReactNode" default='"Release to refresh"'>Label after the threshold.</ApiRow>
+</ApiTable>

@@ -1,0 +1,37 @@
+---
+title: Bouncy Accordion
+description: A connected accordion whose rows separate and settle around expanded content.
+---
+
+<ComponentPreview name="bouncy-accordion-demo" />
+
+## Overview
+
+Use Bouncy Accordion for a short list of mutually exclusive details. Opening a row separates it from its neighbors and reveals its content with coordinated layout motion.
+
+## Installation
+
+<CliBlock commands={["bouncy-accordion"]} />
+
+## Usage
+
+```tsx
+import { BouncyAccordion } from "@/components/animated/bouncy-accordion"
+
+<BouncyAccordion items={items} defaultValue="billing" />
+```
+
+## Accessibility
+
+Each row uses a button with `aria-expanded` and `aria-controls`; the panel is a labeled region. Disabled rows stay out of the interaction path, and reduced motion removes spring movement.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="items" type="BouncyAccordionItem[]" required>Rows with `id`, `title`, optional `description`, `icon`, and `disabled`.</ApiRow>
+  <ApiRow name="value" type="string | null">Controlled open row.</ApiRow>
+  <ApiRow name="defaultValue" type="string | null" default="null">Initially open row.</ApiRow>
+  <ApiRow name="onValueChange" type="(value: string | null) => void">Runs when the open row changes.</ApiRow>
+  <ApiRow name="collapsible" type="boolean" default="true">Lets the open row close without opening another.</ApiRow>
+  <ApiRow name="classNames" type="BouncyAccordionClassNames">Classes for the root, item, trigger, icon, title, chevron, content, and description slots.</ApiRow>
+</ApiTable>

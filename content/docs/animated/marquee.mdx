@@ -1,0 +1,36 @@
+---
+title: Marquee
+description: Loop a row or column of content with optional fade and hover pause.
+---
+
+<ComponentPreview name="marquee-demo" />
+
+## Overview
+
+Use Marquee for non-essential collections such as partner marks, short tags, or ambient highlights. It duplicates a static set to create a seamless CSS loop.
+
+## Installation
+
+<CliBlock commands={["marquee"]} />
+
+## Usage
+
+```tsx
+import { Marquee } from "@/components/animated/marquee"
+
+<Marquee speed={24}>{items.map((item) => <Tag key={item}>{item}</Tag>)}</Marquee>
+```
+
+## Accessibility
+
+The duplicate track is hidden from assistive technology, hover can pause the loop, and reduced-motion preferences stop the animation. Never place time-sensitive or uniquely actionable content only inside a marquee.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="direction" type='"left" | "right" | "up" | "down"' default='"left"'>Movement direction.</ApiRow>
+  <ApiRow name="speed" type="number" default="30">Loop duration in seconds.</ApiRow>
+  <ApiRow name="pauseOnHover" type="boolean" default="true">Pauses while the pointer is over the marquee.</ApiRow>
+  <ApiRow name="gap" type="string" default='"1rem"'>Space between items and tracks.</ApiRow>
+  <ApiRow name="fade" type="boolean" default="true">Fades the leading and trailing edges.</ApiRow>
+</ApiTable>
