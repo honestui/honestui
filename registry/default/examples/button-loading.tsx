@@ -1,4 +1,4 @@
-import { LoaderCircle as LoaderCircleIcon } from "love-ui/icons"
+import { LoaderCircle as LoaderCircleIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 

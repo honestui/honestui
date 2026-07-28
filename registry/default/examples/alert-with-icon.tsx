@@ -1,4 +1,4 @@
-import { Info as InfoIcon } from "love-ui/icons"
+import { Info as InfoIcon } from "honestui/icons"
 
 import {
   Alert,

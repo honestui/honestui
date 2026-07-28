@@ -4,7 +4,7 @@ import {
   TextAlignEnd as AlignRightIcon,
   DollarSign as DollarSignIcon,
   Percent as PercentIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

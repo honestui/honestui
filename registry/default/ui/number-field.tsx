@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { NumberField as NumberFieldPrimitive } from "@base-ui-components/react/number-field"
-import { Minus as MinusIcon, Plus as PlusIcon } from "love-ui/icons"
+import { Minus as MinusIcon, Plus as PlusIcon } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/registry/default/ui/label"

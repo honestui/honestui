@@ -1,4 +1,4 @@
-import { Bell as BellIcon } from "love-ui/icons"
+import { Bell as BellIcon } from "honestui/icons"
 
 import { Checkbox } from "@/registry/default/ui/checkbox"
 import { Label } from "@/registry/default/ui/label"

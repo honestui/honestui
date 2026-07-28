@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Moon as MoonIcon, Sun as SunIcon } from "love-ui/icons"
+import { Moon as MoonIcon, Sun as SunIcon } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/default/ui/button"

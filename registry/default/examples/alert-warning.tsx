@@ -1,4 +1,4 @@
-import { TriangleAlert as TriangleAlertIcon } from "love-ui/icons"
+import { TriangleAlert as TriangleAlertIcon } from "honestui/icons"
 
 import {
   Alert,

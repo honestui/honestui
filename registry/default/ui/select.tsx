@@ -5,7 +5,7 @@ import {
   ChevronDown as ChevronDownIcon,
   ChevronsUpDown as ChevronsUpDownIcon,
   ChevronUp as ChevronUpIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 

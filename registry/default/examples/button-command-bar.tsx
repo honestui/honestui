@@ -1,4 +1,4 @@
-import { Command as CommandIcon, Plus as PlusIcon } from "love-ui/icons"
+import { Command as CommandIcon, Plus as PlusIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 

@@ -1,4 +1,4 @@
-import { X as XIcon } from "love-ui/icons"
+import { X as XIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

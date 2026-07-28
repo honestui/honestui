@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Combobox as ComboboxPrimitive } from "@base-ui-components/react/combobox"
-import { ChevronsUpDown as ChevronsUpDownIcon, X as XIcon } from "love-ui/icons"
+import { ChevronsUpDown as ChevronsUpDownIcon, X as XIcon } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 import { Input } from "@/registry/default/ui/input"

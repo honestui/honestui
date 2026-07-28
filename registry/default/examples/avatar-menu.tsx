@@ -4,7 +4,7 @@ import {
   Plus as PlusIcon,
   Settings as SettingsIcon,
   User as UserIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import {
   Avatar,

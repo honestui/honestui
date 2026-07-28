@@ -1,5 +1,5 @@
 import { Button } from "@/registry/default/ui/button"
-import { Check } from "love-ui/icons"
+import { Check } from "honestui/icons"
 
 export default function ButtonDemo() {
   return (

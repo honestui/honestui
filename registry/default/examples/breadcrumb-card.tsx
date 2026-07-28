@@ -1,4 +1,4 @@
-import { House as HouseIcon } from "love-ui/icons"
+import { House as HouseIcon } from "honestui/icons"
 
 import {
   Breadcrumb,

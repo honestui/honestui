@@ -1,4 +1,4 @@
-import { Lock as LockIcon } from "love-ui/icons"
+import { Lock as LockIcon } from "honestui/icons"
 
 import { Switch } from "@/registry/default/ui/switch"
 

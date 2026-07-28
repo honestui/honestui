@@ -1,4 +1,4 @@
-import { Download as DownloadIcon } from "love-ui/icons"
+import { Download as DownloadIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 

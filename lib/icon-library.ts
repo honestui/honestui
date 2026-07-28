@@ -1,6 +1,6 @@
 import "server-only";
 
-import { allIcons } from "love-ui/icons";
+import { allIcons } from "honestui/icons";
 import { getIconCategorySummary } from "@/globals/constants/icon-categories";
 
 export function getIconCategory(slug: string) {

@@ -1,4 +1,4 @@
-import { CircleCheck as CircleCheckIcon } from "love-ui/icons"
+import { CircleCheck as CircleCheckIcon } from "honestui/icons"
 
 import {
   Alert,

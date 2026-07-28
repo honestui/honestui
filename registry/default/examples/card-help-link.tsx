@@ -1,4 +1,4 @@
-import { ExternalLink as ExternalLinkIcon } from "love-ui/icons"
+import { ExternalLink as ExternalLinkIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

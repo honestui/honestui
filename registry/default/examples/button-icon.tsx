@@ -1,4 +1,4 @@
-import { Plus as PlusIcon } from "love-ui/icons"
+import { Plus as PlusIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 

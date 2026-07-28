@@ -17,7 +17,7 @@ export default defineConfig({
     "react",
     "react-dom",
     "react/jsx-runtime",
-    "love-ui/icons",
+    "honestui/icons",
   ],
   esbuildOptions(options) {
     options.alias = {

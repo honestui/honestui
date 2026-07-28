@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui-components/react/menu"
-import { Check as CheckIcon, ChevronRight as ChevronRightIcon } from "love-ui/icons"
+import { Check as CheckIcon, ChevronRight as ChevronRightIcon } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 

@@ -8,7 +8,7 @@ import {
   MapPin as MapPinIcon,
   Tag as TagIcon,
   Users as UsersIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 import { toast } from "sonner"
 
 import {

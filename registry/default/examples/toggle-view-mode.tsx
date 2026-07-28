@@ -1,4 +1,4 @@
-import { Grid2x2 as Grid2X2Icon, List as ListIcon } from "love-ui/icons"
+import { Grid2x2 as Grid2X2Icon, List as ListIcon } from "honestui/icons"
 
 import { Toggle, ToggleGroup } from "@/registry/default/ui/toggle"
 

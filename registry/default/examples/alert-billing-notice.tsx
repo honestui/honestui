@@ -1,4 +1,4 @@
-import { CreditCard as CreditCardIcon } from "love-ui/icons"
+import { CreditCard as CreditCardIcon } from "honestui/icons"
 
 import {
   Alert,

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "love-ui/icons";
+import { Search } from "honestui/icons";
 import { useMemo, useState, type ReactNode } from "react";
 
 const PAGE_SIZE = 24;

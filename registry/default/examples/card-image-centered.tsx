@@ -1,4 +1,4 @@
-import { ArrowRight as ArrowRightIcon, Bell as BellIcon } from "love-ui/icons"
+import { ArrowRight as ArrowRightIcon, Bell as BellIcon } from "honestui/icons"
 
 import { Badge } from "@/registry/default/ui/badge"
 import { Button } from "@/registry/default/ui/button"

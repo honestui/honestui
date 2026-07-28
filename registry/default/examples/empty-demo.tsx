@@ -1,4 +1,4 @@
-import { Book as BookIcon, Route as RouteIcon } from "love-ui/icons"
+import { Book as BookIcon, Route as RouteIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

@@ -3,7 +3,7 @@ import {
   Plus as PlusIcon,
   ShieldCheck as ShieldCheckIcon,
   Star as StarIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import {
   Avatar,

@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "honestui/icons": ["./lib/honestui-icons.ts"]
     }
   },
   "include": [

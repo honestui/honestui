@@ -1,4 +1,4 @@
-import { CircleQuestionMark as HelpCircleIcon, Lock as LockIcon, Settings as SettingsIcon } from "love-ui/icons"
+import { CircleQuestionMark as HelpCircleIcon, Lock as LockIcon, Settings as SettingsIcon } from "honestui/icons"
 
 import { Badge } from "@/registry/default/ui/badge"
 import {

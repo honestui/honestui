@@ -1,4 +1,4 @@
-import { Ellipsis as EllipsisIcon, Files as FilesIcon, Film as FilmIcon } from "love-ui/icons"
+import { Ellipsis as EllipsisIcon, Files as FilesIcon, Film as FilmIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import { Group, GroupItem, GroupSeparator } from "@/registry/default/ui/group"

@@ -1,4 +1,4 @@
-import { CloudUpload as UploadCloudIcon } from "love-ui/icons"
+import { CloudUpload as UploadCloudIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

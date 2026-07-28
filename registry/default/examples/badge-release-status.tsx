@@ -1,4 +1,4 @@
-import { Sparkles as SparklesIcon } from "love-ui/icons"
+import { Sparkles as SparklesIcon } from "honestui/icons"
 
 import { Badge } from "@/registry/default/ui/badge"
 

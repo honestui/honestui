@@ -1,4 +1,4 @@
-import { Copy as CopyIcon } from "love-ui/icons"
+import { Copy as CopyIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import { Group, GroupItem, GroupSeparator } from "@/registry/default/ui/group"

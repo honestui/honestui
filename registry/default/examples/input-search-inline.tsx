@@ -1,4 +1,4 @@
-import { Search as SearchIcon } from "love-ui/icons"
+import { Search as SearchIcon } from "honestui/icons"
 
 import { Input } from "@/registry/default/ui/input"
 

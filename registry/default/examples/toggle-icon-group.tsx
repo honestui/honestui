@@ -1,4 +1,4 @@
-import { Bold as BoldIcon, Italic as ItalicIcon, Underline as UnderlineIcon } from "love-ui/icons"
+import { Bold as BoldIcon, Italic as ItalicIcon, Underline as UnderlineIcon } from "honestui/icons"
 
 import { Toggle } from "@/registry/default/ui/toggle"
 

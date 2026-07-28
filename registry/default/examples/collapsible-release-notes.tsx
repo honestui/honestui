@@ -1,4 +1,4 @@
-import { ChevronDown as ChevronDownIcon } from "love-ui/icons"
+import { ChevronDown as ChevronDownIcon } from "honestui/icons"
 
 import {
   Collapsible,

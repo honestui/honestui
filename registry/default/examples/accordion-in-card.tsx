@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/registry/default/ui/card"
-import { ArrowUpRight as ArrowUpRightIcon } from "love-ui/icons"
+import { ArrowUpRight as ArrowUpRightIcon } from "honestui/icons"
 
 const items = [
   {

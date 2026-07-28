@@ -1,4 +1,4 @@
-import { Check as CheckIcon } from "love-ui/icons"
+import { Check as CheckIcon } from "honestui/icons"
 
 import { Badge } from "@/registry/default/ui/badge"
 

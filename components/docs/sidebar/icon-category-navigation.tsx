@@ -70,7 +70,7 @@ import {
   WalletFilled,
   WomanFilled,
   ZodiacAries,
-} from "love-ui/icons";
+} from "honestui/icons";
 import { usePathname } from "next/navigation";
 import type { ElementType } from "react";
 import Link from "next/link";

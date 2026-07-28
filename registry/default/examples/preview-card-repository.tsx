@@ -1,4 +1,4 @@
-import { Star as StarIcon } from "love-ui/icons"
+import { Star as StarIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import { PreviewCard, PreviewCardPopup, PreviewCardTrigger } from "@/registry/default/ui/preview-card"

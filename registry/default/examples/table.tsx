@@ -1,7 +1,7 @@
 "use client"
 
 import { faker } from "@faker-js/faker"
-import { ChevronRight as ChevronRightIcon } from "love-ui/icons"
+import { ChevronRight as ChevronRightIcon } from "honestui/icons"
 
 import {
   Avatar,

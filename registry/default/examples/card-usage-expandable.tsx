@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown as ChevronDownIcon } from "love-ui/icons"
+import { ChevronDown as ChevronDownIcon } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/default/ui/button"

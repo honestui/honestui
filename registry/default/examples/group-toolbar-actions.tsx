@@ -1,4 +1,4 @@
-import { Download as DownloadIcon, Share as ShareIcon } from "love-ui/icons"
+import { Download as DownloadIcon, Share as ShareIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import { Group, GroupItem, GroupSeparator } from "@/registry/default/ui/group"

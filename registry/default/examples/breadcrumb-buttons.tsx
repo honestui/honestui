@@ -3,7 +3,7 @@ import {
   House as HouseIcon,
   LayoutGrid as LayoutGridIcon,
   Settings as SettingsIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import {
   Breadcrumb,

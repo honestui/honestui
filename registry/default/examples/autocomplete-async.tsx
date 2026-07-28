@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Autocomplete as AutocompletePrimitive } from "@base-ui-components/react/autocomplete"
-import { LoaderCircle as LoaderCircleIcon } from "love-ui/icons"
+import { LoaderCircle as LoaderCircleIcon } from "honestui/icons"
 
 import {
   Autocomplete,

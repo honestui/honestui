@@ -1,4 +1,4 @@
-import { Inbox as InboxIcon } from "love-ui/icons"
+import { Inbox as InboxIcon } from "honestui/icons"
 
 import {
   Empty,

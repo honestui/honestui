@@ -1,4 +1,4 @@
-import { UserPlus as UserPlusIcon } from "love-ui/icons"
+import { UserPlus as UserPlusIcon } from "honestui/icons"
 
 import {
   Avatar,

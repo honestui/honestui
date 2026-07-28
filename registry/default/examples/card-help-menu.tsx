@@ -3,7 +3,7 @@ import {
   Ellipsis as MoreHorizontalIcon,
   Settings as SettingsIcon,
   User as UserIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/registry/default/ui/avatar"
 import { Button } from "@/registry/default/ui/button"

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { UserRoundPlus as UserRoundPlusIcon, UsersRound as UsersRoundIcon } from "love-ui/icons"
+import { UserRoundPlus as UserRoundPlusIcon, UsersRound as UsersRoundIcon } from "honestui/icons"
 
 import {
   Avatar,

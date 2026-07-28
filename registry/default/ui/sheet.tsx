@@ -1,7 +1,7 @@
 "use client"
 
 import { Dialog as SheetPrimitive } from "@base-ui-components/react/dialog"
-import { X as XIcon } from "love-ui/icons"
+import { X as XIcon } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 

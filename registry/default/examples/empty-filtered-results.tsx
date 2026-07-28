@@ -1,4 +1,4 @@
-import { SearchX as SearchXIcon } from "love-ui/icons"
+import { SearchX as SearchXIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

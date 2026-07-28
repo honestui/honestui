@@ -1,4 +1,4 @@
-import { ChevronRight as ChevronRightIcon } from "love-ui/icons"
+import { ChevronRight as ChevronRightIcon } from "honestui/icons"
 
 import {
   Accordion,

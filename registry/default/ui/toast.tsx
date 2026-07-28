@@ -8,7 +8,7 @@ import {
   Info as InfoIcon,
   LoaderCircle as LoaderCircleIcon,
   TriangleAlert as TriangleAlertIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import {
   gooey,

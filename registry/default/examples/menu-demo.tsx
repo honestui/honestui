@@ -4,7 +4,7 @@ import {
   SkipBack as SkipBackIcon,
   SkipForward as SkipForwardIcon,
   Trash as TrashIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

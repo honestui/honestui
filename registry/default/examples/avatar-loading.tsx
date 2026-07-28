@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { LoaderCircle as LoaderCircleIcon } from "love-ui/icons"
+import { LoaderCircle as LoaderCircleIcon } from "honestui/icons"
 
 import {
   Avatar,

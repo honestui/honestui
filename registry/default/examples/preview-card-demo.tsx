@@ -1,4 +1,4 @@
-import { CornerUpLeft as CornerUpLeftIcon, Star as StarIcon } from "love-ui/icons"
+import { CornerUpLeft as CornerUpLeftIcon, Star as StarIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

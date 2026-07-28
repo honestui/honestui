@@ -7,7 +7,7 @@ import {
   Share2 as Share2Icon,
   Trash as TrashIcon,
   TriangleAlert as TriangleAlertIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import { Badge } from "@/registry/default/ui/badge"
 import { Button } from "@/registry/default/ui/button"

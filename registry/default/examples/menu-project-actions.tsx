@@ -1,4 +1,4 @@
-import { Ellipsis as MoreHorizontalIcon } from "love-ui/icons"
+import { Ellipsis as MoreHorizontalIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "@/registry/default/ui/menu"

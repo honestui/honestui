@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronsUpDown as ChevronsUpDownIcon } from "love-ui/icons"
+import { ChevronsUpDown as ChevronsUpDownIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 import {

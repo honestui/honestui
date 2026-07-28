@@ -1,4 +1,4 @@
-import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from "love-ui/icons"
+import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"
 

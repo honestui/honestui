@@ -1,4 +1,4 @@
-import { TrendingUp as TrendingUpIcon } from "love-ui/icons"
+import { TrendingUp as TrendingUpIcon } from "honestui/icons"
 
 import {
   Card,

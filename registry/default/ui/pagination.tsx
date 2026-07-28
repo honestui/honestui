@@ -5,7 +5,7 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   Ellipsis as MoreHorizontalIcon,
-} from "love-ui/icons"
+} from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/registry/default/ui/button"

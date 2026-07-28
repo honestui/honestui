@@ -1,4 +1,4 @@
-import { BookOpen as BookOpenIcon, Link as LinkIcon } from "love-ui/icons"
+import { BookOpen as BookOpenIcon, Link as LinkIcon } from "honestui/icons"
 
 import { Card, CardContent } from "@/registry/default/ui/card"
 
