@@ -1,0 +1,70 @@
+{
+  "name": "honestui",
+  "version": "0.0.1",
+  "description": "Build and manage Honest UI component libraries.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "honestui": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.18.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@antfu/ni": "^25.0.0",
+    "@babel/core": "^7.28.0",
+    "@babel/parser": "^7.28.0",
+    "@babel/plugin-transform-typescript": "^7.27.1",
+    "commander": "^14.0.0",
+    "cosmiconfig": "^9.0.0",
+    "dedent": "^1.6.0",
+    "deepmerge": "^4.3.1",
+    "diff": "^8.0.2",
+    "execa": "^9.6.0",
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.1",
+    "fuzzysort": "^3.1.0",
+    "https-proxy-agent": "^7.0.6",
+    "kleur": "^4.1.5",
+    "node-fetch": "^3.3.2",
+    "open": "^11.0.0",
+    "ora": "^8.2.0",
+    "postcss": "^8.5.6",
+    "postcss-selector-parser": "^7.1.0",
+    "prompts": "^2.4.2",
+    "recast": "^0.23.11",
+    "stringify-object": "^5.0.0",
+    "tailwind-merge": "^3.0.1",
+    "ts-morph": "^26.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.0.0",
+    "@types/prompts": "^2.4.9",
+    "@types/stringify-object": "^4.0.5",
+    "tsup": "^8.5.0",
+    "type-fest": "^4.41.0",
+    "typescript": "^5.9.2"
+  }
+}

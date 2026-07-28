@@ -1,0 +1,11 @@
+import { Plus as PlusIcon } from "honestui/icons"
+
+import { Button } from "@/registry/default/ui/button"
+
+export default function ButtonIcon() {
+  return (
+    <Button size="icon">
+      <PlusIcon />
+    </Button>
+  )
+}

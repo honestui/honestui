@@ -140,7 +140,7 @@ export const mdxComponents: MDXComponents = {
   tr: Tr,
   th: Th,
   td: Td,
-  Step,
+  Step: (props: React.ComponentProps<typeof Step>) => <Step {...props} data-step />,
   Steps,
   StepTitle,
   StepContent,

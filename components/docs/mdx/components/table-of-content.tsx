@@ -69,6 +69,27 @@ export function DocsTableOfContents({
   const activeHeading = useActiveItem(itemIds);
   const activeIndex = activeHeading ? itemIds.indexOf(activeHeading) : -1;
 
+  const handleItemClick = React.useCallback(
+    (event: React.MouseEvent<HTMLElement>, url: string) => {
+      const targetId = decodeURIComponent(url.replace(/^#/, ""));
+      const target = document.getElementById(targetId);
+
+      if (!target) {
+        return;
+      }
+
+      event.preventDefault();
+      target.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+        block: "start",
+      });
+      window.history.pushState(null, "", url);
+    },
+    [],
+  );
+
   if (!toc?.length) {
     return null;
   }
@@ -86,7 +107,8 @@ export function DocsTableOfContents({
             <DropdownMenuItem
               key={item.url}
               render={<a href={item.url} />}
-              onClick={() => {
+              onClick={(event) => {
+                handleItemClick(event, item.url);
                 setOpen(false);
               }}
               data-depth={item.depth}
@@ -113,6 +135,7 @@ export function DocsTableOfContents({
             <a
               key={item.url}
               href={item.url}
+              onClick={(event) => handleItemClick(event, item.url)}
               className="text-muted-foreground/75 hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors duration-200 empty:hidden data-[active=true]:font-medium data-[depth=1]:pl-5 data-[depth=2]:pl-5 data-[depth=3]:pl-8 data-[depth=4]:pl-11"
               data-active={item.url === `#${activeHeading}`}
               data-depth={item.depth}

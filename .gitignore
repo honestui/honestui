@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/package/honestui/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -24,6 +25,8 @@
 /build
 /dist
 /*.tgz
+/package/honestui/dist/
+/package/honestui/*.tgz
 
 # misc
 .DS_Store

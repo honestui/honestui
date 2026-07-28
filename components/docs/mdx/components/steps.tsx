@@ -10,6 +10,7 @@ interface StepsProps extends React.HTMLAttributes<HTMLDivElement> {
 interface StepProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   stepNumber?: number;
+  "data-step"?: boolean;
 }
 
 interface StepContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -17,7 +18,10 @@ interface StepContentProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 function isStepElement(child: React.ReactNode): child is React.ReactElement<StepProps> {
-  return React.isValidElement<StepProps>(child);
+  return (
+    React.isValidElement<StepProps>(child) &&
+    (child.type === Step || child.props["data-step"] === true)
+  );
 }
 
 function Steps({ className, children, ...props }: StepsProps) {

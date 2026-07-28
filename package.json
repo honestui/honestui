@@ -1,5 +1,6 @@
 {
-  "name": "honestui",
+  "name": "honestui-site",
+  "private": true,
   "version": "0.1.0",
   "description": "Accessible React components, charts, and icons from Honest UI.",
   "type": "module",
@@ -38,7 +39,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:package": "tsup",
+    "build:package": "npm --prefix package/honestui run build",
+    "pack:package": "npm --prefix package/honestui pack",
     "start": "next start",
     "lint": "eslint",
     "registry:charts": "node scripts/generate-chart-index.mjs",
