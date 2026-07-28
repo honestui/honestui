@@ -1,6 +1,5 @@
 import fs from "fs"
 import path from "path"
-import { Index } from "@/registry/__index__"
 import { source } from "@/lib/source"
 
 const showcaseItems = [
@@ -33,15 +32,6 @@ const honestUiCliCommands = {
   yarn: "yarn dlx honestui@latest add",
   bun: "bunx --bun honestui@latest add",
   pnpm: "pnpm dlx honestui@latest add",
-}
-
-/**
- * Resolve a `@/...` import path to an absolute filesystem path.
- * e.g. `@/registry/examples/ex-area-chart.tsx` → `/abs/path/src/registry/examples/ex-area-chart.tsx`
- */
-function resolveAliasPath(aliasPath: string): string {
-  const relative = aliasPath.replace(/^@\//, "")
-  return path.join(process.cwd(), "src", relative)
 }
 
 function getComponentsList() {
@@ -129,26 +119,32 @@ function getShowcaseList() {
     .join("\n")
 }
 
-function renderRegistrySource(name: string, title?: string) {
-  const component = Index[name]
-  if (!component?.files?.length) {
+function renderRegistrySource(
+  name: string,
+  title: string | undefined,
+  kind: "component" | "example",
+) {
+  if (!/^[a-z0-9-]+$/.test(name)) {
     return undefined
   }
 
-  const filePath = component.files[0]?.path
-  if (!filePath) {
-    return undefined
-  }
+  const directories =
+    kind === "component"
+      ? ["registry/default/ui"]
+      : ["registry/default/examples", "registry/default/examples/charts"]
+  const absolutePath = directories
+    .map((directory) => path.join(process.cwd(), directory, `${name}.tsx`))
+    .find((candidate) => fs.existsSync(candidate))
 
-  const absolutePath = resolveAliasPath(filePath)
-
-  if (!fs.existsSync(absolutePath)) {
+  if (!absolutePath) {
     return undefined
   }
 
   let src = fs.readFileSync(absolutePath, "utf8")
 
   // Rewrite internal registry paths to user-facing paths.
+  src = src.replaceAll("@/registry/default/ui/", "@/components/honest-ui/ui/")
+  src = src.replaceAll("@/registry/default/examples/", "@/components/")
   src = src.replaceAll("@/registry/ui/", "@/components/honest-ui/ui/")
   src = src.replace(
     /(["'])@\/registry\/(?:default\/)?charts\/[^"']+\1/g,
@@ -188,7 +184,7 @@ export function processMdxForLLMs(content: string) {
       const name = getAttribute(match, "name")
       const title = getAttribute(match, "title")
 
-      return name ? renderRegistrySource(name, title) ?? match : match
+      return name ? renderRegistrySource(name, title, "component") ?? match : match
     },
   )
 
@@ -202,7 +198,7 @@ export function processMdxForLLMs(content: string) {
     }
 
     try {
-      return renderRegistrySource(name, title) ?? match
+      return renderRegistrySource(name, title, "example") ?? match
     } catch (error) {
       console.error(`Error processing ComponentPreview ${name}:`, error)
       return match

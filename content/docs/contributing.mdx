@@ -40,14 +40,10 @@ Good first changes include:
 ## Commands to run before you open a PR
 
 ```bash
-bun run format:write
-bun run registry:build
-```
-
-If you changed core UI components, also run:
-
-```bash
-bun run ui:propagate
+npx eslint path/to/changed-file.tsx
+npm run build
+npm run build:package
+npm --prefix package/honestui run typecheck
 ```
 
 If you changed docs, check that the docs site still builds and the changed pages render correctly.
@@ -85,4 +81,4 @@ Prefer short paragraphs and specific examples. Explain when to use a component, 
 
 For the full technical process, file conventions, and registry details, see:
 
-[Full CONTRIBUTING.md](/api/raw/CONTRIBUTING.md)
+[Full CONTRIBUTING.md](https://github.com/honestui/honestui/blob/main/CONTRIBUTING.md)

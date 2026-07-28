@@ -3,6 +3,15 @@
   "version": "0.0.1",
   "description": "Build and manage Honest UI component libraries.",
   "license": "MIT",
+  "homepage": "https://honestui.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honestui/honestui.git",
+    "directory": "package/honestui"
+  },
+  "bugs": {
+    "url": "https://github.com/honestui/honestui/issues"
+  },
   "type": "module",
   "exports": {
     ".": {

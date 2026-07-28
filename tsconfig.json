@@ -30,5 +30,10 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "package/honestui"]
+  "exclude": [
+    "node_modules",
+    "package/honestui",
+    "registry/default/examples/form.tsx",
+    "registry/default/examples/table.tsx"
+  ]
 }
