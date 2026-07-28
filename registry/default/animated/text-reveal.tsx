@@ -1,7 +1,13 @@
 "use client";
 
 import { motion, type Transition, useInView, useReducedMotion } from "motion/react";
-import { useRef, type ElementType, type ReactNode } from "react";
+import {
+  useRef,
+  type ComponentType,
+  type ElementType,
+  type ReactNode,
+  type Ref,
+} from "react";
 import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +30,12 @@ export interface TextRevealProps {
 
 const DEFAULT_SPRING = { stiffness: 140, damping: 26, mass: 1.2 };
 
+type TextRevealRootProps = {
+  children?: ReactNode;
+  className?: string;
+  ref?: Ref<HTMLElement>;
+};
+
 export function TextReveal({
   text,
   as: Comp = "span",
@@ -38,6 +50,7 @@ export function TextReveal({
   whileInView = false,
   children,
 }: TextRevealProps) {
+  const Root = Comp as ComponentType<TextRevealRootProps>;
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once, amount: 0.4 });
   const reduce = useReducedMotion();
@@ -57,7 +70,7 @@ export function TextReveal({
   );
 
   return (
-    <Comp ref={ref} className={cn("block", className)}>
+    <Root ref={ref} className={cn("block", className)}>
       {lines.map((line, lineIndex) => {
         const units = split === "word" ? line.split(" ") : Array.from(line);
         const lineKey = `${line}-${lineIndex}`;
@@ -101,6 +114,6 @@ export function TextReveal({
         );
       })}
       {children}
-    </Comp>
+    </Root>
   );
 }

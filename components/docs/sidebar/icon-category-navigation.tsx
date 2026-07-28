@@ -72,10 +72,13 @@ import {
   ZodiacAries,
 } from "honestui/icons";
 import { usePathname } from "next/navigation";
-import type { ElementType } from "react";
+import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
 
-const categoryIcons: Record<string, ElementType> = {
+type CategoryIconProps = Pick<SVGProps<SVGSVGElement>, "aria-hidden" | "className">;
+type CategoryIcon = ComponentType<CategoryIconProps>;
+
+const categoryIcons: Record<string, CategoryIcon> = {
   align: AlignCenterHorizontal,
   animal: PawPrint,
   app: AppWindow,
