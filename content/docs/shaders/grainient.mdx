@@ -1,0 +1,57 @@
+---
+title: Grainient
+description: Blend three colors into a warped, animated gradient with controllable film grain.
+---
+
+<ComponentPreview name="grainient-demo" />
+
+## Overview
+
+Grainient creates a soft three-color field with independent controls for warping, rotation, tone, and grain. Use it when a product moment needs an organic background that still feels designed and controllable.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Grainient } from "honestui/shaders"
+
+<div className="h-80">
+  <Grainient
+    className="size-full"
+    color1="#ffb257"
+    color2="#d8d3c5"
+    color3="#335c67"
+    grainAmount={0.08}
+  />
+</div>
+```
+
+## Accessibility
+
+Use Grainient as decoration and keep readable content in a separate foreground layer. The component pauses while it is offscreen or the document is hidden; gate it behind your reduced-motion preference when continuous movement is not appropriate.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="color1" type="string" default='"#FF9FFC"'>First gradient color.</ApiRow>
+  <ApiRow name="color2" type="string" default='"#5227FF"'>Second gradient color.</ApiRow>
+  <ApiRow name="color3" type="string" default='"#B497CF"'>Third gradient color.</ApiRow>
+  <ApiRow name="timeSpeed" type="number" default="0.25">Overall animation speed.</ApiRow>
+  <ApiRow name="warpStrength" type="number" default="1">Strength of the gradient deformation.</ApiRow>
+  <ApiRow name="warpFrequency" type="number" default="5">Frequency of the deformation.</ApiRow>
+  <ApiRow name="warpSpeed" type="number" default="2">Movement speed of the deformation.</ApiRow>
+  <ApiRow name="warpAmplitude" type="number" default="50">Scale of the deformation.</ApiRow>
+  <ApiRow name="blendAngle" type="number" default="0">Direction of the color blend.</ApiRow>
+  <ApiRow name="blendSoftness" type="number" default="0.05">Softness between color regions.</ApiRow>
+  <ApiRow name="grainAmount" type="number" default="0.1">Strength of the grain overlay.</ApiRow>
+  <ApiRow name="grainScale" type="number" default="2">Size of the grain texture.</ApiRow>
+  <ApiRow name="grainAnimated" type="boolean" default="false">Moves the grain over time.</ApiRow>
+  <ApiRow name="contrast" type="number" default="1.5">Output contrast.</ApiRow>
+  <ApiRow name="gamma" type="number" default="1">Output gamma.</ApiRow>
+  <ApiRow name="saturation" type="number" default="1">Output saturation.</ApiRow>
+  <ApiRow name="zoom" type="number" default="0.9">Scale of the rendered field.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

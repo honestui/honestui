@@ -20,12 +20,13 @@ import {
   ComponentBlocksIcon,
   IconLibraryIcon,
   MotionIcon,
+  ShaderIcon,
 } from "@/assets/icons";
 import { usePathname, useRouter } from "next/navigation";
 import { CaretDown } from "@carbon/icons-react";
 import { cn } from "@/lib/utils";
 
-export type ProductArea = "components" | "charts" | "icons" | "animated";
+export type ProductArea = "components" | "charts" | "icons" | "animated" | "shaders";
 
 interface ProductAreaMeta {
   id: ProductArea;
@@ -69,6 +70,14 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     icon: MotionIcon,
     tint: "text-emerald-400",
   },
+  {
+    id: "shaders",
+    name: "Shaders",
+    tagline: "GPU-rendered visual effects",
+    href: "/docs/shaders",
+    icon: ShaderIcon,
+    tint: "text-fuchsia-400",
+  },
 ];
 
 export function areaFromPathname(pathname: string): ProductArea {
@@ -86,6 +95,10 @@ export function areaFromPathname(pathname: string): ProductArea {
 
   if (pathname === "/docs/animated" || pathname.startsWith("/docs/animated/")) {
     return "animated";
+  }
+
+  if (pathname === "/docs/shaders" || pathname.startsWith("/docs/shaders/")) {
+    return "shaders";
   }
 
   return "components";

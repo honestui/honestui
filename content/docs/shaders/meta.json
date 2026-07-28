@@ -1,0 +1,13 @@
+{
+  "title": "Shaders",
+  "pages": [
+    "index",
+    "installation",
+    "blinds",
+    "dithering",
+    "grainient",
+    "grid-distortion",
+    "light-rays",
+    "side-rays"
+  ]
+}

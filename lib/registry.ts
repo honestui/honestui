@@ -42,6 +42,14 @@ export async function getRegistryItem(name: string) {
       type: "registry:example" as const,
     },
     {
+      path: path.join(process.cwd(), "registry/default/shaders"),
+      type: "registry:component" as const,
+    },
+    {
+      path: path.join(process.cwd(), "registry/default/examples/shaders"),
+      type: "registry:example" as const,
+    },
+    {
       path: path.join(process.cwd(), "lib/hooks"),
       type: "registry:hook" as const,
     },
@@ -103,6 +111,9 @@ export async function getRegistryItem(name: string) {
   const isAnimatedComponent = registryFile.path.includes(
     `${path.sep}registry${path.sep}default${path.sep}animated${path.sep}`,
   );
+  const isShaderComponent = registryFile.path.includes(
+    `${path.sep}registry${path.sep}default${path.sep}shaders${path.sep}`,
+  );
   const animatedButtonFiles =
     name === "animated-button"
       ? [
@@ -127,12 +138,34 @@ export async function getRegistryItem(name: string) {
           },
         ]
       : null;
+  const shaderFiles = isShaderComponent
+    ? [
+        {
+          path: registryFile.path,
+          type: "registry:component" as const,
+          target: `components/shaders/${path.basename(registryFile.path)}`,
+        },
+        {
+          path: path.join(
+            path.dirname(registryFile.path),
+            "css",
+            `${path.basename(registryFile.path, path.extname(registryFile.path))}.css`,
+          ),
+          type: "registry:component" as const,
+          target: `components/shaders/css/${path.basename(
+            registryFile.path,
+            path.extname(registryFile.path),
+          )}.css`,
+        },
+      ]
+    : null;
 
   const typedItem = {
     name,
     type: registryFile.type,
     files:
       animatedButtonFiles ??
+      shaderFiles ??
       [
         {
           path: registryFile.path,
@@ -165,7 +198,10 @@ export async function getRegistryItem(name: string) {
   const source = processedFiles.map((file) => file.content ?? "").join("\n");
   const { dependencies, registryDependencies } = getDependencies(source);
   const bundledNames = new Set(
-    processedFiles.map((file) => path.basename(file.path, path.extname(file.path))),
+    processedFiles.flatMap((file) => [
+      path.basename(file.path),
+      path.basename(file.path, path.extname(file.path)),
+    ]),
   );
   const externalRegistryDependencies = registryDependencies.filter(
     (dependency) => !bundledNames.has(dependency),
@@ -334,7 +370,8 @@ function fixFilePaths(
 }
 
 export function fixImport(content: string) {
-  const regex = /@\/(.+?)\/((?:.*?\/)?(?:components|ui|hooks|lib|charts))\/([\w-]+)/g;
+  const regex =
+    /@\/(.+?)\/((?:.*?\/)?(?:components|ui|hooks|lib|charts|animated|shaders))\/([\w-]+)/g;
 
   const replacement = (match: string, _path: string, type: string, component: string) => {
     if (type.endsWith("components")) {
@@ -351,6 +388,12 @@ export function fixImport(content: string) {
     }
     if (type.endsWith("charts")) {
       return "honestui/charts";
+    }
+    if (type.endsWith("animated")) {
+      return `@/components/animated/${component}`;
+    }
+    if (type.endsWith("shaders")) {
+      return `@/components/shaders/${component}`;
     }
 
     return match;

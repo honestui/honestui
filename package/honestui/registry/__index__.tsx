@@ -1,6 +1,7 @@
 import type { ComponentType } from "react"
 import { AnimatedIndex } from "./animated-index"
 import { ChartIndex } from "./chart-index"
+import { ShaderIndex } from "./shader-index"
 
 import accordion_controlled from "./default/examples/accordion-controlled"
 import accordion_demo from "./default/examples/accordion-demo"
@@ -335,6 +336,7 @@ import tooltip_keyboard_hints from "./default/examples/tooltip-keyboard-hints"
 export const Index: Record<string, { component: ComponentType }> = {
   ...AnimatedIndex,
   ...ChartIndex,
+  ...ShaderIndex,
   "accordion-product-faq": { component: accordion_product_faq },
   "accordion-card": { component: accordion_card },
   "alert-billing-notice": { component: alert_billing_notice },

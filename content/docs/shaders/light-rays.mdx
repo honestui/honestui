@@ -1,0 +1,51 @@
+---
+title: Light Rays
+description: Cast soft animated rays from any edge with optional pointer influence.
+---
+
+<ComponentPreview name="light-rays-demo" />
+
+## Overview
+
+Light Rays creates a directional atmospheric wash with controllable spread, length, color, noise, and distortion. It is suited to dark hero surfaces and media where the light source should feel spatially anchored.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { LightRays } from "honestui/shaders"
+
+<div className="h-80 bg-black">
+  <LightRays
+    className="size-full"
+    raysColor="#b8d6ff"
+    raysOrigin="top-left"
+    lightSpread={0.72}
+  />
+</div>
+```
+
+## Accessibility
+
+Light Rays ignores pointer events and should stay decorative. Keep the foreground readable without the rays, and disable `followMouse` when pointer response would be distracting.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="raysOrigin" type='"top-center" | "top-left" | "top-right" | "right" | "left" | "bottom-center" | "bottom-right" | "bottom-left"' default='"top-center"'>Edge or corner that emits the rays.</ApiRow>
+  <ApiRow name="raysColor" type="string" default='"#ffffff"'>Hex color of the light.</ApiRow>
+  <ApiRow name="raysSpeed" type="number" default="1">Animation speed.</ApiRow>
+  <ApiRow name="lightSpread" type="number" default="1">Angular width of the ray field.</ApiRow>
+  <ApiRow name="rayLength" type="number" default="2">Maximum ray reach.</ApiRow>
+  <ApiRow name="pulsating" type="boolean" default="false">Adds a subtle intensity pulse.</ApiRow>
+  <ApiRow name="fadeDistance" type="number" default="1">Distance over which the rays fade.</ApiRow>
+  <ApiRow name="saturation" type="number" default="1">Color saturation.</ApiRow>
+  <ApiRow name="followMouse" type="boolean" default="true">Lets the pointer influence ray direction.</ApiRow>
+  <ApiRow name="mouseInfluence" type="number" default="0.1">Strength of pointer influence.</ApiRow>
+  <ApiRow name="noiseAmount" type="number" default="0">Texture added to the rays.</ApiRow>
+  <ApiRow name="distortion" type="number" default="0">Amount of animated angular distortion.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

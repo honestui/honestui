@@ -18,6 +18,11 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./shaders": {
+      "types": "./dist/shaders.d.ts",
+      "default": "./dist/shaders.js"
+    },
+    "./shaders.css": "./dist/shaders.css",
     "./package.json": "./package.json"
   },
   "bin": {
@@ -26,6 +31,9 @@
   "files": [
     "dist"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "engines": {
     "node": ">=20.18.1"
   },
@@ -33,7 +41,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/mark-shaders-client.mjs",
     "typecheck": "tsc --noEmit",
     "prepack": "npm run build"
   },
@@ -42,6 +50,8 @@
     "@babel/core": "^7.28.0",
     "@babel/parser": "^7.28.0",
     "@babel/plugin-transform-typescript": "^7.27.1",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
     "commander": "^14.0.0",
     "cosmiconfig": "^9.0.0",
     "dedent": "^1.6.0",
@@ -54,17 +64,24 @@
     "https-proxy-agent": "^7.0.6",
     "kleur": "^4.1.5",
     "node-fetch": "^3.3.2",
+    "ogl": "^1.0.11",
     "open": "^11.0.0",
     "ora": "^8.2.0",
     "postcss": "^8.5.6",
     "postcss-selector-parser": "^7.1.0",
+    "postprocessing": "^6.39.4",
     "prompts": "^2.4.2",
     "recast": "^0.23.11",
     "stringify-object": "^5.0.0",
     "tailwind-merge": "^3.0.1",
+    "three": "^0.185.1",
     "ts-morph": "^26.0.0",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",

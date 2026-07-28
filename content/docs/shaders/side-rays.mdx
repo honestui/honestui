@@ -1,0 +1,50 @@
+---
+title: Side Rays
+description: Blend two colors into directional rays that enter from a chosen corner.
+---
+
+<ComponentPreview name="side-rays-demo" />
+
+## Overview
+
+Side Rays creates a denser, two-color beam field from one corner of its container. Use it as a controlled atmospheric layer behind a focal object or short piece of display content.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { SideRays } from "honestui/shaders"
+
+<div className="h-80 bg-black">
+  <SideRays
+    className="size-full"
+    origin="top-right"
+    rayColor1="#ffbf69"
+    rayColor2="#7fb3ff"
+  />
+</div>
+```
+
+## Accessibility
+
+Side Rays ignores pointer events and should remain decorative. Preserve a static background color beneath it and verify the contrast of any foreground content.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="speed" type="number" default="2.5">Animation speed.</ApiRow>
+  <ApiRow name="rayColor1" type="string" default='"#EAB308"'>Primary ray color.</ApiRow>
+  <ApiRow name="rayColor2" type="string" default='"#96c8ff"'>Secondary ray color.</ApiRow>
+  <ApiRow name="intensity" type="number" default="2">Overall light intensity.</ApiRow>
+  <ApiRow name="spread" type="number" default="2">Width of the ray field.</ApiRow>
+  <ApiRow name="origin" type='"top-right" | "top-left" | "bottom-right" | "bottom-left"' default='"top-right"'>Corner that emits the rays.</ApiRow>
+  <ApiRow name="tilt" type="number" default="0">Angular offset of the field.</ApiRow>
+  <ApiRow name="saturation" type="number" default="1.5">Output color saturation.</ApiRow>
+  <ApiRow name="blend" type="number" default="0.75">Mix between the two ray colors.</ApiRow>
+  <ApiRow name="falloff" type="number" default="1.6">Rate at which rays fade.</ApiRow>
+  <ApiRow name="opacity" type="number" default="1">Overall effect opacity.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

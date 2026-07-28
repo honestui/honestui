@@ -1,0 +1,37 @@
+---
+title: Installation
+description: Install Honest UI shaders and import them from the dedicated package entry point.
+---
+
+Honest UI shaders are available from the `honestui/shaders` package entry point. Installing `honestui` includes the shader components and their WebGL runtime dependencies.
+
+## Install
+
+<CommandBlock commands={["honestui"]} />
+
+## Import
+
+Import shader components from the dedicated entry point and load the shared shader styles once in your application root.
+
+```tsx
+import { LightRays } from "honestui/shaders"
+import "honestui/shaders.css"
+```
+
+## Container sizing
+
+Shader canvases fill their parent. Give the parent an explicit height or aspect ratio so the effect has space to render.
+
+```tsx
+<div className="relative h-80 overflow-hidden rounded-xl bg-black">
+  <LightRays className="size-full" />
+</div>
+```
+
+## Client rendering
+
+Shader components run in the browser and include the `"use client"` directive. In server-rendered frameworks, keep data fetching and essential content outside the shader component.
+
+## Performance and accessibility
+
+Avoid mounting several full-viewport shaders at once. Use `paused` or `disableAnimation` where available, respect `prefers-reduced-motion` in the parent experience, and keep meaningful content available without WebGL.

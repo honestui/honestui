@@ -1,0 +1,47 @@
+---
+title: Dithering
+description: Render an animated wave field with a configurable retro dithering pass.
+---
+
+<ComponentPreview name="dithering-demo" />
+
+## Overview
+
+Dithering combines a flowing Three.js wave shader with a pixelated post-processing pass. Use it for full-bleed ambient media, experimental covers, and playful technical surfaces.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Dither } from "honestui/shaders"
+
+<div className="h-80 bg-black">
+  <Dither
+    colorNum={5}
+    pixelSize={3}
+    waveColor={[0.22, 0.48, 0.95]}
+    waveFrequency={2.4}
+  />
+</div>
+```
+
+## Accessibility
+
+The pointer response is decorative. Set `disableAnimation` for a still frame and `enableMouseInteraction={false}` when pointer motion is not useful. Keep essential content outside the canvas.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="waveSpeed" type="number" default="0.05">Rate of wave movement.</ApiRow>
+  <ApiRow name="waveFrequency" type="number" default="3">Number of wave cycles across the field.</ApiRow>
+  <ApiRow name="waveAmplitude" type="number" default="0.3">Height of the wave deformation.</ApiRow>
+  <ApiRow name="waveColor" type="[number, number, number]" default="[0.5, 0.5, 0.5]">RGB color with values from zero to one.</ApiRow>
+  <ApiRow name="colorNum" type="number" default="4">Number of tonal steps in the dither pass.</ApiRow>
+  <ApiRow name="pixelSize" type="number" default="2">Dither pixel size.</ApiRow>
+  <ApiRow name="disableAnimation" type="boolean" default="false">Freezes the time uniform.</ApiRow>
+  <ApiRow name="enableMouseInteraction" type="boolean" default="true">Lets pointer movement influence the field.</ApiRow>
+  <ApiRow name="mouseRadius" type="number" default="1">Radius of the pointer influence.</ApiRow>
+</ApiTable>

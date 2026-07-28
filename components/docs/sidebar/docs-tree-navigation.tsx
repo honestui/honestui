@@ -87,7 +87,8 @@ export function DocsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
         if (
           page.url === "/docs/charts" ||
           page.url === "/docs/icons" ||
-          page.url === "/docs/animated"
+          page.url === "/docs/animated" ||
+          page.url === "/docs/shaders"
         )
           return false;
         if (page.url.startsWith("/docs/chart-")) return false;
@@ -139,4 +140,19 @@ export function AnimatedTreeNavigation({ tree }: { tree: PageTreeRoot }) {
   );
 
   return <PageGroup label="Components" pages={componentPages} />;
+}
+
+export function ShaderTreeNavigation({ tree }: { tree: PageTreeRoot }) {
+  const pages = useMemo(() => flattenTree(tree.children), [tree.children]);
+  const componentPages = useMemo(
+    () =>
+      pages.filter(
+        (page) =>
+          page.url.startsWith("/docs/shaders/") &&
+          page.url !== "/docs/shaders/installation",
+      ),
+    [pages],
+  );
+
+  return <PageGroup label="Shaders" pages={componentPages} />;
 }

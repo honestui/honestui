@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "honestui/icons": ["./lib/honestui-icons.ts"]
+      "honestui/icons": ["./lib/honestui-icons.ts"],
+      "honestui/shaders": ["./lib/honestui-shaders.ts"]
     }
   },
   "include": [

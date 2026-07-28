@@ -1,0 +1,26 @@
+---
+title: Shaders
+description: WebGL-powered React effects for expressive backgrounds, imagery, and atmospheric product moments.
+image: /og/og-image.png
+---
+
+Shaders bring GPU-rendered depth and motion to the places where a flat surface is not enough. Each effect is available from the dedicated `honestui/shaders` package entry point, with focused React controls for color, movement, distortion, and pointer response.
+
+## Why shaders?
+
+Use shaders to create a strong visual signal without shipping video or a large sequence of images. Honest UI shaders are:
+
+- **Dedicated.** Import every effect from `honestui/shaders` without mixing shaders into the UI component API.
+- **Responsive.** Every effect tracks its container instead of assuming a fixed viewport.
+- **Composable.** Place content above the effect or use it as a self-contained media surface.
+- **Resource-aware.** Effects clean up their WebGL resources and pause work when the implementation supports it.
+
+## Choose the right effect
+
+Use Blinds, Grainient, Light Rays, or Side Rays for atmospheric backgrounds. Dithering creates a deliberately low-resolution animated field. Grid Distortion is designed for interactive imagery.
+
+Treat every shader as progressive enhancement. Keep essential text and actions in normal HTML, maintain readable contrast, and provide a static or motion-reduced presentation when the effect is not available.
+
+## Get started
+
+Follow [Installation](/docs/shaders/installation), then choose an effect from the sidebar. Every component page includes a live preview, CLI command, usage example, and API reference.

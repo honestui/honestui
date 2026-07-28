@@ -1,0 +1,55 @@
+---
+title: Gradient Blinds
+description: Render a pointer-lit gradient through adjustable bands of color and distortion.
+---
+
+<ComponentPreview name="blinds-demo" />
+
+## Overview
+
+Gradient Blinds turns a multi-stop gradient into directional bands with noise, spotlight response, and optional warping. It works best as a decorative background for a focused hero, cover, or feature panel.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { GradientBlinds } from "honestui/shaders"
+
+<div className="h-80 bg-black">
+  <GradientBlinds
+    className="size-full"
+    gradientColors={["#ffb86b", "#f9f4e8", "#4f7cff"]}
+    angle={18}
+    blindCount={12}
+    mixBlendMode="normal"
+  />
+</div>
+```
+
+## Accessibility
+
+Keep the effect decorative and do not rely on the moving spotlight to communicate state. Set `paused` when motion should stop, and verify foreground text against every part of the gradient.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="gradientColors" type="string[]" default='["#FF9FFC", "#5227FF"]'>Hex color stops, up to eight.</ApiRow>
+  <ApiRow name="angle" type="number" default="0">Band direction in degrees.</ApiRow>
+  <ApiRow name="blindCount" type="number" default="16">Requested number of gradient bands.</ApiRow>
+  <ApiRow name="blindMinWidth" type="number" default="60">Minimum band width in pixels.</ApiRow>
+  <ApiRow name="noise" type="number" default="0.3">Amount of surface noise.</ApiRow>
+  <ApiRow name="distortAmount" type="number" default="0">Strength of band warping.</ApiRow>
+  <ApiRow name="mirrorGradient" type="boolean" default="false">Mirrors the gradient across adjacent bands.</ApiRow>
+  <ApiRow name="spotlightRadius" type="number" default="0.5">Radius of the pointer spotlight.</ApiRow>
+  <ApiRow name="spotlightSoftness" type="number" default="1">Falloff softness around the spotlight.</ApiRow>
+  <ApiRow name="spotlightOpacity" type="number" default="1">Spotlight intensity.</ApiRow>
+  <ApiRow name="mouseDampening" type="number" default="0.15">How gradually the spotlight follows the pointer.</ApiRow>
+  <ApiRow name="shineDirection" type='"left" | "right"' default='"left"'>Direction of the band highlight.</ApiRow>
+  <ApiRow name="mixBlendMode" type="string" default='"lighten"'>CSS blend mode applied to the shader container.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Stops time-based rendering updates.</ApiRow>
+  <ApiRow name="dpr" type="number">Overrides the canvas device-pixel ratio.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

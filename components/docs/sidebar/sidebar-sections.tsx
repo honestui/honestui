@@ -7,9 +7,14 @@ import {
   DocumentationOptions,
   IconStartedOptions,
   AnimatedStartedOptions,
+  ShaderStartedOptions,
 } from "@/globals/constants/docs-sidebar";
 import { RenderDefaultOptions } from "./render-default-options";
-import { AnimatedTreeNavigation, DocsTreeNavigation } from "./docs-tree-navigation";
+import {
+  AnimatedTreeNavigation,
+  DocsTreeNavigation,
+  ShaderTreeNavigation,
+} from "./docs-tree-navigation";
 import { areaFromPathname, ProviderSwitcher } from "./provider-switcher";
 import { usePathname } from "next/navigation";
 import { NavMain } from "./nav-main";
@@ -39,6 +44,11 @@ export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
         <>
           <RenderDefaultOptions label="Get Started" options={IconStartedOptions} />
           <IconCategoryNavigation categories={ICON_CATEGORIES} />
+        </>
+      ) : activeArea === "shaders" ? (
+        <>
+          <RenderDefaultOptions label="Get Started" options={ShaderStartedOptions} />
+          <ShaderTreeNavigation tree={tree} />
         </>
       ) : (
         <>

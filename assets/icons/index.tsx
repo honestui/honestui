@@ -105,6 +105,49 @@ export function MotionIcon({
   );
 }
 
+export function ShaderIcon({
+  fill = "currentColor",
+  secondaryfill,
+  width = "1em",
+  height = "1em",
+  ...props
+}: IconProps) {
+  secondaryfill = secondaryfill || fill;
+
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M1.5 5.25c2.1 0 2.1-2.5 4.2-2.5s2.1 2.5 4.2 2.5 2.1-2.5 4.2-2.5c.9 0 1.45.46 2.4 1.25"
+        fill="none"
+        stroke={fill}
+        strokeLinecap="round"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M1.5 9c2.1 0 2.1-2.5 4.2-2.5S7.8 9 9.9 9s2.1-2.5 4.2-2.5c.9 0 1.45.46 2.4 1.25"
+        fill="none"
+        stroke={secondaryfill}
+        strokeLinecap="round"
+        strokeOpacity="0.65"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M1.5 12.75c2.1 0 2.1-2.5 4.2-2.5s2.1 2.5 4.2 2.5 2.1-2.5 4.2-2.5c.9 0 1.45.46 2.4 1.25"
+        fill="none"
+        stroke={fill}
+        strokeLinecap="round"
+        strokeWidth="1.7"
+      />
+    </svg>
+  );
+}
+
 export function ComponentBlocksIcon({
   fill = "currentColor",
   secondaryfill,
