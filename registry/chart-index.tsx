@@ -6,128 +6,145 @@ import { AudienceAreaChart as chartExample1 } from "./default/examples/charts/b-
 import { BenchmarkAreaChart as chartExample2 } from "./default/examples/charts/b-benchmark-echarts-area-chart";
 import { BudgetRadialChart as chartExample3 } from "./default/examples/charts/b-budget-echarts-radial-chart";
 import { CacheTiersRadialChart as chartExample4 } from "./default/examples/charts/b-cache-tiers-echarts-radial-chart";
-import { GridBarChart as chartExample5 } from "./default/examples/charts/b-grid-echarts-bar-chart";
-import { LatencyAreaChart as chartExample6 } from "./default/examples/charts/b-latency-echarts-area-chart";
-import { MarketSharePieChart as chartExample7 } from "./default/examples/charts/b-market-share-echarts-pie-chart";
-import { MonospaceBarChart as chartExample8 } from "./default/examples/charts/b-monospace-echarts-bar-chart";
-import { PayoutsLineChart as chartExample9 } from "./default/examples/charts/b-payouts-echarts-line-chart";
-import { PeakBarChart as chartExample10 } from "./default/examples/charts/b-peak-echarts-bar-chart";
-import { PipelineSankeyChart as chartExample11 } from "./default/examples/charts/b-pipeline-echarts-sankey-chart";
-import { PortfolioAreaChart as chartExample12 } from "./default/examples/charts/b-portfolio-echarts-area-chart";
-import { ProgressRingsPieChart as chartExample13 } from "./default/examples/charts/b-progress-rings-echarts-pie-chart";
-import { ReliabilityScorePieChart as chartExample14 } from "./default/examples/charts/b-reliability-score-echarts-pie-chart";
-import { RevenueMixPieChart as chartExample15 } from "./default/examples/charts/b-revenue-mix-echarts-pie-chart";
-import { RideRadialChart as chartExample16 } from "./default/examples/charts/b-ride-echarts-radial-chart";
-import { ShipmentsLineChart as chartExample17 } from "./default/examples/charts/b-shipments-echarts-line-chart";
-import { ExampleAreaChart as chartExample18 } from "./default/examples/charts/ex-animated-dashed-stroke-echarts-area-chart";
-import { ExampleComposedChart as chartExample19 } from "./default/examples/charts/ex-animated-dashed-stroke-echarts-composed-chart";
-import { ExampleLineChart as chartExample20 } from "./default/examples/charts/ex-animated-dashed-stroke-echarts-line-chart";
-import { ExampleBarChart as chartExample21 } from "./default/examples/charts/ex-blocks-variant-echarts-bar-chart";
-import { ExampleBrushAreaChart as chartExample22 } from "./default/examples/charts/ex-brush-echarts-area-chart";
-import { ExampleAreaChart as chartExample23 } from "./default/examples/charts/ex-buffer-echarts-area-chart";
-import { ExampleBarChart as chartExample24 } from "./default/examples/charts/ex-buffer-echarts-bar-chart";
-import { ExampleLineChart as chartExample25 } from "./default/examples/charts/ex-buffer-echarts-line-chart";
-import { ExampleComposedChart as chartExample26 } from "./default/examples/charts/ex-bump-curve-echarts-composed-chart";
-import { ExampleAreaChart as chartExample27 } from "./default/examples/charts/ex-bump-curve-type-echarts-area-chart";
-import { ExampleLineChart as chartExample28 } from "./default/examples/charts/ex-bump-curve-type-echarts-line-chart";
-import { ExampleBarChart as chartExample29 } from "./default/examples/charts/ex-chart-config-default-echarts-bar-chart";
-import { ExampleBarChart as chartExample30 } from "./default/examples/charts/ex-chart-config-icons-echarts-bar-chart";
-import { ExampleRadarChart as chartExample31 } from "./default/examples/charts/ex-circle-grid-echarts-radar-chart";
-import { ExampleAreaChart as chartExample32 } from "./default/examples/charts/ex-dashed-stroke-echarts-area-chart";
-import { ExampleComposedChart as chartExample33 } from "./default/examples/charts/ex-dashed-stroke-echarts-composed-chart";
-import { ExampleLineChart as chartExample34 } from "./default/examples/charts/ex-dashed-stroke-echarts-line-chart";
-import { ExampleAreaChart as chartExample35 } from "./default/examples/charts/ex-default-type-echarts-area-chart";
-import { ExampleBarChart as chartExample36 } from "./default/examples/charts/ex-default-variant-echarts-bar-chart";
-import { ExamplePieChart as chartExample37 } from "./default/examples/charts/ex-donut-echarts-pie-chart";
-import { DotBorderLineChart as chartExample38 } from "./default/examples/charts/ex-dot-border-echarts-line-chart";
-import { DotColoredBorderLineChart as chartExample39 } from "./default/examples/charts/ex-dot-colored-border-echarts-line-chart";
-import { DotDefaultLineChart as chartExample40 } from "./default/examples/charts/ex-dot-default-echarts-line-chart";
-import { DotPingLineChart as chartExample41 } from "./default/examples/charts/ex-dot-ping-echarts-line-chart";
-import { ExampleComposedChart as chartExample42 } from "./default/examples/charts/ex-dots-echarts-composed-chart";
-import { ExampleAreaChart as chartExample43 } from "./default/examples/charts/ex-dotted-area-variant-echarts-area-chart";
-import { ExampleBarChart as chartExample44 } from "./default/examples/charts/ex-duotone-reverse-variant-echarts-bar-chart";
-import { ExampleBarChart as chartExample45 } from "./default/examples/charts/ex-duotone-variant-echarts-bar-chart";
-import { ExampleComposedChart as chartExample46 } from "./default/examples/charts/ex-duotone-variant-echarts-composed-chart";
-import { ExampleAreaChart as chartExample47 } from "./default/examples/charts/ex-echarts-area-chart";
-import { ExampleBarChart as chartExample48 } from "./default/examples/charts/ex-echarts-bar-chart";
-import { ExampleComposedChart as chartExample49 } from "./default/examples/charts/ex-echarts-composed-chart";
-import { ExampleLineChart as chartExample50 } from "./default/examples/charts/ex-echarts-line-chart";
-import { ExamplePieChart as chartExample51 } from "./default/examples/charts/ex-echarts-pie-chart";
-import { ExampleRadarChart as chartExample52 } from "./default/examples/charts/ex-echarts-radar-chart";
-import { ExampleRadialChart as chartExample53 } from "./default/examples/charts/ex-echarts-radial-chart";
-import { ExampleSankeyChart as chartExample54 } from "./default/examples/charts/ex-echarts-sankey-chart";
-import { ExampleBarChart as chartExample55 } from "./default/examples/charts/ex-expandable-variant-echarts-bar-chart";
-import { ExampleAreaChart as chartExample56 } from "./default/examples/charts/ex-expanded-type-echarts-area-chart";
-import { ExampleBarChart as chartExample57 } from "./default/examples/charts/ex-glowing-desktop-echarts-bar-chart";
-import { ExampleLineChart as chartExample58 } from "./default/examples/charts/ex-glowing-desktop-echarts-line-chart";
-import { ExampleComposedChart as chartExample59 } from "./default/examples/charts/ex-glowing-echarts-composed-chart";
-import { ExampleBarChart as chartExample60 } from "./default/examples/charts/ex-glowing-mobile-echarts-bar-chart";
-import { ExampleLineChart as chartExample61 } from "./default/examples/charts/ex-glowing-mobile-echarts-line-chart";
-import { ExampleAreaChart as chartExample62 } from "./default/examples/charts/ex-gradient-area-variant-echarts-area-chart";
-import { ExampleAreaChart as chartExample63 } from "./default/examples/charts/ex-gradient-colors-bump-echarts-area-chart";
-import { ExampleLineChart as chartExample64 } from "./default/examples/charts/ex-gradient-colors-bump-echarts-line-chart";
-import { ExampleAreaChart as chartExample65 } from "./default/examples/charts/ex-gradient-colors-echarts-area-chart";
-import { ExampleBarChart as chartExample66 } from "./default/examples/charts/ex-gradient-colors-echarts-bar-chart";
-import { ExampleComposedChart as chartExample67 } from "./default/examples/charts/ex-gradient-colors-echarts-composed-chart";
-import { ExampleLineChart as chartExample68 } from "./default/examples/charts/ex-gradient-colors-echarts-line-chart";
-import { ExamplePieChart as chartExample69 } from "./default/examples/charts/ex-gradient-colors-echarts-pie-chart";
-import { ExampleRadarChart as chartExample70 } from "./default/examples/charts/ex-gradient-colors-echarts-radar-chart";
-import { ExampleRadialChart as chartExample71 } from "./default/examples/charts/ex-gradient-colors-echarts-radial-chart";
-import { ExampleSankeyChart as chartExample72 } from "./default/examples/charts/ex-gradient-colors-echarts-sankey-chart";
-import { ExampleAreaChart as chartExample73 } from "./default/examples/charts/ex-gradient-reverse-area-variant-echarts-area-chart";
-import { ExampleBarChart as chartExample74 } from "./default/examples/charts/ex-gradient-variant-echarts-bar-chart";
-import { ExampleComposedChart as chartExample75 } from "./default/examples/charts/ex-gradient-variant-echarts-composed-chart";
-import { ExampleAreaChart as chartExample76 } from "./default/examples/charts/ex-hatched-area-variant-echarts-area-chart";
-import { ExampleBarChart as chartExample77 } from "./default/examples/charts/ex-hatched-variant-echarts-bar-chart";
-import { ExampleComposedChart as chartExample78 } from "./default/examples/charts/ex-hatched-variant-echarts-composed-chart";
-import { ExampleBarChart as chartExample79 } from "./default/examples/charts/ex-horizontal-layout-echarts-bar-chart";
-import { ExampleAreaChart as chartExample80 } from "./default/examples/charts/ex-hover-highlight-echarts-area-chart";
-import { ExampleBarChart as chartExample81 } from "./default/examples/charts/ex-hover-highlight-echarts-bar-chart";
-import { ExampleComposedChart as chartExample82 } from "./default/examples/charts/ex-hover-highlight-echarts-composed-chart";
-import { ExampleAreaChart as chartExample83 } from "./default/examples/charts/ex-hover-reveal-echarts-area-chart";
-import { ExampleLineChart as chartExample84 } from "./default/examples/charts/ex-hover-reveal-echarts-line-chart";
-import { ExampleSankeyChart as chartExample85 } from "./default/examples/charts/ex-labeled-nodes-echarts-sankey-chart";
-import { ExamplePieChart as chartExample86 } from "./default/examples/charts/ex-labels-echarts-pie-chart";
-import { LegendCircleLineChart as chartExample87 } from "./default/examples/charts/ex-legend-circle-echarts-line-chart";
-import { LegendCircleOutlineLineChart as chartExample88 } from "./default/examples/charts/ex-legend-circle-outline-echarts-line-chart";
-import { LegendHorizontalBarLineChart as chartExample89 } from "./default/examples/charts/ex-legend-horizontal-bar-echarts-line-chart";
-import { LegendRoundedSquareLineChart as chartExample90 } from "./default/examples/charts/ex-legend-rounded-square-echarts-line-chart";
-import { LegendRoundedSquareOutlineLineChart as chartExample91 } from "./default/examples/charts/ex-legend-rounded-square-outline-echarts-line-chart";
-import { LegendSquareLineChart as chartExample92 } from "./default/examples/charts/ex-legend-square-echarts-line-chart";
-import { LegendVerticalBarLineChart as chartExample93 } from "./default/examples/charts/ex-legend-vertical-bar-echarts-line-chart";
-import { ExampleAreaChart as chartExample94 } from "./default/examples/charts/ex-lines-area-variant-echarts-area-chart";
-import { ExampleRadarChart as chartExample95 } from "./default/examples/charts/ex-lines-variant-echarts-radar-chart";
-import { ExampleAreaChart as chartExample96 } from "./default/examples/charts/ex-loading-state-echarts-area-chart";
-import { ExampleBarChart as chartExample97 } from "./default/examples/charts/ex-loading-state-echarts-bar-chart";
-import { ExampleComposedChart as chartExample98 } from "./default/examples/charts/ex-loading-state-echarts-composed-chart";
-import { ExampleLineChart as chartExample99 } from "./default/examples/charts/ex-loading-state-echarts-line-chart";
-import { ExamplePieChart as chartExample100 } from "./default/examples/charts/ex-loading-state-echarts-pie-chart";
-import { ExampleRadarChart as chartExample101 } from "./default/examples/charts/ex-loading-state-echarts-radar-chart";
-import { ExampleRadialChart as chartExample102 } from "./default/examples/charts/ex-loading-state-echarts-radial-chart";
-import { ExampleSankeyChart as chartExample103 } from "./default/examples/charts/ex-loading-state-echarts-sankey-chart";
-import { ExampleBarChart as chartExample104 } from "./default/examples/charts/ex-max-highlight-echarts-bar-chart";
-import { ExampleAreaChart as chartExample105 } from "./default/examples/charts/ex-monotoney-curve-type-echarts-area-chart";
-import { ExampleLineChart as chartExample106 } from "./default/examples/charts/ex-monotoney-curve-type-echarts-line-chart";
-import { ExamplePieChart as chartExample107 } from "./default/examples/charts/ex-outside-labels-echarts-pie-chart";
-import { ExampleSankeyChart as chartExample108 } from "./default/examples/charts/ex-outside-labels-echarts-sankey-chart";
-import { ExamplePieChart as chartExample109 } from "./default/examples/charts/ex-overlapping-padded-echarts-pie-chart";
-import { ExamplePieChart as chartExample110 } from "./default/examples/charts/ex-padded-echarts-pie-chart";
-import { ExampleBarChart as chartExample111 } from "./default/examples/charts/ex-percent-type-echarts-bar-chart";
-import { ExampleRadialChart as chartExample112 } from "./default/examples/charts/ex-semi-variant-echarts-radial-chart";
-import { ExampleAreaChart as chartExample113 } from "./default/examples/charts/ex-solid-area-variant-echarts-area-chart";
-import { ExampleSankeyChart as chartExample114 } from "./default/examples/charts/ex-solid-labeled-nodes-echarts-sankey-chart";
-import { ExampleSankeyChart as chartExample115 } from "./default/examples/charts/ex-solid-link-variant-echarts-sankey-chart";
-import { ExampleAreaChart as chartExample116 } from "./default/examples/charts/ex-solid-stroke-echarts-area-chart";
-import { ExampleLineChart as chartExample117 } from "./default/examples/charts/ex-solid-stroke-echarts-line-chart";
-import { ExampleSankeyChart as chartExample118 } from "./default/examples/charts/ex-source-link-variant-echarts-sankey-chart";
-import { ExampleAreaChart as chartExample119 } from "./default/examples/charts/ex-stacked-type-echarts-area-chart";
-import { ExampleBarChart as chartExample120 } from "./default/examples/charts/ex-stacked-type-echarts-bar-chart";
-import { ExampleAreaChart as chartExample121 } from "./default/examples/charts/ex-step-curve-type-echarts-area-chart";
-import { ExampleLineChart as chartExample122 } from "./default/examples/charts/ex-step-curve-type-echarts-line-chart";
-import { ExampleBarChart as chartExample123 } from "./default/examples/charts/ex-stripped-variant-echarts-bar-chart";
-import { ExampleComposedChart as chartExample124 } from "./default/examples/charts/ex-stripped-variant-echarts-composed-chart";
-import { ExampleBarChart as chartExample125 } from "./default/examples/charts/ex-tooltip-default-echarts-bar-chart";
-import { ExampleBarChart as chartExample126 } from "./default/examples/charts/ex-tooltip-frosted-glass-echarts-bar-chart";
+import { CycleBoxPlot as chartExample5 } from "./default/examples/charts/b-cycle-echarts-box-plot";
+import { ExperimentBoxPlot as chartExample6 } from "./default/examples/charts/b-experiment-echarts-box-plot";
+import { GridBarChart as chartExample7 } from "./default/examples/charts/b-grid-echarts-bar-chart";
+import { LatencyAreaChart as chartExample8 } from "./default/examples/charts/b-latency-echarts-area-chart";
+import { LatencyBoxPlot as chartExample9 } from "./default/examples/charts/b-latency-echarts-box-plot";
+import { MarketMapScatterChart as chartExample10 } from "./default/examples/charts/b-market-map-echarts-scatter-chart";
+import { MarketSharePieChart as chartExample11 } from "./default/examples/charts/b-market-share-echarts-pie-chart";
+import { MonospaceBarChart as chartExample12 } from "./default/examples/charts/b-monospace-echarts-bar-chart";
+import { PayoutsLineChart as chartExample13 } from "./default/examples/charts/b-payouts-echarts-line-chart";
+import { PeakBarChart as chartExample14 } from "./default/examples/charts/b-peak-echarts-bar-chart";
+import { PipelineSankeyChart as chartExample15 } from "./default/examples/charts/b-pipeline-echarts-sankey-chart";
+import { PortfolioAreaChart as chartExample16 } from "./default/examples/charts/b-portfolio-echarts-area-chart";
+import { PriorityScatterChart as chartExample17 } from "./default/examples/charts/b-priority-echarts-scatter-chart";
+import { ProgressRingsPieChart as chartExample18 } from "./default/examples/charts/b-progress-rings-echarts-pie-chart";
+import { ReliabilityScorePieChart as chartExample19 } from "./default/examples/charts/b-reliability-score-echarts-pie-chart";
+import { RetentionScatterChart as chartExample20 } from "./default/examples/charts/b-retention-echarts-scatter-chart";
+import { RevenueMixPieChart as chartExample21 } from "./default/examples/charts/b-revenue-mix-echarts-pie-chart";
+import { RideRadialChart as chartExample22 } from "./default/examples/charts/b-ride-echarts-radial-chart";
+import { ShipmentsLineChart as chartExample23 } from "./default/examples/charts/b-shipments-echarts-line-chart";
+import { ExampleAreaChart as chartExample24 } from "./default/examples/charts/ex-animated-dashed-stroke-echarts-area-chart";
+import { ExampleComposedChart as chartExample25 } from "./default/examples/charts/ex-animated-dashed-stroke-echarts-composed-chart";
+import { ExampleLineChart as chartExample26 } from "./default/examples/charts/ex-animated-dashed-stroke-echarts-line-chart";
+import { ExampleBarChart as chartExample27 } from "./default/examples/charts/ex-blocks-variant-echarts-bar-chart";
+import { BlocksBoxPlot as chartExample28 } from "./default/examples/charts/ex-blocks-variant-echarts-box-plot";
+import { BlocksHeatmap as chartExample29 } from "./default/examples/charts/ex-blocks-variant-echarts-heatmap";
+import { ExampleBrushAreaChart as chartExample30 } from "./default/examples/charts/ex-brush-echarts-area-chart";
+import { BubbleScatterChart as chartExample31 } from "./default/examples/charts/ex-bubble-echarts-scatter-chart";
+import { ExampleAreaChart as chartExample32 } from "./default/examples/charts/ex-buffer-echarts-area-chart";
+import { ExampleBarChart as chartExample33 } from "./default/examples/charts/ex-buffer-echarts-bar-chart";
+import { ExampleLineChart as chartExample34 } from "./default/examples/charts/ex-buffer-echarts-line-chart";
+import { ExampleComposedChart as chartExample35 } from "./default/examples/charts/ex-bump-curve-echarts-composed-chart";
+import { ExampleAreaChart as chartExample36 } from "./default/examples/charts/ex-bump-curve-type-echarts-area-chart";
+import { ExampleLineChart as chartExample37 } from "./default/examples/charts/ex-bump-curve-type-echarts-line-chart";
+import { ExampleBarChart as chartExample38 } from "./default/examples/charts/ex-chart-config-default-echarts-bar-chart";
+import { ExampleBarChart as chartExample39 } from "./default/examples/charts/ex-chart-config-icons-echarts-bar-chart";
+import { ExampleRadarChart as chartExample40 } from "./default/examples/charts/ex-circle-grid-echarts-radar-chart";
+import { ExampleAreaChart as chartExample41 } from "./default/examples/charts/ex-dashed-stroke-echarts-area-chart";
+import { ExampleComposedChart as chartExample42 } from "./default/examples/charts/ex-dashed-stroke-echarts-composed-chart";
+import { ExampleLineChart as chartExample43 } from "./default/examples/charts/ex-dashed-stroke-echarts-line-chart";
+import { ExampleAreaChart as chartExample44 } from "./default/examples/charts/ex-default-type-echarts-area-chart";
+import { ExampleBarChart as chartExample45 } from "./default/examples/charts/ex-default-variant-echarts-bar-chart";
+import { DenseFieldHeatmap as chartExample46 } from "./default/examples/charts/ex-dense-field-echarts-heatmap";
+import { ExamplePieChart as chartExample47 } from "./default/examples/charts/ex-donut-echarts-pie-chart";
+import { DotBorderLineChart as chartExample48 } from "./default/examples/charts/ex-dot-border-echarts-line-chart";
+import { DotColoredBorderLineChart as chartExample49 } from "./default/examples/charts/ex-dot-colored-border-echarts-line-chart";
+import { DotDefaultLineChart as chartExample50 } from "./default/examples/charts/ex-dot-default-echarts-line-chart";
+import { DotPingLineChart as chartExample51 } from "./default/examples/charts/ex-dot-ping-echarts-line-chart";
+import { ExampleComposedChart as chartExample52 } from "./default/examples/charts/ex-dots-echarts-composed-chart";
+import { ExampleAreaChart as chartExample53 } from "./default/examples/charts/ex-dotted-area-variant-echarts-area-chart";
+import { ExampleBarChart as chartExample54 } from "./default/examples/charts/ex-duotone-reverse-variant-echarts-bar-chart";
+import { ExampleBarChart as chartExample55 } from "./default/examples/charts/ex-duotone-variant-echarts-bar-chart";
+import { ExampleComposedChart as chartExample56 } from "./default/examples/charts/ex-duotone-variant-echarts-composed-chart";
+import { ExampleAreaChart as chartExample57 } from "./default/examples/charts/ex-echarts-area-chart";
+import { ExampleBarChart as chartExample58 } from "./default/examples/charts/ex-echarts-bar-chart";
+import { ExampleBoxPlot as chartExample59 } from "./default/examples/charts/ex-echarts-box-plot";
+import { ExampleComposedChart as chartExample60 } from "./default/examples/charts/ex-echarts-composed-chart";
+import { ExampleHeatmap as chartExample61 } from "./default/examples/charts/ex-echarts-heatmap";
+import { ExampleLineChart as chartExample62 } from "./default/examples/charts/ex-echarts-line-chart";
+import { ExamplePieChart as chartExample63 } from "./default/examples/charts/ex-echarts-pie-chart";
+import { ExampleRadarChart as chartExample64 } from "./default/examples/charts/ex-echarts-radar-chart";
+import { ExampleRadialChart as chartExample65 } from "./default/examples/charts/ex-echarts-radial-chart";
+import { ExampleSankeyChart as chartExample66 } from "./default/examples/charts/ex-echarts-sankey-chart";
+import { ExampleScatterChart as chartExample67 } from "./default/examples/charts/ex-echarts-scatter-chart";
+import { ExampleBarChart as chartExample68 } from "./default/examples/charts/ex-expandable-variant-echarts-bar-chart";
+import { ExampleAreaChart as chartExample69 } from "./default/examples/charts/ex-expanded-type-echarts-area-chart";
+import { ExampleBarChart as chartExample70 } from "./default/examples/charts/ex-glowing-desktop-echarts-bar-chart";
+import { ExampleLineChart as chartExample71 } from "./default/examples/charts/ex-glowing-desktop-echarts-line-chart";
+import { ExampleComposedChart as chartExample72 } from "./default/examples/charts/ex-glowing-echarts-composed-chart";
+import { ExampleBarChart as chartExample73 } from "./default/examples/charts/ex-glowing-mobile-echarts-bar-chart";
+import { ExampleLineChart as chartExample74 } from "./default/examples/charts/ex-glowing-mobile-echarts-line-chart";
+import { ExampleAreaChart as chartExample75 } from "./default/examples/charts/ex-gradient-area-variant-echarts-area-chart";
+import { ExampleAreaChart as chartExample76 } from "./default/examples/charts/ex-gradient-colors-bump-echarts-area-chart";
+import { ExampleLineChart as chartExample77 } from "./default/examples/charts/ex-gradient-colors-bump-echarts-line-chart";
+import { ExampleAreaChart as chartExample78 } from "./default/examples/charts/ex-gradient-colors-echarts-area-chart";
+import { ExampleBarChart as chartExample79 } from "./default/examples/charts/ex-gradient-colors-echarts-bar-chart";
+import { ExampleComposedChart as chartExample80 } from "./default/examples/charts/ex-gradient-colors-echarts-composed-chart";
+import { ExampleLineChart as chartExample81 } from "./default/examples/charts/ex-gradient-colors-echarts-line-chart";
+import { ExamplePieChart as chartExample82 } from "./default/examples/charts/ex-gradient-colors-echarts-pie-chart";
+import { ExampleRadarChart as chartExample83 } from "./default/examples/charts/ex-gradient-colors-echarts-radar-chart";
+import { ExampleRadialChart as chartExample84 } from "./default/examples/charts/ex-gradient-colors-echarts-radial-chart";
+import { ExampleSankeyChart as chartExample85 } from "./default/examples/charts/ex-gradient-colors-echarts-sankey-chart";
+import { ExampleAreaChart as chartExample86 } from "./default/examples/charts/ex-gradient-reverse-area-variant-echarts-area-chart";
+import { ExampleBarChart as chartExample87 } from "./default/examples/charts/ex-gradient-variant-echarts-bar-chart";
+import { ExampleComposedChart as chartExample88 } from "./default/examples/charts/ex-gradient-variant-echarts-composed-chart";
+import { ExampleAreaChart as chartExample89 } from "./default/examples/charts/ex-hatched-area-variant-echarts-area-chart";
+import { ExampleBarChart as chartExample90 } from "./default/examples/charts/ex-hatched-variant-echarts-bar-chart";
+import { ExampleComposedChart as chartExample91 } from "./default/examples/charts/ex-hatched-variant-echarts-composed-chart";
+import { ExampleBarChart as chartExample92 } from "./default/examples/charts/ex-horizontal-layout-echarts-bar-chart";
+import { ExampleAreaChart as chartExample93 } from "./default/examples/charts/ex-hover-highlight-echarts-area-chart";
+import { ExampleBarChart as chartExample94 } from "./default/examples/charts/ex-hover-highlight-echarts-bar-chart";
+import { ExampleComposedChart as chartExample95 } from "./default/examples/charts/ex-hover-highlight-echarts-composed-chart";
+import { ExampleAreaChart as chartExample96 } from "./default/examples/charts/ex-hover-reveal-echarts-area-chart";
+import { ExampleLineChart as chartExample97 } from "./default/examples/charts/ex-hover-reveal-echarts-line-chart";
+import { ExampleSankeyChart as chartExample98 } from "./default/examples/charts/ex-labeled-nodes-echarts-sankey-chart";
+import { ExamplePieChart as chartExample99 } from "./default/examples/charts/ex-labels-echarts-pie-chart";
+import { LegendCircleLineChart as chartExample100 } from "./default/examples/charts/ex-legend-circle-echarts-line-chart";
+import { LegendCircleOutlineLineChart as chartExample101 } from "./default/examples/charts/ex-legend-circle-outline-echarts-line-chart";
+import { LegendHorizontalBarLineChart as chartExample102 } from "./default/examples/charts/ex-legend-horizontal-bar-echarts-line-chart";
+import { LegendRoundedSquareLineChart as chartExample103 } from "./default/examples/charts/ex-legend-rounded-square-echarts-line-chart";
+import { LegendRoundedSquareOutlineLineChart as chartExample104 } from "./default/examples/charts/ex-legend-rounded-square-outline-echarts-line-chart";
+import { LegendSquareLineChart as chartExample105 } from "./default/examples/charts/ex-legend-square-echarts-line-chart";
+import { LegendVerticalBarLineChart as chartExample106 } from "./default/examples/charts/ex-legend-vertical-bar-echarts-line-chart";
+import { ExampleAreaChart as chartExample107 } from "./default/examples/charts/ex-lines-area-variant-echarts-area-chart";
+import { ExampleRadarChart as chartExample108 } from "./default/examples/charts/ex-lines-variant-echarts-radar-chart";
+import { ExampleAreaChart as chartExample109 } from "./default/examples/charts/ex-loading-state-echarts-area-chart";
+import { ExampleBarChart as chartExample110 } from "./default/examples/charts/ex-loading-state-echarts-bar-chart";
+import { LoadingBoxPlot as chartExample111 } from "./default/examples/charts/ex-loading-state-echarts-box-plot";
+import { ExampleComposedChart as chartExample112 } from "./default/examples/charts/ex-loading-state-echarts-composed-chart";
+import { LoadingHeatmap as chartExample113 } from "./default/examples/charts/ex-loading-state-echarts-heatmap";
+import { ExampleLineChart as chartExample114 } from "./default/examples/charts/ex-loading-state-echarts-line-chart";
+import { ExamplePieChart as chartExample115 } from "./default/examples/charts/ex-loading-state-echarts-pie-chart";
+import { ExampleRadarChart as chartExample116 } from "./default/examples/charts/ex-loading-state-echarts-radar-chart";
+import { ExampleRadialChart as chartExample117 } from "./default/examples/charts/ex-loading-state-echarts-radial-chart";
+import { ExampleSankeyChart as chartExample118 } from "./default/examples/charts/ex-loading-state-echarts-sankey-chart";
+import { LoadingScatterChart as chartExample119 } from "./default/examples/charts/ex-loading-state-echarts-scatter-chart";
+import { ExampleBarChart as chartExample120 } from "./default/examples/charts/ex-max-highlight-echarts-bar-chart";
+import { ExampleAreaChart as chartExample121 } from "./default/examples/charts/ex-monotoney-curve-type-echarts-area-chart";
+import { ExampleLineChart as chartExample122 } from "./default/examples/charts/ex-monotoney-curve-type-echarts-line-chart";
+import { ExamplePieChart as chartExample123 } from "./default/examples/charts/ex-outside-labels-echarts-pie-chart";
+import { ExampleSankeyChart as chartExample124 } from "./default/examples/charts/ex-outside-labels-echarts-sankey-chart";
+import { ExamplePieChart as chartExample125 } from "./default/examples/charts/ex-overlapping-padded-echarts-pie-chart";
+import { ExamplePieChart as chartExample126 } from "./default/examples/charts/ex-padded-echarts-pie-chart";
+import { ExampleBarChart as chartExample127 } from "./default/examples/charts/ex-percent-type-echarts-bar-chart";
+import { QuadrantScatterChart as chartExample128 } from "./default/examples/charts/ex-quadrant-echarts-scatter-chart";
+import { ExampleRadialChart as chartExample129 } from "./default/examples/charts/ex-semi-variant-echarts-radial-chart";
+import { ExampleAreaChart as chartExample130 } from "./default/examples/charts/ex-solid-area-variant-echarts-area-chart";
+import { ExampleSankeyChart as chartExample131 } from "./default/examples/charts/ex-solid-labeled-nodes-echarts-sankey-chart";
+import { ExampleSankeyChart as chartExample132 } from "./default/examples/charts/ex-solid-link-variant-echarts-sankey-chart";
+import { ExampleAreaChart as chartExample133 } from "./default/examples/charts/ex-solid-stroke-echarts-area-chart";
+import { ExampleLineChart as chartExample134 } from "./default/examples/charts/ex-solid-stroke-echarts-line-chart";
+import { ExampleSankeyChart as chartExample135 } from "./default/examples/charts/ex-source-link-variant-echarts-sankey-chart";
+import { ExampleAreaChart as chartExample136 } from "./default/examples/charts/ex-stacked-type-echarts-area-chart";
+import { ExampleBarChart as chartExample137 } from "./default/examples/charts/ex-stacked-type-echarts-bar-chart";
+import { ExampleAreaChart as chartExample138 } from "./default/examples/charts/ex-step-curve-type-echarts-area-chart";
+import { ExampleLineChart as chartExample139 } from "./default/examples/charts/ex-step-curve-type-echarts-line-chart";
+import { ExampleBarChart as chartExample140 } from "./default/examples/charts/ex-stripped-variant-echarts-bar-chart";
+import { ExampleComposedChart as chartExample141 } from "./default/examples/charts/ex-stripped-variant-echarts-composed-chart";
+import { ExampleBarChart as chartExample142 } from "./default/examples/charts/ex-tooltip-default-echarts-bar-chart";
+import { ExampleBarChart as chartExample143 } from "./default/examples/charts/ex-tooltip-frosted-glass-echarts-bar-chart";
 
 export const ChartIndex: Record<string, { component: ComponentType }> = {
   "b-allocation-echarts-sankey-chart": { component: chartExample0 },
@@ -135,126 +152,143 @@ export const ChartIndex: Record<string, { component: ComponentType }> = {
   "b-benchmark-echarts-area-chart": { component: chartExample2 },
   "b-budget-echarts-radial-chart": { component: chartExample3 },
   "b-cache-tiers-echarts-radial-chart": { component: chartExample4 },
-  "b-grid-echarts-bar-chart": { component: chartExample5 },
-  "b-latency-echarts-area-chart": { component: chartExample6 },
-  "b-market-share-echarts-pie-chart": { component: chartExample7 },
-  "b-monospace-echarts-bar-chart": { component: chartExample8 },
-  "b-payouts-echarts-line-chart": { component: chartExample9 },
-  "b-peak-echarts-bar-chart": { component: chartExample10 },
-  "b-pipeline-echarts-sankey-chart": { component: chartExample11 },
-  "b-portfolio-echarts-area-chart": { component: chartExample12 },
-  "b-progress-rings-echarts-pie-chart": { component: chartExample13 },
-  "b-reliability-score-echarts-pie-chart": { component: chartExample14 },
-  "b-revenue-mix-echarts-pie-chart": { component: chartExample15 },
-  "b-ride-echarts-radial-chart": { component: chartExample16 },
-  "b-shipments-echarts-line-chart": { component: chartExample17 },
-  "ex-animated-dashed-stroke-echarts-area-chart": { component: chartExample18 },
-  "ex-animated-dashed-stroke-echarts-composed-chart": { component: chartExample19 },
-  "ex-animated-dashed-stroke-echarts-line-chart": { component: chartExample20 },
-  "ex-blocks-variant-echarts-bar-chart": { component: chartExample21 },
-  "ex-brush-echarts-area-chart": { component: chartExample22 },
-  "ex-buffer-echarts-area-chart": { component: chartExample23 },
-  "ex-buffer-echarts-bar-chart": { component: chartExample24 },
-  "ex-buffer-echarts-line-chart": { component: chartExample25 },
-  "ex-bump-curve-echarts-composed-chart": { component: chartExample26 },
-  "ex-bump-curve-type-echarts-area-chart": { component: chartExample27 },
-  "ex-bump-curve-type-echarts-line-chart": { component: chartExample28 },
-  "ex-chart-config-default-echarts-bar-chart": { component: chartExample29 },
-  "ex-chart-config-icons-echarts-bar-chart": { component: chartExample30 },
-  "ex-circle-grid-echarts-radar-chart": { component: chartExample31 },
-  "ex-dashed-stroke-echarts-area-chart": { component: chartExample32 },
-  "ex-dashed-stroke-echarts-composed-chart": { component: chartExample33 },
-  "ex-dashed-stroke-echarts-line-chart": { component: chartExample34 },
-  "ex-default-type-echarts-area-chart": { component: chartExample35 },
-  "ex-default-variant-echarts-bar-chart": { component: chartExample36 },
-  "ex-donut-echarts-pie-chart": { component: chartExample37 },
-  "ex-dot-border-echarts-line-chart": { component: chartExample38 },
-  "ex-dot-colored-border-echarts-line-chart": { component: chartExample39 },
-  "ex-dot-default-echarts-line-chart": { component: chartExample40 },
-  "ex-dot-ping-echarts-line-chart": { component: chartExample41 },
-  "ex-dots-echarts-composed-chart": { component: chartExample42 },
-  "ex-dotted-area-variant-echarts-area-chart": { component: chartExample43 },
-  "ex-duotone-reverse-variant-echarts-bar-chart": { component: chartExample44 },
-  "ex-duotone-variant-echarts-bar-chart": { component: chartExample45 },
-  "ex-duotone-variant-echarts-composed-chart": { component: chartExample46 },
-  "ex-echarts-area-chart": { component: chartExample47 },
-  "ex-echarts-bar-chart": { component: chartExample48 },
-  "ex-echarts-composed-chart": { component: chartExample49 },
-  "ex-echarts-line-chart": { component: chartExample50 },
-  "ex-echarts-pie-chart": { component: chartExample51 },
-  "ex-echarts-radar-chart": { component: chartExample52 },
-  "ex-echarts-radial-chart": { component: chartExample53 },
-  "ex-echarts-sankey-chart": { component: chartExample54 },
-  "ex-expandable-variant-echarts-bar-chart": { component: chartExample55 },
-  "ex-expanded-type-echarts-area-chart": { component: chartExample56 },
-  "ex-glowing-desktop-echarts-bar-chart": { component: chartExample57 },
-  "ex-glowing-desktop-echarts-line-chart": { component: chartExample58 },
-  "ex-glowing-echarts-composed-chart": { component: chartExample59 },
-  "ex-glowing-mobile-echarts-bar-chart": { component: chartExample60 },
-  "ex-glowing-mobile-echarts-line-chart": { component: chartExample61 },
-  "ex-gradient-area-variant-echarts-area-chart": { component: chartExample62 },
-  "ex-gradient-colors-bump-echarts-area-chart": { component: chartExample63 },
-  "ex-gradient-colors-bump-echarts-line-chart": { component: chartExample64 },
-  "ex-gradient-colors-echarts-area-chart": { component: chartExample65 },
-  "ex-gradient-colors-echarts-bar-chart": { component: chartExample66 },
-  "ex-gradient-colors-echarts-composed-chart": { component: chartExample67 },
-  "ex-gradient-colors-echarts-line-chart": { component: chartExample68 },
-  "ex-gradient-colors-echarts-pie-chart": { component: chartExample69 },
-  "ex-gradient-colors-echarts-radar-chart": { component: chartExample70 },
-  "ex-gradient-colors-echarts-radial-chart": { component: chartExample71 },
-  "ex-gradient-colors-echarts-sankey-chart": { component: chartExample72 },
-  "ex-gradient-reverse-area-variant-echarts-area-chart": { component: chartExample73 },
-  "ex-gradient-variant-echarts-bar-chart": { component: chartExample74 },
-  "ex-gradient-variant-echarts-composed-chart": { component: chartExample75 },
-  "ex-hatched-area-variant-echarts-area-chart": { component: chartExample76 },
-  "ex-hatched-variant-echarts-bar-chart": { component: chartExample77 },
-  "ex-hatched-variant-echarts-composed-chart": { component: chartExample78 },
-  "ex-horizontal-layout-echarts-bar-chart": { component: chartExample79 },
-  "ex-hover-highlight-echarts-area-chart": { component: chartExample80 },
-  "ex-hover-highlight-echarts-bar-chart": { component: chartExample81 },
-  "ex-hover-highlight-echarts-composed-chart": { component: chartExample82 },
-  "ex-hover-reveal-echarts-area-chart": { component: chartExample83 },
-  "ex-hover-reveal-echarts-line-chart": { component: chartExample84 },
-  "ex-labeled-nodes-echarts-sankey-chart": { component: chartExample85 },
-  "ex-labels-echarts-pie-chart": { component: chartExample86 },
-  "ex-legend-circle-echarts-line-chart": { component: chartExample87 },
-  "ex-legend-circle-outline-echarts-line-chart": { component: chartExample88 },
-  "ex-legend-horizontal-bar-echarts-line-chart": { component: chartExample89 },
-  "ex-legend-rounded-square-echarts-line-chart": { component: chartExample90 },
-  "ex-legend-rounded-square-outline-echarts-line-chart": { component: chartExample91 },
-  "ex-legend-square-echarts-line-chart": { component: chartExample92 },
-  "ex-legend-vertical-bar-echarts-line-chart": { component: chartExample93 },
-  "ex-lines-area-variant-echarts-area-chart": { component: chartExample94 },
-  "ex-lines-variant-echarts-radar-chart": { component: chartExample95 },
-  "ex-loading-state-echarts-area-chart": { component: chartExample96 },
-  "ex-loading-state-echarts-bar-chart": { component: chartExample97 },
-  "ex-loading-state-echarts-composed-chart": { component: chartExample98 },
-  "ex-loading-state-echarts-line-chart": { component: chartExample99 },
-  "ex-loading-state-echarts-pie-chart": { component: chartExample100 },
-  "ex-loading-state-echarts-radar-chart": { component: chartExample101 },
-  "ex-loading-state-echarts-radial-chart": { component: chartExample102 },
-  "ex-loading-state-echarts-sankey-chart": { component: chartExample103 },
-  "ex-max-highlight-echarts-bar-chart": { component: chartExample104 },
-  "ex-monotoney-curve-type-echarts-area-chart": { component: chartExample105 },
-  "ex-monotoney-curve-type-echarts-line-chart": { component: chartExample106 },
-  "ex-outside-labels-echarts-pie-chart": { component: chartExample107 },
-  "ex-outside-labels-echarts-sankey-chart": { component: chartExample108 },
-  "ex-overlapping-padded-echarts-pie-chart": { component: chartExample109 },
-  "ex-padded-echarts-pie-chart": { component: chartExample110 },
-  "ex-percent-type-echarts-bar-chart": { component: chartExample111 },
-  "ex-semi-variant-echarts-radial-chart": { component: chartExample112 },
-  "ex-solid-area-variant-echarts-area-chart": { component: chartExample113 },
-  "ex-solid-labeled-nodes-echarts-sankey-chart": { component: chartExample114 },
-  "ex-solid-link-variant-echarts-sankey-chart": { component: chartExample115 },
-  "ex-solid-stroke-echarts-area-chart": { component: chartExample116 },
-  "ex-solid-stroke-echarts-line-chart": { component: chartExample117 },
-  "ex-source-link-variant-echarts-sankey-chart": { component: chartExample118 },
-  "ex-stacked-type-echarts-area-chart": { component: chartExample119 },
-  "ex-stacked-type-echarts-bar-chart": { component: chartExample120 },
-  "ex-step-curve-type-echarts-area-chart": { component: chartExample121 },
-  "ex-step-curve-type-echarts-line-chart": { component: chartExample122 },
-  "ex-stripped-variant-echarts-bar-chart": { component: chartExample123 },
-  "ex-stripped-variant-echarts-composed-chart": { component: chartExample124 },
-  "ex-tooltip-default-echarts-bar-chart": { component: chartExample125 },
-  "ex-tooltip-frosted-glass-echarts-bar-chart": { component: chartExample126 },
+  "b-cycle-echarts-box-plot": { component: chartExample5 },
+  "b-experiment-echarts-box-plot": { component: chartExample6 },
+  "b-grid-echarts-bar-chart": { component: chartExample7 },
+  "b-latency-echarts-area-chart": { component: chartExample8 },
+  "b-latency-echarts-box-plot": { component: chartExample9 },
+  "b-market-map-echarts-scatter-chart": { component: chartExample10 },
+  "b-market-share-echarts-pie-chart": { component: chartExample11 },
+  "b-monospace-echarts-bar-chart": { component: chartExample12 },
+  "b-payouts-echarts-line-chart": { component: chartExample13 },
+  "b-peak-echarts-bar-chart": { component: chartExample14 },
+  "b-pipeline-echarts-sankey-chart": { component: chartExample15 },
+  "b-portfolio-echarts-area-chart": { component: chartExample16 },
+  "b-priority-echarts-scatter-chart": { component: chartExample17 },
+  "b-progress-rings-echarts-pie-chart": { component: chartExample18 },
+  "b-reliability-score-echarts-pie-chart": { component: chartExample19 },
+  "b-retention-echarts-scatter-chart": { component: chartExample20 },
+  "b-revenue-mix-echarts-pie-chart": { component: chartExample21 },
+  "b-ride-echarts-radial-chart": { component: chartExample22 },
+  "b-shipments-echarts-line-chart": { component: chartExample23 },
+  "ex-animated-dashed-stroke-echarts-area-chart": { component: chartExample24 },
+  "ex-animated-dashed-stroke-echarts-composed-chart": { component: chartExample25 },
+  "ex-animated-dashed-stroke-echarts-line-chart": { component: chartExample26 },
+  "ex-blocks-variant-echarts-bar-chart": { component: chartExample27 },
+  "ex-blocks-variant-echarts-box-plot": { component: chartExample28 },
+  "ex-blocks-variant-echarts-heatmap": { component: chartExample29 },
+  "ex-brush-echarts-area-chart": { component: chartExample30 },
+  "ex-bubble-echarts-scatter-chart": { component: chartExample31 },
+  "ex-buffer-echarts-area-chart": { component: chartExample32 },
+  "ex-buffer-echarts-bar-chart": { component: chartExample33 },
+  "ex-buffer-echarts-line-chart": { component: chartExample34 },
+  "ex-bump-curve-echarts-composed-chart": { component: chartExample35 },
+  "ex-bump-curve-type-echarts-area-chart": { component: chartExample36 },
+  "ex-bump-curve-type-echarts-line-chart": { component: chartExample37 },
+  "ex-chart-config-default-echarts-bar-chart": { component: chartExample38 },
+  "ex-chart-config-icons-echarts-bar-chart": { component: chartExample39 },
+  "ex-circle-grid-echarts-radar-chart": { component: chartExample40 },
+  "ex-dashed-stroke-echarts-area-chart": { component: chartExample41 },
+  "ex-dashed-stroke-echarts-composed-chart": { component: chartExample42 },
+  "ex-dashed-stroke-echarts-line-chart": { component: chartExample43 },
+  "ex-default-type-echarts-area-chart": { component: chartExample44 },
+  "ex-default-variant-echarts-bar-chart": { component: chartExample45 },
+  "ex-dense-field-echarts-heatmap": { component: chartExample46 },
+  "ex-donut-echarts-pie-chart": { component: chartExample47 },
+  "ex-dot-border-echarts-line-chart": { component: chartExample48 },
+  "ex-dot-colored-border-echarts-line-chart": { component: chartExample49 },
+  "ex-dot-default-echarts-line-chart": { component: chartExample50 },
+  "ex-dot-ping-echarts-line-chart": { component: chartExample51 },
+  "ex-dots-echarts-composed-chart": { component: chartExample52 },
+  "ex-dotted-area-variant-echarts-area-chart": { component: chartExample53 },
+  "ex-duotone-reverse-variant-echarts-bar-chart": { component: chartExample54 },
+  "ex-duotone-variant-echarts-bar-chart": { component: chartExample55 },
+  "ex-duotone-variant-echarts-composed-chart": { component: chartExample56 },
+  "ex-echarts-area-chart": { component: chartExample57 },
+  "ex-echarts-bar-chart": { component: chartExample58 },
+  "ex-echarts-box-plot": { component: chartExample59 },
+  "ex-echarts-composed-chart": { component: chartExample60 },
+  "ex-echarts-heatmap": { component: chartExample61 },
+  "ex-echarts-line-chart": { component: chartExample62 },
+  "ex-echarts-pie-chart": { component: chartExample63 },
+  "ex-echarts-radar-chart": { component: chartExample64 },
+  "ex-echarts-radial-chart": { component: chartExample65 },
+  "ex-echarts-sankey-chart": { component: chartExample66 },
+  "ex-echarts-scatter-chart": { component: chartExample67 },
+  "ex-expandable-variant-echarts-bar-chart": { component: chartExample68 },
+  "ex-expanded-type-echarts-area-chart": { component: chartExample69 },
+  "ex-glowing-desktop-echarts-bar-chart": { component: chartExample70 },
+  "ex-glowing-desktop-echarts-line-chart": { component: chartExample71 },
+  "ex-glowing-echarts-composed-chart": { component: chartExample72 },
+  "ex-glowing-mobile-echarts-bar-chart": { component: chartExample73 },
+  "ex-glowing-mobile-echarts-line-chart": { component: chartExample74 },
+  "ex-gradient-area-variant-echarts-area-chart": { component: chartExample75 },
+  "ex-gradient-colors-bump-echarts-area-chart": { component: chartExample76 },
+  "ex-gradient-colors-bump-echarts-line-chart": { component: chartExample77 },
+  "ex-gradient-colors-echarts-area-chart": { component: chartExample78 },
+  "ex-gradient-colors-echarts-bar-chart": { component: chartExample79 },
+  "ex-gradient-colors-echarts-composed-chart": { component: chartExample80 },
+  "ex-gradient-colors-echarts-line-chart": { component: chartExample81 },
+  "ex-gradient-colors-echarts-pie-chart": { component: chartExample82 },
+  "ex-gradient-colors-echarts-radar-chart": { component: chartExample83 },
+  "ex-gradient-colors-echarts-radial-chart": { component: chartExample84 },
+  "ex-gradient-colors-echarts-sankey-chart": { component: chartExample85 },
+  "ex-gradient-reverse-area-variant-echarts-area-chart": { component: chartExample86 },
+  "ex-gradient-variant-echarts-bar-chart": { component: chartExample87 },
+  "ex-gradient-variant-echarts-composed-chart": { component: chartExample88 },
+  "ex-hatched-area-variant-echarts-area-chart": { component: chartExample89 },
+  "ex-hatched-variant-echarts-bar-chart": { component: chartExample90 },
+  "ex-hatched-variant-echarts-composed-chart": { component: chartExample91 },
+  "ex-horizontal-layout-echarts-bar-chart": { component: chartExample92 },
+  "ex-hover-highlight-echarts-area-chart": { component: chartExample93 },
+  "ex-hover-highlight-echarts-bar-chart": { component: chartExample94 },
+  "ex-hover-highlight-echarts-composed-chart": { component: chartExample95 },
+  "ex-hover-reveal-echarts-area-chart": { component: chartExample96 },
+  "ex-hover-reveal-echarts-line-chart": { component: chartExample97 },
+  "ex-labeled-nodes-echarts-sankey-chart": { component: chartExample98 },
+  "ex-labels-echarts-pie-chart": { component: chartExample99 },
+  "ex-legend-circle-echarts-line-chart": { component: chartExample100 },
+  "ex-legend-circle-outline-echarts-line-chart": { component: chartExample101 },
+  "ex-legend-horizontal-bar-echarts-line-chart": { component: chartExample102 },
+  "ex-legend-rounded-square-echarts-line-chart": { component: chartExample103 },
+  "ex-legend-rounded-square-outline-echarts-line-chart": { component: chartExample104 },
+  "ex-legend-square-echarts-line-chart": { component: chartExample105 },
+  "ex-legend-vertical-bar-echarts-line-chart": { component: chartExample106 },
+  "ex-lines-area-variant-echarts-area-chart": { component: chartExample107 },
+  "ex-lines-variant-echarts-radar-chart": { component: chartExample108 },
+  "ex-loading-state-echarts-area-chart": { component: chartExample109 },
+  "ex-loading-state-echarts-bar-chart": { component: chartExample110 },
+  "ex-loading-state-echarts-box-plot": { component: chartExample111 },
+  "ex-loading-state-echarts-composed-chart": { component: chartExample112 },
+  "ex-loading-state-echarts-heatmap": { component: chartExample113 },
+  "ex-loading-state-echarts-line-chart": { component: chartExample114 },
+  "ex-loading-state-echarts-pie-chart": { component: chartExample115 },
+  "ex-loading-state-echarts-radar-chart": { component: chartExample116 },
+  "ex-loading-state-echarts-radial-chart": { component: chartExample117 },
+  "ex-loading-state-echarts-sankey-chart": { component: chartExample118 },
+  "ex-loading-state-echarts-scatter-chart": { component: chartExample119 },
+  "ex-max-highlight-echarts-bar-chart": { component: chartExample120 },
+  "ex-monotoney-curve-type-echarts-area-chart": { component: chartExample121 },
+  "ex-monotoney-curve-type-echarts-line-chart": { component: chartExample122 },
+  "ex-outside-labels-echarts-pie-chart": { component: chartExample123 },
+  "ex-outside-labels-echarts-sankey-chart": { component: chartExample124 },
+  "ex-overlapping-padded-echarts-pie-chart": { component: chartExample125 },
+  "ex-padded-echarts-pie-chart": { component: chartExample126 },
+  "ex-percent-type-echarts-bar-chart": { component: chartExample127 },
+  "ex-quadrant-echarts-scatter-chart": { component: chartExample128 },
+  "ex-semi-variant-echarts-radial-chart": { component: chartExample129 },
+  "ex-solid-area-variant-echarts-area-chart": { component: chartExample130 },
+  "ex-solid-labeled-nodes-echarts-sankey-chart": { component: chartExample131 },
+  "ex-solid-link-variant-echarts-sankey-chart": { component: chartExample132 },
+  "ex-solid-stroke-echarts-area-chart": { component: chartExample133 },
+  "ex-solid-stroke-echarts-line-chart": { component: chartExample134 },
+  "ex-source-link-variant-echarts-sankey-chart": { component: chartExample135 },
+  "ex-stacked-type-echarts-area-chart": { component: chartExample136 },
+  "ex-stacked-type-echarts-bar-chart": { component: chartExample137 },
+  "ex-step-curve-type-echarts-area-chart": { component: chartExample138 },
+  "ex-step-curve-type-echarts-line-chart": { component: chartExample139 },
+  "ex-stripped-variant-echarts-bar-chart": { component: chartExample140 },
+  "ex-stripped-variant-echarts-composed-chart": { component: chartExample141 },
+  "ex-tooltip-default-echarts-bar-chart": { component: chartExample142 },
+  "ex-tooltip-frosted-glass-echarts-bar-chart": { component: chartExample143 },
 };

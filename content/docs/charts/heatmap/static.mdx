@@ -1,0 +1,225 @@
+---
+title: Heatmap
+description: A composable heatmap for finding patterns across two categorical dimensions.
+image: /og/heatmap.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/heatmap.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-heatmap
+---
+
+<ComponentPreview title="Basic Heatmap" name="ex-echarts-heatmap" />
+
+## Overview
+
+Use a heatmap to reveal clusters, quiet periods, and outliers across two categorical dimensions. The default variant uses a continuous color scale; choose the blocks variant when discrete intensity bands are easier to scan.
+
+## Anatomy
+
+`Heatmap` owns the flat cell data, category axes, value range, loading state, and color scale. Add `XAxis` and `YAxis` for context, `Cells` for the rendered matrix, and optional `Grid`, `Legend`, and `Tooltip` parts.
+
+## Accessibility
+
+Color is not enough when exact values matter. Provide a clear `ariaLabel`, keep the tooltip enabled, and pair the canvas with a data table or text summary in reporting workflows. Use a multi-stop palette with sufficient contrast between adjacent levels when using the blocks variant.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+The data is a flat array with one row per cell. `xDataKey` and `yDataKey` define the categories, while `valueDataKey` selects the numeric intensity and matching chart config entry.
+
+```tsx
+import { Heatmap, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<Heatmap
+  data={data}
+  config={chartConfig}
+  xDataKey="day"
+  yDataKey="hour"
+  valueDataKey="requests"
+>
+  <Heatmap.Grid />
+  <Heatmap.XAxis />
+  <Heatmap.YAxis />
+  <Heatmap.Legend minLabel="Quiet" maxLabel="Busy" />
+  <Heatmap.Tooltip />
+  <Heatmap.Cells variant="default" />
+</Heatmap>
+```
+
+ECharts renders to a `<canvas>`, so the compound children are declarative configuration rather than live DOM nodes. Colors come from the same theme-aware `ChartConfig` used by every Honest UI chart.
+
+### Blocks Variant
+
+<ComponentPreview title="variant='blocks'" name="ex-blocks-variant-echarts-heatmap" />
+
+The blocks variant divides the value range into discrete buckets and gives each cell more separation. Use `levels` to control how many intensity steps are shown.
+
+### Dense Field
+
+<ComponentPreview title="Dense continuous field" name="ex-dense-field-echarts-heatmap" />
+
+Dense matrices can read like a continuous field by removing cell gaps, using a multi-stop diverging palette, disabling intro animation, and enabling progressive rendering. The vertical calculable legend keeps the full value range visible without competing with the x-axis. This example leaves out per-cell hover interaction so the canvas remains responsive while rendering thousands of cells.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-heatmap" />
+
+Pass `isLoading` to reserve the chart layout with a neutral cell matrix and the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>Heatmap</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    A flat array of cell objects (`TData extends Record<string, unknown>`).
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Defines the label and theme colors for `valueDataKey`.
+  </ApiRow>
+  <ApiRow name="xDataKey" type="keyof TData & string" required>
+    The categorical data key shown on the horizontal axis.
+  </ApiRow>
+  <ApiRow name="yDataKey" type="keyof TData & string" required>
+    The categorical data key shown on the vertical axis.
+  </ApiRow>
+  <ApiRow name="valueDataKey" type="keyof TData & string" required>
+    The numeric cell value. The same key should exist in `config`.
+  </ApiRow>
+  <ApiRow name="children" type="ReactNode">
+    The composed `Grid`, `XAxis`, `YAxis`, `Legend`, `Tooltip`, and `Cells` parts.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Additional CSS classes for the chart container. Give the chart an explicit height.
+  </ApiRow>
+  <ApiRow name="min" type="number">
+    Lower bound of the color scale. Defaults to the smallest value in `data`.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    Upper bound of the color scale. Defaults to the largest value in `data`.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Enables the intro animation. Reduced-motion preferences disable it automatically.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Replaces the data with a neutral loading matrix and progress label.
+  </ApiRow>
+  <ApiRow name="loadingColumns" type="number" default="7">
+    Number of placeholder columns in the loading matrix.
+  </ApiRow>
+  <ApiRow name="loadingRows" type="number" default="5">
+    Number of placeholder rows in the loading matrix.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas chart. A descriptive label is generated when omitted.
+  </ApiRow>
+  <ApiRow name="onCellClick" type="(cell: HeatmapCell&lt;TData&gt;) => void">
+    Fires when a cell with `isClickable` enabled is selected.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option object.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Cells</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "blocks"' default='"default"'>
+    Uses a continuous value ramp or discrete intensity buckets.
+  </ApiRow>
+  <ApiRow name="radius" type="number" default="2">
+    Cell corner radius in pixels. Blocks default to `1`.
+  </ApiRow>
+  <ApiRow name="gap" type="number" default="2">
+    Space between cells in pixels. Blocks default to `4`.
+  </ApiRow>
+  <ApiRow name="levels" type="number" default="5">
+    Number of discrete buckets used by the blocks variant.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Enables the pointer cursor and `onCellClick` callback.
+  </ApiRow>
+  <ApiRow name="showValues" type="boolean" default="false">
+    Displays each numeric value inside its cell.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats labels rendered inside cells.
+  </ApiRow>
+  <ApiRow name="progressive" type="number">
+    Number of cells rendered per progressive chunk. Useful for dense matrices.
+  </ApiRow>
+  <ApiRow name="progressiveThreshold" type="number">
+    Cell count above which progressive rendering begins.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>XAxis / YAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(value: string, index: number) => string">
+    Formats category labels without changing the underlying values.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Axis title.
+  </ApiRow>
+  <ApiRow name="hide" type="boolean" default="false">
+    Hides the axis labels while preserving the categories.
+  </ApiRow>
+  <ApiRow name="inverse" type="boolean" default="true">
+    `YAxis` only. Places the first category at the top of the matrix.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface treatment.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the active cell.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the value shown in the tooltip.
+  </ApiRow>
+  <ApiRow name="defaultIndex" type="number">
+    Opens the tooltip on a specific cell after mount.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>
+    Horizontal alignment of the value scale.
+  </ApiRow>
+  <ApiRow name="orient" type='"horizontal" | "vertical"' default='"horizontal"'>
+    Lays the value scale below the chart or beside the matrix.
+  </ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "middle" | "bottom"' default='"middle"'>
+    Vertical placement of a vertical legend.
+  </ApiRow>
+  <ApiRow name="calculable" type="boolean" default="false">
+    Adds draggable range handles to a continuous legend.
+  </ApiRow>
+  <ApiRow name="realtime" type="boolean" default="false">
+    Updates the matrix while a calculable handle moves. Keep this disabled for dense fields to apply the range after dragging.
+  </ApiRow>
+  <ApiRow name="minLabel" type="string">
+    Custom low-end label for the continuous legend.
+  </ApiRow>
+  <ApiRow name="maxLabel" type="string">
+    Custom high-end label for the continuous legend.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats numeric legend labels.
+  </ApiRow>
+</ApiTable>

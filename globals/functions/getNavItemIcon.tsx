@@ -1,12 +1,15 @@
 import {
   BarChartIcon,
+  BoxPlotIcon,
   ChartStackedAreaIcon,
   ChartStackedLineIcon,
   ComposedChartIcon,
+  HeatmapIcon,
   PieChartIcon,
   RadialChartIcon,
   RadarChartIcon,
   SankeyChartIcon,
+  ScatterChartIcon,
 } from "@/assets/icons";
 import {
   ActivitySparkIcon,
@@ -163,6 +166,12 @@ export function getNavItemIcon(tag?: string) {
       return <RadarChartIcon />;
     case "sankey-chart":
       return <SankeyChartIcon />;
+    case "heatmap":
+      return <HeatmapIcon />;
+    case "box-plot":
+      return <BoxPlotIcon />;
+    case "scatter-chart":
+      return <ScatterChartIcon />;
   }
 
   const componentIcon = COMPONENT_ICONS[item as keyof typeof COMPONENT_ICONS];

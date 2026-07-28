@@ -1,0 +1,149 @@
+---
+title: Scatter Chart
+description: A composable scatter chart for relationships, clusters, bubbles, and quadrant analysis.
+image: /og/scatter-chart.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/scatter-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-scatter
+---
+
+<ComponentPreview title="Standard Scatter" name="ex-echarts-scatter-chart" />
+
+## Overview
+
+Use a scatter chart to inspect relationships between two numeric measures, reveal clusters, and spot outliers. Add bubble sizing when a third measure matters, or divide the plot into labeled quadrants for prioritization and portfolio analysis.
+
+## Anatomy
+
+`ScatterChart` owns the rows, numeric x/y fields, optional grouping, loading state, and selection. Add one `Scatter` per series, then compose optional `Grid`, `XAxis`, `YAxis`, `Legend`, `Tooltip`, and `Quadrants` parts.
+
+## Accessibility
+
+Provide a meaningful `ariaLabel`, keep tooltips enabled for exact values, and pair the canvas with a table or written summary when point-level data is essential. Bubble area and quadrant color should supplement labels and values rather than carry meaning alone.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { ScatterChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<ScatterChart
+  data={data}
+  config={chartConfig}
+  xDataKey="seats"
+  yDataKey="adoption"
+  groupDataKey="segment"
+  pointNameDataKey="account"
+>
+  <ScatterChart.Grid />
+  <ScatterChart.XAxis label="Licensed seats" />
+  <ScatterChart.YAxis label="Adoption" />
+  <ScatterChart.Legend />
+  <ScatterChart.Tooltip />
+  <ScatterChart.Scatter dataKey="enterprise" />
+  <ScatterChart.Scatter dataKey="startup" />
+</ScatterChart>
+```
+
+When `groupDataKey` is supplied, each `Scatter` renders rows whose group value matches its `dataKey`. Without grouping, a single series renders every row.
+
+### Bubble Chart
+
+<ComponentPreview title="Bubble Chart" name="ex-bubble-echarts-scatter-chart" />
+
+Set `variant="bubble"` and provide `sizeDataKey` to encode a third numeric measure by area. `minSize` and `maxSize` keep small values visible and large values from overwhelming the plot.
+
+### Quadrant Chart
+
+<ComponentPreview title="Quadrant Chart" name="ex-quadrant-echarts-scatter-chart" />
+
+Add `Quadrants` with numeric split points and optional labels. Honest UI renders quiet analytical regions behind the points while retaining exact x/y positioning.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-scatter-chart" />
+
+The loading state preserves the plot dimensions with neutral placeholder points and the shared chart loading treatment.
+
+## API Reference
+
+<ApiHeading>ScatterChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>Rows containing numeric x/y values and optional group, name, and size fields.</ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>Defines labels and theme colors for series and tooltip measures.</ApiRow>
+  <ApiRow name="xDataKey" type="keyof TData & string" required>Numeric field plotted horizontally.</ApiRow>
+  <ApiRow name="yDataKey" type="keyof TData & string" required>Numeric field plotted vertically.</ApiRow>
+  <ApiRow name="groupDataKey" type="keyof TData & string">Field used to divide rows between composed series.</ApiRow>
+  <ApiRow name="pointNameDataKey" type="keyof TData & string">Field used as the tooltip heading for each point.</ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">Enables intro animation unless reduced motion is preferred.</ApiRow>
+  <ApiRow name="defaultSelectedDataKey" type="string | null" default="null">Series selected on first render.</ApiRow>
+  <ApiRow name="onSelectionChange" type="(key: string | null) => void">Fires when a clickable point or legend item changes selection.</ApiRow>
+  <ApiRow name="onPointClick" type="(point: ScatterPoint&lt;TData&gt;) => void">Returns the source row and encoded point values.</ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">Shows neutral placeholder points and a loading label.</ApiRow>
+  <ApiRow name="loadingPoints" type="number" default="14">Number of loading placeholders.</ApiRow>
+  <ApiRow name="ariaLabel" type="string">Accessible name for the canvas chart.</ApiRow>
+  <ApiRow name="chartOptions" type="Record&lt;string, unknown&gt;">Escape hatch merged over generated ECharts options.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Scatter</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string" required>Series identifier and matching `ChartConfig` key.</ApiRow>
+  <ApiRow name="variant" type='"standard" | "bubble"' default='"standard"'>Uses a fixed point size or size encoding.</ApiRow>
+  <ApiRow name="sizeDataKey" type="string">Numeric field used by the bubble variant.</ApiRow>
+  <ApiRow name="symbol" type="ScatterSymbol" default='"circle"'>Point shape.</ApiRow>
+  <ApiRow name="symbolSize" type="number" default="10">Fixed size for standard points.</ApiRow>
+  <ApiRow name="minSize" type="number" default="8">Smallest bubble diameter.</ApiRow>
+  <ApiRow name="maxSize" type="number" default="44">Largest bubble diameter.</ApiRow>
+  <ApiRow name="fillOpacity" type="number" default="0.78">Point fill opacity.</ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">Enables selection and point click callbacks.</ApiRow>
+  <ApiRow name="large" type="boolean" default="false">Enables ECharts large-data rendering.</ApiRow>
+  <ApiRow name="largeThreshold" type="number" default="2000">Point count that activates large rendering.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Quadrants</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="xSplit" type="number" required>Vertical dividing value.</ApiRow>
+  <ApiRow name="ySplit" type="number" required>Horizontal dividing value.</ApiRow>
+  <ApiRow name="labels" type="QuadrantLabels">Labels for the four analytical regions.</ApiRow>
+  <ApiRow name="showLabels" type="boolean" default="true">Shows quadrant labels.</ApiRow>
+</ApiTable>
+
+<ApiHeading>XAxis / YAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(value: number, index: number) => string">Formats numeric ticks.</ApiRow>
+  <ApiRow name="label" type="string">Axis title.</ApiRow>
+  <ApiRow name="hideDots" type="boolean" default="false">Hides small tick marks.</ApiRow>
+  <ApiRow name="min" type="number">Explicit lower bound.</ApiRow>
+  <ApiRow name="max" type="number">Explicit upper bound.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>Tooltip surface treatment.</ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>Tooltip corner radius.</ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>Pins or follows the active point.</ApiRow>
+  <ApiRow name="xValueFormatter" type="(value: number) => string">Formats the horizontal value.</ApiRow>
+  <ApiRow name="yValueFormatter" type="(value: number) => string">Formats the vertical value.</ApiRow>
+  <ApiRow name="sizeValueFormatter" type="(value: number) => string">Formats the bubble-size value.</ApiRow>
+  <ApiRow name="defaultIndex" type="number">Opens a tooltip after mount.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"circle"'>Shared Honest UI legend indicator style.</ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>Horizontal alignment.</ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "middle" | "bottom"' default='"bottom"'>Placement around the plot.</ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">Lets legend items isolate a series.</ApiRow>
+</ApiTable>

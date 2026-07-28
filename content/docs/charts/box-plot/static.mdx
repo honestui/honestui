@@ -1,0 +1,184 @@
+---
+title: Box Plot
+description: A composable box-and-whisker chart for comparing distributions, medians, and spread.
+image: /og/box-plot.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/box-plot.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-boxplot
+---
+
+<ComponentPreview title="Basic Box Plot" name="ex-echarts-box-plot" />
+
+## Overview
+
+Use a box plot to compare the shape of several distributions without drawing every observation. Each box shows the first quartile, median, and third quartile; the whiskers show the minimum and maximum values supplied in the five-number summary.
+
+The default variant uses a quiet translucent fill. Choose the blocks variant when stronger quartile bands make the distribution easier to scan.
+
+## Anatomy
+
+`BoxPlot` owns the rows, category key, loading state, and selection. Add one `Box` per five-number-summary field, then compose optional `Grid`, `XAxis`, `YAxis`, `Legend`, and `Tooltip` parts.
+
+## Accessibility
+
+Canvas charts need a meaningful text alternative. Provide an `ariaLabel` that explains the measure and categories, keep the tooltip enabled for exact values, and pair the chart with a table or written summary when the distribution is essential to the task. Do not rely on fill color alone to distinguish series.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+Each box value is an ordered tuple of `[minimum, firstQuartile, median, thirdQuartile, maximum]`.
+
+```tsx
+import { BoxPlot, type BoxPlotValue, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const data: { region: string; latency: BoxPlotValue }[] = [
+  { region: "North America", latency: [42, 58, 71, 86, 119] },
+  { region: "Europe", latency: [38, 52, 66, 79, 108] },
+];
+
+<BoxPlot data={data} config={chartConfig} xDataKey="region">
+  <BoxPlot.Grid />
+  <BoxPlot.XAxis />
+  <BoxPlot.YAxis />
+  <BoxPlot.Legend />
+  <BoxPlot.Tooltip />
+  <BoxPlot.Box dataKey="latency" variant="default" />
+</BoxPlot>
+```
+
+ECharts renders to a `<canvas>`, so the compound children are declarative configuration rather than live DOM nodes. Colors come from the same theme-aware `ChartConfig` used by the other Honest UI charts.
+
+### Blocks Variant
+
+<ComponentPreview title="variant='blocks'" name="ex-blocks-variant-echarts-box-plot" />
+
+The blocks variant draws hard color bands inside each box. Give the series multiple colors in `ChartConfig` to control the bands, or provide one color and the chart will derive four opacity levels automatically.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-box-plot" />
+
+Pass `isLoading` to preserve the chart dimensions with neutral placeholder boxes and the shared loading treatment.
+
+## API Reference
+
+<ApiHeading>BoxPlot</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    Rows containing a category and one or more five-number-summary tuples.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Defines theme-aware labels and colors for each `Box` data key.
+  </ApiRow>
+  <ApiRow name="xDataKey" type="keyof TData & string" required>
+    The categorical field shown on the horizontal axis.
+  </ApiRow>
+  <ApiRow name="children" type="ReactNode">
+    The composed `Grid`, `XAxis`, `YAxis`, `Legend`, `Tooltip`, and `Box` parts.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Additional classes for the chart container. Give the chart an explicit height.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Enables the intro animation. Reduced-motion preferences disable it automatically.
+  </ApiRow>
+  <ApiRow name="defaultSelectedDataKey" type="string | null" default="null">
+    Series selected on first render.
+  </ApiRow>
+  <ApiRow name="onSelectionChange" type="(key: string | null) => void">
+    Fires when a clickable box or legend item changes the selected series.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Replaces the data with neutral placeholder boxes and a progress label.
+  </ApiRow>
+  <ApiRow name="loadingBoxes" type="number" default="6">
+    Number of placeholder categories in the loading state.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas chart. A descriptive label is generated when omitted.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option object.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Box</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string" required>
+    Field containing `[minimum, Q1, median, Q3, maximum]`. The same key should exist in `config`.
+  </ApiRow>
+  <ApiRow name="variant" type='"default" | "blocks"' default='"default"'>
+    Uses a translucent continuous fill or discrete color bands.
+  </ApiRow>
+  <ApiRow name="boxWidth" type="number | string | [number | string, number | string]">
+    Fixed width or ECharts minimum/maximum width range for each box.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Enables selection from the rendered series.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>XAxis / YAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(value, index) => string">
+    Formats category or numeric tick labels.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Axis title.
+  </ApiRow>
+  <ApiRow name="hideDots" type="boolean" default="false">
+    Hides the small axis tick marks.
+  </ApiRow>
+  <ApiRow name="min" type="number">
+    `YAxis` only. Sets the lower numeric bound.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    `YAxis` only. Sets the upper numeric bound.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface treatment.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the active box.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats all five values shown in the tooltip.
+  </ApiRow>
+  <ApiRow name="defaultIndex" type="number">
+    Opens the tooltip on a category after mount.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>
+    Indicator shape shared with the other chart legends.
+  </ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>
+    Horizontal legend alignment.
+  </ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "middle" | "bottom"' default='"bottom"'>
+    Places the legend above, beside, or below the plot area.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Lets legend items select and isolate a series.
+  </ApiRow>
+</ApiTable>

@@ -252,6 +252,115 @@ export function BarChartIcon({
   );
 }
 
+export function HeatmapIcon({
+  fill = "currentColor",
+  secondaryfill,
+  width = "1em",
+  height = "1em",
+  ...props
+}: IconProps) {
+  const secondary = secondaryfill || fill;
+
+  const cells = [
+    [1, 1, 0.2],
+    [6.5, 1, 0.45],
+    [12, 1, 0.8],
+    [1, 6.5, 0.55],
+    [6.5, 6.5, 1],
+    [12, 6.5, 0.35],
+    [1, 12, 0.3],
+    [6.5, 12, 0.7],
+    [12, 12, 0.5],
+  ] as const;
+
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      {cells.map(([x, y, opacity], index) => (
+        <rect
+          key={index}
+          x={x}
+          y={y}
+          width="5"
+          height="5"
+          rx="1.25"
+          fill={index === 4 ? fill : secondary}
+          fillOpacity={opacity}
+        />
+      ))}
+    </svg>
+  );
+}
+
+export function BoxPlotIcon({
+  fill = "currentColor",
+  secondaryfill,
+  width = "1em",
+  height = "1em",
+  ...props
+}: IconProps) {
+  const secondary = secondaryfill || fill;
+
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g fill="none" stroke={fill} strokeLinecap="round" strokeWidth="1.35">
+        <path d="M4.25 2.25v2.1m0 5.3v6.1M2.8 2.25h2.9m-2.9 13.5h2.9" />
+        <rect x="1.7" y="4.35" width="5.1" height="5.3" rx="1" fill={secondary} fillOpacity="0.35" />
+        <path d="M1.8 7h4.9" />
+        <path d="M13.75 2.25v4.1m0 5.3v4.1m-1.45-13.5h2.9m-2.9 13.5h2.9" />
+        <rect x="11.2" y="6.35" width="5.1" height="5.3" rx="1" fill={secondary} fillOpacity="0.65" />
+        <path d="M11.3 9h4.9" />
+      </g>
+    </svg>
+  );
+}
+
+export function ScatterChartIcon({
+  fill = "currentColor",
+  secondaryfill,
+  width = "1em",
+  height = "1em",
+  ...props
+}: IconProps) {
+  const secondary = secondaryfill || fill;
+
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M2 2.5v13h13.5"
+        fill="none"
+        stroke={secondary}
+        strokeOpacity="0.45"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.4"
+      />
+      <circle cx="5" cy="11.75" r="1.45" fill={secondary} fillOpacity="0.55" />
+      <circle cx="8.1" cy="9.1" r="1.9" fill={fill} fillOpacity="0.78" />
+      <circle cx="11.25" cy="10.35" r="1.2" fill={secondary} fillOpacity="0.5" />
+      <circle cx="13.55" cy="5.35" r="2.25" fill={fill} />
+      <circle cx="5.6" cy="5.9" r="1.1" fill={secondary} fillOpacity="0.4" />
+    </svg>
+  );
+}
+
 export function ComposedChartIcon({
   fill = "currentColor",
   secondaryfill,
