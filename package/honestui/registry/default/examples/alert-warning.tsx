@@ -8,7 +8,7 @@ import {
 
 export default function AlertWarning() {
   return (
-    <Alert variant="warning">
+    <Alert variant="warning" className="max-w-lg">
       <TriangleAlertIcon />
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>

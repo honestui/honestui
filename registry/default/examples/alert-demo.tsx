@@ -6,7 +6,7 @@ import {
 
 export default function AlertDemo() {
   return (
-    <Alert>
+    <Alert className="max-w-lg">
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>
         <p>Describe what can be done about it here.</p>

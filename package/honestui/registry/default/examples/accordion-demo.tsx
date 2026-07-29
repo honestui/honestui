@@ -27,7 +27,7 @@ const items = [
 
 export default function AccordionDemo() {
   return (
-    <Accordion className="w-full" defaultValue={["3"]}>
+    <Accordion className="w-full max-w-lg" defaultValue={["3"]}>
       {items.map((item) => (
         <AccordionItem value={item.id} key={item.id}>
           <AccordionTrigger>{item.title}</AccordionTrigger>

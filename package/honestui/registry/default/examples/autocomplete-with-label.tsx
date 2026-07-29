@@ -28,25 +28,27 @@ const items = [
 export default function AutocompleteWithLabel() {
   const id = useId()
   return (
-    <Autocomplete items={items}>
-      <div className="flex flex-col items-start gap-2">
-        <Label htmlFor={id}>Fruits</Label>
-        <AutocompleteInput
-          id={id}
-          placeholder="Search items…"
-          aria-label="Search items"
-        />
-      </div>
-      <AutocompletePopup>
-        <AutocompleteEmpty>No items found.</AutocompleteEmpty>
-        <AutocompleteList>
-          {(item) => (
-            <AutocompleteItem key={item.value} value={item}>
-              {item.label}
-            </AutocompleteItem>
-          )}
-        </AutocompleteList>
-      </AutocompletePopup>
-    </Autocomplete>
+    <div className="w-full max-w-64">
+      <Autocomplete items={items}>
+        <div className="flex flex-col items-start gap-2">
+          <Label htmlFor={id}>Fruits</Label>
+          <AutocompleteInput
+            id={id}
+            placeholder="Search items…"
+            aria-label="Search items"
+          />
+        </div>
+        <AutocompletePopup>
+          <AutocompleteEmpty>No items found.</AutocompleteEmpty>
+          <AutocompleteList>
+            {(item) => (
+              <AutocompleteItem key={item.value} value={item}>
+                {item.label}
+              </AutocompleteItem>
+            )}
+          </AutocompleteList>
+        </AutocompletePopup>
+      </Autocomplete>
+    </div>
   )
 }

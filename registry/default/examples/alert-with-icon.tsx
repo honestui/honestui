@@ -8,7 +8,7 @@ import {
 
 export default function AlertWithIcon() {
   return (
-    <Alert>
+    <Alert className="max-w-lg">
       <InfoIcon />
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>

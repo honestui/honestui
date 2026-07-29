@@ -32,7 +32,7 @@ const items = [
 
 export default function FieldComboboxMultiple() {
   return (
-    <Field>
+    <Field className="w-full max-w-64">
       <FieldLabel>Fruits</FieldLabel>
       <Combobox items={items} multiple defaultValue={[items[0], items[4]]}>
         <ComboboxChips>

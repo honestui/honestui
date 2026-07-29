@@ -8,7 +8,7 @@ import {
 
 export default function NumberFieldDisabled() {
   return (
-    <NumberField defaultValue={42} disabled>
+    <NumberField className="w-full max-w-64" defaultValue={42} disabled>
       <NumberFieldGroup>
         <NumberFieldDecrement />
         <NumberFieldInput />

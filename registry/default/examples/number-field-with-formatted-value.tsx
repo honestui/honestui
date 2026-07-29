@@ -8,7 +8,7 @@ import {
 
 export default function NumberFieldWithFormattedValue() {
   return (
-    <NumberField
+    <NumberField className="w-full max-w-64"
       defaultValue={0}
       format={{ style: "currency", currency: "USD" }}
     >

@@ -80,33 +80,35 @@ const groupedTags: TagGroup[] = groupTags(tagsData)
 
 export default function ComboboxGrouped() {
   return (
-    <Combobox items={groupedTags}>
-      <div className="flex flex-col items-start gap-2">
-        <ComboboxInput
-          placeholder="e.g. feature"
-          aria-label="Search tags"
-        />
-      </div>
-      <ComboboxPopup>
-        <ComboboxEmpty>No tags found.</ComboboxEmpty>
-        <ComboboxList>
-          {(group: TagGroup) => (
-            <React.Fragment key={group.value}>
-              <ComboboxGroup items={group.items}>
-                <ComboboxGroupLabel>{group.value}</ComboboxGroupLabel>
-                <ComboboxCollection>
-                  {(tag: Tag) => (
-                    <ComboboxItem key={tag.id} value={tag}>
-                      {tag.label}
-                    </ComboboxItem>
-                  )}
-                </ComboboxCollection>
-              </ComboboxGroup>
-              {group.value !== "Team" && <ComboboxSeparator />}
-            </React.Fragment>
-          )}
-        </ComboboxList>
-      </ComboboxPopup>
-    </Combobox>
+    <div className="w-full max-w-64">
+      <Combobox items={groupedTags}>
+        <div className="flex flex-col items-start gap-2">
+          <ComboboxInput
+            placeholder="e.g. feature"
+            aria-label="Search tags"
+          />
+        </div>
+        <ComboboxPopup>
+          <ComboboxEmpty>No tags found.</ComboboxEmpty>
+          <ComboboxList>
+            {(group: TagGroup) => (
+              <React.Fragment key={group.value}>
+                <ComboboxGroup items={group.items}>
+                  <ComboboxGroupLabel>{group.value}</ComboboxGroupLabel>
+                  <ComboboxCollection>
+                    {(tag: Tag) => (
+                      <ComboboxItem key={tag.id} value={tag}>
+                        {tag.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxCollection>
+                </ComboboxGroup>
+                {group.value !== "Team" && <ComboboxSeparator />}
+              </React.Fragment>
+            )}
+          </ComboboxList>
+        </ComboboxPopup>
+      </Combobox>
+    </div>
   )
 }

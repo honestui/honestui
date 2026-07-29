@@ -10,7 +10,7 @@ import {
 
 export default function FieldNumberFieldDemo() {
   return (
-    <Field>
+    <Field className="w-full max-w-64">
       <NumberField defaultValue={1} min={1} max={100}>
         <NumberFieldScrubArea label="Quantity" />
         <NumberFieldGroup>

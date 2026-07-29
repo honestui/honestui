@@ -102,33 +102,35 @@ export default function AutocompleteAsync() {
   const shouldRenderPopup = searchValue !== ""
 
   return (
-    <Autocomplete
-      items={searchResults}
-      value={searchValue}
-      onValueChange={setSearchValue}
-      itemToStringValue={(item: unknown) => (item as Movie).title}
-      filter={null}
-    >
-      <AutocompleteInput placeholder="e.g. Pulp Fiction or 1994" />
-      {shouldRenderPopup && (
-        <AutocompletePopup aria-busy={isLoading || undefined}>
-          <AutocompleteStatus className="text-muted-foreground">
-            {status}
-          </AutocompleteStatus>
-          <AutocompleteList>
-            {(movie: Movie) => (
-              <AutocompleteItem key={movie.id} value={movie as any}>
-                <div className="flex w-full flex-col gap-1">
-                  <div className="font-medium">{movie.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {movie.year}
+    <div className="w-full max-w-64">
+      <Autocomplete
+        items={searchResults}
+        value={searchValue}
+        onValueChange={setSearchValue}
+        itemToStringValue={(item: unknown) => (item as Movie).title}
+        filter={null}
+      >
+        <AutocompleteInput placeholder="e.g. Pulp Fiction or 1994" />
+        {shouldRenderPopup && (
+          <AutocompletePopup aria-busy={isLoading || undefined}>
+            <AutocompleteStatus className="text-muted-foreground">
+              {status}
+            </AutocompleteStatus>
+            <AutocompleteList>
+              {(movie: Movie) => (
+                <AutocompleteItem key={movie.id} value={movie as any}>
+                  <div className="flex w-full flex-col gap-1">
+                    <div className="font-medium">{movie.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {movie.year}
+                    </div>
                   </div>
-                </div>
-              </AutocompleteItem>
-            )}
-          </AutocompleteList>
-        </AutocompletePopup>
-      )}
-    </Autocomplete>
+                </AutocompleteItem>
+              )}
+            </AutocompleteList>
+          </AutocompletePopup>
+        )}
+      </Autocomplete>
+    </div>
   )
 }

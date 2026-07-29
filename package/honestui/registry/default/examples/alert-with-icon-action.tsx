@@ -10,7 +10,7 @@ import { Button } from "@/registry/default/ui/button"
 
 export default function AlertWithIconAction() {
   return (
-    <Alert>
+    <Alert className="max-w-lg">
       <InfoIcon />
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>

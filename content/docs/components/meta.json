@@ -21,6 +21,7 @@
     "group",
     "input",
     "label",
+    "kanban-list",
     "menu",
     "meter",
     "number-field",

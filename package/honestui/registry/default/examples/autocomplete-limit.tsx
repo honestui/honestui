@@ -56,28 +56,30 @@ export default function AutocompleteLimit() {
   const moreCount = Math.max(0, totalMatches - limit)
 
   return (
-    <Autocomplete
-      items={manyTags}
-      value={value}
-      onValueChange={setValue}
-      limit={limit}
-    >
-      <AutocompleteInput placeholder="e.g. feature" />
-      <AutocompletePopup>
-        <AutocompleteEmpty>No tags found.</AutocompleteEmpty>
-        <AutocompleteList>
-          {(tag: SimpleTag) => (
-            <AutocompleteItem key={tag.id} value={tag}>
-              {tag.value}
-            </AutocompleteItem>
+    <div className="w-full max-w-64">
+      <Autocomplete
+        items={manyTags}
+        value={value}
+        onValueChange={setValue}
+        limit={limit}
+      >
+        <AutocompleteInput placeholder="e.g. feature" />
+        <AutocompletePopup>
+          <AutocompleteEmpty>No tags found.</AutocompleteEmpty>
+          <AutocompleteList>
+            {(tag: SimpleTag) => (
+              <AutocompleteItem key={tag.id} value={tag}>
+                {tag.value}
+              </AutocompleteItem>
+            )}
+          </AutocompleteList>
+          {moreCount > 0 && (
+            <AutocompleteStatus>
+              +{moreCount} more (keep typing to narrow down)
+            </AutocompleteStatus>
           )}
-        </AutocompleteList>
-        {moreCount > 0 && (
-          <AutocompleteStatus>
-            +{moreCount} more (keep typing to narrow down)
-          </AutocompleteStatus>
-        )}
-      </AutocompletePopup>
-    </Autocomplete>
+        </AutocompletePopup>
+      </Autocomplete>
+    </div>
   )
 }

@@ -14,7 +14,7 @@ export default function AccordionControlledDemo() {
   const [value, setValue] = React.useState<string[]>([])
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="flex w-full max-w-lg flex-col gap-4">
       <Accordion className="w-full" value={value} onValueChange={setValue}>
         <AccordionItem value="item-1">
           <AccordionTrigger>What is Base UI?</AccordionTrigger>

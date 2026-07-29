@@ -9,7 +9,7 @@ import {
 
 export default function FieldWithValidityDemo() {
   return (
-    <Field>
+    <Field className="w-full max-w-80">
       <FieldLabel>Email</FieldLabel>
       <FieldControl
         type="email"

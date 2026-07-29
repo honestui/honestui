@@ -7,7 +7,7 @@ import {
 
 export default function AccordionSingleDemo() {
   return (
-    <Accordion className="w-full" multiple={false}>
+    <Accordion className="w-full max-w-lg" multiple={false}>
       <AccordionItem value="item-1">
         <AccordionTrigger>What is Base UI?</AccordionTrigger>
         <AccordionPanel>

@@ -80,33 +80,35 @@ const groupedTags: TagGroup[] = groupTags(tagsData)
 
 export default function AutocompleteGrouped() {
   return (
-    <Autocomplete items={groupedTags}>
-      <div className="flex flex-col items-start gap-2">
-        <AutocompleteInput
-          placeholder="e.g. feature"
-          aria-label="Search tags"
-        />
-      </div>
-      <AutocompletePopup>
-        <AutocompleteEmpty>No tags found.</AutocompleteEmpty>
-        <AutocompleteList>
-          {(group: TagGroup) => (
-            <React.Fragment key={group.value}>
-              <AutocompleteGroup items={group.items}>
-                <AutocompleteGroupLabel>{group.value}</AutocompleteGroupLabel>
-                <AutocompleteCollection>
-                  {(tag: Tag) => (
-                    <AutocompleteItem key={tag.id} value={tag}>
-                      {tag.label}
-                    </AutocompleteItem>
-                  )}
-                </AutocompleteCollection>
-              </AutocompleteGroup>
-              {group.value !== "Team" && <AutocompleteSeparator />}
-            </React.Fragment>
-          )}
-        </AutocompleteList>
-      </AutocompletePopup>
-    </Autocomplete>
+    <div className="w-full max-w-64">
+      <Autocomplete items={groupedTags}>
+        <div className="flex flex-col items-start gap-2">
+          <AutocompleteInput
+            placeholder="e.g. feature"
+            aria-label="Search tags"
+          />
+        </div>
+        <AutocompletePopup>
+          <AutocompleteEmpty>No tags found.</AutocompleteEmpty>
+          <AutocompleteList>
+            {(group: TagGroup) => (
+              <React.Fragment key={group.value}>
+                <AutocompleteGroup items={group.items}>
+                  <AutocompleteGroupLabel>{group.value}</AutocompleteGroupLabel>
+                  <AutocompleteCollection>
+                    {(tag: Tag) => (
+                      <AutocompleteItem key={tag.id} value={tag}>
+                        {tag.label}
+                      </AutocompleteItem>
+                    )}
+                  </AutocompleteCollection>
+                </AutocompleteGroup>
+                {group.value !== "Team" && <AutocompleteSeparator />}
+              </React.Fragment>
+            )}
+          </AutocompleteList>
+        </AutocompletePopup>
+      </Autocomplete>
+    </div>
   )
 }

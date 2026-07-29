@@ -5,7 +5,7 @@ export default function TabsUnderlineVertical() {
     <Tabs
       defaultValue="tab-1"
       orientation="vertical"
-      className="w-full flex-row"
+      className="w-full max-w-80 flex-row"
     >
       <div className="border-s">
         <TabsList variant="underline">

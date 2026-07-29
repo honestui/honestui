@@ -9,7 +9,7 @@ import {
 
 export default function NumberFieldWithStep() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="w-full max-w-64 flex flex-col gap-6">
       <NumberField defaultValue={0} step={10}>
         <NumberFieldScrubArea label="Step 10" />
         <NumberFieldGroup>

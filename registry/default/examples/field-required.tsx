@@ -7,7 +7,7 @@ import {
 
 export default function FieldRequiredDemo() {
   return (
-    <Field>
+    <Field className="w-full max-w-64">
       <FieldLabel>
         Password <span className="text-destructive-foreground">*</span>
       </FieldLabel>

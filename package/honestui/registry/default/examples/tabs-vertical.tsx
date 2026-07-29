@@ -2,7 +2,7 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from "@/registry/default/ui/tabs"
 
 export default function TabsVertical() {
   return (
-    <Tabs defaultValue="tab-1" orientation="vertical" className="w-full">
+    <Tabs defaultValue="tab-1" orientation="vertical" className="w-full max-w-80">
       <TabsList>
         <TabsTab value="tab-1">Tab 1</TabsTab>
         <TabsTab value="tab-2">Tab 2</TabsTab>

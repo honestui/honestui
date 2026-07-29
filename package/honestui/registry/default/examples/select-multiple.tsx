@@ -38,17 +38,19 @@ function renderValue(value: Language[]) {
 
 export default function SelectMultiple() {
   return (
-    <Select multiple defaultValue={["javascript", "typescript"]}>
-      <SelectTrigger>
-        <SelectValue>{renderValue}</SelectValue>
-      </SelectTrigger>
-      <SelectPopup alignItemWithTrigger={false}>
-        {values.map((value) => (
-          <SelectItem key={value} value={value}>
-            {languages[value]}
-          </SelectItem>
-        ))}
-      </SelectPopup>
-    </Select>
+    <div className="w-full max-w-64">
+      <Select multiple defaultValue={["javascript", "typescript"]}>
+        <SelectTrigger>
+          <SelectValue>{renderValue}</SelectValue>
+        </SelectTrigger>
+        <SelectPopup alignItemWithTrigger={false}>
+          {values.map((value) => (
+            <SelectItem key={value} value={value}>
+              {languages[value]}
+            </SelectItem>
+          ))}
+        </SelectPopup>
+      </Select>
+    </div>
   )
 }

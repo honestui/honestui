@@ -7,7 +7,7 @@ import {
 
 export default function FieldDisabledDemo() {
   return (
-    <Field disabled>
+    <Field className="w-full max-w-64" disabled>
       <FieldLabel>Email</FieldLabel>
       <FieldControl
         type="email"

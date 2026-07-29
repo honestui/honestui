@@ -8,7 +8,7 @@ import {
 
 export default function NumberFieldSm() {
   return (
-    <NumberField size="sm" defaultValue={0}>
+    <NumberField className="w-full max-w-64" size="sm" defaultValue={0}>
       <NumberFieldGroup>
         <NumberFieldDecrement />
         <NumberFieldInput />

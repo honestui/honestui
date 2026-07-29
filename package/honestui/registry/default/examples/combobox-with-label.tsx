@@ -28,25 +28,27 @@ const items = [
 export default function ComboboxWithLabel() {
   const id = useId()
   return (
-    <Combobox items={items}>
-      <div className="flex flex-col items-start gap-2">
-        <Label htmlFor={id}>Fruits</Label>
-        <ComboboxInput
-          id={id}
-          placeholder="Select an item..."
-          aria-label="Select an item"
-        />
-      </div>
-      <ComboboxPopup>
-        <ComboboxEmpty>No results found.</ComboboxEmpty>
-        <ComboboxList>
-          {(item) => (
-            <ComboboxItem key={item.value} value={item}>
-              {item.label}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxPopup>
-    </Combobox>
+    <div className="w-full max-w-64">
+      <Combobox items={items}>
+        <div className="flex flex-col items-start gap-2">
+          <Label htmlFor={id}>Fruits</Label>
+          <ComboboxInput
+            id={id}
+            placeholder="Select an item..."
+            aria-label="Select an item"
+          />
+        </div>
+        <ComboboxPopup>
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item) => (
+              <ComboboxItem key={item.value} value={item}>
+                {item.label}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxPopup>
+      </Combobox>
+    </div>
   )
 }

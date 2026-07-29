@@ -28,29 +28,31 @@ const backend = [
 
 export default function SelectWithGroups() {
   return (
-    <Select items={[...placeholder, ...frontend, ...backend]}>
-      <SelectTrigger>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectPopup>
-        <SelectGroup>
-          <SelectGroupLabel>Frontend</SelectGroupLabel>
-          {frontend.map(({ label, value }) => (
-            <SelectItem key={value} value={value}>
-              {label}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-        <SelectSeparator />
-        <SelectGroup>
-          <SelectGroupLabel>Backend</SelectGroupLabel>
-          {backend.map(({ label, value }) => (
-            <SelectItem key={value} value={value}>
-              {label}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectPopup>
-    </Select>
+    <div className="w-full max-w-64">
+      <Select items={[...placeholder, ...frontend, ...backend]}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectPopup>
+          <SelectGroup>
+            <SelectGroupLabel>Frontend</SelectGroupLabel>
+            {frontend.map(({ label, value }) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+          <SelectSeparator />
+          <SelectGroup>
+            <SelectGroupLabel>Backend</SelectGroupLabel>
+            {backend.map(({ label, value }) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectPopup>
+      </Select>
+    </div>
   )
 }

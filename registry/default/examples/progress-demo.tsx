@@ -16,5 +16,5 @@ export default function ProgressDemo() {
     return () => clearInterval(interval)
   }, [])
 
-  return <Progress value={value} />
+  return <Progress className="w-full max-w-64" value={value} />
 }

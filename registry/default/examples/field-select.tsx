@@ -21,7 +21,7 @@ const items = [
 
 export default function FieldSelectDemo() {
   return (
-    <Field>
+    <Field className="w-full max-w-64">
       <FieldLabel>Country</FieldLabel>
       <Select items={items}>
         <SelectTrigger>

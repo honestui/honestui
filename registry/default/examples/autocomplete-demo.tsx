@@ -24,21 +24,23 @@ const items = [
 
 export default function AutocompleteDemo() {
   return (
-    <Autocomplete items={items}>
-      <AutocompleteInput
-        placeholder="Search items…"
-        aria-label="Search items"
-      />
-      <AutocompletePopup>
-        <AutocompleteEmpty>No items found.</AutocompleteEmpty>
-        <AutocompleteList>
-          {(item) => (
-            <AutocompleteItem key={item.value} value={item}>
-              {item.label}
-            </AutocompleteItem>
-          )}
-        </AutocompleteList>
-      </AutocompletePopup>
-    </Autocomplete>
+    <div className="w-full max-w-64">
+      <Autocomplete items={items}>
+        <AutocompleteInput
+          placeholder="Search items…"
+          aria-label="Search items"
+        />
+        <AutocompletePopup>
+          <AutocompleteEmpty>No items found.</AutocompleteEmpty>
+          <AutocompleteList>
+            {(item) => (
+              <AutocompleteItem key={item.value} value={item}>
+                {item.label}
+              </AutocompleteItem>
+            )}
+          </AutocompleteList>
+        </AutocompletePopup>
+      </Autocomplete>
+    </div>
   )
 }

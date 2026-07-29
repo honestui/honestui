@@ -8,7 +8,7 @@ import {
 
 export default function NumberFieldWithRange() {
   return (
-    <NumberField defaultValue={5} min={0} max={10}>
+    <NumberField className="w-full max-w-64" defaultValue={5} min={0} max={10}>
       <NumberFieldGroup>
         <NumberFieldDecrement />
         <NumberFieldInput />

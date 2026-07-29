@@ -15,17 +15,19 @@ const items = [
 
 export default function SelectWithoutAlignment() {
   return (
-    <Select items={items}>
-      <SelectTrigger>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectPopup alignItemWithTrigger={false}>
-        {items.map(({ label, value }) => (
-          <SelectItem key={value} value={value}>
-            {label}
-          </SelectItem>
-        ))}
-      </SelectPopup>
-    </Select>
+    <div className="w-full max-w-64">
+      <Select items={items}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectPopup alignItemWithTrigger={false}>
+          {items.map(({ label, value }) => (
+            <SelectItem key={value} value={value}>
+              {label}
+            </SelectItem>
+          ))}
+        </SelectPopup>
+      </Select>
+    </div>
   )
 }

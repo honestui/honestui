@@ -8,7 +8,7 @@ import {
 
 export default function AlertInfo() {
   return (
-    <Alert variant="info">
+    <Alert variant="info" className="max-w-lg">
       <InfoIcon />
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>

@@ -34,10 +34,20 @@ const buttonVariants = cva(
         "icon-sm": "size-7",
         "icon-lg": "size-9",
       },
+      appearance: {
+        flat: null,
+        glossy:
+          "bg-[linear-gradient(180deg,rgba(255,255,255,.46)_0%,rgba(255,255,255,.12)_38%,transparent_39%),linear-gradient(180deg,rgba(255,255,255,.12)_0%,transparent_54%,rgba(0,0,0,.18)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.5),inset_0_0_5px_rgba(255,255,255,.18),inset_0_-18px_15px_-14px_rgba(0,0,0,.35),0_0_0_.75px_rgba(0,0,0,.24),0_3px_8px_rgba(0,0,0,.24)]! [text-shadow:0_1px_2px_rgba(0,0,0,.35)] transition-[filter,box-shadow] duration-200 hover:brightness-[1.06]",
+        glow:
+          "bg-[linear-gradient(180deg,rgba(0,0,0,.18)_0%,rgba(255,255,255,.08)_100%)] shadow-[inset_0_-1.5px_2px_rgba(255,255,255,.45),inset_0_0_12px_rgba(255,255,255,.22),inset_0_0_8px_rgba(255,255,255,.18),0_2px_6px_rgba(0,0,0,.28)]! [text-shadow:0_1px_2px_rgba(0,0,0,.4)] transition-[filter,box-shadow] duration-200 hover:brightness-[1.12]",
+        bevel:
+          "bg-[linear-gradient(180deg,rgba(255,255,255,.2)_0%,transparent_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.4),0_1px_0_rgba(0,0,0,.28),0_2px_0_rgba(0,0,0,.28),0_3px_0_rgba(0,0,0,.38),0_4px_0_rgba(0,0,0,.38),0_6px_8px_rgba(0,0,0,.3)]! [text-shadow:0_1px_0_rgba(0,0,0,.4)] transition-[transform,box-shadow] duration-120 hover:-translate-y-px [&:is(:active,[data-pressed])]:translate-y-1 [&:is(:active,[data-pressed])]:shadow-[inset_0_1px_0_rgba(255,255,255,.35),0_1px_0_rgba(0,0,0,.38),0_2px_4px_rgba(0,0,0,.28)]!",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      appearance: "flat",
     },
   }
 )
@@ -45,6 +55,7 @@ const buttonVariants = cva(
 interface ButtonProps extends useRender.ComponentProps<"button"> {
   variant?: VariantProps<typeof buttonVariants>["variant"]
   size?: VariantProps<typeof buttonVariants>["size"]
+  appearance?: VariantProps<typeof buttonVariants>["appearance"]
   asChild?: boolean
 }
 
@@ -52,6 +63,7 @@ function Button({
   className,
   variant,
   size,
+  appearance,
   render,
   asChild = false,
   children,
@@ -68,7 +80,7 @@ function Button({
 
   const defaultProps = {
     "data-slot": "button",
-    className: cn(buttonVariants({ variant, size, className })),
+    className: cn(buttonVariants({ variant, size, appearance, className })),
     type: typeValue,
   }
 

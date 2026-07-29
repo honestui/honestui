@@ -24,22 +24,24 @@ const items = [
 
 export default function ComboboxLg() {
   return (
-    <Combobox items={items}>
-      <ComboboxInput
-        size="lg"
-        placeholder="Select an item..."
-        aria-label="Select an item"
-      />
-      <ComboboxPopup>
-        <ComboboxEmpty>No results found.</ComboboxEmpty>
-        <ComboboxList>
-          {(item) => (
-            <ComboboxItem key={item.value} value={item}>
-              {item.label}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxPopup>
-    </Combobox>
+    <div className="w-full max-w-64">
+      <Combobox items={items}>
+        <ComboboxInput
+          size="lg"
+          placeholder="Select an item..."
+          aria-label="Select an item"
+        />
+        <ComboboxPopup>
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item) => (
+              <ComboboxItem key={item.value} value={item}>
+                {item.label}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxPopup>
+      </Combobox>
+    </div>
   )
 }

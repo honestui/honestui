@@ -29,7 +29,7 @@ const items = [
 
 export default function FieldComboboxDemo() {
   return (
-    <Field>
+    <Field className="w-full max-w-64">
       <FieldLabel>Fruits</FieldLabel>
       <Combobox items={items}>
         <ComboboxInput

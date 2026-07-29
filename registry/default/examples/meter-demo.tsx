@@ -8,7 +8,7 @@ import {
 
 export default function MeterDemo() {
   return (
-    <Meter value={75}>
+    <Meter className="w-full max-w-64" value={75}>
       <div className="flex items-center justify-between gap-2">
         <MeterLabel>Storage usage</MeterLabel>
         <MeterValue />

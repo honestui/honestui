@@ -24,21 +24,23 @@ const items = [
 
 export default function ComboboxAutohighlight() {
   return (
-    <Combobox items={items} autoHighlight>
-      <ComboboxInput
-        placeholder="Select an item..."
-        aria-label="Select an item"
-      />
-      <ComboboxPopup>
-        <ComboboxEmpty>No results found.</ComboboxEmpty>
-        <ComboboxList>
-          {(item) => (
-            <ComboboxItem key={item.value} value={item}>
-              {item.label}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxPopup>
-    </Combobox>
+    <div className="w-full max-w-64">
+      <Combobox items={items} autoHighlight>
+        <ComboboxInput
+          placeholder="Select an item..."
+          aria-label="Select an item"
+        />
+        <ComboboxPopup>
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item) => (
+              <ComboboxItem key={item.value} value={item}>
+                {item.label}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxPopup>
+      </Combobox>
+    </div>
   )
 }

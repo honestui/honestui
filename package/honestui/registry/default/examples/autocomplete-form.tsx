@@ -43,7 +43,7 @@ export default function AutocompleteForm() {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="grid max-w-64 gap-4">
+    <Form onSubmit={onSubmit} className="grid w-full max-w-64 gap-4">
       <Field>
         <FieldLabel>Favorite item</FieldLabel>
         <Autocomplete items={items} name="item" disabled={loading} required>

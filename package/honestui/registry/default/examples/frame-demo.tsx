@@ -8,7 +8,7 @@ import {
 
 export default function FrameDemo() {
   return (
-    <Frame className="w-full">
+    <Frame className="w-full max-w-lg">
       <FrameHeader>
         <FrameTitle>Section header</FrameTitle>
         <FrameDescription>

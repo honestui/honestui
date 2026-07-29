@@ -55,7 +55,7 @@ export default function NumberFieldFormDemo() {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="grid max-w-64 gap-4">
+    <Form onSubmit={onSubmit} className="grid w-full max-w-64 gap-4">
       <Field name="quantity">
         <NumberField defaultValue={1} min={1} max={100} disabled={loading}>
           <NumberFieldScrubArea label="Quantity" />

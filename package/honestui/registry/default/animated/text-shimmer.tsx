@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { ElementType, ReactNode } from "react";
+import type { ComponentType, CSSProperties, ElementType, ReactNode } from "react";
 
 export interface TextShimmerProps {
   children: ReactNode;
@@ -8,13 +8,21 @@ export interface TextShimmerProps {
   className?: string;
 }
 
+type TextShimmerRootProps = {
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
+
 export function TextShimmer({ children, as: Comp = "span", duration = 2.5, className }: TextShimmerProps) {
+  const Root = Comp as ComponentType<TextShimmerRootProps>;
+
   return (
     <>
       <style>
         {`@keyframes beui-text-shimmer{from{background-position:200% 0}to{background-position:-200% 0}}@media(prefers-reduced-motion:reduce){.beui-text-shimmer{animation:none!important;background-position:50% 0}}`}
       </style>
-      <Comp
+      <Root
         style={{ animation: `beui-text-shimmer ${duration}s linear infinite` }}
         className={cn(
           "beui-text-shimmer",
@@ -24,7 +32,7 @@ export function TextShimmer({ children, as: Comp = "span", duration = 2.5, class
         )}
       >
         {children}
-      </Comp>
+      </Root>
     </>
   );
 }

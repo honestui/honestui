@@ -63,6 +63,7 @@ import breadcrumb_buttons from "./default/examples/breadcrumb-buttons"
 import breadcrumb_card from "./default/examples/breadcrumb-card"
 import breadcrumb_custom_separator from "./default/examples/breadcrumb-custom-separator"
 import breadcrumb_demo from "./default/examples/breadcrumb-demo"
+import button_appearances from "./default/examples/button-appearances"
 import button_default from "./default/examples/button-default"
 import button_default_icons from "./default/examples/button-default-icons"
 import button_demo from "./default/examples/button-demo"
@@ -154,6 +155,8 @@ import input_lg from "./default/examples/input-lg"
 import input_sm from "./default/examples/input-sm"
 import input_with_button from "./default/examples/input-with-button"
 import input_with_label from "./default/examples/input-with-label"
+import kanban_list_kanban_demo from "./default/examples/kanban-list-kanban-demo"
+import kanban_list_list_demo from "./default/examples/kanban-list-list-demo"
 import menu_checkbox from "./default/examples/menu-checkbox"
 import menu_close_on_click from "./default/examples/menu-close-on-click"
 import menu_demo from "./default/examples/menu-demo"
@@ -479,6 +482,7 @@ export const Index: Record<string, { component: ComponentType }> = {
   "breadcrumb-card": { component: breadcrumb_card },
   "breadcrumb-custom-separator": { component: breadcrumb_custom_separator },
   "breadcrumb-demo": { component: breadcrumb_demo },
+  "button-appearances": { component: button_appearances },
   "button-default": { component: button_default },
   "button-default-icons": { component: button_default_icons },
   "button-demo": { component: button_demo },
@@ -570,6 +574,8 @@ export const Index: Record<string, { component: ComponentType }> = {
   "input-sm": { component: input_sm },
   "input-with-button": { component: input_with_button },
   "input-with-label": { component: input_with_label },
+  "kanban-list-kanban-demo": { component: kanban_list_kanban_demo },
+  "kanban-list-list-demo": { component: kanban_list_list_demo },
   "menu-checkbox": { component: menu_checkbox },
   "menu-close-on-click": { component: menu_close_on_click },
   "menu-demo": { component: menu_demo },

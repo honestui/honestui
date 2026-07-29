@@ -8,7 +8,7 @@ import {
 
 export default function AlertWarning() {
   return (
-    <Alert variant="error">
+    <Alert variant="error" className="max-w-lg">
       <CircleAlertIcon />
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>

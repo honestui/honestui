@@ -26,7 +26,7 @@ export default function SliderForm() {
   }
 
   return (
-    <Form onSubmit={onSubmit} className="grid gap-4">
+    <Form onSubmit={onSubmit} className="w-full max-w-64 grid gap-4">
       <Field name="volume" className="items-stretch gap-3">
         <Slider value={value} onValueChange={setValue} disabled={loading}>
           <div className="mb-2 flex items-center justify-between gap-1">

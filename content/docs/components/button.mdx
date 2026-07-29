@@ -19,6 +19,12 @@ A button has a visible label, optional icon, variant, size, and state. The label
 
 Use the default variant for primary actions, secondary for supporting actions, outline for medium emphasis, ghost for low emphasis, link for inline actions, and destructive for dangerous actions.
 
+## Appearances
+
+Use the `appearance` prop to change a button's surface treatment without changing its semantic variant or color. Choose `flat` to keep the original treatment, `glossy` for a polished sheen, `glow` for an internally lit treatment, or `bevel` for an extruded key-like treatment.
+
+Appearances compose with every variant. For example, `variant="destructive" appearance="glossy"` keeps the destructive color and behavior while adding the glossy depth treatment.
+
 ## Accessibility
 
 Buttons must have accessible names. Icon-only buttons need a label through text, `aria-label`, or an equivalent pattern. Keep disabled and loading states clear so users understand why the action is unavailable.
@@ -104,6 +110,13 @@ export function LinkAsButton() {
 ## Examples
 
 Our examples cover variants, sizes, icon layouts, disabled state, link rendering, and loading behavior.
+
+### Styling Appearances
+
+<ComponentPreview
+  name="button-appearances"
+  className="[&_[data-slot=code]_pre]:h-[300px] [&_[data-slot=preview]>*]:h-[300px]"
+/>
 
 ### Default
 

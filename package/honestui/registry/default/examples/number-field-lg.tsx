@@ -8,7 +8,7 @@ import {
 
 export default function NumberFieldLg() {
   return (
-    <NumberField size="lg" defaultValue={0}>
+    <NumberField className="w-full max-w-64" size="lg" defaultValue={0}>
       <NumberFieldGroup>
         <NumberFieldDecrement />
         <NumberFieldInput />

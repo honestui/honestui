@@ -41,7 +41,7 @@ export default function FieldCompleteFormDemo() {
     )
   }
   return (
-    <Form onSubmit={onSubmit} className="grid gap-4">
+    <Form onSubmit={onSubmit} className="w-full max-w-64 grid gap-4">
       <Field>
         <FieldLabel>
           Full Name <span className="text-destructive">*</span>

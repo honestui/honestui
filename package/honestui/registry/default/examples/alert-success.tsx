@@ -9,7 +9,7 @@ import { Button } from "@/registry/default/ui/button"
 
 export default function AlertSuccess() {
   return (
-    <Alert variant="success">
+    <Alert variant="success" className="max-w-lg">
       <CircleCheckIcon />
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>

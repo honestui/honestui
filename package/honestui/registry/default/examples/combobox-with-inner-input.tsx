@@ -844,37 +844,39 @@ const countries: Country[] = [
 
 export default function ComboboxWithInnerInput() {
   return (
-    <Combobox items={countries} defaultValue={countries[0]}>
-      <ComboboxTrigger
-        render={
-          <Button
-            variant="outline"
-            className="w-full justify-between font-normal"
-          />
-        }
-      >
-        <ComboboxValue />
-        <div className="flex">
-          <ChevronsUpDownIcon className="-me-1 size-4 opacity-72" />
-        </div>
-      </ComboboxTrigger>
-      <ComboboxPopup aria-label="Select country">
-        <div className="border-b p-2">
-          <ComboboxInput
-            className="rounded-md before:rounded-[calc(var(--radius-md)-1px)]"
-            placeholder="e.g. United Kingdom"
-            showTrigger={false}
-          />
-        </div>
-        <ComboboxEmpty>No countries found.</ComboboxEmpty>
-        <ComboboxList>
-          {(country: Country) => (
-            <ComboboxItem key={country.code} value={country}>
-              {country.label}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxPopup>
-    </Combobox>
+    <div className="w-full max-w-64">
+      <Combobox items={countries} defaultValue={countries[0]}>
+        <ComboboxTrigger
+          render={
+            <Button
+              variant="outline"
+              className="w-full justify-between font-normal"
+            />
+          }
+        >
+          <ComboboxValue />
+          <div className="flex">
+            <ChevronsUpDownIcon className="-me-1 size-4 opacity-72" />
+          </div>
+        </ComboboxTrigger>
+        <ComboboxPopup aria-label="Select country">
+          <div className="border-b p-2">
+            <ComboboxInput
+              className="rounded-md before:rounded-[calc(var(--radius-md)-1px)]"
+              placeholder="e.g. United Kingdom"
+              showTrigger={false}
+            />
+          </div>
+          <ComboboxEmpty>No countries found.</ComboboxEmpty>
+          <ComboboxList>
+            {(country: Country) => (
+              <ComboboxItem key={country.code} value={country}>
+                {country.label}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxPopup>
+      </Combobox>
+    </div>
   )
 }

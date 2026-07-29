@@ -10,7 +10,7 @@ import { Textarea } from "@/registry/default/ui/textarea"
 
 export default function FieldTextareaDemo() {
   return (
-    <Field>
+    <Field className="w-full max-w-64">
       <FieldLabel>Bio</FieldLabel>
       <FieldControl
         render={(props) => (

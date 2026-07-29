@@ -9,7 +9,7 @@ import {
 
 export default function NumberFieldDemoWithScrub() {
   return (
-    <NumberField defaultValue={0}>
+    <NumberField className="w-full max-w-64" defaultValue={0}>
       <NumberFieldScrubArea label="Quantity" />
       <NumberFieldGroup>
         <NumberFieldDecrement />

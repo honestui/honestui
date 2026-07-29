@@ -7,7 +7,7 @@ import {
 
 export default function FieldWithErrorDemo() {
   return (
-    <Field>
+    <Field className="w-full max-w-64">
       <FieldLabel>Email</FieldLabel>
       <FieldControl type="email" placeholder="Enter your email" />
       <FieldError>Please enter a valid email address.</FieldError>

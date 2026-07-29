@@ -1,0 +1,108 @@
+---
+title: Kanban List
+description: A sortable collection for organizing items in kanban or list views.
+---
+
+<ComponentPreview
+  name="kanban-list-kanban-demo"
+  title="kanban-list"
+  align="start"
+  containerClassName="-mx-2 sm:-mx-20"
+/>
+
+## Overview
+
+Use Kanban List to organize items into stages and reorder them with drag and drop.
+
+Kanban lists work well for project tasks, editorial workflows, support queues, hiring pipelines, and other processes where items move through a sequence.
+
+## Anatomy
+
+A kanban list has stage panels, stage headers, item counts, items, and a drag preview. Kanban view places stages side by side. List view stacks the same stages vertically.
+
+## Usage guidance
+
+Use kanban view when users need to scan stages and move items spatially. Use list view when density and vertical scanning matter more.
+
+Keep stage names short and preserve the same item order when switching views. Use `columns` to limit the stages shown in a compact surface.
+
+## Accessibility
+
+Each item is a focusable button with its current stage in the accessible name. Left and right arrow keys move an item between stages. Up and down arrow keys reorder it within the current stage.
+
+Use `ariaLabel` to give the collection a name that matches its content. Reordering is announced through a live region, and reduced-motion preferences are respected.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add kanban-list
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the Motion dependency.</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="kanban-list" title="components/ui/kanban-list.tsx" />
+
+<Step>Update the import path to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { KanbanList } from "@/components/ui/kanban-list"
+```
+
+```tsx
+<KanbanList
+  defaultItems={items}
+  onItemsChange={(nextItems) => saveItems(nextItems)}
+/>
+```
+
+## Examples
+
+### List view
+
+Set `view="list"` to stack the stages vertically. The preview keeps a fixed height and scrolls when its content is taller than the available space.
+
+<ComponentPreview
+  name="kanban-list-list-demo"
+  title='kanban-list view="list"'
+  align="start"
+  containerClassName="-mx-2 sm:-mx-20"
+/>
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="view" type='"kanban" | "list"' default='"kanban"'>Sets the collection layout.</ApiRow>
+  <ApiRow name="defaultItems" type="KanbanListItem[]">Sets the initial items.</ApiRow>
+  <ApiRow name="onItemsChange" type="(items: KanbanListItem[]) => void">Runs after an item is moved.</ApiRow>
+  <ApiRow name="columns" type="KanbanListStage[]">Limits the stages shown.</ApiRow>
+  <ApiRow name="className" type="string">Adds a class name to the root element.</ApiRow>
+  <ApiRow name="ariaLabel" type="string" default="Kanban list">Sets the accessible name for the collection.</ApiRow>
+</ApiTable>
