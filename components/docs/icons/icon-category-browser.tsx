@@ -21,7 +21,21 @@ const variantLabels: Record<string, string> = {
   doodle: "Doodle",
   filled: "Filled",
   rounded: "Rounded",
+  shapes: "Shapes",
+  sketch: "Sketch",
+  pattern: "Pattern",
+  texture: "Texture",
+  character: "Character",
+  symbols: "Symbol",
+  wordmark: "Wordmark",
 };
+
+function formatVariant(variant: string) {
+  return (
+    variantLabels[variant] ??
+    variant.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (character) => character.toUpperCase())
+  );
+}
 
 export interface IconCatalogItem {
   exportName: string;
@@ -35,9 +49,13 @@ export interface IconCatalogItem {
 export function IconCategoryBrowser({
   categoryName,
   icons,
+  collection = "icons",
+  importPath = "honestui/icons",
 }: {
   categoryName: string;
   icons: IconCatalogItem[];
+  collection?: "icons" | "logos" | "vectors";
+  importPath?: string;
 }) {
   const [query, setQuery] = useState("");
   const [variant, setVariant] = useState(ALL_VARIANTS);
@@ -65,19 +83,22 @@ export function IconCategoryBrowser({
   }, [icons, query, variant]);
 
   const displayedIcons = visibleIcons.slice(0, visibleCount);
+  const singular = collection === "logos" ? "logo" : collection === "vectors" ? "vector" : "icon";
 
   return (
     <>
       <div className="mt-12 mb-3">
-        <h2 className="text-lg font-medium">All {categoryName.toLowerCase()} icons</h2>
+        <h2 className="text-lg font-medium">
+          All {categoryName.toLowerCase()} {collection}
+        </h2>
         <p className="text-muted-foreground mt-1 text-sm">
-          Every icon includes its own preview and copyable React code.
+          Every {singular} includes its own preview and copyable React code.
         </p>
       </div>
 
       <div className="sticky top-14 z-20 -mx-1 mt-8 bg-background/92 px-1 py-3 backdrop-blur-md supports-[backdrop-filter]:bg-background/78 sm:top-[35px]">
         <label className="sr-only" htmlFor="icon-search">
-          Search {categoryName} icons
+          Search {categoryName} {collection}
         </label>
         <div className="flex w-full flex-col gap-2 sm:flex-row">
           <div className="relative min-w-0 flex-1">
@@ -93,7 +114,7 @@ export function IconCategoryBrowser({
                 setQuery(event.target.value);
                 setVisibleCount(PAGE_SIZE);
               }}
-              placeholder={`Search ${icons.length.toLocaleString()} icons…`}
+              placeholder={`Search ${icons.length.toLocaleString()} ${collection}…`}
               className="[&_[data-slot=input]]:pl-9"
             />
           </div>
@@ -109,14 +130,14 @@ export function IconCategoryBrowser({
               <SelectValue>
                 {variant === ALL_VARIANTS
                   ? "All styles"
-                  : (variantLabels[variant] ?? variant)}
+                  : formatVariant(variant)}
               </SelectValue>
             </SelectTrigger>
             <SelectPopup>
               <SelectItem value={ALL_VARIANTS}>All styles</SelectItem>
               {availableVariants.map((availableVariant) => (
                 <SelectItem key={availableVariant} value={availableVariant}>
-                  {variantLabels[availableVariant] ?? availableVariant}
+                  {formatVariant(availableVariant)}
                 </SelectItem>
               ))}
             </SelectPopup>
@@ -124,7 +145,7 @@ export function IconCategoryBrowser({
         </div>
         <p className="text-muted-foreground mt-2 text-[11px]" aria-live="polite">
           Showing {displayedIcons.length.toLocaleString()} of {visibleIcons.length.toLocaleString()}
-          {query || variant !== ALL_VARIANTS ? " matching" : ""} icons
+          {query || variant !== ALL_VARIANTS ? " matching" : ""} {collection}
         </p>
       </div>
 
@@ -137,6 +158,7 @@ export function IconCategoryBrowser({
                 exportName={icon.exportName}
                 name={icon.name}
                 preview={icon.preview}
+                importPath={importPath}
               />
             ))}
           </div>
@@ -152,9 +174,9 @@ export function IconCategoryBrowser({
       ) : (
         <div className="flex min-h-64 flex-col items-center justify-center rounded-lg border border-dashed px-6 text-center">
           <Search aria-hidden="true" className="text-muted-foreground mb-3 size-5" />
-          <p className="text-sm font-medium">No matching icons</p>
+          <p className="text-sm font-medium">No matching {collection}</p>
           <p className="text-muted-foreground mt-1 text-xs">
-            Try another search or icon style.
+            Try another search or style.
           </p>
           <Button
             className="mt-4"

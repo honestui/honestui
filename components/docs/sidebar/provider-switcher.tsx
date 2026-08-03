@@ -56,8 +56,8 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
   },
   {
     id: "icons",
-    name: "Icons",
-    tagline: "Consistent interface symbols",
+    name: "Icons & Assets",
+    tagline: "Icons, logos, and vectors",
     href: "/docs/icons",
     icon: IconLibraryIcon,
     tint: "text-amber-400",

@@ -1,0 +1,79 @@
+---
+title: Logos
+description: Browse and use brand marks, flags, payment symbols, and technology logos as React components.
+---
+
+The logo collection contains 565 ready-to-use React components. It includes brand marks, wordmarks, flags, payment symbols, and product identities. Use a named import when you know which logo you need, or browse the categories in the sidebar to compare available variants.
+
+## Installation
+
+Install Honest UI with your preferred package manager:
+
+```bash
+npm install honestui
+```
+
+Import logos from the dedicated `honestui/logos` entry point:
+
+```tsx
+import { Vercel, VercelWordmark } from "honestui/logos";
+
+export function ProductCredits() {
+  return (
+    <div className="flex items-center gap-4">
+      <Vercel size={24} aria-label="Vercel" />
+      <VercelWordmark className="h-6 w-auto" aria-label="Vercel" />
+    </div>
+  );
+}
+```
+
+Named imports are tree-shakeable, so your application only bundles the logos it uses.
+
+## Logo variants
+
+Some identities include more than one component. Variants can include an icon, a horizontal wordmark, light and dark artwork, or a symbol designed for a particular context. The variant is part of the export name, such as `VercelWordmark`.
+
+Every export also has typed metadata:
+
+```tsx
+import { Vercel, VercelMetadata } from "honestui/logos";
+
+console.log(VercelMetadata.name); // "Vercel"
+console.log(VercelMetadata.variant); // "default"
+```
+
+Use `allLogos` when building a catalog or asset picker. Prefer named imports in product code so you do not include the full collection.
+
+## Categories
+
+- [**Adobe**](/docs/icons/logos/categories/adobe) contains Adobe and Creative Cloud application identities.
+- [**AI**](/docs/icons/logos/categories/ai) covers AI assistants, model providers, and generative tools.
+- [**Browser**](/docs/icons/logos/categories/browser) includes web browser identities and browser-related products.
+- [**Cards**](/docs/icons/logos/categories/cards) contains card networks, card faces, and financial card symbols.
+- [**CMS**](/docs/icons/logos/categories/cms) covers content management and publishing platforms.
+- [**Crypto**](/docs/icons/logos/categories/crypto) includes cryptocurrencies, wallets, and blockchain networks.
+- [**Database**](/docs/icons/logos/categories/database) contains database engines, hosted data services, and storage products.
+- [**Design**](/docs/icons/logos/categories/design) covers interface design, prototyping, and creative tools.
+- [**Developer Tools**](/docs/icons/logos/categories/devtool) includes developer environments, deployment tools, and engineering services.
+- [**Flags**](/docs/icons/logos/categories/flags) contains country, territory, and regional flags.
+- [**Frameworks**](/docs/icons/logos/categories/framework) covers application and web development frameworks.
+- [**Google**](/docs/icons/logos/categories/google) contains Google products and platform identities.
+- [**Languages**](/docs/icons/logos/categories/language) includes programming and markup language marks.
+- [**Libraries**](/docs/icons/logos/categories/library) covers open-source packages, UI libraries, and development utilities.
+- [**Music**](/docs/icons/logos/categories/music) contains music and audio service identities.
+- [**Payment**](/docs/icons/logos/categories/payment) includes payment providers and checkout methods.
+- [**Social**](/docs/icons/logos/categories/social) covers social networks, communities, and messaging platforms.
+- [**Software**](/docs/icons/logos/categories/software) contains applications, operating systems, and software products.
+- [**Sports**](/docs/icons/logos/categories/sports) contains sports brand identities.
+- [**Stickers**](/docs/icons/logos/categories/stickers) contains decorative badges and identity stickers.
+
+## Sizing and color
+
+Logo components accept standard SVG props plus `size` and `className`. Multicolor logos preserve their authored colors. Single-color marks can be styled when their SVG uses `currentColor`.
+
+Do not assume that every logo is square. For wordmarks, set one dimension and allow the other to remain automatic with classes such as `h-6 w-auto`.
+
+## Accessibility and brand usage
+
+Use `aria-label` when a logo communicates the identity of a product or company. Use `aria-hidden="true"` when nearby text already supplies the same information. Brand assets can have usage restrictions even when the React component code is open source, so follow the brand owner's trademark and identity guidelines.

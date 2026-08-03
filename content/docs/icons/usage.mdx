@@ -1,96 +1,95 @@
 ---
 title: Usage
-description: Choose, style, and compose Honest UI icons in React.
+description: Choose, style, and compose Honest UI icons, logos, and vectors in React.
 ---
 
-Our icon category pages follow the same structure so you can quickly find, inspect, and use each icon.
+The category pages for Icons, Logos, and Vectors share the same browser. Select an asset to view its preview, export name, style, import statement, and basic React usage.
 
-Select an icon to view its preview, component name, variant, install command, import statement, and basic usage code.
+## Choose the right collection
+
+- Use an **icon** to represent an action, destination, status, object, or product concept.
+- Use a **logo** to identify a company, product, platform, country, or payment method.
+- Use a **vector** to add decorative artwork, illustration, texture, or visual emphasis.
+
+Do not use a logo as a generic interface icon, and do not use a decorative vector where a familiar icon would communicate an action more clearly.
 
 ## Basic usage
 
-Import icons by name from `honestui/icons`. Icons inherit the surrounding text color and render at `1em` by default.
+Import assets by name from their collection entry point:
 
 ```tsx
-import { Bell, Search, Settings } from "honestui/icons";
+import { Search } from "honestui/icons";
+import { VercelWordmark } from "honestui/logos";
+import { Scribble1Sketch } from "honestui/vectors";
 
-export function Actions() {
+export function Example() {
   return (
-    <div className="flex items-center gap-3">
-      <Search />
-      <Bell />
-      <Settings />
+    <section>
+      <Search size={20} aria-label="Search" />
+      <VercelWordmark className="h-6 w-auto" aria-label="Vercel" />
+      <Scribble1Sketch className="h-8 w-32" aria-hidden="true" />
+    </section>
+  );
+}
+```
+
+## Using icons
+
+Choose the symbol that most directly matches the user's task. Keep one visual style within the same control or surface. Filled icons work well for selected states, while outline icons are usually calmer for default actions.
+
+Variant names are part of the component export:
+
+```tsx
+import { Heart, HeartFilled } from "honestui/icons";
+
+export function FavoriteState({ selected }: { selected: boolean }) {
+  const FavoriteIcon = selected ? HeartFilled : Heart;
+  return <FavoriteIcon aria-hidden="true" />;
+}
+```
+
+Icons inherit `currentColor`. Set `size` for explicit dimensions and `strokeWidth` on outline icons.
+
+```tsx
+<Search className="text-muted-foreground" size={16} strokeWidth={1.5} />
+<Search className="text-foreground" size={20} strokeWidth={1.75} />
+```
+
+## Using logos
+
+Logo exports can include a default mark, symbol, wordmark, or light and dark version. Choose the version intended for the available space and background.
+
+```tsx
+import { Vercel, VercelWordmark } from "honestui/logos";
+
+<Vercel size={24} aria-label="Vercel" />
+<VercelWordmark className="h-6 w-auto" aria-label="Vercel" />
+```
+
+Wordmarks are not always square, so setting a height with `w-auto` usually preserves their intended proportions. Multicolor artwork preserves its authored colors. Follow the brand owner's identity and trademark guidelines when using a logo.
+
+## Using vectors
+
+Vectors are compositional elements rather than compact controls. Size and position them with CSS, and use clipping or transforms when building a decorative layout.
+
+```tsx
+import { Abstract1Shapes, Organic1Pattern } from "honestui/vectors";
+
+export function HeroArtwork() {
+  return (
+    <div className="relative overflow-hidden">
+      <Abstract1Shapes className="absolute -top-8 -right-8 size-48" aria-hidden="true" />
+      <Organic1Pattern className="h-24 w-full" aria-hidden="true" />
     </div>
   );
 }
 ```
 
-## Choosing an icon
-
-Use the icon that most directly matches the user's task:
-
-- Use **Search** for finding content.
-- Use **Settings** for configuration.
-- Use **Plus** for creating or adding an item.
-- Use **Trash** for a destructive removal action.
-- Use **Arrow** icons for direction or movement.
-- Use **Chevron** icons for disclosure, selection, or compact navigation.
-- Use **Circle Check** for success and **Circle Alert** for warnings.
-
-Keep one visual style within the same control or surface. Filled icons work well for selected states, while outline icons are usually calmer for default actions.
-
-## Choosing a variant
-
-Variant names are part of the component export. When a concept includes multiple styles, import the version that matches the surrounding interface.
-
-```tsx
-import { Heart, HeartFilled, HeartRounded } from "honestui/icons";
-
-export function FavoriteState({ selected }: { selected: boolean }) {
-  const FavoriteIcon = selected ? HeartFilled : Heart;
-
-  return <FavoriteIcon aria-hidden="true" />;
-}
-```
-
-Use variant changes to reinforce a real state, such as selected or saved. Avoid mixing variants only for decoration.
-
-## Size and stroke
-
-Set `size` when an icon needs an explicit dimension. Outline icons also accept `strokeWidth`.
-
-```tsx
-<Search size={16} strokeWidth={1.5} />
-<Search size={20} strokeWidth={1.75} />
-<Search size="1.5rem" strokeWidth={2} />
-```
-
-Icons that appear together should use the same size and stroke weight unless hierarchy requires a deliberate difference.
-
-## Color
-
-Icons use `currentColor`, so class names and inherited CSS control their color.
-
-```tsx
-<CircleCheck className="text-success" />
-<CircleAlert className="text-warning" />
-<Heart className="text-destructive" />
-```
-
-This keeps hover, disabled, dark-mode, and state colors in the same styling system as the rest of your interface.
+Common vector styles include `Shapes`, `Sketch`, `Pattern`, `Texture`, and `Character`. Keeping a consistent style helps separate intentional art direction from visual noise.
 
 ## Inside controls
 
-When an icon appears beside visible text, hide the SVG from assistive technology because the text already names the action.
-
-```tsx
-<button type="button">
-  Download report
-  <Download aria-hidden="true" />
-</button>
-```
-
-For icon-only controls, put the accessible name on the control itself.
+When an icon appears beside visible text, hide the SVG because the text already names the action. For icon-only controls, put the accessible name on the control.
 
 ```tsx
 <button type="button" aria-label="Close dialog">
@@ -98,12 +97,16 @@ For icon-only controls, put the accessible name on the control itself.
 </button>
 ```
 
-## Metadata
+Logos and decorative vectors should not normally be used as button labels.
 
-Each icon exports a matching metadata object for custom browsers and internal tooling.
+## Metadata and complete catalogs
+
+Every asset exports a matching metadata object:
 
 ```tsx
 import { Search, SearchMetadata } from "honestui/icons";
+import { Vercel, VercelMetadata } from "honestui/logos";
+import { Abstract1Shapes, Abstract1ShapesMetadata } from "honestui/vectors";
 ```
 
-The package also exports `allIcons`, grouped by category. Prefer named imports in product code so your application does not include the complete catalog.
+The entry points also export `allIcons`, `allLogos`, and `allVectors`, grouped by category. These complete catalogs are useful for internal browsers and editors. Prefer named imports in product code so your application does not bundle every asset.

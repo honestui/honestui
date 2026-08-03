@@ -1,9 +1,9 @@
 ---
 title: Installation
-description: Add Honest UI Icons to your React project.
+description: Add Honest UI icons, logos, and vectors to your React project.
 ---
 
-Our icons are distributed with `honestui` and require no stylesheet or provider.
+Icons, logos, and vectors are distributed with `honestui`. They require no stylesheet or provider.
 
 ## Steps
 
@@ -12,36 +12,56 @@ Our icons are distributed with `honestui` and require no stylesheet or provider.
     <StepTitle>Install the package</StepTitle>
     <StepContent>
       <StepDescription>
-        Install `honestui` from your project root.
+        Install `honestui` once from your project root. All three collections are included.
       </StepDescription>
       <CommandBlock commands={["honestui"]} />
     </StepContent>
   </Step>
 
   <Step>
-    <StepTitle>Choose an icon</StepTitle>
+    <StepTitle>Choose a collection</StepTitle>
     <StepContent>
       <StepDescription>
-        Open a category from the sidebar and select an icon to view its import and usage code.
+        Use Icons for interface symbols, Logos for identities, or Vectors for decorative artwork. Select a collection and category from the sidebar to browse its assets.
       </StepDescription>
     </StepContent>
   </Step>
 
   <Step>
-    <StepTitle>Import the component</StepTitle>
+    <StepTitle>Import from its entry point</StepTitle>
     <StepContent>
       <StepDescription>
-        Import icons by name from `honestui/icons`.
+        Each collection has a dedicated entry point so named imports remain clear and tree-shakeable.
       </StepDescription>
 
 ```tsx
 import { Search } from "honestui/icons";
+import { Vercel } from "honestui/logos";
+import { Abstract1Shapes } from "honestui/vectors";
 
-export function SearchIcon() {
-  return <Search aria-hidden="true" />;
+export function AssetRow() {
+  return (
+    <div className="flex items-center gap-4">
+      <Search size={20} aria-hidden="true" />
+      <Vercel size={24} aria-label="Vercel" />
+      <Abstract1Shapes className="size-12" aria-hidden="true" />
+    </div>
+  );
 }
 ```
 
     </StepContent>
   </Step>
 </Steps>
+
+## Entry points
+
+- `honestui/icons` exports interface icons, icon metadata, and `allIcons`.
+- `honestui/logos` exports logos and wordmarks, logo metadata, and `allLogos`.
+- `honestui/vectors` exports decorative vectors, vector metadata, and `allVectors`.
+
+Import directly from an entry point rather than the package root. No CSS import, asset loader, SVG configuration, or runtime initialization is needed.
+
+## React requirements
+
+The assets are React SVG components and use the React JSX runtime. Your application must provide the compatible `react` and `react-dom` peer dependencies listed by `honestui`.

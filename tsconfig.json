@@ -21,6 +21,8 @@
     "paths": {
       "@/*": ["./*"],
       "honestui/icons": ["./lib/honestui-icons.ts"],
+      "honestui/logos": ["./lib/honestui-logos.ts"],
+      "honestui/vectors": ["./lib/honestui-vectors.ts"],
       "honestui/shaders": ["./lib/honestui-shaders.ts"]
     }
   },

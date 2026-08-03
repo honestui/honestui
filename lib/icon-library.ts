@@ -1,13 +1,46 @@
 import "server-only";
 
 import { allIcons } from "honestui/icons";
-import { getIconCategorySummary } from "@/globals/constants/icon-categories";
+import { allLogos } from "honestui/logos";
+import { allVectors } from "honestui/vectors";
+import {
+  getAssetCategorySummary,
+  type AssetCollection,
+} from "@/globals/constants/icon-categories";
+import type { ComponentType, SVGProps } from "react";
+
+interface AssetEntry {
+  Component: ComponentType<
+    SVGProps<SVGSVGElement> & {
+      size?: number | string;
+      strokeWidth?: number;
+    }
+  >;
+  metadata: {
+    id: string;
+    name: string;
+    variant: string;
+    tags: readonly string[];
+  };
+}
+
+type AssetCatalog = Record<string, Record<string, AssetEntry>>;
+
+const catalogs: Record<AssetCollection, AssetCatalog> = {
+  icons: allIcons as unknown as AssetCatalog,
+  logos: allLogos as unknown as AssetCatalog,
+  vectors: allVectors as unknown as AssetCatalog,
+};
 
 export function getIconCategory(slug: string) {
-  const category = getIconCategorySummary(slug);
+  return getAssetCategory("icons", slug);
+}
+
+export function getAssetCategory(collection: AssetCollection, slug: string) {
+  const category = getAssetCategorySummary(collection, slug);
   if (!category) return null;
 
-  const icons = allIcons[category.sourceKey];
+  const icons = catalogs[collection][category.sourceKey];
   if (!icons) return null;
 
   return { ...category, icons };

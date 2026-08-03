@@ -1,7 +1,11 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/utils";
 import { source } from "@/lib/source";
-import { ICON_CATEGORIES } from "@/globals/constants/icon-categories";
+import {
+  ICON_CATEGORIES,
+  LOGO_CATEGORIES,
+  VECTOR_CATEGORIES,
+} from "@/globals/constants/icon-categories";
 
 export const dynamic = "force-static";
 export const revalidate = false;
@@ -39,8 +43,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
+  const assetCollectionEntries: MetadataRoute.Sitemap = ["logos", "vectors"].flatMap(
+    (collection) => {
+      const categories = collection === "logos" ? LOGO_CATEGORIES : VECTOR_CATEGORIES;
+
+      return [
+        {
+          url: absoluteUrl(`/docs/icons/${collection}`),
+          lastModified: now,
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+        },
+        ...categories.map((category) => ({
+          url: absoluteUrl(`/docs/icons/${collection}/categories/${category.slug}`),
+          lastModified: now,
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        })),
+      ];
+    },
+  );
+
   const seen = new Set<string>();
-  return [...staticEntries, ...docsEntries, ...iconCategoryEntries].filter((entry) => {
+  return [
+    ...staticEntries,
+    ...docsEntries,
+    ...iconCategoryEntries,
+    ...assetCollectionEntries,
+  ].filter((entry) => {
     if (seen.has(entry.url)) return false;
     seen.add(entry.url);
     return true;

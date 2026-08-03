@@ -26,11 +26,19 @@
       "types": "./dist/icons.d.ts",
       "default": "./dist/icons.js"
     },
+    "./logos": {
+      "types": "./dist/logos.d.ts",
+      "default": "./dist/logos.js"
+    },
     "./shaders": {
       "types": "./dist/shaders.d.ts",
       "default": "./dist/shaders.js"
     },
     "./shaders.css": "./dist/shaders.css",
+    "./vectors": {
+      "types": "./dist/vectors.d.ts",
+      "default": "./dist/vectors.js"
+    },
     "./package.json": "./package.json"
   },
   "bin": {

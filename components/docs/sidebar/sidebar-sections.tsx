@@ -18,12 +18,18 @@ import {
 import { areaFromPathname, ProviderSwitcher } from "./provider-switcher";
 import { usePathname } from "next/navigation";
 import { NavMain } from "./nav-main";
-import { IconCategoryNavigation } from "./icon-category-navigation";
-import { ICON_CATEGORIES } from "@/globals/constants/icon-categories";
+import {
+  assetCollectionFromPathname,
+  IconCategoryNavigation,
+  IconCollectionNavigation,
+} from "./icon-category-navigation";
+import { ASSET_CATEGORIES } from "@/globals/constants/icon-categories";
 
 export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
   const pathname = usePathname();
   const activeArea = areaFromPathname(pathname);
+  const assetCollection = assetCollectionFromPathname(pathname);
+  const displayedAssetCollection = assetCollection ?? "icons";
 
   return (
     <>
@@ -43,7 +49,11 @@ export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
       ) : activeArea === "icons" ? (
         <>
           <RenderDefaultOptions label="Get Started" options={IconStartedOptions} />
-          <IconCategoryNavigation categories={ICON_CATEGORIES} />
+          <IconCollectionNavigation collection={assetCollection} />
+          <IconCategoryNavigation
+            categories={ASSET_CATEGORIES[displayedAssetCollection]}
+            collection={displayedAssetCollection}
+          />
         </>
       ) : activeArea === "shaders" ? (
         <>

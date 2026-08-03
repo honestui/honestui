@@ -1,26 +1,28 @@
 ---
 title: Accessibility
-description: Use Honest UI icons without hiding meaning from assistive technology.
+description: Use Honest UI icons, logos, and vectors without hiding meaning from assistive technology.
 ---
 
-Accessible icon usage starts by deciding what the icon does. An icon can be decorative, reinforce visible text, label an icon-only control, or communicate status on its own.
+Accessible visual asset usage starts by deciding what the asset contributes. An icon can label an action or communicate status, a logo can identify an organization or product, and a vector can be decorative or illustrate information.
 
-Use native HTML for the surrounding control and add ARIA only when it improves the accessible name or meaning.
+Use native HTML for surrounding controls and add ARIA only when it improves the accessible name or meaning.
 
-## Decorative icons
+## Decorative assets
 
-Hide icons that only add visual detail with `aria-hidden="true"`.
+Hide any icon, logo, or vector that only adds visual detail or repeats nearby text.
 
 ```tsx
 import { Sparkles } from "honestui/icons";
+import { Scribble1Sketch } from "honestui/vectors";
 
-<p>
+<div>
   <Sparkles aria-hidden="true" />
-  New this week
-</p>
+  <span>New this week</span>
+  <Scribble1Sketch aria-hidden="true" />
+</div>
 ```
 
-Decorative icons should not receive focus and should not repeat nearby text.
+Decorative assets should not receive focus. Hiding repeated artwork prevents a screen reader from announcing the same information twice.
 
 ## Icons beside text
 
@@ -35,8 +37,6 @@ import { Download } from "honestui/icons";
 </button>
 ```
 
-This prevents a screen reader from announcing both the icon name and the visible label.
-
 ## Icon-only controls
 
 Put the accessible name on the interactive element, not on the SVG.
@@ -49,9 +49,7 @@ import { Trash2 } from "honestui/icons";
 </button>
 ```
 
-Labels should describe the action and, when useful, its target. “Delete invoice” is clearer than “Trash.”
-
-Icon-only buttons and links also need a visible focus indicator and a touch target of at least `44 × 44` pixels.
+Labels should describe the action and, when useful, its target. Icon-only buttons and links also need a visible focus indicator and a touch target of at least `44 × 44` pixels.
 
 ## Meaningful status icons
 
@@ -63,21 +61,47 @@ import { CircleAlert } from "honestui/icons";
 <CircleAlert role="img" aria-label="Warning" />
 ```
 
-Whenever possible, pair status icons with visible text. Do not rely on color or icon shape alone to communicate an error, warning, or success state.
+Whenever possible, pair status icons with visible text. Do not rely on color or shape alone to communicate an error, warning, or success state.
+
+## Logos and wordmarks
+
+When a logo is the only visible identification, give it the organization or product name:
+
+```tsx
+import { VercelWordmark } from "honestui/logos";
+
+<VercelWordmark role="img" aria-label="Vercel" />
+```
+
+If visible text already says “Vercel,” use `aria-hidden="true"` on the logo. Avoid labels such as “Vercel logo”; the meaningful information is the identity, not the fact that it is a logo.
+
+## Informative vectors
+
+Most vectors are decorative and should be hidden. If an illustration communicates information that is not available in nearby text, give it a concise label or provide an equivalent text description.
+
+```tsx
+import { PeepStanding1Character } from "honestui/vectors";
+
+<PeepStanding1Character role="img" aria-label="A person waving" />
+```
+
+Complex illustrations may need a longer description in surrounding content rather than an oversized `aria-label`.
 
 ## Color and contrast
 
 Icons that carry meaning should meet a contrast ratio of at least `3:1` against adjacent colors. Check default, hover, focus, active, and disabled states in both light and dark themes.
 
-Decorative icons can use quieter colors, but they should not make nearby text harder to read.
+Logos and vectors can contain fixed colors. Test them against every intended background, and do not alter a brand mark in a way that makes it unrecognizable. Decorative artwork can use quieter colors, but it should not reduce the readability of nearby content.
 
-## Testing icons
+## Testing visual assets
 
-When adding or changing an icon:
+When adding or changing an asset:
 
-1. Confirm that decorative icons are hidden from the accessibility tree.
+1. Confirm that decorative icons, logos, and vectors are hidden from the accessibility tree.
 2. Check that icon-only controls have specific accessible names.
-3. Navigate to the control with a keyboard and confirm that focus is visible.
-4. Test the control with a screen reader.
-5. Check contrast in light mode, dark mode, and disabled states.
-6. Verify that zooming to 200% does not clip the icon or its label.
+3. Confirm that meaningful logos expose the correct identity without repeating nearby text.
+4. Provide equivalent text for informative illustrations.
+5. Navigate interactive controls with a keyboard and confirm that focus is visible.
+6. Test meaningful assets with a screen reader.
+7. Check contrast and visibility in light mode, dark mode, and disabled states.
+8. Verify that zooming to 200% does not clip the asset or its label.

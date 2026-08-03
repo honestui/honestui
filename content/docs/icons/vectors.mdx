@@ -1,0 +1,75 @@
+---
+title: Vectors
+description: Browse and use decorative shapes, illustrations, patterns, and hand-drawn accents as React components.
+---
+
+The vector collection contains 914 decorative React components for compositions that need more than an interface icon. It includes abstract shapes, people, patterns, scribbles, organic forms, and geometric artwork. Use the categories in the sidebar to browse the collection by visual purpose.
+
+## Installation
+
+Install Honest UI with your preferred package manager:
+
+```bash
+npm install honestui
+```
+
+Import vectors from the dedicated `honestui/vectors` entry point:
+
+```tsx
+import { Abstract1Shapes, Scribble1Sketch } from "honestui/vectors";
+
+export function DecorativeHeader() {
+  return (
+    <div className="relative overflow-hidden">
+      <Abstract1Shapes className="size-24 text-blue-500" aria-hidden="true" />
+      <Scribble1Sketch className="h-8 w-32" aria-hidden="true" />
+    </div>
+  );
+}
+```
+
+Named imports are tree-shakeable, so your application only bundles the vectors it uses.
+
+## Vector styles
+
+Export names describe both the artwork and its style. Common suffixes include `Shapes`, `Sketch`, `Pattern`, `Texture`, and `Character`. Filtering by style on a category page makes it easier to keep a composition visually consistent.
+
+Every vector also includes typed metadata:
+
+```tsx
+import { Abstract1Shapes, Abstract1ShapesMetadata } from "honestui/vectors";
+
+console.log(Abstract1ShapesMetadata.category); // "abstract"
+console.log(Abstract1ShapesMetadata.variant); // "shapes"
+```
+
+Use `allVectors` when building an internal asset browser or visual editor. Prefer named imports in product code so you do not include the complete catalog.
+
+## Categories
+
+- [**Abstract**](/docs/icons/vectors/categories/abstract) contains expressive non-representational shapes in shape and sketch styles.
+- [**Arrows**](/docs/icons/vectors/categories/arrows) includes oversized and hand-drawn directional artwork for callouts and annotations.
+- [**Busts**](/docs/icons/vectors/categories/busts) contains illustrated people shown from the shoulders or chest upward.
+- [**Ellipse**](/docs/icons/vectors/categories/ellipse) includes oval and elliptical geometric compositions.
+- [**Flowers**](/docs/icons/vectors/categories/flower) contains floral shapes for decorative and organic layouts.
+- [**Geometric**](/docs/icons/vectors/categories/geometric) combines circles, lines, polygons, and other constructed forms.
+- [**Misc**](/docs/icons/vectors/categories/misc) contains decorative artwork that does not belong to a single visual family.
+- [**Moon**](/docs/icons/vectors/categories/moon) includes crescent and lunar-inspired forms.
+- [**Numbers**](/docs/icons/vectors/categories/number) contains illustrated numerals for editorial and promotional compositions.
+- [**Organic**](/docs/icons/vectors/categories/organic) includes fluid blobs, natural contours, patterns, and textures.
+- [**Polygons**](/docs/icons/vectors/categories/polygon) contains multi-sided geometric shapes.
+- [**Rectangles**](/docs/icons/vectors/categories/rectangle) includes rectangular frames and compositions.
+- [**Scribbles**](/docs/icons/vectors/categories/scribble) contains hand-drawn lines, loops, underlines, and annotation marks.
+- [**Sitting People**](/docs/icons/vectors/categories/sitting) contains full-body character illustrations in seated poses.
+- [**Standing People**](/docs/icons/vectors/categories/standing) contains full-body character illustrations in standing poses.
+- [**Stars**](/docs/icons/vectors/categories/stars) includes starbursts and decorative star shapes.
+- [**Triangles**](/docs/icons/vectors/categories/triangle) contains triangular geometric compositions.
+- [**Wheels**](/docs/icons/vectors/categories/wheel) includes radial and wheel-like shapes.
+
+## Sizing and composition
+
+Vector components accept standard SVG props plus `size` and `className`. Use CSS width and height utilities when the artwork is not square. Vectors are intended as compositional elements, so they work well with absolute positioning, transforms, clipping, and responsive sizing.
+
+## Accessibility
+
+Decorative vectors should normally use `aria-hidden="true"` and should not receive focus. When an illustration communicates information that is not present in nearby text, give it a concise accessible name with `aria-label` or provide an equivalent text description.

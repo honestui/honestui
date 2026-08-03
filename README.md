@@ -1,6 +1,6 @@
 # Honest UI
 
-Accessible React components, shaders, charts, and icons.
+Accessible React components, shaders, charts, icons, logos, and vectors.
 
 [Documentation](https://honestui.com/docs) ·
 [Report a bug](https://github.com/honestui/honestui/issues/new?template=bug_report.yml) ·
@@ -22,7 +22,9 @@ npm install honestui
 import { Button } from "honestui";
 import { BarChart, type ChartConfig } from "honestui/charts";
 import { Search } from "honestui/icons";
+import { Vercel } from "honestui/logos";
 import { LightRays } from "honestui/shaders";
+import { Abstract1Shapes } from "honestui/vectors";
 ```
 
 Load the corresponding package styles for Gooey Toast and shader effects:
@@ -32,12 +34,14 @@ import "honestui/styles.css";
 import "honestui/shaders.css";
 ```
 
-The four JavaScript entry points are:
+The six JavaScript entry points are:
 
 - `honestui` for UI components
 - `honestui/charts` for chart components, helpers, and types
 - `honestui/icons` for the complete icon catalog and metadata
+- `honestui/logos` for the complete logo catalog and metadata
 - `honestui/shaders` for GPU-rendered visual effects and their prop types
+- `honestui/vectors` for decorative shapes, illustrations, patterns, and metadata
 
 Both ES modules and CommonJS are published with TypeScript declarations.
 

@@ -1,29 +1,44 @@
 ---
-title: Our Icons
-description: Open-source React icons designed for clear, consistent product interfaces.
+title: Icons
+description: Open-source React icons, logos, and vectors for product interfaces and visual compositions.
 ---
 
-Our icons bring Honest UI's source-first approach to interface symbols. Each icon is open source, composable, and designed to fit naturally into modern React applications.
+Honest UI includes three visual asset collections with a shared React API. Use icons for interface meaning, logos for identities, and vectors for decorative compositions. Every asset is typed, tree-shakeable, and rendered as an SVG component.
 
-They share a consistent visual system and can be imported directly from `honestui/icons`.
+## Collections
 
-## Why our icons?
+- [**Icons**](/docs/icons/categories/interface) contains 4,084 consistent interface symbols. Use them for actions, navigation, status, content types, and product concepts. Import them from `honestui/icons`.
+- [**Logos**](/docs/icons/logos) contains 565 brand marks, wordmarks, flags, payment symbols, and technology identities. Import them from `honestui/logos`.
+- [**Vectors**](/docs/icons/vectors) contains 914 abstract shapes, hand-drawn accents, people, patterns, and decorative illustrations. Import them from `honestui/vectors`.
 
-Icons make actions and information easier to recognize, but mixed styles can make an interface feel uneven. Our icons provide a broad set of symbols with consistent sizing, proportions, and React APIs.
+Use Collections in the sidebar to switch catalogs. The category list updates to show the organization and item counts for the selected collection.
 
-Every icon is:
+## Shared component API
 
-- **Composable.** Use icons inside buttons, menus, fields, charts, and your own components.
-- **Themeable.** Icons inherit `currentColor`, so they follow text, state, and theme colors.
-- **Tree-shakeable.** Named imports let your bundler keep only the icons your application uses.
-- **Source-first.** Inspect the SVG output, wrap the component, or adapt it for your product.
+Assets accept standard SVG props such as `className`, `aria-label`, `role`, `width`, and `height`. They also accept a convenient `size` prop and forward their ref to the underlying SVG element.
 
-## Built for product interfaces
+```tsx
+import { Search } from "honestui/icons";
+import { Vercel } from "honestui/logos";
+import { Abstract1Shapes } from "honestui/vectors";
 
-The collection includes interface controls, arrows, files, commerce, brands, charts, devices, status symbols, and more. Default, filled, rounded, and doodle variants are available where the concept supports them.
+export function AssetExamples() {
+  return (
+    <div className="flex items-center gap-4">
+      <Search size={20} aria-label="Search" />
+      <Vercel size={24} aria-label="Vercel" />
+      <Abstract1Shapes className="size-12" aria-hidden="true" />
+    </div>
+  );
+}
+```
 
-Every icon forwards standard SVG props and includes typed metadata for its name, category, variant, tags, and view box.
+## Variants and metadata
+
+An export name includes its visual variant when applicable. Icons can have filled, rounded, or doodle versions; logos can have symbols and wordmarks; vectors can have shape, sketch, pattern, texture, or character versions.
+
+Every component has a matching metadata export describing its ID, name, category, variant, tags, and view box. Each package entry point also exposes its complete catalog as `allIcons`, `allLogos`, or `allVectors` for internal browsers and asset pickers.
 
 ## Get started
 
-Follow [Installation](/docs/icons/installation), read [Usage](/docs/icons/usage), and review [Accessibility](/docs/icons/accessibility). Use the categories in the sidebar to browse every icon and copy its import or usage code.
+Follow [Installation](/docs/icons/installation) to add the package, read [Usage](/docs/icons/usage) for collection-specific examples, and review [Accessibility](/docs/icons/accessibility) before shipping visual assets in an interface.

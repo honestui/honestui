@@ -8,7 +8,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import type { IconCategorySummary } from "@/globals/constants/icon-categories";
+import type {
+  AssetCollection,
+  IconCategorySummary,
+} from "@/globals/constants/icon-categories";
 import {
   ActivityFilled,
   AlarmClock,
@@ -139,12 +142,115 @@ const categoryIcons: Record<string, CategoryIcon> = {
   user: UserRound,
   weather: CloudSunnyFilled,
   zodiac: ZodiacAries,
+  adobe: Palette,
+  ai: RocketDoodle,
+  browser: AppWindow,
+  cards: Badge,
+  cms: DocumentTextFilled,
+  crypto: Circle,
+  database: Network,
+  devtool: Code,
+  flags: AwardFilled,
+  framework: Columns3,
+  google: Cloud,
+  language: Code,
+  library: BookOpen,
+  music: Play,
+  payment: WalletFilled,
+  social: MessageCircleHeart,
+  software: AppWindow,
+  sports: AwardFilled,
+  stickers: Badge,
+  abstract: DashboardDoodle,
+  busts: UserRound,
+  ellipse: Circle,
+  flower: Leaf,
+  geometric: Triangle,
+  moon: CloudSunnyFilled,
+  number: Type,
+  organic: Leaf,
+  polygon: Triangle,
+  rectangle: Square,
+  scribble: HandDoodle,
+  sitting: UserRound,
+  standing: UserRound,
+  stars: AwardFilled,
+  triangle: Triangle,
+  wheel: Circle,
 };
+
+const collections: Array<{
+  id: AssetCollection;
+  name: string;
+  href: string;
+  icon: CategoryIcon;
+}> = [
+  { id: "icons", name: "Icons", href: "/docs/icons", icon: Square },
+  { id: "logos", name: "Logos", href: "/docs/icons/logos", icon: FigmaFilled },
+  { id: "vectors", name: "Vectors", href: "/docs/icons/vectors", icon: Palette },
+];
+
+export function assetCollectionFromPathname(pathname: string): AssetCollection | null {
+  if (pathname === "/docs/icons/logos" || pathname.startsWith("/docs/icons/logos/")) {
+    return "logos";
+  }
+
+  if (pathname === "/docs/icons/vectors" || pathname.startsWith("/docs/icons/vectors/")) {
+    return "vectors";
+  }
+
+  if (pathname.startsWith("/docs/icons/categories/")) {
+    return "icons";
+  }
+
+  return null;
+}
+
+export function IconCollectionNavigation({
+  collection,
+}: {
+  collection: AssetCollection | null;
+}) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  return (
+    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel>Collections</SidebarGroupLabel>
+      <SidebarMenu>
+        {collections.map((item) => {
+          const CollectionIcon = item.icon;
+
+          return (
+            <SidebarMenuItem key={item.id}>
+              <SidebarMenuButton
+                render={
+                  <Link
+                    href={item.href}
+                    aria-current={collection === item.id ? "page" : undefined}
+                    onClick={() => {
+                      if (isMobile) setOpenMobile(false);
+                    }}
+                  />
+                }
+                isActive={collection === item.id}
+              >
+                <CollectionIcon aria-hidden="true" className="size-4 shrink-0" />
+                <span>{item.name}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+}
 
 export function IconCategoryNavigation({
   categories,
+  collection = "icons",
 }: {
   categories: IconCategorySummary[];
+  collection?: AssetCollection;
 }) {
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -154,9 +260,10 @@ export function IconCategoryNavigation({
       <SidebarGroupLabel>Categories</SidebarGroupLabel>
       <SidebarMenu>
         {categories.map((category) => {
-          const url = `/docs/icons/categories/${category.slug}`;
+          const collectionSegment = collection === "icons" ? "" : `/${collection}`;
+          const url = `/docs/icons${collectionSegment}/categories/${category.slug}`;
           const isActive = pathname === url;
-          const CategoryIcon = categoryIcons[category.sourceKey];
+          const CategoryIcon = categoryIcons[category.sourceKey] ?? Ellipsis;
 
           return (
             <SidebarMenuItem key={category.slug}>

@@ -6,7 +6,13 @@ import CopyButton from "@/components/docs/mdx/components/copy-button";
 import { getIconUsageCode } from "@/lib/icon-code";
 import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 
-function HighlightedIconCode({ exportName }: { exportName: string }) {
+function HighlightedIconCode({
+  exportName,
+  importPath,
+}: {
+  exportName: string;
+  importPath: string;
+}) {
   return (
     <pre className="no-scrollbar h-full overflow-auto px-4 py-3.5 text-[.8125rem] leading-6 outline-none">
       <code className="whitespace-pre">
@@ -16,7 +22,7 @@ function HighlightedIconCode({ exportName }: { exportName: string }) {
           <span className="text-[#005CC5] dark:text-[#79B8FF]">{exportName}</span>
           {" } "}
           <span className="text-[#D73A49] dark:text-[#F97583]">from</span>
-          <span className="text-[#032F62] dark:text-[#9ECBFF]"> {`"honestui/icons"`}</span>
+          <span className="text-[#032F62] dark:text-[#9ECBFF]"> {`"${importPath}"`}</span>
           {";"}
         </span>
         <span aria-hidden="true" className="block">
@@ -102,12 +108,14 @@ export function IconComponentPreview({
   exportName,
   name,
   preview,
+  importPath = "honestui/icons",
 }: {
   exportName: string;
   name: string;
   preview: ReactNode;
+  importPath?: string;
 }) {
-  const code = getIconUsageCode(exportName);
+  const code = getIconUsageCode(exportName, importPath);
 
   return (
     <article>
@@ -129,7 +137,7 @@ export function IconComponentPreview({
               code={code}
               className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover/source:opacity-100"
             />
-            <HighlightedIconCode exportName={exportName} />
+            <HighlightedIconCode exportName={exportName} importPath={importPath} />
           </div>
         }
       />

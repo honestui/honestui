@@ -5,6 +5,8 @@ export interface IconCategorySummary {
   count: number;
 }
 
+export type AssetCollection = "icons" | "logos" | "vectors";
+
 export const ICON_CATEGORIES: IconCategorySummary[] = [
   { sourceKey: "align", slug: "align", name: "Align", count: 22 },
   { sourceKey: "animal", slug: "animal", name: "Animal", count: 17 },
@@ -75,6 +77,66 @@ export const ICON_CATEGORIES: IconCategorySummary[] = [
 
 export const ICON_COUNT = ICON_CATEGORIES.reduce((total, category) => total + category.count, 0);
 
+export const LOGO_CATEGORIES: IconCategorySummary[] = [
+  { sourceKey: "adobe", slug: "adobe", name: "Adobe", count: 12 },
+  { sourceKey: "ai", slug: "ai", name: "AI", count: 26 },
+  { sourceKey: "browser", slug: "browser", name: "Browser", count: 12 },
+  { sourceKey: "cards", slug: "cards", name: "Cards", count: 25 },
+  { sourceKey: "cms", slug: "cms", name: "CMS", count: 10 },
+  { sourceKey: "crypto", slug: "crypto", name: "Crypto", count: 15 },
+  { sourceKey: "database", slug: "database", name: "Database", count: 14 },
+  { sourceKey: "design", slug: "design", name: "Design", count: 10 },
+  { sourceKey: "devtool", slug: "devtool", name: "Developer Tools", count: 10 },
+  { sourceKey: "flags", slug: "flags", name: "Flags", count: 227 },
+  { sourceKey: "framework", slug: "framework", name: "Frameworks", count: 36 },
+  { sourceKey: "google", slug: "google", name: "Google", count: 39 },
+  { sourceKey: "language", slug: "language", name: "Languages", count: 25 },
+  { sourceKey: "library", slug: "library", name: "Libraries", count: 45 },
+  { sourceKey: "music", slug: "music", name: "Music", count: 3 },
+  { sourceKey: "payment", slug: "payment", name: "Payment", count: 5 },
+  { sourceKey: "social", slug: "social", name: "Social", count: 18 },
+  { sourceKey: "software", slug: "software", name: "Software", count: 31 },
+  { sourceKey: "sports", slug: "sports", name: "Sports", count: 1 },
+  { sourceKey: "stickers", slug: "stickers", name: "Stickers", count: 1 },
+];
+
+export const VECTOR_CATEGORIES: IconCategorySummary[] = [
+  { sourceKey: "abstract", slug: "abstract", name: "Abstract", count: 229 },
+  { sourceKey: "arrows", slug: "arrows", name: "Arrows", count: 74 },
+  { sourceKey: "busts", slug: "busts", name: "Busts", count: 105 },
+  { sourceKey: "ellipse", slug: "ellipse", name: "Ellipse", count: 12 },
+  { sourceKey: "flower", slug: "flower", name: "Flowers", count: 16 },
+  { sourceKey: "geometric", slug: "geometric", name: "Geometric", count: 96 },
+  { sourceKey: "misc", slug: "misc", name: "Misc", count: 11 },
+  { sourceKey: "moon", slug: "moon", name: "Moon", count: 15 },
+  { sourceKey: "number", slug: "number", name: "Numbers", count: 10 },
+  { sourceKey: "organic", slug: "organic", name: "Organic", count: 97 },
+  { sourceKey: "polygon", slug: "polygon", name: "Polygons", count: 8 },
+  { sourceKey: "rectangle", slug: "rectangle", name: "Rectangles", count: 9 },
+  { sourceKey: "scribble", slug: "scribble", name: "Scribbles", count: 150 },
+  { sourceKey: "sitting", slug: "sitting", name: "Sitting People", count: 18 },
+  { sourceKey: "standing", slug: "standing", name: "Standing People", count: 30 },
+  { sourceKey: "stars", slug: "stars", name: "Stars", count: 13 },
+  { sourceKey: "triangle", slug: "triangle", name: "Triangles", count: 14 },
+  { sourceKey: "wheel", slug: "wheel", name: "Wheels", count: 7 },
+];
+
+export const ASSET_CATEGORIES: Record<AssetCollection, IconCategorySummary[]> = {
+  icons: ICON_CATEGORIES,
+  logos: LOGO_CATEGORIES,
+  vectors: VECTOR_CATEGORIES,
+};
+
+export const ASSET_COUNTS: Record<AssetCollection, number> = {
+  icons: ICON_COUNT,
+  logos: LOGO_CATEGORIES.reduce((total, category) => total + category.count, 0),
+  vectors: VECTOR_CATEGORIES.reduce((total, category) => total + category.count, 0),
+};
+
 export function getIconCategorySummary(slug: string) {
   return ICON_CATEGORIES.find((category) => category.slug === slug);
+}
+
+export function getAssetCategorySummary(collection: AssetCollection, slug: string) {
+  return ASSET_CATEGORIES[collection].find((category) => category.slug === slug);
 }
