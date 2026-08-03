@@ -1,6 +1,6 @@
 {
   "name": "honestui",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Build and manage Honest UI component libraries.",
   "license": "MIT",
   "homepage": "https://honestui.com",
@@ -17,6 +17,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./charts": {
+      "types": "./dist/charts.d.ts",
+      "default": "./dist/charts.js"
+    },
+    "./icons": {
+      "types": "./dist/icons.d.ts",
+      "default": "./dist/icons.js"
     },
     "./shaders": {
       "types": "./dist/shaders.d.ts",
@@ -41,9 +49,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup && node scripts/mark-shaders-client.mjs",
+    "build": "tsup && node scripts/mark-client-entries.mjs",
     "typecheck": "tsc --noEmit",
-    "prepack": "npm run build"
+    "verify:exports": "node scripts/verify-package-exports.mjs",
+    "prepack": "npm run build && npm run verify:exports"
   },
   "dependencies": {
     "@antfu/ni": "^25.0.0",
@@ -57,12 +66,15 @@
     "dedent": "^1.6.0",
     "deepmerge": "^4.3.1",
     "diff": "^8.0.2",
+    "echarts": "^6.1.0",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.1",
     "fuzzysort": "^3.1.0",
     "https-proxy-agent": "^7.0.6",
     "kleur": "^4.1.5",
+    "love-ui": "^1.2.24",
+    "motion": "^12.42.2",
     "node-fetch": "^3.3.2",
     "ogl": "^1.0.11",
     "open": "^11.0.0",

@@ -21,7 +21,7 @@ import type {
   Root as PageTreeRoot,
 } from "fumadocs-core/page-tree";
 import { flattenTree } from "fumadocs-core/page-tree";
-import { CaretRight } from "@carbon/icons-react";
+import { Add } from "@carbon/icons-react";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -295,9 +295,10 @@ export function NavMain({
               >
                 {getNavItemIcon(item.$id)}
                 <span className="capitalize">{item.name}</span>
-                <CaretRight
+                <Add
+                  aria-hidden="true"
                   className={cn(
-                    "ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90",
+                    "ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-45",
                     !hasActiveChild ? "opacity-60" : "opacity-100",
                   )}
                 />

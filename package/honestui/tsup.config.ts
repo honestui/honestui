@@ -3,6 +3,8 @@ import { defineConfig } from "tsup"
 export default defineConfig({
   entry: {
     index: "src/index.ts",
+    charts: "src/charts.ts",
+    icons: "src/icons.ts",
     shaders: "src/shaders.ts",
   },
   format: ["esm"],

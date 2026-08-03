@@ -6,7 +6,6 @@ import shaderExample1 from "./default/examples/shaders/dithering-demo";
 import shaderExample2 from "./default/examples/shaders/grainient-demo";
 import shaderExample3 from "./default/examples/shaders/grid-distortion-demo";
 import shaderExample4 from "./default/examples/shaders/light-rays-demo";
-import shaderExample5 from "./default/examples/shaders/side-rays-demo";
 
 export const ShaderIndex: Record<string, { component: ComponentType }> = {
   "blinds-demo": { component: shaderExample0 },
@@ -14,5 +13,4 @@ export const ShaderIndex: Record<string, { component: ComponentType }> = {
   "grainient-demo": { component: shaderExample2 },
   "grid-distortion-demo": { component: shaderExample3 },
   "light-rays-demo": { component: shaderExample4 },
-  "side-rays-demo": { component: shaderExample5 },
 };

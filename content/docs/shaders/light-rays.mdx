@@ -1,13 +1,13 @@
 ---
 title: Light Rays
-description: Cast soft animated rays from any edge with optional pointer influence.
+description: Cast soft animated rays from any edge or corner.
 ---
 
 <ComponentPreview name="light-rays-demo" playground />
 
 ## Overview
 
-Light Rays creates a directional atmospheric wash with controllable spread, length, color, noise, and distortion. It is suited to dark hero surfaces and media where the light source should feel spatially anchored.
+Light Rays creates a directional atmospheric wash with controllable spread, length, color, noise, and distortion. It can originate from any edge or corner of its container.
 
 ## Installation
 
@@ -22,7 +22,7 @@ import { LightRays } from "honestui/shaders"
   <LightRays
     className="size-full"
     raysColor="#b8d6ff"
-    raysOrigin="top-center"
+    raysOrigin="top-right"
     lightSpread={0.72}
     followMouse={false}
   />
