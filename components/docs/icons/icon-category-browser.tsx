@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Search } from "honestui/icons";
 import { useMemo, useState, type ReactNode } from "react";
+import posthog from "posthog-js";
 
 const PAGE_SIZE = 24;
 const ALL_VARIANTS = "all";
@@ -114,6 +115,15 @@ export function IconCategoryBrowser({
                 setQuery(event.target.value);
                 setVisibleCount(PAGE_SIZE);
               }}
+              onBlur={() => {
+                if (query.trim()) {
+                  posthog.capture("icon_catalog_searched", {
+                    collection,
+                    query_length: query.trim().length,
+                    result_count: visibleIcons.length,
+                  });
+                }
+              }}
               placeholder={`Search ${icons.length.toLocaleString()} ${collection}…`}
               className="[&_[data-slot=input]]:pl-9"
             />
@@ -122,8 +132,14 @@ export function IconCategoryBrowser({
           <Select
             value={variant}
             onValueChange={(value) => {
-              setVariant(value ?? ALL_VARIANTS);
+              const nextVariant = value ?? ALL_VARIANTS;
+              setVariant(nextVariant);
               setVisibleCount(PAGE_SIZE);
+              posthog.capture("icon_catalog_filter_changed", {
+                collection,
+                filter_type: "variant",
+                filter_value: nextVariant,
+              });
             }}
           >
             <SelectTrigger className="w-full sm:w-40" aria-label="Filter by icon style">
@@ -165,7 +181,17 @@ export function IconCategoryBrowser({
 
           {displayedIcons.length < visibleIcons.length ? (
             <div className="mt-10 flex justify-center">
-              <Button variant="outline" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setVisibleCount((count) => count + PAGE_SIZE);
+                  posthog.capture("icon_catalog_more_results_requested", {
+                    collection,
+                    visible_count: displayedIcons.length,
+                    result_count: visibleIcons.length,
+                  });
+                }}
+              >
                 Show {Math.min(PAGE_SIZE, visibleIcons.length - displayedIcons.length)} more
               </Button>
             </div>
@@ -186,6 +212,7 @@ export function IconCategoryBrowser({
               setQuery("");
               setVariant(ALL_VARIANTS);
               setVisibleCount(PAGE_SIZE);
+              posthog.capture("icon_catalog_filters_cleared", { collection });
             }}
           >
             Clear filters

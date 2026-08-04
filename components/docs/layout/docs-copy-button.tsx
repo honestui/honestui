@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { CaretDown } from "@carbon/icons-react";
 import { useClipboard } from "@mantine/hooks";
 import { cn } from "@/lib/utils";
+import posthog from "posthog-js";
 
 export function DocsCopyButton({
   value,
@@ -38,7 +39,12 @@ export function DocsCopyButton({
         "text-muted-foreground hover:text-foreground size-5 rounded opacity-70 hover:opacity-100",
         className,
       )}
-      onClick={() => copy(value)}
+      onClick={() => {
+        copy(value);
+        posthog.capture("documentation_code_copied", {
+          copy_target: "identifier",
+        });
+      }}
     >
       {copied ? <CheckIcon /> : <CopyIcon />}
     </Button>
@@ -170,6 +176,13 @@ const menuItems = {
 export function DocsCopyPage({ mdx, url, path }: { mdx: string; url: string; path: string }) {
   const { copy, copied } = useClipboard();
 
+  const capturePageAction = (action: string) => {
+    posthog.capture("documentation_page_action_selected", {
+      action,
+      documentation_path: path,
+    });
+  };
+
   const trigger = (
     <Button
       variant="secondary"
@@ -190,7 +203,10 @@ export function DocsCopyPage({ mdx, url, path }: { mdx: string; url: string; pat
           variant="secondary"
           size="sm"
           className="bg-background hover:bg-background text-muted-foreground hover:text-primary hover:border-primary/20 border px-1.5! text-xs duration-0"
-          onClick={() => copy(mdx)}
+          onClick={() => {
+            copy(mdx);
+            capturePageAction("copy_page");
+          }}
         >
           {copied ? <CheckIcon /> : <CopyIcon />}
           <span className={cn(copied && "opacity-0")}>Copy Page</span>
@@ -203,6 +219,7 @@ export function DocsCopyPage({ mdx, url, path }: { mdx: string; url: string; pat
               <DropdownMenuItem
                 className="hover:bg-muted/50! text-muted-foreground/80 hover:text-primary! cursor-pointer text-[13px]"
                 key={key}
+                onClick={() => capturePageAction(key)}
                 render={value(url, path)}
               />
             ))}

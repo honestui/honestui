@@ -4,6 +4,7 @@ import { CheckIcon, CopyIcon } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
 import { useClipboard } from "@mantine/hooks";
 import { cn } from "@/lib/utils";
+import posthog from "posthog-js";
 
 const CopyButton = ({
   code,
@@ -25,7 +26,12 @@ const CopyButton = ({
       )}
       variant="ghost"
       size="icon"
-      onClick={() => copy(code)}
+      onClick={() => {
+        copy(code);
+        posthog.capture("documentation_code_copied", {
+          copy_target: "code_snippet",
+        });
+      }}
     >
       {copied ? <CheckIcon /> : <CopyIcon />}
     </Button>
