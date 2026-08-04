@@ -1,5 +1,6 @@
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
-import { JetBrains_Mono, Geist, Inter } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
 import { absoluteUrl, cn, SITE_URL } from "@/lib/utils";
@@ -11,15 +12,60 @@ import {
 } from "@/globals/constants/site";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geist = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const loveSans = localFont({
+  src: [
+    {
+      path: "../public/fonts/LoveSans-Light.woff",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/LoveSans-LightItalic.woff",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/LoveSans-Regular.woff",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/LoveSans-RegularItalic.woff",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/LoveSans-Medium.woff",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/LoveSans-MediumItalic.woff",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/LoveSans-Semibold.woff",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/LoveSans-SemiboldItalic.woff",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "../public/fonts/LoveSans-Bold.woff",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/LoveSans-BoldItalic.woff",
+      weight: "700",
+      style: "italic",
+    },
+  ],
+  variable: "--font-love-sans",
   display: "swap",
 });
 
@@ -155,10 +201,9 @@ export default function RootLayout({
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
         className={cn(
-          geist.variable,
+          loveSans.variable,
           jetbrainsMono.variable,
-          inter.variable,
-          "font-inter antialiased",
+          "font-sans antialiased",
         )}
       >
         <script
