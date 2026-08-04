@@ -2,31 +2,32 @@
 
 import { ComposedChart, type ChartConfig } from "@/registry/default/charts/composed-chart";
 
+// Scenario: Restaurant service
 const data = [
-  { month: "January", revenue: 4200, profit: 1800 },
-  { month: "February", revenue: 5800, profit: 2400 },
-  { month: "March", revenue: 4100, profit: 1600 },
-  { month: "April", revenue: 6200, profit: 2800 },
-  { month: "May", revenue: 5400, profit: 2200 },
-  { month: "June", revenue: 7800, profit: 3400 },
-  { month: "July", revenue: 6100, profit: 2600 },
-  { month: "August", revenue: 8200, profit: 3800 },
-  { month: "September", revenue: 5900, profit: 2500 },
-  { month: "October", revenue: 6800, profit: 3000 },
-  { month: "November", revenue: 7200, profit: 3200 },
-  { month: "December", revenue: 9100, profit: 4200 },
+  { month: "January", covers: 4128, ticketTime: 1448 },
+  { month: "February", covers: 5707, ticketTime: 1935 },
+  { month: "March", covers: 4052, ticketTime: 1302 },
+  { month: "April", covers: 6121, ticketTime: 2269 },
+  { month: "May", covers: 5304, ticketTime: 1796 },
+  { month: "June", covers: 7667, ticketTime: 2728 },
+  { month: "July", covers: 6012, ticketTime: 2095 },
+  { month: "August", covers: 8081, ticketTime: 3062 },
+  { month: "September", covers: 5794, ticketTime: 2029 },
+  { month: "October", covers: 6687, ticketTime: 2436 },
+  { month: "November", covers: 7090, ticketTime: 2568 },
+  { month: "December", covers: 8963, ticketTime: 3375 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  covers: {
+    label: "Covers",
     colors: {
       light: ["#3b82f6"],
       dark: ["#6A5ACD"],
     },
   },
-  profit: {
-    label: "Profit",
+  ticketTime: {
+    label: "Ticket time",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
@@ -47,11 +48,11 @@ export function ExampleComposedChart() {
       <ComposedChart.Legend isClickable />
       <ComposedChart.Tooltip />
       <ComposedChart.Bar
-        dataKey="revenue"
+        dataKey="covers"
         variant="duotone" // [!code highlight]
         isClickable
       />
-      <ComposedChart.Line dataKey="profit" isClickable />
+      <ComposedChart.Line dataKey="ticketTime" isClickable />
     </ComposedChart>
   );
 }

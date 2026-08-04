@@ -2,9 +2,10 @@
 
 import { Heatmap, type ChartConfig } from "@/registry/default/charts/heatmap";
 
+// Scenario: Classroom attendance
 const chartConfig = {
-  activity: {
-    label: "Activity",
+  attendance: {
+    label: "Attendance",
     colors: {
       light: ["#e0f2fe", "#0369a1"],
       dark: ["#082f49", "#38bdf8"],
@@ -19,7 +20,7 @@ export function LoadingHeatmap() {
       config={chartConfig}
       xDataKey="day"
       yDataKey="hour"
-      valueDataKey="activity"
+      valueDataKey="attendance"
       className="h-full w-full p-4"
       isLoading
     >

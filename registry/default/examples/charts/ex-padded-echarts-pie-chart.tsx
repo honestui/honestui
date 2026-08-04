@@ -2,45 +2,46 @@
 
 import { PieChart, type ChartConfig } from "@/registry/default/charts/pie-chart";
 
+// Scenario: Course enrollment
 const data = [
-  { browser: "chrome", visitors: 275 },
-  { browser: "safari", visitors: 200 },
-  { browser: "firefox", visitors: 187 },
-  { browser: "edge", visitors: 173 },
-  { browser: "other", visitors: 90 },
+  { category: "science", students: 264 },
+  { category: "arts", students: 218 },
+  { category: "business", students: 176 },
+  { category: "language", students: 132 },
+  { category: "music", students: 88 },
 ];
 
 const chartConfig = {
-  chrome: {
-    label: "Chrome",
+  science: {
+    label: "Science",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
-  safari: {
-    label: "Safari",
+  arts: {
+    label: "Arts",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
     },
   },
-  firefox: {
-    label: "Firefox",
+  business: {
+    label: "Business",
     colors: {
       light: ["#f59e0b"],
       dark: ["#fbbf24"],
     },
   },
-  edge: {
-    label: "Edge",
+  language: {
+    label: "Languages",
     colors: {
       light: ["#8b5cf6"],
       dark: ["#a78bfa"],
     },
   },
-  other: {
-    label: "Other",
+  music: {
+    label: "Music",
     colors: {
       light: ["#6b7280"],
       dark: ["#9ca3af"],
@@ -53,8 +54,8 @@ export function ExamplePieChart() {
     <PieChart
       className="h-full w-full p-4"
       data={data}
-      dataKey="visitors"
-      nameKey="browser"
+      dataKey="students"
+      nameKey="category"
       config={chartConfig}
     >
       <PieChart.Legend isClickable />

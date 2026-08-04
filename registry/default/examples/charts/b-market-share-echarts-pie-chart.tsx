@@ -4,16 +4,17 @@ import { PieChart, type ChartConfig } from "@/registry/default/charts/pie-chart"
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
+// Scenario: Coffee export destinations
 const SERIES = [
-  { key: "skyline", label: "Skyline", value: 27, swatch: "bg-[#0a0a0a] dark:bg-[#ffffff]" },
-  { key: "datawell", label: "Datawell", value: 21, swatch: "bg-[#262626] dark:bg-[#dedede]" },
-  { key: "cloudpeak", label: "Cloudpeak", value: 13, swatch: "bg-[#3d3d3d] dark:bg-[#bebebe]" },
-  { key: "taskbridge", label: "Taskbridge", value: 21, swatch: "bg-[#545454] dark:bg-[#a0a0a0]" },
-  { key: "insightloop", label: "Insightloop", value: 6, swatch: "bg-[#6b6b6b] dark:bg-[#868686]" },
+  { key: "skyline", label: "Europe", value: 24, swatch: "bg-[#0a0a0a] dark:bg-[#ffffff]" },
+  { key: "datawell", label: "North America", value: 20, swatch: "bg-[#262626] dark:bg-[#dedede]" },
+  { key: "cloudpeak", label: "East Asia", value: 18, swatch: "bg-[#3d3d3d] dark:bg-[#bebebe]" },
+  { key: "taskbridge", label: "Middle East", value: 16, swatch: "bg-[#545454] dark:bg-[#a0a0a0]" },
+  { key: "insightloop", label: "Oceania", value: 13, swatch: "bg-[#6b6b6b] dark:bg-[#868686]" },
   {
     key: "streamforge",
-    label: "Streamforge",
-    value: 12,
+    label: "Africa",
+    value: 9,
     swatch: "bg-[#7d7d7d] dark:bg-[#6f6f6f]",
   },
 ] as const;
@@ -25,12 +26,12 @@ const chartData = [...SERIES].reverse().map(({ key, value }) => ({
 }));
 
 const chartConfig = {
-  skyline: { label: "Skyline", colors: { light: ["#0a0a0a"], dark: ["#ffffff"] } },
-  datawell: { label: "Datawell", colors: { light: ["#262626"], dark: ["#dedede"] } },
-  cloudpeak: { label: "Cloudpeak", colors: { light: ["#3d3d3d"], dark: ["#bebebe"] } },
-  taskbridge: { label: "Taskbridge", colors: { light: ["#545454"], dark: ["#a0a0a0"] } },
-  insightloop: { label: "Insightloop", colors: { light: ["#6b6b6b"], dark: ["#868686"] } },
-  streamforge: { label: "Streamforge", colors: { light: ["#7d7d7d"], dark: ["#6f6f6f"] } },
+  skyline: { label: "Europe", colors: { light: ["#0a0a0a"], dark: ["#ffffff"] } },
+  datawell: { label: "North America", colors: { light: ["#262626"], dark: ["#dedede"] } },
+  cloudpeak: { label: "East Asia", colors: { light: ["#3d3d3d"], dark: ["#bebebe"] } },
+  taskbridge: { label: "Middle East", colors: { light: ["#545454"], dark: ["#a0a0a0"] } },
+  insightloop: { label: "Oceania", colors: { light: ["#6b6b6b"], dark: ["#868686"] } },
+  streamforge: { label: "Africa", colors: { light: ["#7d7d7d"], dark: ["#6f6f6f"] } },
 } satisfies ChartConfig;
 
 const TOTAL = SERIES.reduce((sum, { value }) => sum + value, 0);
@@ -65,9 +66,9 @@ export function MarketSharePieChart() {
 
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-0.5">
           <span className="text-primary text-xl font-semibold tracking-tight sm:text-3xl">
-            ${TOTAL}B
+            {TOTAL}M kg
           </span>
-          <span className="text-muted-foreground text-[10px] sm:text-xs">Ecosystem value</span>
+          <span className="text-muted-foreground text-[10px] sm:text-xs">Coffee exports</span>
         </div>
       </div>
 
@@ -85,7 +86,7 @@ export function MarketSharePieChart() {
           >
             <span className={cn("size-3 shrink-0 rounded-[3px]", swatch)} />
             <span className="text-primary font-medium">{label}</span>
-            <span className="text-muted-foreground">${value}B</span>
+            <span className="text-muted-foreground">{value}M kg</span>
             <span className="text-muted-foreground/60">({value}%)</span>
           </button>
         ))}

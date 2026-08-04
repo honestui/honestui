@@ -12,7 +12,7 @@ Compose a `<Dot />` inside a `<Line />` (or `<Area />`) to render a resting mark
 import { LineChart } from "honestui/charts";
 
 <LineChart data={data} config={chartConfig} xDataKey="month">
-  <LineChart.Line dataKey="desktop">
+  <LineChart.Line dataKey="highTemp">
     <LineChart.Dot variant="border" />
     <LineChart.ActiveDot variant="default" />
   </LineChart.Line>

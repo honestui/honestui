@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Classroom outcomes
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", passed: 239, needsSupport: 136 },
+  { month: "February", passed: 581, needsSupport: 339 },
+  { month: "March", passed: 366, needsSupport: 218 },
+  { month: "April", passed: 450, needsSupport: 289 },
+  { month: "May", passed: 311, needsSupport: 244 },
+  { month: "June", passed: 522, needsSupport: 305 },
+  { month: "July", passed: 293, needsSupport: 175 },
+  { month: "August", passed: 634, needsSupport: 388 },
+  { month: "September", passed: 428, needsSupport: 274 },
+  { month: "October", passed: 368, needsSupport: 274 },
+  { month: "November", passed: 547, needsSupport: 348 },
+  { month: "December", passed: 228, needsSupport: 120 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  passed: {
+    label: "Passed",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  needsSupport: {
+    label: "Needs support",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -42,12 +43,12 @@ export function ExampleBarChart() {
       <BarChart.Legend isClickable />
       <BarChart.Tooltip />
       <BarChart.Bar
-        dataKey="desktop"
+        dataKey="passed"
         variant="default"
         glowing // [!code highlight]
         isClickable
       />
-      <BarChart.Bar dataKey="mobile" variant="default" isClickable />
+      <BarChart.Bar dataKey="needsSupport" variant="default" isClickable />
     </BarChart>
   );
 }

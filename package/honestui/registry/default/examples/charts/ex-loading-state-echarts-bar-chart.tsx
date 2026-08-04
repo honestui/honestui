@@ -2,18 +2,19 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
-const data: { month: string; desktop: number; mobile: number }[] = [];
+// Scenario: Emergency dispatch
+const data: { month: string; medical: number; fire: number }[] = [];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  medical: {
+    label: "Medical",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  fire: {
+    label: "Fire",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -33,8 +34,8 @@ export function ExampleBarChart() {
       <BarChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <BarChart.Legend />
       <BarChart.Tooltip />
-      <BarChart.Bar dataKey="desktop" variant="default" />
-      <BarChart.Bar dataKey="mobile" variant="default" />
+      <BarChart.Bar dataKey="medical" variant="default" />
+      <BarChart.Bar dataKey="fire" variant="default" />
     </BarChart>
   );
 }

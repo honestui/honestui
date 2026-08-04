@@ -2,31 +2,32 @@
 
 import { ComposedChart, type ChartConfig } from "@/registry/default/charts/composed-chart";
 
+// Scenario: Manufacturing quality
 const data = [
-  { month: "January", revenue: 4200, profit: 1800 },
-  { month: "February", revenue: 5800, profit: 2400 },
-  { month: "March", revenue: 4100, profit: 1600 },
-  { month: "April", revenue: 6200, profit: 2800 },
-  { month: "May", revenue: 5400, profit: 2200 },
-  { month: "June", revenue: 7800, profit: 3400 },
-  { month: "July", revenue: 6100, profit: 2600 },
-  { month: "August", revenue: 8200, profit: 3800 },
-  { month: "September", revenue: 5900, profit: 2500 },
-  { month: "October", revenue: 6800, profit: 3000 },
-  { month: "November", revenue: 7200, profit: 3200 },
-  { month: "December", revenue: 9100, profit: 4200 },
+  { month: "January", units: 4890, defectRate: 1740 },
+  { month: "February", units: 6757, defectRate: 2323 },
+  { month: "March", units: 4796, defectRate: 1562 },
+  { month: "April", units: 7243, defectRate: 2721 },
+  { month: "May", units: 6282, defectRate: 2152 },
+  { month: "June", units: 9077, defectRate: 3276 },
+  { month: "July", units: 7116, defectRate: 2515 },
+  { month: "August", units: 9563, defectRate: 3674 },
+  { month: "September", units: 6862, defectRate: 2433 },
+  { month: "October", units: 7917, defectRate: 2920 },
+  { month: "November", units: 8392, defectRate: 3084 },
+  { month: "December", units: 10607, defectRate: 4051 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  units: {
+    label: "Units",
     colors: {
       light: ["#3b82f6"],
       dark: ["#6A5ACD"],
     },
   },
-  profit: {
-    label: "Profit",
+  defectRate: {
+    label: "Defect rate",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
@@ -47,12 +48,12 @@ export function ExampleComposedChart() {
       <ComposedChart.Legend isClickable />
       <ComposedChart.Tooltip />
       <ComposedChart.Bar
-        dataKey="revenue"
+        dataKey="units"
         glow // [!code highlight]
         isClickable
       />
       <ComposedChart.Line
-        dataKey="profit"
+        dataKey="defectRate"
         glow // [!code highlight]
         isClickable
       />

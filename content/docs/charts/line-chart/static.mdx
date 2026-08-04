@@ -41,11 +41,11 @@ import { LineChart, type ChartConfig } from "honestui/charts";
   <LineChart.YAxis />
   <LineChart.Legend isClickable />
   <LineChart.Tooltip />
-  <LineChart.Line dataKey="desktop" strokeVariant="solid" isClickable>
+  <LineChart.Line dataKey="buys" strokeVariant="solid" isClickable>
     <LineChart.Dot variant="border" />
     <LineChart.ActiveDot variant="colored-border" />
   </LineChart.Line>
-  <LineChart.Line dataKey="mobile" strokeVariant="dashed" glowing>
+  <LineChart.Line dataKey="sells" strokeVariant="dashed" glowing>
     <LineChart.ActiveDot variant="default" />
   </LineChart.Line>
 </LineChart>
@@ -80,8 +80,8 @@ Add `isClickable` to any `<Line>` (and to `<Legend>`) to make those series selec
   <LineChart.XAxis dataKey="month" />
   <LineChart.Legend isClickable />
   <LineChart.Tooltip />
-  <LineChart.Line dataKey="desktop" strokeVariant="solid" isClickable />
-  <LineChart.Line dataKey="mobile" strokeVariant="solid" isClickable />
+  <LineChart.Line dataKey="buys" strokeVariant="solid" isClickable />
+  <LineChart.Line dataKey="sells" strokeVariant="solid" isClickable />
 </LineChart>
 ```
 
@@ -135,8 +135,8 @@ Examples with different settings. Change `strokeVariant` on a `<Line>` or `curve
 
 ### Glowing Lines
 
-<ComponentPreview className="mb-0" title="glowing - gradient colors" name="ex-glowing-desktop-echarts-line-chart"  />
-<ComponentPreview title="glowing - solid colors" name="ex-glowing-mobile-echarts-line-chart"  />
+<ComponentPreview className="mb-0" title="Hospital census" name="ex-glowing-desktop-echarts-line-chart"  />
+<ComponentPreview title="Train punctuality" name="ex-glowing-mobile-echarts-line-chart"  />
 
 ## API Reference
 

@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Search quality
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", relevant: 300, irrelevant: 200 },
+  { month: "February", relevant: 690, irrelevant: 477 },
+  { month: "March", relevant: 443, irrelevant: 307 },
+  { month: "April", relevant: 537, irrelevant: 403 },
+  { month: "May", relevant: 382, irrelevant: 338 },
+  { month: "June", relevant: 623, irrelevant: 433 },
+  { month: "July", relevant: 359, irrelevant: 251 },
+  { month: "August", relevant: 747, irrelevant: 542 },
+  { month: "September", relevant: 516, irrelevant: 382 },
+  { month: "October", relevant: 446, irrelevant: 380 },
+  { month: "November", relevant: 649, irrelevant: 491 },
+  { month: "December", relevant: 282, irrelevant: 176 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  relevant: {
+    label: "Relevant",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  irrelevant: {
+    label: "Irrelevant",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -46,8 +47,8 @@ export function LegendSquareLineChart() {
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Legend variant="square" />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" />
-      <LineChart.Line dataKey="mobile" />
+      <LineChart.Line dataKey="relevant" />
+      <LineChart.Line dataKey="irrelevant" />
     </LineChart>
   );
 }

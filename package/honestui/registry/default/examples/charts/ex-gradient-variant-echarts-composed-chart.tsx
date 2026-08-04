@@ -2,31 +2,32 @@
 
 import { ComposedChart, type ChartConfig } from "@/registry/default/charts/composed-chart";
 
+// Scenario: Real estate
 const data = [
-  { month: "January", revenue: 4200, profit: 1800 },
-  { month: "February", revenue: 5800, profit: 2400 },
-  { month: "March", revenue: 4100, profit: 1600 },
-  { month: "April", revenue: 6200, profit: 2800 },
-  { month: "May", revenue: 5400, profit: 2200 },
-  { month: "June", revenue: 7800, profit: 3400 },
-  { month: "July", revenue: 6100, profit: 2600 },
-  { month: "August", revenue: 8200, profit: 3800 },
-  { month: "September", revenue: 5900, profit: 2500 },
-  { month: "October", revenue: 6800, profit: 3000 },
-  { month: "November", revenue: 7200, profit: 3200 },
-  { month: "December", revenue: 9100, profit: 4200 },
+  { month: "January", showings: 5652, offerRate: 1024 },
+  { month: "February", showings: 7807, offerRate: 1367 },
+  { month: "March", showings: 5540, offerRate: 926 },
+  { month: "April", showings: 8365, offerRate: 1605 },
+  { month: "May", showings: 7260, offerRate: 1276 },
+  { month: "June", showings: 10487, offerRate: 1920 },
+  { month: "July", showings: 8220, offerRate: 1479 },
+  { month: "August", showings: 11045, offerRate: 2158 },
+  { month: "September", showings: 7930, offerRate: 1437 },
+  { month: "October", showings: 9147, offerRate: 1724 },
+  { month: "November", showings: 9694, offerRate: 1808 },
+  { month: "December", showings: 12251, offerRate: 2375 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  showings: {
+    label: "Showings",
     colors: {
       light: ["#3b82f6"],
       dark: ["#6A5ACD"],
     },
   },
-  profit: {
-    label: "Profit",
+  offerRate: {
+    label: "Offer rate",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
@@ -47,11 +48,11 @@ export function ExampleComposedChart() {
       <ComposedChart.Legend isClickable />
       <ComposedChart.Tooltip />
       <ComposedChart.Bar
-        dataKey="revenue"
+        dataKey="showings"
         variant="gradient" // [!code highlight]
         isClickable
       />
-      <ComposedChart.Line dataKey="profit" isClickable />
+      <ComposedChart.Line dataKey="offerRate" isClickable />
     </ComposedChart>
   );
 }

@@ -2,49 +2,50 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Museum attendance
 const data = [
-  { date: "June 1", desktop: 412, mobile: 268 },
-  { date: "June 2", desktop: 468, mobile: 301 },
-  { date: "June 3", desktop: 501, mobile: 334 },
-  { date: "June 4", desktop: 486, mobile: 312 },
-  { date: "June 5", desktop: 523, mobile: 349 },
-  { date: "June 6", desktop: 297, mobile: 198 },
-  { date: "June 7", desktop: 264, mobile: 173 },
-  { date: "June 8", desktop: 534, mobile: 356 },
-  { date: "June 9", desktop: 578, mobile: 384 },
-  { date: "June 10", desktop: 612, mobile: 402 },
-  { date: "June 11", desktop: 596, mobile: 391 },
-  { date: "June 12", desktop: 641, mobile: 428 },
-  { date: "June 13", desktop: 351, mobile: 236 },
-  { date: "June 14", desktop: 318, mobile: 211 },
-  { date: "June 15", desktop: 663, mobile: 441 },
-  { date: "June 16", desktop: 702, mobile: 467 },
-  { date: "June 17", desktop: 688, mobile: 452 },
-  { date: "June 18", desktop: 731, mobile: 489 },
-  { date: "June 19", desktop: 754, mobile: 503 },
-  { date: "June 20", desktop: 402, mobile: 271 },
-  { date: "June 21", desktop: 376, mobile: 249 },
-  { date: "June 22", desktop: 769, mobile: 512 },
-  { date: "June 23", desktop: 812, mobile: 538 },
-  { date: "June 24", desktop: 798, mobile: 524 },
-  { date: "June 25", desktop: 843, mobile: 561 },
-  { date: "June 26", desktop: 867, mobile: 579 },
-  { date: "June 27", desktop: 451, mobile: 302 },
-  { date: "June 28", desktop: 428, mobile: 287 },
-  { date: "June 29", desktop: 881, mobile: 594 },
-  { date: "June 30", desktop: 926, mobile: 618 },
+  { date: "June 1", members: 296, guests: 152 },
+  { date: "June 2", members: 346, guests: 178 },
+  { date: "June 3", members: 381, guests: 203 },
+  { date: "June 4", members: 381, guests: 198 },
+  { date: "June 5", members: 374, guests: 225 },
+  { date: "June 6", members: 225, guests: 113 },
+  { date: "June 7", members: 212, guests: 106 },
+  { date: "June 8", members: 415, guests: 215 },
+  { date: "June 9", members: 413, guests: 238 },
+  { date: "June 10", members: 449, guests: 255 },
+  { date: "June 11", members: 448, guests: 221 },
+  { date: "June 12", members: 491, guests: 249 },
+  { date: "June 13", members: 252, guests: 148 },
+  { date: "June 14", members: 240, guests: 141 },
+  { date: "June 15", members: 496, guests: 277 },
+  { date: "June 16", members: 534, guests: 264 },
+  { date: "June 17", members: 491, guests: 262 },
+  { date: "June 18", members: 533, guests: 290 },
+  { date: "June 19", members: 560, guests: 305 },
+  { date: "June 20", members: 321, guests: 182 },
+  { date: "June 21", members: 270, guests: 141 },
+  { date: "June 22", members: 560, guests: 296 },
+  { date: "June 23", members: 602, guests: 317 },
+  { date: "June 24", members: 603, guests: 316 },
+  { date: "June 25", members: 602, guests: 344 },
+  { date: "June 26", members: 630, guests: 326 },
+  { date: "June 27", members: 345, guests: 178 },
+  { date: "June 28", members: 340, guests: 177 },
+  { date: "June 29", members: 629, guests: 356 },
+  { date: "June 30", members: 671, guests: 376 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  members: {
+    label: "Members",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  guests: {
+    label: "Guests",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -69,8 +70,8 @@ export function ExampleBrushAreaChart() {
       />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable />
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable />
+      <AreaChart.Area dataKey="members" variant="gradient" isClickable />
+      <AreaChart.Area dataKey="guests" variant="gradient" isClickable />
     </AreaChart>
   );
 }

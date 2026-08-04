@@ -6,7 +6,7 @@ import {
   type ChartConfig,
 } from "@/registry/default/charts/sankey-chart";
 
-// E-commerce journey - traffic to purchase
+// Scenario: Equipment lending workflow
 const data: SankeyData = {
   nodes: [
     { name: "Direct" },
@@ -20,44 +20,44 @@ const data: SankeyData = {
     { name: "Abandoned" },
   ],
   links: [
-    { source: 0, target: 3, value: 15200 },
-    { source: 1, target: 3, value: 8400 },
-    { source: 2, target: 3, value: 6800 },
-    { source: 3, target: 4, value: 18600 },
-    { source: 3, target: 8, value: 11800 },
-    { source: 4, target: 5, value: 12400 },
-    { source: 4, target: 8, value: 6200 },
-    { source: 5, target: 6, value: 8100 },
-    { source: 5, target: 8, value: 4300 },
-    { source: 6, target: 7, value: 5400 },
-    { source: 6, target: 8, value: 2700 },
+    { source: 0, target: 3, value: 30400 },
+    { source: 1, target: 3, value: 16800 },
+    { source: 2, target: 3, value: 13600 },
+    { source: 3, target: 4, value: 37200 },
+    { source: 3, target: 8, value: 23600 },
+    { source: 4, target: 5, value: 24800 },
+    { source: 4, target: 8, value: 12400 },
+    { source: 5, target: 6, value: 16200 },
+    { source: 5, target: 8, value: 8600 },
+    { source: 6, target: 7, value: 10800 },
+    { source: 6, target: 8, value: 5400 },
   ],
 };
 
 const chartConfig = {
   Direct: {
-    label: "Direct Traffic",
+    label: "Requests",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
   Email: {
-    label: "Email Campaign",
+    label: "Reservations",
     colors: {
       light: ["#8b5cf6"],
       dark: ["#a78bfa"],
     },
   },
   Referral: {
-    label: "Referral",
+    label: "Transfers",
     colors: {
       light: ["#06b6d4"],
       dark: ["#22d3ee"],
     },
   },
   Browse: {
-    label: "Browse",
+    label: "Inventory",
     colors: {
       light: ["#f59e0b"],
       dark: ["#fbbf24"],
@@ -71,28 +71,28 @@ const chartConfig = {
     },
   },
   ViewItem: {
-    label: "View Item",
+    label: "Item reviewed",
     colors: {
       light: ["#ec4899"],
       dark: ["#f472b6"],
     },
   },
   AddToCart: {
-    label: "Add to Cart",
+    label: "Reserved",
     colors: {
       light: ["#f97316"],
       dark: ["#fb923c"],
     },
   },
   Checkout: {
-    label: "Checkout",
+    label: "Checked out",
     colors: {
       light: ["#22c55e"],
       dark: ["#4ade80"],
     },
   },
   Abandoned: {
-    label: "Abandoned",
+    label: "Cancelled",
     colors: {
       light: ["#e11d48"],
       dark: ["#f43f5e"],

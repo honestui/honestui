@@ -16,7 +16,7 @@ import { AreaChart } from "honestui/charts";
 <AreaChart data={data} config={chartConfig} xDataKey="date">
   <AreaChart.XAxis dataKey="date" />
   <AreaChart.Brush formatLabel={(value) => String(value)} />
-  <AreaChart.Area dataKey="desktop" variant="gradient" />
+  <AreaChart.Area dataKey="members" variant="gradient" />
 </AreaChart>;
 ```
 
@@ -56,7 +56,7 @@ const [range, setRange] = useState({ startIndex: 0, endIndex: data.length - 1 })
 
 <AreaChart data={data} config={chartConfig} xDataKey="date">
   <AreaChart.Brush onChange={setRange} />
-  <AreaChart.Area dataKey="desktop" variant="gradient" />
+  <AreaChart.Area dataKey="members" variant="gradient" />
 </AreaChart>;
 
 // data[range.startIndex].date → data[range.endIndex].date

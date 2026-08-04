@@ -2,45 +2,46 @@
 
 import { PieChart, type ChartConfig } from "@/registry/default/charts/pie-chart";
 
+// Scenario: Shipment destinations
 const data = [
-  { browser: "chrome", visitors: 275 },
-  { browser: "safari", visitors: 200 },
-  { browser: "firefox", visitors: 187 },
-  { browser: "edge", visitors: 173 },
-  { browser: "other", visitors: 90 },
+  { category: "north", parcels: 275 },
+  { category: "south", parcels: 230 },
+  { category: "east", parcels: 195 },
+  { category: "west", parcels: 160 },
+  { category: "central", parcels: 115 },
 ];
 
 const chartConfig = {
-  chrome: {
-    label: "Chrome",
+  north: {
+    label: "North",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
-  safari: {
-    label: "Safari",
+  south: {
+    label: "South",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
     },
   },
-  firefox: {
-    label: "Firefox",
+  east: {
+    label: "East",
     colors: {
       light: ["#f59e0b"],
       dark: ["#fbbf24"],
     },
   },
-  edge: {
-    label: "Edge",
+  west: {
+    label: "West",
     colors: {
       light: ["#8b5cf6"],
       dark: ["#a78bfa"],
     },
   },
-  other: {
-    label: "Other",
+  central: {
+    label: "Central",
     colors: {
       light: ["#6b7280"],
       dark: ["#9ca3af"],
@@ -53,8 +54,8 @@ export function ExamplePieChart() {
     <PieChart
       className="h-full w-full p-4"
       data={data}
-      dataKey="visitors"
-      nameKey="browser"
+      dataKey="parcels"
+      nameKey="category"
       config={chartConfig}
     >
       <PieChart.Legend isClickable />

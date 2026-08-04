@@ -2,33 +2,34 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Urban tree planting
 const chartData = [
-  { date: "Jan 1", actual: 240, target: 125 },
-  { date: "Jan 8", actual: 240, target: 125 },
-  { date: "Jan 15", actual: 175, target: 200 },
-  { date: "Jan 22", actual: 175, target: 200 },
-  { date: "Feb 1", actual: 175, target: 200 },
-  { date: "Feb 8", actual: 260, target: 125 },
-  { date: "Feb 15", actual: 260, target: 125 },
-  { date: "Feb 22", actual: 260, target: 125 },
-  { date: "Mar 1", actual: 260, target: 190 },
-  { date: "Mar 8", actual: 335, target: 190 },
-  { date: "Mar 15", actual: 335, target: 190 },
-  { date: "Mar 22", actual: 335, target: 390 },
-  { date: "Apr 1", actual: 335, target: 390 },
-  { date: "Apr 8", actual: 335, target: 390 },
-  { date: "Apr 15", actual: 190, target: 390 },
-  { date: "Apr 22", actual: 215, target: 305 },
-  { date: "May 1", actual: 215, target: 305 },
-  { date: "May 8", actual: 215, target: 175 },
-  { date: "May 15", actual: 215, target: 175 },
-  { date: "May 22", actual: 275, target: 175 },
-  { date: "Jun 1", actual: 275, target: 245 },
+  { date: "Jan 1", actual: 266, target: 125 },
+  { date: "Jan 8", actual: 266, target: 125 },
+  { date: "Jan 15", actual: 194, target: 200 },
+  { date: "Jan 22", actual: 194, target: 200 },
+  { date: "Feb 1", actual: 194, target: 200 },
+  { date: "Feb 8", actual: 289, target: 125 },
+  { date: "Feb 15", actual: 289, target: 125 },
+  { date: "Feb 22", actual: 289, target: 125 },
+  { date: "Mar 1", actual: 289, target: 190 },
+  { date: "Mar 8", actual: 372, target: 190 },
+  { date: "Mar 15", actual: 372, target: 190 },
+  { date: "Mar 22", actual: 372, target: 390 },
+  { date: "Apr 1", actual: 372, target: 390 },
+  { date: "Apr 8", actual: 372, target: 390 },
+  { date: "Apr 15", actual: 211, target: 390 },
+  { date: "Apr 22", actual: 239, target: 305 },
+  { date: "May 1", actual: 239, target: 305 },
+  { date: "May 8", actual: 239, target: 175 },
+  { date: "May 15", actual: 239, target: 175 },
+  { date: "May 22", actual: 305, target: 175 },
+  { date: "Jun 1", actual: 305, target: 245 },
 ];
 
 const chartConfig = {
-  actual: { label: "Actual", colors: { light: ["#0a0a0a"], dark: ["#ffffff"] } },
-  target: { label: "Target", colors: { light: ["#a1a1aa"], dark: ["#666"] } },
+  actual: { label: "Planted", colors: { light: ["#0a0a0a"], dark: ["#ffffff"] } },
+  target: { label: "Season goal", colors: { light: ["#a1a1aa"], dark: ["#666"] } },
 } satisfies ChartConfig;
 
 const LATEST = chartData[chartData.length - 1];
@@ -39,7 +40,7 @@ export function BenchmarkAreaChart() {
     <div className="flex h-full w-full flex-col p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <span className="text-muted-foreground text-xs">Weekly signups</span>
+          <span className="text-muted-foreground text-xs">Saplings planted</span>
           <div className="flex items-baseline gap-2">
             <span className="text-primary text-2xl font-semibold tracking-tight sm:text-3xl">
               {LATEST.actual}

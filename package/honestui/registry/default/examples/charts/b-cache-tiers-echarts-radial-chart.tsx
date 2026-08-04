@@ -4,47 +4,48 @@ import { RadialChart, type ChartConfig } from "@/registry/default/charts/radial-
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
+// Scenario: Reservoir water sources
 const TOTAL = 1000;
 
 const TIERS = [
   {
     name: "memory",
-    label: "L1 Memory",
+    label: "Mountain runoff",
     count: 610,
     swatch: "bg-[#dc2626] dark:bg-[#ef4444]",
   },
   {
     name: "regional",
-    label: "L2 Regional",
+    label: "River intake",
     count: 240,
     swatch: "bg-[#d97706] dark:bg-[#f59e0b]",
   },
   {
     name: "overflow",
-    label: "Edge Overflow",
+    label: "Reclaimed water",
     count: 100,
     swatch: "bg-[#2563eb] dark:bg-[#3b82f6]",
   },
   {
     name: "origin",
-    label: "Origin Fetch",
+    label: "Groundwater",
     count: 50,
     swatch: "bg-[#0f172a] dark:bg-white",
   },
 ];
 
 const STATS = [
-  { name: "warm", label: "Served Warm", value: 9150 },
-  { name: "revalidated", label: "Revalidated", value: 1280 },
-  { name: "evictions", label: "Evictions", value: 412 },
-  { name: "purges", label: "Purges", value: 96 },
+  { name: "warm", label: "Households supplied", value: 12480 },
+  { name: "revalidated", label: "Quality tests", value: 1840 },
+  { name: "evictions", label: "Leak repairs", value: 286 },
+  { name: "purges", label: "Service alerts", value: 43 },
 ];
 
 const chartConfig = {
-  memory: { label: "L1 Memory", colors: { light: ["#dc2626"], dark: ["#ef4444"] } },
-  regional: { label: "L2 Regional", colors: { light: ["#d97706"], dark: ["#f59e0b"] } },
-  overflow: { label: "Edge Overflow", colors: { light: ["#2563eb"], dark: ["#3b82f6"] } },
-  origin: { label: "Origin Fetch", colors: { light: ["#0f172a"], dark: ["#ffffff"] } },
+  memory: { label: "Mountain runoff", colors: { light: ["#dc2626"], dark: ["#ef4444"] } },
+  regional: { label: "River intake", colors: { light: ["#d97706"], dark: ["#f59e0b"] } },
+  overflow: { label: "Reclaimed water", colors: { light: ["#2563eb"], dark: ["#3b82f6"] } },
+  origin: { label: "Groundwater", colors: { light: ["#0f172a"], dark: ["#ffffff"] } },
 } satisfies ChartConfig;
 
 const chartData = [...TIERS]

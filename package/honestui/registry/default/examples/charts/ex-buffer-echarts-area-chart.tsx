@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Water demand
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", residential: 280, commercial: 122 },
+  { month: "February", residential: 718, commercial: 325 },
+  { month: "March", residential: 438, commercial: 204 },
+  { month: "April", residential: 542, commercial: 275 },
+  { month: "May", residential: 372, commercial: 230 },
+  { month: "June", residential: 642, commercial: 291 },
+  { month: "July", residential: 343, commercial: 161 },
+  { month: "August", residential: 779, commercial: 374 },
+  { month: "September", residential: 524, commercial: 260 },
+  { month: "October", residential: 443, commercial: 260 },
+  { month: "November", residential: 670, commercial: 334 },
+  { month: "December", residential: 256, commercial: 106 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  residential: {
+    label: "Residential",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  commercial: {
+    label: "Commercial",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -48,7 +49,7 @@ export function ExampleAreaChart() {
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
       <AreaChart.Area
-        dataKey="desktop"
+        dataKey="residential"
         variant="gradient"
         strokeVariant="solid"
         enableBufferLine // [!code highlight]
@@ -58,7 +59,7 @@ export function ExampleAreaChart() {
         <AreaChart.ActiveDot variant="colored-border" />
       </AreaChart.Area>
       <AreaChart.Area
-        dataKey="mobile"
+        dataKey="commercial"
         variant="gradient"
         strokeVariant="solid"
         enableBufferLine // [!code highlight]

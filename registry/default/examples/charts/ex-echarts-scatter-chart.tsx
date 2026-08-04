@@ -2,28 +2,29 @@
 
 import { ScatterChart, type ChartConfig } from "@/registry/default/charts/scatter-chart";
 
+// Scenario: Building energy performance
 const data = [
-  { account: "Acme", segment: "enterprise", seats: 82, adoption: 88 },
-  { account: "Globex", segment: "enterprise", seats: 68, adoption: 74 },
-  { account: "Initech", segment: "enterprise", seats: 91, adoption: 81 },
-  { account: "Umbrella", segment: "enterprise", seats: 74, adoption: 92 },
-  { account: "Hooli", segment: "enterprise", seats: 59, adoption: 69 },
-  { account: "Linear", segment: "startup", seats: 34, adoption: 91 },
-  { account: "Vercel", segment: "startup", seats: 47, adoption: 86 },
-  { account: "Raycast", segment: "startup", seats: 22, adoption: 79 },
-  { account: "Resend", segment: "startup", seats: 29, adoption: 84 },
-  { account: "Cal", segment: "startup", seats: 41, adoption: 72 },
+  { building: "Harbor Tower", type: "office", floorArea: 96, energyUse: 103 },
+  { building: "Maple Center", type: "office", floorArea: 80, energyUse: 87 },
+  { building: "Civic Hall", type: "office", floorArea: 106, energyUse: 95 },
+  { building: "Union House", type: "office", floorArea: 87, energyUse: 108 },
+  { building: "Market Annex", type: "office", floorArea: 69, energyUse: 81 },
+  { building: "Roosevelt School", type: "school", floorArea: 40, energyUse: 106 },
+  { building: "Lincoln School", type: "school", floorArea: 55, energyUse: 101 },
+  { building: "Adams School", type: "school", floorArea: 26, energyUse: 92 },
+  { building: "Franklin School", type: "school", floorArea: 34, energyUse: 98 },
+  { building: "Jefferson School", type: "school", floorArea: 48, energyUse: 84 },
 ];
 
 const chartConfig = {
-  seats: { label: "Licensed seats" },
-  adoption: { label: "Adoption" },
-  enterprise: {
-    label: "Enterprise",
+  floorArea: { label: "Licensed floorArea" },
+  energyUse: { label: "Energy use" },
+  office: {
+    label: "Office",
     colors: { light: ["#2563eb"], dark: ["#60a5fa"] },
   },
-  startup: {
-    label: "Startup",
+  school: {
+    label: "School",
     colors: { light: ["#059669"], dark: ["#34d399"] },
   },
 } satisfies ChartConfig;
@@ -33,19 +34,19 @@ export function ExampleScatterChart() {
     <ScatterChart
       data={data}
       config={chartConfig}
-      xDataKey="seats"
-      yDataKey="adoption"
-      groupDataKey="segment"
-      pointNameDataKey="account"
+      xDataKey="floorArea"
+      yDataKey="energyUse"
+      groupDataKey="type"
+      pointNameDataKey="building"
       className="h-full w-full p-4"
     >
       <ScatterChart.Grid />
-      <ScatterChart.XAxis label="Licensed seats" hideDots />
+      <ScatterChart.XAxis label="Licensed floorArea" hideDots />
       <ScatterChart.YAxis label="Adoption" hideDots tickFormatter={(value) => `${value}%`} />
       <ScatterChart.Legend isClickable />
       <ScatterChart.Tooltip yValueFormatter={(value) => `${value}%`} />
-      <ScatterChart.Scatter dataKey="enterprise" isClickable />
-      <ScatterChart.Scatter dataKey="startup" isClickable />
+      <ScatterChart.Scatter dataKey="office" isClickable />
+      <ScatterChart.Scatter dataKey="school" isClickable />
     </ScatterChart>
   );
 }

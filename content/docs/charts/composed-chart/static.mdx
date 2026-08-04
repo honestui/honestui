@@ -12,7 +12,7 @@ links:
 
 ## Overview
 
-Use a composed chart when bars and lines explain different measures over the same categories, such as revenue and conversion rate. Keep the number of series small so the mixed encodings remain easy to read.
+Use a composed chart when bars and lines explain different measures over the same categories, such as procedure volume and wait time. Keep the number of series small so the mixed encodings remain easy to read.
 
 ## Anatomy
 
@@ -36,12 +36,12 @@ import { ComposedChart, type ChartConfig } from "honestui/charts";
 
 ```tsx
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  procedures: {
+    label: "Procedures",
     colors: { light: ["#3b82f6"], dark: ["#6A5ACD"] },
   },
-  profit: {
-    label: "Profit",
+  waitTime: {
+    label: "Wait time",
     colors: { light: ["#10b981"], dark: ["#34d399"] },
   },
 } satisfies ChartConfig;
@@ -52,8 +52,8 @@ const chartConfig = {
   <ComposedChart.YAxis />
   <ComposedChart.Legend isClickable />
   <ComposedChart.Tooltip />
-  <ComposedChart.Bar dataKey="revenue" variant="gradient" isClickable />
-  <ComposedChart.Line dataKey="profit" strokeVariant="dashed" isClickable>
+  <ComposedChart.Bar dataKey="procedures" variant="gradient" isClickable />
+  <ComposedChart.Line dataKey="waitTime" strokeVariant="dashed" isClickable>
     <ComposedChart.Dot variant="default" />
     <ComposedChart.ActiveDot variant="colored-border" />
   </ComposedChart.Line>
@@ -89,8 +89,8 @@ Add `isClickable` to any `<Bar>`, `<Line>`, or `<Legend>` to make its series sel
   <ComposedChart.XAxis dataKey="month" />
   <ComposedChart.Legend isClickable />
   <ComposedChart.Tooltip />
-  <ComposedChart.Bar dataKey="revenue" isClickable />
-  <ComposedChart.Line dataKey="profit" isClickable />
+  <ComposedChart.Bar dataKey="procedures" isClickable />
+  <ComposedChart.Line dataKey="waitTime" isClickable />
 </ComposedChart>
 ```
 

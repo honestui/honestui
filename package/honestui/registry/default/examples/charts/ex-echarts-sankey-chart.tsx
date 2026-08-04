@@ -6,7 +6,7 @@ import {
   type ChartConfig,
 } from "@/registry/default/charts/sankey-chart";
 
-// Marketing funnel - user acquisition to conversions
+// Scenario: Coffee supply chain
 const data: SankeyData = {
   nodes: [
     { name: "Organic" },
@@ -19,70 +19,70 @@ const data: SankeyData = {
     { name: "Bounced" },
   ],
   links: [
-    { source: 0, target: 3, value: 42000 },
-    { source: 1, target: 3, value: 28000 },
-    { source: 2, target: 3, value: 18000 },
-    { source: 3, target: 4, value: 52000 },
-    { source: 3, target: 7, value: 36000 },
-    { source: 4, target: 5, value: 31000 },
-    { source: 4, target: 7, value: 21000 },
-    { source: 5, target: 6, value: 24000 },
-    { source: 5, target: 7, value: 7000 },
+    { source: 0, target: 3, value: 84000 },
+    { source: 1, target: 3, value: 56000 },
+    { source: 2, target: 3, value: 36000 },
+    { source: 3, target: 4, value: 104000 },
+    { source: 3, target: 7, value: 72000 },
+    { source: 4, target: 5, value: 62000 },
+    { source: 4, target: 7, value: 42000 },
+    { source: 5, target: 6, value: 48000 },
+    { source: 5, target: 7, value: 14000 },
   ],
 };
 
 const chartConfig = {
   Organic: {
-    label: "Organic Search",
+    label: "Farms",
     colors: {
       light: ["#059669"],
       dark: ["#34d399"],
     },
   },
   PaidAds: {
-    label: "Paid Ads",
+    label: "Cooperatives",
     colors: {
       light: ["#dc2626"],
       dark: ["#f87171"],
     },
   },
   Social: {
-    label: "Social Media",
+    label: "Importers",
     colors: {
       light: ["#7c3aed"],
       dark: ["#a78bfa"],
     },
   },
   Landing: {
-    label: "Landing Page",
+    label: "Roastery",
     colors: {
       light: ["#0891b2"],
       dark: ["#22d3ee"],
     },
   },
   Product: {
-    label: "Product Page",
+    label: "Distribution",
     colors: {
       light: ["#2563eb"],
       dark: ["#60a5fa"],
     },
   },
   Cart: {
-    label: "Cart",
+    label: "Cafés",
     colors: {
       light: ["#ea580c"],
       dark: ["#fb923c"],
     },
   },
   Purchase: {
-    label: "Purchase",
+    label: "Served",
     colors: {
       light: ["#16a34a"],
       dark: ["#4ade80"],
     },
   },
   Bounced: {
-    label: "Bounced",
+    label: "Waste",
     colors: {
       light: ["#f43f5e"],
       dark: ["#fb7185"],

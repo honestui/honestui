@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: School enrollment
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", enrolled: 435, waitlisted: 164 },
+  { month: "February", enrolled: 1017, waitlisted: 367 },
+  { month: "March", enrolled: 639, waitlisted: 246 },
+  { month: "April", enrolled: 775, waitlisted: 317 },
+  { month: "May", enrolled: 559, waitlisted: 272 },
+  { month: "June", enrolled: 916, waitlisted: 333 },
+  { month: "July", enrolled: 513, waitlisted: 203 },
+  { month: "August", enrolled: 1092, waitlisted: 416 },
+  { month: "September", enrolled: 761, waitlisted: 302 },
+  { month: "October", enrolled: 649, waitlisted: 302 },
+  { month: "November", enrolled: 950, waitlisted: 376 },
+  { month: "December", enrolled: 392, waitlisted: 148 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  enrolled: {
+    label: "Enrolled",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  waitlisted: {
+    label: "Waitlisted",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -38,18 +39,18 @@ export function ExampleLineChart() {
   return (
     <LineChart data={data} config={chartConfig} className="h-full w-full p-4">
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <LineChart.YAxis dataKey="desktop" />
+      <LineChart.YAxis dataKey="enrolled" />
       <LineChart.Legend isClickable />
       <LineChart.Tooltip />
       <LineChart.Line
-        dataKey="desktop"
+        dataKey="enrolled"
         strokeVariant="solid" // [!code highlight]
         isClickable
       >
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
       <LineChart.Line
-        dataKey="mobile"
+        dataKey="waitlisted"
         strokeVariant="solid" // [!code highlight]
         isClickable
       >

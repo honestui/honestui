@@ -2,18 +2,19 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
-const data: { month: string; desktop: number; mobile: number }[] = [];
+// Scenario: Delivery distance
+const data: { month: string; urban: number; rural: number }[] = [];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  urban: {
+    label: "Urban",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  rural: {
+    label: "Rural",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -31,13 +32,13 @@ export function ExampleLineChart() {
       curveType="bump"
     >
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <LineChart.YAxis dataKey="desktop" />
+      <LineChart.YAxis dataKey="urban" />
       <LineChart.Legend isClickable />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="urban" strokeVariant="solid" isClickable>
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="rural" strokeVariant="solid" isClickable>
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
     </LineChart>

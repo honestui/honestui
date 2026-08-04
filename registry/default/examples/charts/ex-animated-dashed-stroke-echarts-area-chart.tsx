@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Renewable generation
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", solar: 212, wind: 118 },
+  { month: "February", solar: 554, wind: 321 },
+  { month: "March", solar: 339, wind: 200 },
+  { month: "April", solar: 423, wind: 271 },
+  { month: "May", solar: 284, wind: 226 },
+  { month: "June", solar: 495, wind: 287 },
+  { month: "July", solar: 266, wind: 157 },
+  { month: "August", solar: 607, wind: 371 },
+  { month: "September", solar: 401, wind: 256 },
+  { month: "October", solar: 341, wind: 256 },
+  { month: "November", solar: 520, wind: 330 },
+  { month: "December", solar: 201, wind: 102 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  solar: {
+    label: "Solar",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  wind: {
+    label: "Wind",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,11 +45,11 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="solar" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
       <AreaChart.Area
-        dataKey="desktop"
+        dataKey="solar"
         variant="gradient"
         strokeVariant="animated-dashed" // [!code highlight]
         isClickable
@@ -56,7 +57,7 @@ export function ExampleAreaChart() {
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
       <AreaChart.Area
-        dataKey="mobile"
+        dataKey="wind"
         variant="gradient"
         strokeVariant="animated-dashed" // [!code highlight]
         isClickable

@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Wildlife survey
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", sightings: 367, tagged: 160 },
+  { month: "February", sightings: 854, tagged: 363 },
+  { month: "March", sightings: 541, tagged: 242 },
+  { month: "April", sightings: 656, tagged: 313 },
+  { month: "May", sightings: 471, tagged: 268 },
+  { month: "June", sightings: 769, tagged: 329 },
+  { month: "July", sightings: 436, tagged: 199 },
+  { month: "August", sightings: 919, tagged: 413 },
+  { month: "September", sightings: 639, tagged: 298 },
+  { month: "October", sightings: 547, tagged: 298 },
+  { month: "November", sightings: 800, tagged: 372 },
+  { month: "December", sightings: 337, tagged: 144 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  sightings: {
+    label: "Sightings",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  tagged: {
+    label: "Tagged",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,13 +45,13 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="sightings" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="sightings" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="tagged" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
     </AreaChart>

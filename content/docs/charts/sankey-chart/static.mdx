@@ -37,27 +37,29 @@ import { SankeyChart, type ChartConfig, type SankeyData } from "honestui/charts"
 ```tsx
 const data: SankeyData = {
   nodes: [
-    { name: "Visit" },
-    { name: "Direct-Favourite" },
-    { name: "Page-Click" },
-    { name: "Detail-Favourite" },
-    { name: "Lost" },
+    { name: "Organic" },
+    { name: "PaidAds" },
+    { name: "Social" },
+    { name: "Landing" },
+    { name: "Product" },
+    { name: "Bounced" },
   ],
   links: [
-    { source: 0, target: 1, value: 3728 },
-    { source: 0, target: 2, value: 354170 },
-    { source: 2, target: 3, value: 62429 },
-    { source: 2, target: 4, value: 291741 },
+    { source: 0, target: 3, value: 84000 },
+    { source: 1, target: 3, value: 56000 },
+    { source: 2, target: 3, value: 36000 },
+    { source: 3, target: 4, value: 104000 },
+    { source: 3, target: 5, value: 72000 },
   ],
 };
 
 const chartConfig = {
-  Visit: {
-    label: "Visit",
+  Organic: {
+    label: "Farms",
     colors: { light: ["#3b82f6"], dark: ["#60a5fa"] },
   },
-  "Page-Click": {
-    label: "Page Click",
+  Landing: {
+    label: "Roastery",
     colors: { light: ["#f59e0b"], dark: ["#fbbf24"] },
   },
   // ... more node configs

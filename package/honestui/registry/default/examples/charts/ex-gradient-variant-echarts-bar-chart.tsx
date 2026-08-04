@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Restaurant covers
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", reservations: 340, walkIns: 186 },
+  { month: "February", reservations: 827, walkIns: 463 },
+  { month: "March", reservations: 514, walkIns: 293 },
+  { month: "April", reservations: 629, walkIns: 389 },
+  { month: "May", reservations: 444, walkIns: 324 },
+  { month: "June", reservations: 742, walkIns: 419 },
+  { month: "July", reservations: 409, walkIns: 237 },
+  { month: "August", reservations: 892, walkIns: 528 },
+  { month: "September", reservations: 612, walkIns: 368 },
+  { month: "October", reservations: 520, walkIns: 366 },
+  { month: "November", reservations: 773, walkIns: 477 },
+  { month: "December", reservations: 310, walkIns: 162 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  reservations: {
+    label: "Reservations",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  walkIns: {
+    label: "Walk-ins",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -42,12 +43,12 @@ export function ExampleBarChart() {
       <BarChart.Legend isClickable />
       <BarChart.Tooltip />
       <BarChart.Bar
-        dataKey="desktop"
+        dataKey="reservations"
         variant="gradient" // [!code highlight]
         isClickable
       />
       <BarChart.Bar
-        dataKey="mobile"
+        dataKey="walkIns"
         variant="gradient" // [!code highlight]
         isClickable
       />

@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Call center demand
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", incoming: 374, answered: 261 },
+  { month: "February", incoming: 908, answered: 661 },
+  { month: "March", incoming: 563, answered: 412 },
+  { month: "April", incoming: 688, answered: 547 },
+  { month: "May", incoming: 488, answered: 450 },
+  { month: "June", incoming: 815, answered: 600 },
+  { month: "July", incoming: 447, answered: 333 },
+  { month: "August", incoming: 979, answered: 753 },
+  { month: "September", incoming: 673, answered: 516 },
+  { month: "October", incoming: 571, answered: 511 },
+  { month: "November", incoming: 848, answered: 686 },
+  { month: "December", incoming: 338, answered: 223 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  incoming: {
+    label: "Incoming",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  answered: {
+    label: "Answered",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -46,10 +47,10 @@ export function ExampleLineChart() {
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Legend />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" strokeVariant="solid">
+      <LineChart.Line dataKey="incoming" strokeVariant="solid">
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile" strokeVariant="solid">
+      <LineChart.Line dataKey="answered" strokeVariant="solid">
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
     </LineChart>

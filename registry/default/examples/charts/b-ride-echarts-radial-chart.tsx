@@ -3,6 +3,7 @@
 import { RadialChart, type ChartConfig } from "@/registry/default/charts/radial-chart";
 import { cn } from "@/lib/utils";
 
+// Scenario: Courier shift
 function BikeIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -97,30 +98,30 @@ function MoonIcon({ className }: { className?: string }) {
   );
 }
 
-const RIDE = { distance: 18.4, goal: 25, unit: "km" };
+const RIDE = { distance: 32.6, goal: 40, unit: "km" };
 
 const METRICS = [
   {
-    name: "elevation",
-    value: 312,
-    goal: 450,
-    unit: "m",
+    name: "stops",
+    value: 18,
+    goal: 24,
+    unit: "stops",
     icon: MountainIcon,
     tint: "text-[#0284c7] dark:text-[#38bdf8]",
   },
   {
-    name: "energy",
-    value: 684,
-    goal: 1200,
-    unit: "kJ",
+    name: "parcels",
+    value: 42,
+    goal: 60,
+    unit: "parcels",
     icon: BoltIcon,
     tint: "text-[#d97706] dark:text-[#fbbf24]",
   },
   {
-    name: "cadence",
-    value: 82,
-    goal: 95,
-    unit: "rpm",
+    name: "onTime",
+    value: 91,
+    goal: 100,
+    unit: "%",
     icon: GaugeIcon,
     tint: "text-[#e11d48] dark:text-[#fb7185]",
   },
@@ -129,16 +130,16 @@ const METRICS = [
 const SPLITS = [
   {
     name: "sprints",
-    label: "Sprints",
-    value: "7",
-    unit: "efforts",
+    label: "Priority drops",
+    value: "9",
+    unit: "drops",
     icon: SprintIcon,
     tint: "text-[#7c3aed] dark:text-[#a78bfa]",
   },
   {
     name: "recovery",
-    label: "Recovery",
-    value: "46",
+    label: "Break time",
+    value: "35",
     unit: "min",
     icon: MoonIcon,
     tint: "text-[#0284c7] dark:text-[#38bdf8]",
@@ -146,16 +147,16 @@ const SPLITS = [
 ];
 
 const chartConfig = {
-  elevation: {
-    label: "Elevation",
+  stops: {
+    label: "Stops",
     colors: { light: ["#0ea5e9", "#0284c7"], dark: ["#38bdf8", "#0ea5e9"] },
   },
-  energy: {
-    label: "Energy",
+  parcels: {
+    label: "Parcels",
     colors: { light: ["#f59e0b", "#d97706"], dark: ["#fbbf24", "#f59e0b"] },
   },
-  cadence: {
-    label: "Cadence",
+  onTime: {
+    label: "On time",
     colors: { light: ["#f43f5e", "#e11d48"], dark: ["#fb7185", "#f43f5e"] },
   },
 } satisfies ChartConfig;
@@ -173,7 +174,7 @@ export function RideRadialChart() {
             <span className="text-primary text-2xl leading-none font-semibold tracking-tight tabular-nums sm:text-4xl">
               {RIDE.distance}
             </span>
-            <span className="text-muted-foreground text-sm font-medium">{RIDE.unit} ridden</span>
+            <span className="text-muted-foreground text-sm font-medium">{RIDE.unit} covered</span>
           </div>
 
           <div className="bg-muted h-2 w-full overflow-hidden rounded-full sm:h-2.5">

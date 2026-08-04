@@ -2,45 +2,46 @@
 
 import { RadialChart, type ChartConfig } from "@/registry/default/charts/radial-chart";
 
+// Scenario: Wellness goals
 const data = [
-  { browser: "chrome", visitors: 275 },
-  { browser: "safari", visitors: 200 },
-  { browser: "firefox", visitors: 187 },
-  { browser: "edge", visitors: 173 },
-  { browser: "other", visitors: 90 },
+  { category: "movement", completion: 88 },
+  { category: "sleep", completion: 72 },
+  { category: "hydration", completion: 66 },
+  { category: "mindfulness", completion: 51 },
+  { category: "recovery", completion: 43 },
 ];
 
 const chartConfig = {
-  chrome: {
-    label: "Chrome",
+  movement: {
+    label: "Movement",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
-  safari: {
-    label: "Safari",
+  sleep: {
+    label: "Sleep",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
     },
   },
-  firefox: {
-    label: "Firefox",
+  hydration: {
+    label: "Hydration",
     colors: {
       light: ["#f59e0b"],
       dark: ["#fbbf24"],
     },
   },
-  edge: {
-    label: "Edge",
+  mindfulness: {
+    label: "Mindfulness",
     colors: {
       light: ["#8b5cf6"],
       dark: ["#a78bfa"],
     },
   },
-  other: {
-    label: "Other",
+  recovery: {
+    label: "Recovery",
     colors: {
       light: ["#6b7280"],
       dark: ["#9ca3af"],
@@ -53,13 +54,13 @@ export function ExampleRadialChart() {
     <RadialChart
       className="h-full w-full p-4"
       data={data}
-      nameKey="browser"
+      nameKey="category"
       config={chartConfig}
       variant="semi" // [!code highlight]
     >
       <RadialChart.Legend />
       <RadialChart.Tooltip />
-      <RadialChart.RadialBar dataKey="visitors" />
+      <RadialChart.RadialBar dataKey="completion" />
     </RadialChart>
   );
 }

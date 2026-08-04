@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Recycling stream
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", recovered: 307, landfill: 169 },
+  { month: "February", recovered: 745, landfill: 422 },
+  { month: "March", recovered: 465, landfill: 268 },
+  { month: "April", recovered: 569, landfill: 356 },
+  { month: "May", recovered: 399, landfill: 297 },
+  { month: "June", recovered: 669, landfill: 381 },
+  { month: "July", recovered: 370, landfill: 216 },
+  { month: "August", recovered: 806, landfill: 482 },
+  { month: "September", recovered: 551, landfill: 337 },
+  { month: "October", recovered: 470, landfill: 336 },
+  { month: "November", recovered: 697, landfill: 434 },
+  { month: "December", recovered: 283, landfill: 148 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  recovered: {
+    label: "Recovered",
     colors: {
       light: ["#a855f7", "#6366f1", "#3b82f6"], // [!code highlight]
       dark: ["#f43f5e", "#ec4899", "#a855f7", "#6366f1", "#3b82f6"], // [!code highlight]
     },
   },
-  mobile: {
-    label: "Mobile",
+  landfill: {
+    label: "Landfill",
     colors: {
       light: ["#10b981", "#34d399", "#6ee7b7"], // [!code highlight]
       dark: ["#10b981", "#14b8a6", "#06b6d4"], // [!code highlight]
@@ -41,8 +42,8 @@ export function ExampleBarChart() {
       <BarChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <BarChart.Legend isClickable />
       <BarChart.Tooltip />
-      <BarChart.Bar dataKey="desktop" variant="default" isClickable />
-      <BarChart.Bar dataKey="mobile" variant="default" isClickable />
+      <BarChart.Bar dataKey="recovered" variant="default" isClickable />
+      <BarChart.Bar dataKey="landfill" variant="default" isClickable />
     </BarChart>
   );
 }

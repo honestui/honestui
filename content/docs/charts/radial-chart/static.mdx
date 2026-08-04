@@ -36,32 +36,32 @@ import { RadialChart, type ChartConfig } from "honestui/charts";
 
 ```tsx
 const data = [
-  { browser: "chrome", visitors: 275 },
-  { browser: "safari", visitors: 200 },
-  { browser: "firefox", visitors: 187 },
+  { category: "research", progress: 92 },
+  { category: "design", progress: 78 },
+  { category: "build", progress: 64 },
 ];
 
 const chartConfig = {
-  chrome: {
-    label: "Chrome",
+  research: {
+    label: "Research",
     colors: { light: ["#3b82f6"], dark: ["#60a5fa"] },
   },
-  safari: {
-    label: "Safari",
+  design: {
+    label: "Design",
     colors: { light: ["#10b981"], dark: ["#34d399"] },
   },
-  firefox: {
-    label: "Firefox",
+  build: {
+    label: "Build",
     colors: { light: ["#f59e0b"], dark: ["#fbbf24"] },
   },
 } satisfies ChartConfig;
 ```
 
 ```tsx
-<RadialChart data={data} nameKey="browser" config={chartConfig} variant="full">
+<RadialChart data={data} nameKey="category" config={chartConfig} variant="full">
   <RadialChart.Legend isClickable />
   <RadialChart.Tooltip />
-  <RadialChart.RadialBar dataKey="visitors" isClickable />
+  <RadialChart.RadialBar dataKey="progress" isClickable />
 </RadialChart>
 ```
 
@@ -82,7 +82,7 @@ Add `isClickable` to `<RadialBar>` (and `<Legend>`) to make bars selectable. Han
 ```tsx
 <RadialChart
   data={data}
-  nameKey="browser"
+  nameKey="category"
   config={chartConfig}
   onSelectionChange={(selection) => {
     if (selection) {
@@ -94,7 +94,7 @@ Add `isClickable` to `<RadialBar>` (and `<Legend>`) to make bars selectable. Han
 >
   <RadialChart.Legend isClickable />
   <RadialChart.Tooltip />
-  <RadialChart.RadialBar dataKey="visitors" isClickable />
+  <RadialChart.RadialBar dataKey="progress" isClickable />
 </RadialChart>
 ```
 

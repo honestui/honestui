@@ -3,50 +3,51 @@
 import { RadialChart, type ChartConfig } from "@/registry/default/charts/radial-chart";
 import { cn } from "@/lib/utils";
 
+// Scenario: Festival budget
 const chartData = [
   {
     name: "payroll",
-    label: "Payroll",
-    value: 46,
-    amount: 920000,
+    label: "Artists",
+    value: 38,
+    amount: 760000,
     swatch: "bg-[#d97706] dark:bg-[#fbbf24]",
   },
   {
     name: "infrastructure",
-    label: "Infrastructure",
-    value: 21,
-    amount: 420000,
+    label: "Venue",
+    value: 24,
+    amount: 480000,
     swatch: "bg-[#2563eb] dark:bg-[#60a5fa]",
   },
   {
     name: "marketing",
-    label: "Marketing",
-    value: 14,
-    amount: 280000,
+    label: "Promotion",
+    value: 18,
+    amount: 360000,
     swatch: "bg-[#e11d48] dark:bg-[#fb7185]",
   },
   {
     name: "tooling",
-    label: "Tooling",
-    value: 10,
-    amount: 200000,
+    label: "Production",
+    value: 12,
+    amount: 240000,
     swatch: "bg-[#475569] dark:bg-[#94a3b8]",
   },
   {
     name: "support",
-    label: "Support",
-    value: 9,
-    amount: 180000,
+    label: "Security",
+    value: 8,
+    amount: 160000,
     swatch: "bg-[#0d9488] dark:bg-[#2dd4bf]",
   },
 ];
 
 const chartConfig = {
-  payroll: { label: "Payroll", colors: { light: ["#d97706"], dark: ["#fbbf24"] } },
-  infrastructure: { label: "Infrastructure", colors: { light: ["#2563eb"], dark: ["#60a5fa"] } },
-  marketing: { label: "Marketing", colors: { light: ["#e11d48"], dark: ["#fb7185"] } },
-  tooling: { label: "Tooling", colors: { light: ["#475569"], dark: ["#94a3b8"] } },
-  support: { label: "Support", colors: { light: ["#0d9488"], dark: ["#2dd4bf"] } },
+  payroll: { label: "Artists", colors: { light: ["#d97706"], dark: ["#fbbf24"] } },
+  infrastructure: { label: "Venue", colors: { light: ["#2563eb"], dark: ["#60a5fa"] } },
+  marketing: { label: "Promotion", colors: { light: ["#e11d48"], dark: ["#fb7185"] } },
+  tooling: { label: "Production", colors: { light: ["#475569"], dark: ["#94a3b8"] } },
+  support: { label: "Security", colors: { light: ["#0d9488"], dark: ["#2dd4bf"] } },
 } satisfies ChartConfig;
 
 const TOTAL = chartData.reduce((sum, { amount }) => sum + amount, 0);
@@ -58,7 +59,7 @@ export function BudgetRadialChart() {
     <div className="flex h-full w-full flex-col gap-6 p-4">
       <div className="flex items-baseline justify-between gap-4">
         <span className="text-primary text-base font-medium tracking-tight sm:text-lg">
-          Quarterly Spend
+          Festival budget
         </span>
         <span className="text-muted-foreground text-xs">${money(TOTAL)}</span>
       </div>

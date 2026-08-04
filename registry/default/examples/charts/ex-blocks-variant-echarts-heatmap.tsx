@@ -2,20 +2,21 @@
 
 import { Heatmap, type ChartConfig } from "@/registry/default/charts/heatmap";
 
+// Scenario: Community garden watering
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+const plots = ["Plot A", "Plot B", "Plot C", "Plot D", "Plot E"];
 
-const data = weeks.flatMap((week, weekIndex) =>
+const data = plots.flatMap((plot, plotIndex) =>
   days.map((day, dayIndex) => ({
-    week,
+    plot,
     day,
-    commits: (weekIndex * 3 + dayIndex * 2 + (weekIndex + dayIndex) ** 2) % 18,
+    liters: (plotIndex * 4 + dayIndex * 2 + (plotIndex + dayIndex) ** 2) % 21,
   })),
 );
 
 const chartConfig = {
-  commits: {
-    label: "Commits",
+  liters: {
+    label: "Water used",
     colors: {
       light: ["#f3f4f6", "#bbf7d0", "#4ade80", "#15803d"],
       dark: ["#27272a", "#14532d", "#22c55e", "#86efac"],
@@ -29,8 +30,8 @@ export function BlocksHeatmap() {
       data={data}
       config={chartConfig}
       xDataKey="day"
-      yDataKey="week"
-      valueDataKey="commits"
+      yDataKey="plot"
+      valueDataKey="liters"
       className="h-full w-full p-4"
     >
       <Heatmap.XAxis />

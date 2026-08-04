@@ -4,6 +4,7 @@ import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-char
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
+// Scenario: Marathon finish percentiles
 const SERIES = [
   { key: "p99", label: "P99", color: "#D41F12", latest: 204 },
   { key: "p95", label: "P95", color: "#F37A00", latest: 98 },
@@ -12,35 +13,35 @@ const SERIES = [
 ] as const;
 
 const chartData = [
-  { time: "Today 13:06", p99: 188, p95: 92, p75: 44, p50: 20 },
-  { time: "Today 13:07", p99: 196, p95: 95, p75: 46, p50: 21 },
-  { time: "Today 13:08", p99: 181, p95: 89, p75: 43, p50: 20 },
-  { time: "Today 13:09", p99: 192, p95: 94, p75: 47, p50: 22 },
-  { time: "Today 13:10", p99: 205, p95: 99, p75: 45, p50: 21 },
-  { time: "Today 13:11", p99: 187, p95: 91, p75: 44, p50: 20 },
-  { time: "Today 13:12", p99: 179, p95: 88, p75: 42, p50: 19 },
-  { time: "Today 13:13", p99: 198, p95: 96, p75: 46, p50: 21 },
-  { time: "Today 13:14", p99: 210, p95: 101, p75: 48, p50: 22 },
-  { time: "Today 13:15", p99: 194, p95: 93, p75: 45, p50: 21 },
-  { time: "Today 13:16", p99: 202, p95: 97, p75: 47, p50: 22 },
-  { time: "Today 13:17", p99: 215, p95: 104, p75: 49, p50: 23 },
-  { time: "Today 13:18", p99: 231, p95: 112, p75: 52, p50: 23 },
-  { time: "Today 13:19", p99: 278, p95: 131, p75: 57, p50: 24 },
-  { time: "Today 13:20", p99: 306, p95: 142, p75: 61, p50: 25 },
-  { time: "Today 13:21", p99: 289, p95: 135, p75: 58, p50: 24 },
-  { time: "Today 13:22", p99: 247, p95: 118, p75: 53, p50: 23 },
-  { time: "Today 13:23", p99: 216, p95: 105, p75: 49, p50: 22 },
-  { time: "Today 13:24", p99: 201, p95: 97, p75: 46, p50: 21 },
-  { time: "Today 13:25", p99: 193, p95: 94, p75: 45, p50: 21 },
-  { time: "Today 13:26", p99: 186, p95: 90, p75: 44, p50: 20 },
-  { time: "Today 13:27", p99: 199, p95: 96, p75: 46, p50: 21 },
-  { time: "Today 13:28", p99: 207, p95: 100, p75: 47, p50: 22 },
-  { time: "Today 13:29", p99: 191, p95: 92, p75: 45, p50: 20 },
-  { time: "Today 13:30", p99: 184, p95: 89, p75: 43, p50: 20 },
-  { time: "Today 13:31", p99: 196, p95: 95, p75: 46, p50: 21 },
-  { time: "Today 13:32", p99: 209, p95: 101, p75: 48, p50: 22 },
-  { time: "Today 13:33", p99: 198, p95: 96, p75: 46, p50: 21 },
-  { time: "Today 13:34", p99: 204, p95: 98, p75: 46, p50: 21 },
+  { time: "Race 13:06", p99: 209, p95: 102, p75: 49, p50: 22 },
+  { time: "Race 13:07", p99: 218, p95: 105, p75: 51, p50: 23 },
+  { time: "Race 13:08", p99: 201, p95: 99, p75: 48, p50: 22 },
+  { time: "Race 13:09", p99: 213, p95: 104, p75: 52, p50: 24 },
+  { time: "Race 13:10", p99: 228, p95: 110, p75: 50, p50: 23 },
+  { time: "Race 13:11", p99: 208, p95: 101, p75: 49, p50: 22 },
+  { time: "Race 13:12", p99: 199, p95: 98, p75: 47, p50: 21 },
+  { time: "Race 13:13", p99: 220, p95: 107, p75: 51, p50: 23 },
+  { time: "Race 13:14", p99: 233, p95: 112, p75: 53, p50: 24 },
+  { time: "Race 13:15", p99: 215, p95: 103, p75: 50, p50: 23 },
+  { time: "Race 13:16", p99: 224, p95: 108, p75: 52, p50: 24 },
+  { time: "Race 13:17", p99: 239, p95: 115, p75: 54, p50: 26 },
+  { time: "Race 13:18", p99: 256, p95: 124, p75: 58, p50: 26 },
+  { time: "Race 13:19", p99: 309, p95: 145, p75: 63, p50: 27 },
+  { time: "Race 13:20", p99: 340, p95: 158, p75: 68, p50: 28 },
+  { time: "Race 13:21", p99: 321, p95: 150, p75: 64, p50: 27 },
+  { time: "Race 13:22", p99: 274, p95: 131, p75: 59, p50: 26 },
+  { time: "Race 13:23", p99: 240, p95: 117, p75: 54, p50: 24 },
+  { time: "Race 13:24", p99: 223, p95: 108, p75: 51, p50: 23 },
+  { time: "Race 13:25", p99: 214, p95: 104, p75: 50, p50: 23 },
+  { time: "Race 13:26", p99: 206, p95: 100, p75: 49, p50: 22 },
+  { time: "Race 13:27", p99: 221, p95: 107, p75: 51, p50: 23 },
+  { time: "Race 13:28", p99: 230, p95: 111, p75: 52, p50: 24 },
+  { time: "Race 13:29", p99: 212, p95: 102, p75: 50, p50: 22 },
+  { time: "Race 13:30", p99: 204, p95: 99, p75: 48, p50: 22 },
+  { time: "Race 13:31", p99: 218, p95: 105, p75: 51, p50: 23 },
+  { time: "Race 13:32", p99: 232, p95: 112, p75: 53, p50: 24 },
+  { time: "Race 13:33", p99: 220, p95: 107, p75: 51, p50: 23 },
+  { time: "Race 13:34", p99: 226, p95: 109, p75: 51, p50: 23 },
 ];
 
 const chartConfig = {
@@ -96,7 +97,7 @@ export function LatencyAreaChart() {
         <AreaChart.XAxis
           dataKey="time"
           label="Time (UTC)"
-          tickFormatter={(value) => value.replace("Today ", "")}
+          tickFormatter={(value) => value.replace("Race ", "")}
         />
         <AreaChart.YAxis />
         <AreaChart.Tooltip />

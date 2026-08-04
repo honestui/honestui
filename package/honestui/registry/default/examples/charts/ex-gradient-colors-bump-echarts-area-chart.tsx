@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Parcel volume
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", scheduled: 273, delivered: 196 },
+  { month: "February", scheduled: 663, delivered: 498 },
+  { month: "March", scheduled: 416, delivered: 313 },
+  { month: "April", scheduled: 510, delivered: 416 },
+  { month: "May", scheduled: 355, delivered: 345 },
+  { month: "June", scheduled: 596, delivered: 451 },
+  { month: "July", scheduled: 332, delivered: 252 },
+  { month: "August", scheduled: 720, delivered: 569 },
+  { month: "September", scheduled: 489, delivered: 393 },
+  { month: "October", scheduled: 419, delivered: 391 },
+  { month: "November", scheduled: 622, delivered: 515 },
+  { month: "December", scheduled: 255, delivered: 170 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  scheduled: {
+    label: "Scheduled",
     colors: {
       light: ["red", "orange", "rosybrown", "purple", "blue"], // [!code highlight]
       dark: ["red", "orange", "rosybrown", "purple", "blue"], // [!code highlight]
     },
   },
-  mobile: {
-    label: "Mobile",
+  delivered: {
+    label: "Delivered",
     colors: {
       light: ["gray"],
       dark: ["gray"],
@@ -47,11 +48,11 @@ export function ExampleAreaChart() {
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="scheduled" variant="gradient" isClickable>
         <AreaChart.Dot variant="colored-border" />
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="delivered" variant="gradient" isClickable>
         <AreaChart.Dot variant="colored-border" />
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>

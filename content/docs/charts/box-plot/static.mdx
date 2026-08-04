@@ -37,18 +37,18 @@ import { BoxPlot, type BoxPlotValue, type ChartConfig } from "honestui/charts";
 ```
 
 ```tsx
-const data: { region: string; latency: BoxPlotValue }[] = [
-  { region: "North America", latency: [42, 58, 71, 86, 119] },
-  { region: "Europe", latency: [38, 52, 66, 79, 108] },
+const data: { warehouse: string; picking: BoxPlotValue }[] = [
+  { warehouse: "Denver", picking: [49, 68, 83, 101, 139] },
+  { warehouse: "Rotterdam", picking: [44, 61, 77, 92, 126] },
 ];
 
-<BoxPlot data={data} config={chartConfig} xDataKey="region">
+<BoxPlot data={data} config={chartConfig} xDataKey="warehouse">
   <BoxPlot.Grid />
   <BoxPlot.XAxis />
   <BoxPlot.YAxis />
   <BoxPlot.Legend />
   <BoxPlot.Tooltip />
-  <BoxPlot.Box dataKey="latency" variant="default" />
+  <BoxPlot.Box dataKey="picking" variant="default" />
 </BoxPlot>
 ```
 

@@ -2,19 +2,20 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Bike rental demand
 const chartData = [
-  { month: "Jan", listeners: 2980 },
-  { month: "Feb", listeners: 3120 },
-  { month: "Mar", listeners: 3460 },
-  { month: "Apr", listeners: 3380 },
-  { month: "May", listeners: 3720 },
-  { month: "Jun", listeners: 4180 },
-  { month: "Jul", listeners: 4560 },
+  { month: "Jan", rentals: 3308 },
+  { month: "Feb", rentals: 3463 },
+  { month: "Mar", rentals: 3841 },
+  { month: "Apr", rentals: 3752 },
+  { month: "May", rentals: 4129 },
+  { month: "Jun", rentals: 4640 },
+  { month: "Jul", rentals: 5062 },
 ];
 
 const chartConfig = {
-  listeners: {
-    label: "Listeners",
+  rentals: {
+    label: "Bike rentals",
     colors: {
       light: ["#10b981", "#0ea5e9", "#8b5cf6"],
       dark: ["#34d399", "#38bdf8", "#a78bfa"],
@@ -22,7 +23,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const TOTAL = chartData.reduce((sum, { listeners }) => sum + listeners, 0);
+const TOTAL = chartData.reduce((sum, { rentals }) => sum + rentals, 0);
 
 export function AudienceAreaChart() {
   return (
@@ -30,17 +31,17 @@ export function AudienceAreaChart() {
       <div className="flex items-start justify-between gap-4 px-4 pt-4">
         <div className="flex flex-col gap-1">
           <span className="text-primary text-base font-medium tracking-tight sm:text-lg">
-            Listeners
+            Bike rentals
           </span>
           <span className="text-muted-foreground max-w-[26ch] text-xs leading-snug">
-            Monthly reach across every show and episode
+            Monthly trips across all docking stations
           </span>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <span className="text-primary text-2xl font-semibold tracking-tight sm:text-4xl">
             {TOTAL.toLocaleString("en-US")}
           </span>
-          <span className="text-muted-foreground text-xs">Total listeners</span>
+          <span className="text-muted-foreground text-xs">Total rentals</span>
         </div>
       </div>
 
@@ -58,7 +59,7 @@ export function AudienceAreaChart() {
         >
           <AreaChart.Tooltip variant="frosted-glass" />
           <AreaChart.Area
-            dataKey="listeners"
+            dataKey="rentals"
             variant="gradient"
             strokeVariant="solid"
             strokeWidth={2.5}

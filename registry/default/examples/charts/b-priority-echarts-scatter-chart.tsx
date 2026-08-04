@@ -2,23 +2,24 @@
 
 import { ScatterChart, type ChartConfig } from "@/registry/default/charts/scatter-chart";
 
+// Scenario: Emergency preparedness plan
 const chartData = [
-  { project: "Onboarding", effort: 28, impact: 89, confidence: 92 },
-  { project: "Team billing", effort: 72, impact: 86, confidence: 76 },
-  { project: "Saved views", effort: 39, impact: 73, confidence: 84 },
-  { project: "Search v2", effort: 64, impact: 68, confidence: 71 },
-  { project: "Bulk actions", effort: 43, impact: 55, confidence: 65 },
-  { project: "Theme builder", effort: 77, impact: 37, confidence: 58 },
-  { project: "CSV presets", effort: 24, impact: 42, confidence: 88 },
-  { project: "Legacy cleanup", effort: 83, impact: 22, confidence: 95 },
+  { project: "Backup generators", effort: 31, impact: 99, confidence: 102 },
+  { project: "Flood barriers", effort: 80, impact: 95, confidence: 84 },
+  { project: "Radio network", effort: 43, impact: 81, confidence: 93 },
+  { project: "Shelter supplies", effort: 71, impact: 75, confidence: 79 },
+  { project: "Evacuation signs", effort: 48, impact: 61, confidence: 72 },
+  { project: "Volunteer training", effort: 85, impact: 41, confidence: 64 },
+  { project: "Water storage", effort: 27, impact: 47, confidence: 98 },
+  { project: "Siren replacement", effort: 92, impact: 24, confidence: 105 },
 ];
 
 const chartConfig = {
-  effort: { label: "Effort" },
-  impact: { label: "Impact" },
-  confidence: { label: "Confidence" },
+  effort: { label: "Cost" },
+  impact: { label: "Readiness gain" },
+  confidence: { label: "Feasibility" },
   roadmap: {
-    label: "Roadmap",
+    label: "Preparedness",
     colors: {
       light: ["#fef3c7", "#d97706"],
       dark: ["#78350f", "#fbbf24"],
@@ -32,7 +33,7 @@ export function PriorityScatterChart() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-primary text-base font-medium tracking-tight sm:text-lg">
-            Roadmap priority
+            Emergency readiness
           </p>
           <p className="text-muted-foreground mt-0.5 text-xs">
             Bubble area represents confidence
@@ -50,7 +51,7 @@ export function PriorityScatterChart() {
         yDataKey="impact"
         pointNameDataKey="project"
         className="mt-2 min-h-0 w-full flex-1"
-        ariaLabel="Roadmap initiatives by effort, impact, and confidence"
+        ariaLabel="Preparedness projects by cost, readiness gain, and feasibility"
       >
         <ScatterChart.XAxis min={0} max={100} hideDots />
         <ScatterChart.YAxis min={0} max={100} hideDots />

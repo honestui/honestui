@@ -2,36 +2,37 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Metro departures
 const chartData = [
-  { hour: "00:00", sessions: 42 },
-  { hour: "01:00", sessions: 28 },
-  { hour: "02:00", sessions: 19 },
-  { hour: "03:00", sessions: 14 },
-  { hour: "04:00", sessions: 12 },
-  { hour: "05:00", sessions: 18 },
-  { hour: "06:00", sessions: 34 },
-  { hour: "07:00", sessions: 66 },
-  { hour: "08:00", sessions: 98 },
-  { hour: "09:00", sessions: 124 },
-  { hour: "10:00", sessions: 147 },
-  { hour: "11:00", sessions: 163 },
-  { hour: "12:00", sessions: 158 },
-  { hour: "13:00", sessions: 171 },
-  { hour: "14:00", sessions: 186 },
-  { hour: "15:00", sessions: 174 },
-  { hour: "16:00", sessions: 152 },
-  { hour: "17:00", sessions: 138 },
-  { hour: "18:00", sessions: 119 },
-  { hour: "19:00", sessions: 96 },
-  { hour: "20:00", sessions: 84 },
-  { hour: "21:00", sessions: 71 },
-  { hour: "22:00", sessions: 58 },
-  { hour: "23:00", sessions: 47 },
+  { hour: "00:00", departures: 47 },
+  { hour: "01:00", departures: 31 },
+  { hour: "02:00", departures: 21 },
+  { hour: "03:00", departures: 16 },
+  { hour: "04:00", departures: 13 },
+  { hour: "05:00", departures: 20 },
+  { hour: "06:00", departures: 38 },
+  { hour: "07:00", departures: 73 },
+  { hour: "08:00", departures: 109 },
+  { hour: "09:00", departures: 138 },
+  { hour: "10:00", departures: 163 },
+  { hour: "11:00", departures: 181 },
+  { hour: "12:00", departures: 175 },
+  { hour: "13:00", departures: 190 },
+  { hour: "14:00", departures: 206 },
+  { hour: "15:00", departures: 193 },
+  { hour: "16:00", departures: 169 },
+  { hour: "17:00", departures: 153 },
+  { hour: "18:00", departures: 132 },
+  { hour: "19:00", departures: 107 },
+  { hour: "20:00", departures: 93 },
+  { hour: "21:00", departures: 79 },
+  { hour: "22:00", departures: 64 },
+  { hour: "23:00", departures: 52 },
 ];
 
 const chartConfig = {
-  sessions: {
-    label: "Sessions",
+  departures: {
+    label: "Departures",
     colors: {
       light: ["#18181b"],
       dark: ["#FFFFFF"],
@@ -39,9 +40,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const TOTAL = chartData.reduce((sum, { sessions }) => sum + sessions, 0);
+const TOTAL = chartData.reduce((sum, { departures }) => sum + departures, 0);
 const PEAK = chartData.reduce(
-  (max, row) => (row.sessions > max.sessions ? row : max),
+  (max, row) => (row.departures > max.departures ? row : max),
   chartData[0],
 );
 
@@ -65,11 +66,11 @@ export function GridBarChart() {
         <div className="flex flex-col justify-end gap-1">
           <span className="text-muted-foreground font-mono text-[10px]">
             {"// CELL: "}
-            <span className="text-primary">1:1</span>
+            <span className="text-primary">24H</span>
           </span>
           <span className="text-muted-foreground font-mono text-[10px]">
             {"// TYPE: "}
-            <span className="text-primary">GRID</span>
+            <span className="text-primary">METRO</span>
           </span>
         </div>
       </div>
@@ -86,7 +87,7 @@ export function GridBarChart() {
         >
           <BarChart.XAxis dataKey="hour" hideDots />
           <BarChart.Tooltip />
-          <BarChart.Bar dataKey="sessions" variant="blocks" />
+          <BarChart.Bar dataKey="departures" variant="blocks" />
         </BarChart>
       </div>
     </div>

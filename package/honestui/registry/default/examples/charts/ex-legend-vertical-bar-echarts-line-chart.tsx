@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Server health
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", cpu: 334, memory: 217 },
+  { month: "February", cpu: 772, memory: 518 },
+  { month: "March", cpu: 492, memory: 332 },
+  { month: "April", cpu: 596, memory: 436 },
+  { month: "May", cpu: 426, memory: 365 },
+  { month: "June", cpu: 696, memory: 471 },
+  { month: "July", cpu: 397, memory: 272 },
+  { month: "August", cpu: 833, memory: 589 },
+  { month: "September", cpu: 578, memory: 413 },
+  { month: "October", cpu: 497, memory: 411 },
+  { month: "November", cpu: 724, memory: 534 },
+  { month: "December", cpu: 310, memory: 190 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  cpu: {
+    label: "CPU",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  memory: {
+    label: "Memory",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -46,8 +47,8 @@ export function LegendVerticalBarLineChart() {
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Legend variant="vertical-bar" />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" />
-      <LineChart.Line dataKey="mobile" />
+      <LineChart.Line dataKey="cpu" />
+      <LineChart.Line dataKey="memory" />
     </LineChart>
   );
 }

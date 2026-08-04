@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Cloud consumption
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", compute: 239, storage: 175 },
+  { month: "February", compute: 581, storage: 444 },
+  { month: "March", compute: 366, storage: 280 },
+  { month: "April", compute: 450, storage: 372 },
+  { month: "May", compute: 311, storage: 310 },
+  { month: "June", compute: 522, storage: 401 },
+  { month: "July", compute: 293, storage: 225 },
+  { month: "August", compute: 634, storage: 508 },
+  { month: "September", compute: 428, storage: 352 },
+  { month: "October", compute: 368, storage: 351 },
+  { month: "November", compute: 547, storage: 458 },
+  { month: "December", compute: 228, storage: 152 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  compute: {
+    label: "Compute",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  storage: {
+    label: "Storage",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,18 +45,18 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="compute" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
       <AreaChart.Area
-        dataKey="desktop"
+        dataKey="compute"
         variant="gradient" // [!code highlight]
         isClickable
       >
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
       <AreaChart.Area
-        dataKey="mobile"
+        dataKey="storage"
         variant="gradient" // [!code highlight]
         isClickable
       >

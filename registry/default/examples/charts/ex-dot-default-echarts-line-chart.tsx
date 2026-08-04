@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Trail traffic
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", hikers: 415, cyclists: 189 },
+  { month: "February", hikers: 1045, cyclists: 490 },
+  { month: "March", hikers: 634, cyclists: 304 },
+  { month: "April", hikers: 781, cyclists: 408 },
+  { month: "May", hikers: 549, cyclists: 337 },
+  { month: "June", hikers: 935, cyclists: 443 },
+  { month: "July", hikers: 497, cyclists: 244 },
+  { month: "August", hikers: 1124, cyclists: 561 },
+  { month: "September", hikers: 769, cyclists: 385 },
+  { month: "October", hikers: 646, cyclists: 383 },
+  { month: "November", hikers: 971, cyclists: 506 },
+  { month: "December", hikers: 365, cyclists: 162 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  hikers: {
+    label: "Hikers",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  cyclists: {
+    label: "Cyclists",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -45,10 +46,10 @@ export function DotDefaultLineChart() {
       <LineChart.Grid />
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop">
+      <LineChart.Line dataKey="hikers">
         <LineChart.Dot variant="default" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile">
+      <LineChart.Line dataKey="cyclists">
         <LineChart.Dot variant="default" />
       </LineChart.Line>
     </LineChart>

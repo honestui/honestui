@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Food waste audit
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", prepared: 415, discarded: 189 },
+  { month: "February", prepared: 1045, discarded: 490 },
+  { month: "March", prepared: 634, discarded: 304 },
+  { month: "April", prepared: 781, discarded: 408 },
+  { month: "May", prepared: 549, discarded: 337 },
+  { month: "June", prepared: 935, discarded: 443 },
+  { month: "July", prepared: 497, discarded: 244 },
+  { month: "August", prepared: 1124, discarded: 561 },
+  { month: "September", prepared: 769, discarded: 385 },
+  { month: "October", prepared: 646, discarded: 383 },
+  { month: "November", prepared: 971, discarded: 506 },
+  { month: "December", prepared: 365, discarded: 162 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  prepared: {
+    label: "Prepared",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  discarded: {
+    label: "Discarded",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -42,12 +43,12 @@ export function ExampleBarChart() {
       <BarChart.Legend isClickable />
       <BarChart.Tooltip />
       <BarChart.Bar
-        dataKey="desktop"
+        dataKey="prepared"
         variant="duotone" // [!code highlight]
         isClickable
       />
       <BarChart.Bar
-        dataKey="mobile"
+        dataKey="discarded"
         variant="duotone" // [!code highlight]
         isClickable
       />

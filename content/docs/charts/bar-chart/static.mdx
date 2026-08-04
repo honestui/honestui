@@ -40,8 +40,8 @@ import { BarChart, type ChartConfig } from "honestui/charts";
   <BarChart.XAxis dataKey="month" />
   <BarChart.Legend isClickable />
   <BarChart.Tooltip />
-  <BarChart.Bar dataKey="desktop" variant="default" isClickable />
-  <BarChart.Bar dataKey="mobile" variant="hatched" isClickable />
+  <BarChart.Bar dataKey="earlyVotes" variant="default" isClickable />
+  <BarChart.Bar dataKey="dayOfVotes" variant="hatched" isClickable />
 </BarChart>
 ```
 
@@ -74,8 +74,8 @@ Add `isClickable` to any `<Bar>` (and to `<Legend>`) to make those series select
   <BarChart.XAxis dataKey="month" />
   <BarChart.Legend isClickable />
   <BarChart.Tooltip />
-  <BarChart.Bar dataKey="desktop" variant="default" isClickable />
-  <BarChart.Bar dataKey="mobile" variant="default" isClickable />
+  <BarChart.Bar dataKey="earlyVotes" variant="default" isClickable />
+  <BarChart.Bar dataKey="dayOfVotes" variant="default" isClickable />
 </BarChart>
 ```
 
@@ -155,8 +155,8 @@ Examples of the bar chart with different `variants`. Each `<Bar>` sets its own `
 
 ### Glowing Bars
 
-<ComponentPreview className="mb-0" title="<Bar glowing /> - desktop" name="ex-glowing-desktop-echarts-bar-chart"  />
-<ComponentPreview title="<Bar glowing /> - mobile" name="ex-glowing-mobile-echarts-bar-chart"  />
+<ComponentPreview className="mb-0" title="Classroom outcomes" name="ex-glowing-desktop-echarts-bar-chart"  />
+<ComponentPreview title="Clinical intake" name="ex-glowing-mobile-echarts-bar-chart"  />
 
 ## API Reference
 

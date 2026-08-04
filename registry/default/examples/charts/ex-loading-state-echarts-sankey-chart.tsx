@@ -6,7 +6,7 @@ import {
   type ChartConfig,
 } from "@/registry/default/charts/sankey-chart";
 
-// Content distribution - how content flows to platforms
+// Scenario: Food distribution
 const data: SankeyData = {
   nodes: [
     { name: "BlogPosts" },
@@ -18,61 +18,61 @@ const data: SankeyData = {
     { name: "Newsletter" },
   ],
   links: [
-    { source: 0, target: 3, value: 12000 },
-    { source: 0, target: 4, value: 8500 },
-    { source: 0, target: 6, value: 15000 },
-    { source: 1, target: 5, value: 28000 },
-    { source: 1, target: 3, value: 4200 },
-    { source: 2, target: 5, value: 9800 },
-    { source: 2, target: 4, value: 3600 },
+    { source: 0, target: 3, value: 24000 },
+    { source: 0, target: 4, value: 17000 },
+    { source: 0, target: 6, value: 30000 },
+    { source: 1, target: 5, value: 56000 },
+    { source: 1, target: 3, value: 8400 },
+    { source: 2, target: 5, value: 19600 },
+    { source: 2, target: 4, value: 7200 },
   ],
 };
 
 const chartConfig = {
   BlogPosts: {
-    label: "Blog Posts",
+    label: "Produce",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
   Videos: {
-    label: "Videos",
+    label: "Dairy",
     colors: {
       light: ["#ef4444"],
       dark: ["#f87171"],
     },
   },
   Podcasts: {
-    label: "Podcasts",
+    label: "Bakery",
     colors: {
       light: ["#8b5cf6"],
       dark: ["#a78bfa"],
     },
   },
   Twitter: {
-    label: "Twitter",
+    label: "Food banks",
     colors: {
       light: ["#0ea5e9"],
       dark: ["#38bdf8"],
     },
   },
   LinkedIn: {
-    label: "LinkedIn",
+    label: "Schools",
     colors: {
       light: ["#0077b5"],
       dark: ["#0a95d9"],
     },
   },
   YouTube: {
-    label: "YouTube",
+    label: "Markets",
     colors: {
       light: ["#dc2626"],
       dark: ["#ef4444"],
     },
   },
   Newsletter: {
-    label: "Newsletter",
+    label: "Shelters",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],

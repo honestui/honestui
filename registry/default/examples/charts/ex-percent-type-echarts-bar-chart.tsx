@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Conference attendance
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", inPerson: 266, virtual: 183 },
+  { month: "February", inPerson: 608, virtual: 436 },
+  { month: "March", inPerson: 393, virtual: 282 },
+  { month: "April", inPerson: 477, virtual: 370 },
+  { month: "May", inPerson: 338, virtual: 311 },
+  { month: "June", inPerson: 549, virtual: 395 },
+  { month: "July", inPerson: 320, virtual: 230 },
+  { month: "August", inPerson: 661, virtual: 496 },
+  { month: "September", inPerson: 455, virtual: 351 },
+  { month: "October", inPerson: 395, virtual: 350 },
+  { month: "November", inPerson: 574, virtual: 448 },
+  { month: "December", inPerson: 255, virtual: 162 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  inPerson: {
+    label: "In person",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  virtual: {
+    label: "Virtual",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -46,8 +47,8 @@ export function ExampleBarChart() {
       <BarChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <BarChart.Legend isClickable />
       <BarChart.Tooltip />
-      <BarChart.Bar dataKey="desktop" variant="default" isClickable />
-      <BarChart.Bar dataKey="mobile" variant="default" isClickable />
+      <BarChart.Bar dataKey="inPerson" variant="default" isClickable />
+      <BarChart.Bar dataKey="virtual" variant="default" isClickable />
     </BarChart>
   );
 }

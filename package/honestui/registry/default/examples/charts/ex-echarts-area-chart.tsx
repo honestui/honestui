@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Factory output
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", finished: 449, scrap: 132 },
+  { month: "February", finished: 1127, scrap: 335 },
+  { month: "March", finished: 683, scrap: 214 },
+  { month: "April", finished: 840, scrap: 285 },
+  { month: "May", finished: 594, scrap: 240 },
+  { month: "June", finished: 1008, scrap: 301 },
+  { month: "July", finished: 536, scrap: 171 },
+  { month: "August", finished: 1210, scrap: 385 },
+  { month: "September", finished: 830, scrap: 270 },
+  { month: "October", finished: 697, scrap: 270 },
+  { month: "November", finished: 1047, scrap: 344 },
+  { month: "December", finished: 393, scrap: 116 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  finished: {
+    label: "Finished units",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  scrap: {
+    label: "Scrap units",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -48,11 +49,11 @@ export function ExampleAreaChart() {
       <AreaChart.Brush formatLabel={(value) => String(value).substring(0, 3)} />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="finished" variant="gradient" isClickable>
         <AreaChart.Dot variant="border" />
         <AreaChart.ActiveDot variant="colored-border" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="scrap" variant="gradient" isClickable>
         <AreaChart.Dot variant="border" />
         <AreaChart.ActiveDot variant="colored-border" />
       </AreaChart.Area>

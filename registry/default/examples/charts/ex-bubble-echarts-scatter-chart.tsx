@@ -2,23 +2,24 @@
 
 import { ScatterChart, type ChartConfig } from "@/registry/default/charts/scatter-chart";
 
+// Scenario: Wildlife field survey
 const data = [
-  { company: "Northstar", revenue: 18, growth: 72, employees: 120 },
-  { company: "Arc", revenue: 31, growth: 54, employees: 240 },
-  { company: "Atlas", revenue: 46, growth: 63, employees: 410 },
-  { company: "Relay", revenue: 57, growth: 41, employees: 520 },
-  { company: "Orbit", revenue: 68, growth: 48, employees: 760 },
-  { company: "Beacon", revenue: 79, growth: 32, employees: 980 },
-  { company: "Summit", revenue: 88, growth: 26, employees: 1350 },
-  { company: "Tempo", revenue: 38, growth: 81, employees: 330 },
+  { species: "Elk", mass: 21, speed: 84, population: 140 },
+  { species: "Fox", mass: 36, speed: 63, population: 281 },
+  { species: "Bison", mass: 54, speed: 74, population: 480 },
+  { species: "Hare", mass: 67, speed: 48, population: 608 },
+  { species: "Wolf", mass: 80, speed: 56, population: 889 },
+  { species: "Lynx", mass: 92, speed: 37, population: 1147 },
+  { species: "Bear", mass: 103, speed: 30, population: 1580 },
+  { species: "Deer", mass: 44, speed: 95, population: 386 },
 ];
 
 const chartConfig = {
-  revenue: { label: "Revenue" },
-  growth: { label: "Growth" },
-  employees: { label: "Employees" },
+  mass: { label: "Body mass" },
+  speed: { label: "Top speed" },
+  population: { label: "Population" },
   companies: {
-    label: "Companies",
+    label: "Species",
     colors: {
       light: ["#dbeafe", "#2563eb"],
       dark: ["#1e3a8a", "#60a5fa"],
@@ -31,14 +32,14 @@ export function BubbleScatterChart() {
     <ScatterChart
       data={data}
       config={chartConfig}
-      xDataKey="revenue"
-      yDataKey="growth"
-      pointNameDataKey="company"
+      xDataKey="mass"
+      yDataKey="speed"
+      pointNameDataKey="species"
       className="h-full w-full p-4"
     >
       <ScatterChart.Grid />
-      <ScatterChart.XAxis label="Revenue" hideDots tickFormatter={(value) => `$${value}m`} />
-      <ScatterChart.YAxis label="Growth" hideDots tickFormatter={(value) => `${value}%`} />
+      <ScatterChart.XAxis label="Body mass" hideDots tickFormatter={(value) => `$${value}m`} />
+      <ScatterChart.YAxis label="Top speed" hideDots tickFormatter={(value) => `${value}%`} />
       <ScatterChart.Tooltip
         xValueFormatter={(value) => `$${value}m`}
         yValueFormatter={(value) => `${value}%`}
@@ -47,7 +48,7 @@ export function BubbleScatterChart() {
       <ScatterChart.Scatter
         dataKey="companies"
         variant="bubble"
-        sizeDataKey="employees"
+        sizeDataKey="population"
         minSize={12}
         maxSize={52}
         isClickable

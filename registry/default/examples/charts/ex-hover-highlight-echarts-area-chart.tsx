@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Transit ridership
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", entries: 408, exits: 146 },
+  { month: "February", entries: 990, exits: 349 },
+  { month: "March", entries: 612, exits: 228 },
+  { month: "April", entries: 748, exits: 299 },
+  { month: "May", entries: 532, exits: 254 },
+  { month: "June", entries: 889, exits: 315 },
+  { month: "July", entries: 486, exits: 185 },
+  { month: "August", entries: 1065, exits: 399 },
+  { month: "September", entries: 734, exits: 284 },
+  { month: "October", entries: 622, exits: 284 },
+  { month: "November", entries: 923, exits: 358 },
+  { month: "December", entries: 365, exits: 130 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  entries: {
+    label: "Entries",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  exits: {
+    label: "Exits",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -45,13 +46,13 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="entries" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="entries" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="exits" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
     </AreaChart>

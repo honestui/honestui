@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Kitchen throughput
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", orders: 334, completed: 275 },
+  { month: "February", orders: 772, completed: 675 },
+  { month: "March", orders: 492, completed: 426 },
+  { month: "April", orders: 596, completed: 561 },
+  { month: "May", orders: 426, completed: 464 },
+  { month: "June", orders: 696, completed: 614 },
+  { month: "July", orders: 397, completed: 347 },
+  { month: "August", orders: 833, completed: 767 },
+  { month: "September", orders: 578, completed: 530 },
+  { month: "October", orders: 497, completed: 525 },
+  { month: "November", orders: 724, completed: 700 },
+  { month: "December", orders: 310, completed: 237 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  orders: {
+    label: "Orders",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  completed: {
+    label: "Completed",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,11 +45,11 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="orders" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
       <AreaChart.Area
-        dataKey="desktop"
+        dataKey="orders"
         variant="gradient"
         strokeVariant="solid" // [!code highlight]
         isClickable
@@ -56,7 +57,7 @@ export function ExampleAreaChart() {
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
       <AreaChart.Area
-        dataKey="mobile"
+        dataKey="completed"
         variant="gradient"
         strokeVariant="solid" // [!code highlight]
         isClickable

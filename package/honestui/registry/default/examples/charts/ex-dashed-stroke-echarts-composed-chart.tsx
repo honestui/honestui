@@ -2,31 +2,32 @@
 
 import { ComposedChart, type ChartConfig } from "@/registry/default/charts/composed-chart";
 
+// Scenario: SaaS acquisition
 const data = [
-  { month: "January", revenue: 4200, profit: 1800 },
-  { month: "February", revenue: 5800, profit: 2400 },
-  { month: "March", revenue: 4100, profit: 1600 },
-  { month: "April", revenue: 6200, profit: 2800 },
-  { month: "May", revenue: 5400, profit: 2200 },
-  { month: "June", revenue: 7800, profit: 3400 },
-  { month: "July", revenue: 6100, profit: 2600 },
-  { month: "August", revenue: 8200, profit: 3800 },
-  { month: "September", revenue: 5900, profit: 2500 },
-  { month: "October", revenue: 6800, profit: 3000 },
-  { month: "November", revenue: 7200, profit: 3200 },
-  { month: "December", revenue: 9100, profit: 4200 },
+  { month: "January", trials: 3366, activationRate: 1156 },
+  { month: "February", trials: 4657, activationRate: 1547 },
+  { month: "March", trials: 3308, activationRate: 1042 },
+  { month: "April", trials: 4999, activationRate: 1817 },
+  { month: "May", trials: 4326, activationRate: 1440 },
+  { month: "June", trials: 6257, activationRate: 2180 },
+  { month: "July", trials: 4908, activationRate: 1675 },
+  { month: "August", trials: 6599, activationRate: 2450 },
+  { month: "September", trials: 4726, activationRate: 1625 },
+  { month: "October", trials: 5457, activationRate: 1952 },
+  { month: "November", trials: 5788, activationRate: 2052 },
+  { month: "December", trials: 7319, activationRate: 2699 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  trials: {
+    label: "Trials",
     colors: {
       light: ["#3b82f6"],
       dark: ["#6A5ACD"],
     },
   },
-  profit: {
-    label: "Profit",
+  activationRate: {
+    label: "Activation rate",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
@@ -46,9 +47,9 @@ export function ExampleComposedChart() {
       <ComposedChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <ComposedChart.Legend isClickable />
       <ComposedChart.Tooltip />
-      <ComposedChart.Bar dataKey="revenue" isClickable />
+      <ComposedChart.Bar dataKey="trials" isClickable />
       <ComposedChart.Line
-        dataKey="profit"
+        dataKey="activationRate"
         strokeVariant="dashed" // [!code highlight]
         isClickable
       />

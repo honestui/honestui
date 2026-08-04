@@ -3,31 +3,32 @@
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 import { cn } from "@/lib/utils";
 
+// Scenario: Renewable energy output
 const chartData = [
-  { month: "Jan", payouts: 312, pending: 548 },
-  { month: "Feb", payouts: 388, pending: 502 },
-  { month: "Mar", payouts: 342, pending: 561 },
-  { month: "Apr", payouts: 455, pending: 470 },
-  { month: "May", payouts: 521, pending: 398 },
-  { month: "Jun", payouts: 486, pending: 441 },
-  { month: "Jul", payouts: 573, pending: 372 },
-  { month: "Aug", payouts: 640, pending: 316 },
-  { month: "Sep", payouts: 598, pending: 358 },
-  { month: "Oct", payouts: 662, pending: 284 },
-  { month: "Nov", payouts: 617, pending: 331 },
-  { month: "Dec", payouts: 690, pending: 262 },
+  { month: "Jan", generated: 346, forecast: 608 },
+  { month: "Feb", generated: 431, forecast: 557 },
+  { month: "Mar", generated: 380, forecast: 623 },
+  { month: "Apr", generated: 505, forecast: 522 },
+  { month: "May", generated: 578, forecast: 442 },
+  { month: "Jun", generated: 539, forecast: 490 },
+  { month: "Jul", generated: 636, forecast: 413 },
+  { month: "Aug", generated: 710, forecast: 351 },
+  { month: "Sep", generated: 664, forecast: 397 },
+  { month: "Oct", generated: 735, forecast: 315 },
+  { month: "Nov", generated: 685, forecast: 367 },
+  { month: "Dec", generated: 766, forecast: 291 },
 ];
 
 const chartConfig = {
-  payouts: {
-    label: "Payouts",
+  generated: {
+    label: "Generated",
     colors: {
       light: ["#f97316", "#ec4899"],
       dark: ["#fb923c", "#f472b6"],
     },
   },
-  pending: {
-    label: "Pending",
+  forecast: {
+    label: "Forecast",
     colors: {
       light: ["#0891b2", "#7c3aed"],
       dark: ["#22d3ee", "#a78bfa"],
@@ -38,25 +39,25 @@ const chartConfig = {
 const STATS = [
   {
     key: "month",
-    label: "Monthly",
-    value: "$12,480",
+    label: "This month",
+    value: "12,480 MWh",
     delta: "+8.4%",
-    sub: "11,512 last month",
+    sub: "11,960 last month",
     swatch: "bg-[#f97316] dark:bg-[#fb923c]",
   },
   {
     key: "year",
-    label: "Yearly",
-    value: "$164,320",
+    label: "This year",
+    value: "164,320 MWh",
     delta: "+3.1%",
-    sub: "159,380 last year",
+    sub: "158,740 last year",
     swatch: "bg-[#ec4899] dark:bg-[#f472b6]",
   },
 ];
 
 const CITIES = [
-  { city: "Berlin", amount: "84,210" },
-  { city: "Toronto", amount: "61,940" },
+  { city: "Coastal wind", amount: "84,210" },
+  { city: "Desert solar", amount: "61,940" },
 ];
 
 export function PayoutsLineChart() {
@@ -73,10 +74,10 @@ export function PayoutsLineChart() {
           <LineChart.Grid />
           <LineChart.YAxis />
           <LineChart.Tooltip variant="frosted-glass" />
-          <LineChart.Line dataKey="payouts" strokeVariant="solid" strokeWidth={2} glowing>
+          <LineChart.Line dataKey="generated" strokeVariant="solid" strokeWidth={2} glowing>
             <LineChart.ActiveDot variant="ping" />
           </LineChart.Line>
-          <LineChart.Line dataKey="pending" strokeVariant="solid" strokeWidth={2} glowing>
+          <LineChart.Line dataKey="forecast" strokeVariant="solid" strokeWidth={2} glowing>
             <LineChart.ActiveDot variant="ping" />
           </LineChart.Line>
         </LineChart>

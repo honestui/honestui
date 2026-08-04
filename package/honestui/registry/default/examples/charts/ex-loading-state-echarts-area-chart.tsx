@@ -2,18 +2,19 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
-const data: { month: string; desktop: number; mobile: number }[] = [];
+// Scenario: Weather forecast
+const data: { month: string; observed: number; forecast: number }[] = [];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  observed: {
+    label: "Observed rainfall",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  forecast: {
+    label: "Forecast rainfall",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -33,13 +34,13 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="observed" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="observed" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="forecast" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
     </AreaChart>

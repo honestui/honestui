@@ -3,17 +3,18 @@
 import { PieChart, type ChartConfig } from "@/registry/default/charts/pie-chart";
 import { cn } from "@/lib/utils";
 
+// Scenario: Soil health score
 const MAX = 1000;
-const SCORE = 842;
+const SCORE = 734;
 const START_ANGLE = 210;
 
 const chartData = [
-  { band: "atrisk", label: "At risk", from: 0, value: 450, bar: "bg-[#e11d48] dark:bg-[#fb7185]" },
-  { band: "fair", label: "Fair", from: 450, value: 200, bar: "bg-[#f59e0b] dark:bg-[#fbbf24]" },
-  { band: "good", label: "Good", from: 650, value: 170, bar: "bg-[#84cc16] dark:bg-[#a3e635]" },
+  { band: "atrisk", label: "Depleted", from: 0, value: 450, bar: "bg-[#e11d48] dark:bg-[#fb7185]" },
+  { band: "fair", label: "Recovering", from: 450, value: 200, bar: "bg-[#f59e0b] dark:bg-[#fbbf24]" },
+  { band: "good", label: "Healthy", from: 650, value: 170, bar: "bg-[#84cc16] dark:bg-[#a3e635]" },
   {
     band: "excellent",
-    label: "Excellent",
+    label: "Thriving",
     from: 820,
     value: 180,
     bar: "bg-[#059669] dark:bg-[#34d399]",
@@ -21,10 +22,10 @@ const chartData = [
 ];
 
 const chartConfig = {
-  atrisk: { label: "At risk", colors: { light: ["#e11d48"], dark: ["#fb7185"] } },
-  fair: { label: "Fair", colors: { light: ["#f59e0b"], dark: ["#fbbf24"] } },
-  good: { label: "Good", colors: { light: ["#84cc16"], dark: ["#a3e635"] } },
-  excellent: { label: "Excellent", colors: { light: ["#059669"], dark: ["#34d399"] } },
+  atrisk: { label: "Depleted", colors: { light: ["#e11d48"], dark: ["#fb7185"] } },
+  fair: { label: "Recovering", colors: { light: ["#f59e0b"], dark: ["#fbbf24"] } },
+  good: { label: "Healthy", colors: { light: ["#84cc16"], dark: ["#a3e635"] } },
+  excellent: { label: "Thriving", colors: { light: ["#059669"], dark: ["#34d399"] } },
 } satisfies ChartConfig;
 
 const BAND = [...chartData].reverse().find(({ from }) => SCORE >= from) ?? chartData[0];
@@ -33,7 +34,7 @@ export function ReliabilityScorePieChart() {
   return (
     <div className="flex h-full w-full flex-col p-4">
       <span className="text-primary text-base font-medium tracking-tight sm:text-lg">
-        Delivery Reliability
+        Soil health
       </span>
 
       <div className="relative mx-auto mt-1 aspect-square w-full max-w-50 shrink-0">
@@ -77,9 +78,9 @@ export function ReliabilityScorePieChart() {
 
       <div className="-mt-6 text-center">
         <p className="text-primary text-xs font-medium sm:text-sm">
-          Reliability is {BAND.label.toLowerCase()}
+          Soil condition is {BAND.label.toLowerCase()}
         </p>
-        <p className="text-muted-foreground text-[10px] sm:text-xs">Updated 12 Mar 2026</p>
+        <p className="text-muted-foreground text-[10px] sm:text-xs">Sampled 18 Jul 2026</p>
       </div>
 
       <div className="mt-auto shrink-0 pt-2">

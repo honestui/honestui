@@ -12,17 +12,17 @@ Every Honest UI chart component accepts a `chartConfig` object. It maps each dat
 import { type ChartConfig } from "honestui/charts";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    icon: MonitorIcon,
+  harvested: {
+    label: "Harvested",
+    icon: WheatIcon,
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
-    icon: SmartphoneIcon,
+  packed: {
+    label: "Packed",
+    icon: PackageCheckIcon,
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -31,7 +31,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 ```
 
-Each key (e.g. `desktop`, `mobile`) must match a data key in your dataset. Its type:
+Each key (e.g. `harvested`, `packed`) must match a data key in your dataset. Its type:
 
 ```tsx
 type ChartConfig = Record<
@@ -55,8 +55,8 @@ The name shown in tooltips and legends. A string or any `React.ReactNode`.
 
 ```tsx
 const chartConfig = {
-  desktop: {
-    label: "Desktop Users", // [!code highlight]
+  harvested: {
+    label: "Harvested", // [!code highlight]
     // ...
   },
 } satisfies ChartConfig;
@@ -91,17 +91,17 @@ Themes can define different color counts, the chart distributes them using the m
 An optional React component that replaces the default color indicator in the **tooltip** and **legend**, useful for distinguishing series beyond color.
 
 ```tsx
-import { Monitor, Smartphone } from "lucide-react";
+import { PackageCheck, Wheat } from "lucide-react";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    icon: Monitor, // [!code highlight] [!code word:Monitor]
+  harvested: {
+    label: "Harvested",
+    icon: Wheat, // [!code highlight] [!code word:Wheat]
     colors: { light: ["#047857"], dark: ["#10b981"] },
   },
-  mobile: {
-    label: "Mobile",
-    icon: Smartphone, // [!code highlight] [!code word:Smartphone]
+  packed: {
+    label: "Packed",
+    icon: PackageCheck, // [!code highlight] [!code word:PackageCheck]
     colors: { light: ["#be123c"], dark: ["#f43f5e"] },
   },
 } satisfies ChartConfig;
@@ -111,11 +111,11 @@ The `icon` renders in place of the color dot/square in tooltips and the color in
 
 ## How Colors Work
 
-The chart config generates CSS custom properties scoped to each chart instance. A key `desktop` with colors `["#a855f7", "#6366f1"]` produces:
+The chart config generates CSS custom properties scoped to each chart instance. A key `harvested` with colors `["#a855f7", "#6366f1"]` produces:
 
 ```css
---color-desktop-0: #a855f7;
---color-desktop-1: #6366f1;
+--color-harvested-0: #a855f7;
+--color-harvested-1: #6366f1;
 ```
 
 Chart components, tooltips, and legends read these variables for consistent theming. Switching between light and dark mode swaps in the correct set automatically.
@@ -134,7 +134,7 @@ So 2-3 gradient stops smoothly span any number of data points.
 The config is validated at runtime. An empty `colors` object, or one without a valid theme key, throws a clear error:
 
 ```plaintext
-[Honest UI] Invalid chart config for "desktop": colors object must
+[Honest UI] Invalid chart config for "harvested": colors object must
 have at least one theme key (light, dark). Received empty object or
 invalid keys.
 ```

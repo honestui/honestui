@@ -2,25 +2,26 @@
 
 import { ComposedChart, type ChartConfig } from "@/registry/default/charts/composed-chart";
 
+// Scenario: Fundraising efficiency
 const data = [
-  { month: "January", revenue: 4200, profit: 1800 },
-  { month: "February", revenue: 5800, profit: 2400 },
-  { month: "March", revenue: 4100, profit: 1600 },
-  { month: "April", revenue: 6200, profit: 2800 },
-  { month: "May", revenue: 5400, profit: 2200 },
-  { month: "June", revenue: 7800, profit: 3400 },
+  { month: "January", donations: 3393, averageGift: 1462 },
+  { month: "February", donations: 4684, averageGift: 1949 },
+  { month: "March", donations: 3335, averageGift: 1316 },
+  { month: "April", donations: 5026, averageGift: 2283 },
+  { month: "May", donations: 4353, averageGift: 1810 },
+  { month: "June", donations: 6284, averageGift: 2742 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  donations: {
+    label: "Donations",
     colors: {
       light: ["#3b82f6"],
       dark: ["#6A5ACD"],
     },
   },
-  profit: {
-    label: "Profit",
+  averageGift: {
+    label: "Average gift",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
@@ -41,8 +42,8 @@ export function ExampleComposedChart() {
       <ComposedChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <ComposedChart.Legend />
       <ComposedChart.Tooltip />
-      <ComposedChart.Bar dataKey="revenue" />
-      <ComposedChart.Line dataKey="profit" />
+      <ComposedChart.Bar dataKey="donations" />
+      <ComposedChart.Line dataKey="averageGift" />
     </ComposedChart>
   );
 }

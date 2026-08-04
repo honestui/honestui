@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Hotel occupancy
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", booked: 381, available: 226 },
+  { month: "February", booked: 963, available: 593 },
+  { month: "March", booked: 585, available: 365 },
+  { month: "April", booked: 721, available: 489 },
+  { month: "May", booked: 505, available: 401 },
+  { month: "June", booked: 862, available: 536 },
+  { month: "July", booked: 459, available: 292 },
+  { month: "August", booked: 1038, available: 678 },
+  { month: "September", booked: 707, available: 461 },
+  { month: "October", booked: 595, available: 457 },
+  { month: "November", booked: 896, available: 615 },
+  { month: "December", booked: 338, available: 191 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  booked: {
+    label: "Booked rooms",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  available: {
+    label: "Available rooms",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,13 +45,13 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="booked" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="booked" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="available" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
     </AreaChart>

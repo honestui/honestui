@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Course progress
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", lessons: 313, exercises: 182 },
+  { month: "February", lessons: 800, exercises: 484 },
+  { month: "March", lessons: 487, exercises: 299 },
+  { month: "April", lessons: 602, exercises: 402 },
+  { month: "May", lessons: 417, exercises: 331 },
+  { month: "June", lessons: 715, exercises: 437 },
+  { month: "July", lessons: 382, exercises: 238 },
+  { month: "August", lessons: 865, exercises: 555 },
+  { month: "September", lessons: 585, exercises: 379 },
+  { month: "October", lessons: 493, exercises: 377 },
+  { month: "November", lessons: 746, exercises: 501 },
+  { month: "December", lessons: 283, exercises: 156 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  lessons: {
+    label: "Lessons",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  exercises: {
+    label: "Exercises",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -45,14 +46,14 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="lessons" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="lessons" variant="gradient" isClickable>
         <AreaChart.Dot variant="default" />
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="exercises" variant="gradient" isClickable>
         <AreaChart.Dot variant="default" />
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>

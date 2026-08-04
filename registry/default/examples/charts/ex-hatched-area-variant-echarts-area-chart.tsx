@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Carbon accounting
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", scopeOne: 374, scopeTwo: 261 },
+  { month: "February", scopeOne: 908, scopeTwo: 661 },
+  { month: "March", scopeOne: 563, scopeTwo: 412 },
+  { month: "April", scopeOne: 688, scopeTwo: 547 },
+  { month: "May", scopeOne: 488, scopeTwo: 450 },
+  { month: "June", scopeOne: 815, scopeTwo: 600 },
+  { month: "July", scopeOne: 447, scopeTwo: 333 },
+  { month: "August", scopeOne: 979, scopeTwo: 753 },
+  { month: "September", scopeOne: 673, scopeTwo: 516 },
+  { month: "October", scopeOne: 571, scopeTwo: 511 },
+  { month: "November", scopeOne: 848, scopeTwo: 686 },
+  { month: "December", scopeOne: 338, scopeTwo: 223 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  scopeOne: {
+    label: "Scope 1",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  scopeTwo: {
+    label: "Scope 2",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,18 +45,18 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="scopeOne" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
       <AreaChart.Area
-        dataKey="desktop"
+        dataKey="scopeOne"
         variant="hatched" // [!code highlight]
         isClickable
       >
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
       <AreaChart.Area
-        dataKey="mobile"
+        dataKey="scopeTwo"
         variant="hatched" // [!code highlight]
         isClickable
       >

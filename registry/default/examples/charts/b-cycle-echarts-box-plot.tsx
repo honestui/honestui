@@ -2,18 +2,19 @@
 
 import { BoxPlot, type BoxPlotValue, type ChartConfig } from "@/registry/default/charts/box-plot";
 
+// Scenario: Kitchen ticket times
 const chartData = [
-  { team: "Core", duration: [1.8, 2.7, 3.4, 4.3, 5.8] },
-  { team: "Growth", duration: [2.2, 3.1, 4.0, 5.1, 6.7] },
-  { team: "Mobile", duration: [2.5, 3.6, 4.5, 5.8, 7.4] },
-  { team: "Data", duration: [3.0, 4.1, 5.2, 6.4, 8.1] },
-  { team: "Platform", duration: [1.6, 2.4, 3.1, 3.9, 5.2] },
-  { team: "Design", duration: [2.0, 2.9, 3.7, 4.8, 6.1] },
+  { team: "Grill", duration: [1.8, 2.7, 3.4, 4.3, 5.8] },
+  { team: "Bar", duration: [2.2, 3.1, 4.0, 5.1, 6.7] },
+  { team: "Pantry", duration: [2.5, 3.6, 4.5, 5.8, 7.4] },
+  { team: "Pastry", duration: [3.0, 4.1, 5.2, 6.4, 8.1] },
+  { team: "Expo", duration: [1.6, 2.4, 3.1, 3.9, 5.2] },
+  { team: "Prep", duration: [2.0, 2.9, 3.7, 4.8, 6.1] },
 ] satisfies { team: string; duration: BoxPlotValue }[];
 
 const chartConfig = {
   duration: {
-    label: "Cycle time",
+    label: "Ticket time",
     colors: {
       light: ["#fef3c7", "#fbbf24", "#d97706", "#92400e"],
       dark: ["#78350f", "#d97706", "#fbbf24", "#fde68a"],
@@ -29,15 +30,15 @@ export function CycleBoxPlot() {
           <p className="text-primary text-base font-medium tracking-tight sm:text-lg">
             Release cycle time
           </p>
-          <p className="text-muted-foreground mt-0.5 text-xs">Last 90 days · working days</p>
+          <p className="text-muted-foreground mt-0.5 text-xs">Last 30 dinner services · minutes</p>
         </div>
         <div className="hidden text-right sm:block">
           <p className="text-muted-foreground text-[10px] tracking-wide uppercase">Median</p>
-          <p className="text-primary text-lg font-semibold tabular-nums">3.9d</p>
+          <p className="text-primary text-lg font-semibold tabular-nums">12.6m</p>
         </div>
         <div className="text-right">
           <p className="text-muted-foreground text-[10px] tracking-wide uppercase">Target</p>
-          <p className="text-primary text-lg font-semibold tabular-nums">≤ 4d</p>
+          <p className="text-primary text-lg font-semibold tabular-nums">≤ 15m</p>
         </div>
       </div>
 
@@ -46,7 +47,7 @@ export function CycleBoxPlot() {
         config={chartConfig}
         xDataKey="team"
         className="mt-2 min-h-0 w-full flex-1"
-        ariaLabel="Release cycle-time distributions by team in working days"
+        ariaLabel="Kitchen ticket-time distributions by station in minutes"
       >
         <BoxPlot.Grid />
         <BoxPlot.XAxis hideDots />

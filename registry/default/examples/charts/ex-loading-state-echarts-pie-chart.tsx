@@ -2,45 +2,46 @@
 
 import { PieChart, type ChartConfig } from "@/registry/default/charts/pie-chart";
 
+// Scenario: Inventory status
 const data = [
-  { browser: "chrome", visitors: 275 },
-  { browser: "safari", visitors: 200 },
-  { browser: "firefox", visitors: 187 },
-  { browser: "edge", visitors: 173 },
-  { browser: "other", visitors: 90 },
+  { category: "available", units: 410 },
+  { category: "reserved", units: 225 },
+  { category: "transit", units: 170 },
+  { category: "inspection", units: 90 },
+  { category: "damaged", units: 35 },
 ];
 
 const chartConfig = {
-  chrome: {
-    label: "Chrome",
+  available: {
+    label: "Available",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
-  safari: {
-    label: "Safari",
+  reserved: {
+    label: "Reserved",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
     },
   },
-  firefox: {
-    label: "Firefox",
+  transit: {
+    label: "In transit",
     colors: {
       light: ["#f59e0b"],
       dark: ["#fbbf24"],
     },
   },
-  edge: {
-    label: "Edge",
+  inspection: {
+    label: "Inspection",
     colors: {
       light: ["#8b5cf6"],
       dark: ["#a78bfa"],
     },
   },
-  other: {
-    label: "Other",
+  damaged: {
+    label: "Damaged",
     colors: {
       light: ["#6b7280"],
       dark: ["#9ca3af"],
@@ -53,8 +54,8 @@ export function ExamplePieChart() {
     <PieChart
       className="h-full w-full p-4"
       data={data}
-      dataKey="visitors"
-      nameKey="browser"
+      dataKey="units"
+      nameKey="category"
       config={chartConfig}
       isLoading // [!code highlight]
     >

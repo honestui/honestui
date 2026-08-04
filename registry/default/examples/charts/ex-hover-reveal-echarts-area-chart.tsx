@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Retail demand
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", online: 442, stores: 167 },
+  { month: "February", online: 1072, stores: 403 },
+  { month: "March", online: 661, stores: 261 },
+  { month: "April", online: 808, stores: 343 },
+  { month: "May", online: 576, stores: 289 },
+  { month: "June", online: 962, stores: 365 },
+  { month: "July", online: 524, stores: 212 },
+  { month: "August", online: 1151, stores: 460 },
+  { month: "September", online: 796, stores: 325 },
+  { month: "October", online: 673, stores: 325 },
+  { month: "November", online: 998, stores: 415 },
+  { month: "December", online: 392, stores: 148 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  online: {
+    label: "Online orders",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  stores: {
+    label: "Store orders",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -47,10 +48,10 @@ export function ExampleAreaChart() {
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <AreaChart.Legend />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient">
+      <AreaChart.Area dataKey="online" variant="gradient">
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient">
+      <AreaChart.Area dataKey="stores" variant="gradient">
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
     </AreaChart>

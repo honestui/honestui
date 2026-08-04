@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Fundraising
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", pledged: 482, collected: 153 },
+  { month: "February", pledged: 1209, collected: 389 },
+  { month: "March", pledged: 732, collected: 247 },
+  { month: "April", pledged: 900, collected: 329 },
+  { month: "May", pledged: 638, collected: 275 },
+  { month: "June", pledged: 1082, collected: 351 },
+  { month: "July", pledged: 574, collected: 198 },
+  { month: "August", pledged: 1296, collected: 446 },
+  { month: "September", pledged: 891, collected: 311 },
+  { month: "October", pledged: 748, collected: 311 },
+  { month: "November", pledged: 1122, collected: 401 },
+  { month: "December", pledged: 420, collected: 134 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  pledged: {
+    label: "Pledged",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  collected: {
+    label: "Collected",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,13 +45,13 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="pledged" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
-      <AreaChart.Area dataKey="desktop" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="pledged" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
-      <AreaChart.Area dataKey="mobile" variant="gradient" isClickable>
+      <AreaChart.Area dataKey="collected" variant="gradient" isClickable>
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
     </AreaChart>

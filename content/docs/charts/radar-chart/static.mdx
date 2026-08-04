@@ -36,20 +36,20 @@ import { RadarChart, type ChartConfig } from "honestui/charts";
 
 ```tsx
 const data = [
-  { skill: "JavaScript", desktop: 186, mobile: 80 },
-  { skill: "TypeScript", desktop: 305, mobile: 200 },
-  { skill: "React", desktop: 237, mobile: 120 },
-  { skill: "Node.js", desktop: 173, mobile: 190 },
-  { skill: "CSS", desktop: 209, mobile: 130 },
+  { skill: "Research", current: 68, target: 82 },
+  { skill: "Design", current: 76, target: 88 },
+  { skill: "Engineering", current: 84, target: 91 },
+  { skill: "Quality", current: 61, target: 79 },
+  { skill: "Marketing", current: 57, target: 74 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  current: {
+    label: "Current",
     colors: { light: ["#3b82f6"], dark: ["#60a5fa"] },
   },
-  mobile: {
-    label: "Mobile",
+  target: {
+    label: "Target",
     colors: { light: ["#10b981"], dark: ["#34d399"] },
   },
 } satisfies ChartConfig;
@@ -59,11 +59,11 @@ const chartConfig = {
   <RadarChart.PolarAngleAxis dataKey="skill" />
   <RadarChart.Legend />
   <RadarChart.Tooltip />
-  <RadarChart.Radar dataKey="desktop" variant="filled">
+  <RadarChart.Radar dataKey="current" variant="filled">
     <RadarChart.Dot variant="colored-border" />
     <RadarChart.ActiveDot variant="default" />
   </RadarChart.Radar>
-  <RadarChart.Radar dataKey="mobile" variant="filled" />
+  <RadarChart.Radar dataKey="target" variant="filled" />
 </RadarChart>
 ```
 
@@ -97,8 +97,8 @@ Set `isClickable` on a `<Radar>` to make it selectable by click, and on `<Legend
   <RadarChart.PolarAngleAxis dataKey="skill" />
   <RadarChart.Legend isClickable />
   <RadarChart.Tooltip />
-  <RadarChart.Radar dataKey="desktop" variant="filled" isClickable />
-  <RadarChart.Radar dataKey="mobile" variant="filled" isClickable />
+  <RadarChart.Radar dataKey="current" variant="filled" isClickable />
+  <RadarChart.Radar dataKey="target" variant="filled" isClickable />
 </RadarChart>
 ```
 
@@ -117,8 +117,8 @@ Set `isClickable` on a `<Radar>` to make it selectable by click, and on `<Legend
   <RadarChart.PolarAngleAxis dataKey="skill" />
   <RadarChart.Legend />
   <RadarChart.Tooltip />
-  <RadarChart.Radar dataKey="desktop" variant="filled" />
-  <RadarChart.Radar dataKey="mobile" variant="filled" />
+  <RadarChart.Radar dataKey="current" variant="filled" />
+  <RadarChart.Radar dataKey="target" variant="filled" />
 </RadarChart>
 ```
 

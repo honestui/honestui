@@ -2,44 +2,45 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: College endowment funds
 const SERIES = [
-  { key: "robinhood", label: "Robinhood", color: "#c3f000", pct: -4.41, delta: -2377.66 },
-  { key: "coinbase", label: "Coinbase", color: "#2f6bff", pct: 1.15, delta: 617.22 },
+  { key: "robinhood", label: "Sustainable fund", color: "#c3f000", pct: -4.41, delta: -2377.66 },
+  { key: "coinbase", label: "Bond fund", color: "#2f6bff", pct: 1.15, delta: 617.22 },
 ] as const;
 
 const chartData = [
-  { date: "Dec 22", robinhood: 53916, coinbase: 53670 },
-  { date: "Dec 23", robinhood: 54380, coinbase: 53080 },
-  { date: "Dec 24", robinhood: 54760, coinbase: 52460 },
-  { date: "Dec 25", robinhood: 54480, coinbase: 51880 },
-  { date: "Dec 26", robinhood: 54060, coinbase: 51340 },
-  { date: "Dec 27", robinhood: 53820, coinbase: 50900 },
-  { date: "Dec 28", robinhood: 53520, coinbase: 50520 },
-  { date: "Dec 29", robinhood: 53240, coinbase: 50200 },
-  { date: "Dec 30", robinhood: 53080, coinbase: 49960 },
-  { date: "Dec 31", robinhood: 52840, coinbase: 49760 },
-  { date: "Jan 1", robinhood: 52700, coinbase: 49640 },
-  { date: "Jan 2", robinhood: 52520, coinbase: 49600 },
-  { date: "Jan 3", robinhood: 52420, coinbase: 49720 },
-  { date: "Jan 4", robinhood: 52340, coinbase: 49980 },
-  { date: "Jan 5", robinhood: 52240, coinbase: 50360 },
-  { date: "Jan 6", robinhood: 52140, coinbase: 50820 },
-  { date: "Jan 7", robinhood: 52080, coinbase: 51340 },
-  { date: "Jan 8", robinhood: 52020, coinbase: 51900 },
-  { date: "Jan 9", robinhood: 51960, coinbase: 52440 },
-  { date: "Jan 10", robinhood: 51900, coinbase: 52960 },
-  { date: "Jan 11", robinhood: 51860, coinbase: 53420 },
-  { date: "Jan 12", robinhood: 51800, coinbase: 53780 },
-  { date: "Jan 13", robinhood: 51740, coinbase: 54040 },
-  { date: "Jan 14", robinhood: 51700, coinbase: 54200 },
-  { date: "Jan 15", robinhood: 51640, coinbase: 54300 },
-  { date: "Jan 16", robinhood: 51580, coinbase: 54320 },
-  { date: "Jan 17", robinhood: 51538, coinbase: 54287 },
+  { date: "Dec 22", robinhood: 59847, coinbase: 59574 },
+  { date: "Dec 23", robinhood: 60362, coinbase: 58919 },
+  { date: "Dec 24", robinhood: 60784, coinbase: 58231 },
+  { date: "Dec 25", robinhood: 60473, coinbase: 57587 },
+  { date: "Dec 26", robinhood: 60007, coinbase: 56987 },
+  { date: "Dec 27", robinhood: 59740, coinbase: 56499 },
+  { date: "Dec 28", robinhood: 59407, coinbase: 56077 },
+  { date: "Dec 29", robinhood: 59096, coinbase: 55722 },
+  { date: "Dec 30", robinhood: 58919, coinbase: 55456 },
+  { date: "Dec 31", robinhood: 58652, coinbase: 55234 },
+  { date: "Jan 1", robinhood: 58497, coinbase: 55100 },
+  { date: "Jan 2", robinhood: 58297, coinbase: 55056 },
+  { date: "Jan 3", robinhood: 58186, coinbase: 55189 },
+  { date: "Jan 4", robinhood: 58097, coinbase: 55478 },
+  { date: "Jan 5", robinhood: 57986, coinbase: 55900 },
+  { date: "Jan 6", robinhood: 57875, coinbase: 56410 },
+  { date: "Jan 7", robinhood: 57809, coinbase: 56987 },
+  { date: "Jan 8", robinhood: 57742, coinbase: 57609 },
+  { date: "Jan 9", robinhood: 57676, coinbase: 58208 },
+  { date: "Jan 10", robinhood: 57609, coinbase: 58786 },
+  { date: "Jan 11", robinhood: 57565, coinbase: 59296 },
+  { date: "Jan 12", robinhood: 57498, coinbase: 59696 },
+  { date: "Jan 13", robinhood: 57431, coinbase: 59984 },
+  { date: "Jan 14", robinhood: 57387, coinbase: 60162 },
+  { date: "Jan 15", robinhood: 57320, coinbase: 60273 },
+  { date: "Jan 16", robinhood: 57254, coinbase: 60295 },
+  { date: "Jan 17", robinhood: 57207, coinbase: 60259 },
 ];
 
 const chartConfig = {
-  robinhood: { label: "Robinhood", colors: { light: ["#a6cc00"], dark: ["#c3f000"] } },
-  coinbase: { label: "Coinbase", colors: { light: ["#2f6bff"], dark: ["#4c86ff"] } },
+  robinhood: { label: "Sustainable fund", colors: { light: ["#a6cc00"], dark: ["#c3f000"] } },
+  coinbase: { label: "Bond fund", colors: { light: ["#2f6bff"], dark: ["#4c86ff"] } },
 } satisfies ChartConfig;
 
 const money = (value: number) =>

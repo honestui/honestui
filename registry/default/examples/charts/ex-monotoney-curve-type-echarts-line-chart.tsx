@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Music royalties
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", earned: 401, paid: 147 },
+  { month: "February", earned: 935, paid: 326 },
+  { month: "March", earned: 590, paid: 220 },
+  { month: "April", earned: 715, paid: 284 },
+  { month: "May", earned: 515, paid: 245 },
+  { month: "June", earned: 842, paid: 295 },
+  { month: "July", earned: 474, paid: 182 },
+  { month: "August", earned: 1006, paid: 370 },
+  { month: "September", earned: 700, paid: 271 },
+  { month: "October", earned: 598, paid: 272 },
+  { month: "November", earned: 875, paid: 332 },
+  { month: "December", earned: 365, paid: 134 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  earned: {
+    label: "Earned",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  paid: {
+    label: "Paid",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -43,14 +44,14 @@ export function ExampleLineChart() {
       curveType="monotoneY" // [!code highlight]
     >
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <LineChart.YAxis dataKey="desktop" />
+      <LineChart.YAxis dataKey="earned" />
       <LineChart.Legend isClickable />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="earned" strokeVariant="solid" isClickable>
         <LineChart.Dot variant="default" />
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="paid" strokeVariant="solid" isClickable>
         <LineChart.Dot variant="default" />
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>

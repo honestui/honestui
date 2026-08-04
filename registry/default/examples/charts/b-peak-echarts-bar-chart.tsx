@@ -3,48 +3,49 @@
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 import { cn } from "@/lib/utils";
 
+// Scenario: Clinic appointments
 const chartData = [
-  { week: "W01", organic: 128, paid: 74 },
-  { week: "W02", organic: 164, paid: 91 },
-  { week: "W03", organic: 142, paid: 66 },
-  { week: "W04", organic: 199, paid: 108 },
-  { week: "W05", organic: 176, paid: 84 },
-  { week: "W06", organic: 231, paid: 167 },
-  { week: "W07", organic: 208, paid: 96 },
-  { week: "W08", organic: 287, paid: 158 },
-  { week: "W09", organic: 244, paid: 112 },
-  { week: "W10", organic: 196, paid: 88 },
-  { week: "W11", organic: 221, paid: 103 },
-  { week: "W12", organic: 173, paid: 79 },
+  { week: "W01", booked: 142, walkIns: 82 },
+  { week: "W02", booked: 182, walkIns: 101 },
+  { week: "W03", booked: 158, walkIns: 73 },
+  { week: "W04", booked: 221, walkIns: 120 },
+  { week: "W05", booked: 195, walkIns: 93 },
+  { week: "W06", booked: 256, walkIns: 185 },
+  { week: "W07", booked: 231, walkIns: 107 },
+  { week: "W08", booked: 319, walkIns: 175 },
+  { week: "W09", booked: 271, walkIns: 124 },
+  { week: "W10", booked: 218, walkIns: 98 },
+  { week: "W11", booked: 245, walkIns: 114 },
+  { week: "W12", booked: 192, walkIns: 88 },
 ];
 
 const chartConfig = {
-  organic: { label: "Organic", colors: { light: ["#7c3aed"], dark: ["#a78bfa"] } },
-  paid: { label: "Paid", colors: { light: ["#0891b2"], dark: ["#22d3ee"] } },
+  booked: { label: "Booked", colors: { light: ["#7c3aed"], dark: ["#a78bfa"] } },
+  walkIns: { label: "Walk-ins", colors: { light: ["#0891b2"], dark: ["#22d3ee"] } },
 } satisfies ChartConfig;
 
 const LEGEND = [
-  { key: "organic", label: "Organic", swatch: "bg-[#7c3aed] dark:bg-[#a78bfa]" },
-  { key: "paid", label: "Paid", swatch: "bg-[#0891b2] dark:bg-[#22d3ee]" },
+  { key: "booked", label: "Booked", swatch: "bg-[#7c3aed] dark:bg-[#a78bfa]" },
+  { key: "walkIns", label: "Walk-ins", swatch: "bg-[#0891b2] dark:bg-[#22d3ee]" },
 ];
 
 const PEAK = chartData.reduce(
-  (best, row) => (row.organic + row.paid > best.organic + best.paid ? row : best),
+  (best, row) => (row.booked + row.walkIns > best.booked + best.walkIns ? row : best),
   chartData[0],
 );
-const PEAK_TOTAL = PEAK.organic + PEAK.paid;
+const PEAK_TOTAL = PEAK.booked + PEAK.walkIns;
 
 export function PeakBarChart() {
   return (
     <div className="flex h-full w-full flex-col p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <span className="text-muted-foreground text-xs">Best week</span>
+          <span className="text-muted-foreground text-xs">Busiest week</span>
           <div className="flex items-baseline gap-2">
             <span className="text-primary text-2xl font-semibold tracking-tight sm:text-3xl">
               {PEAK_TOTAL}
             </span>
-            <span className="text-muted-foreground text-sm">signups in {PEAK.week}</span>
+            <span className="text-muted-foreground text-sm">appointments in {PEAK.week}</span>
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5 pt-1">
@@ -71,8 +72,8 @@ export function PeakBarChart() {
         >
           <BarChart.XAxis dataKey="week" hideDots />
           <BarChart.Tooltip />
-          <BarChart.Bar dataKey="paid" radius={6} />
-          <BarChart.Bar dataKey="organic" radius={6} />
+          <BarChart.Bar dataKey="walkIns" radius={6} />
+          <BarChart.Bar dataKey="booked" radius={6} />
         </BarChart>
       </div>
     </div>

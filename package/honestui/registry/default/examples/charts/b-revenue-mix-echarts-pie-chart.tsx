@@ -3,28 +3,29 @@
 import { PieChart, type ChartConfig } from "@/registry/default/charts/pie-chart";
 import { cn } from "@/lib/utils";
 
+// Scenario: Museum funding mix
 const chartData = [
   {
     channel: "direct",
-    label: "Direct",
+    label: "Admissions",
     value: 52400,
     swatch: "bg-[#7c3aed] dark:bg-[#a78bfa]",
   },
   {
     channel: "marketplace",
-    label: "Marketplace",
+    label: "Memberships",
     value: 38900,
     swatch: "bg-[#4f46e5] dark:bg-[#818cf8]",
   },
   {
     channel: "wholesale",
-    label: "Wholesale",
+    label: "Grants",
     value: 24150,
     swatch: "bg-[#0284c7] dark:bg-[#38bdf8]",
   },
   {
     channel: "affiliate",
-    label: "Affiliate",
+    label: "Donations",
     value: 16300,
     swatch: "bg-[#059669] dark:bg-[#34d399]",
   },
@@ -32,24 +33,24 @@ const chartData = [
 
 const chartConfig = {
   direct: {
-    label: "Direct",
+    label: "Admissions",
     colors: { light: ["#7c3aed", "#a855f7"], dark: ["#a78bfa", "#c4b5fd"] },
   },
   marketplace: {
-    label: "Marketplace",
+    label: "Memberships",
     colors: { light: ["#4f46e5", "#6366f1"], dark: ["#818cf8", "#a5b4fc"] },
   },
   wholesale: {
-    label: "Wholesale",
+    label: "Grants",
     colors: { light: ["#0284c7", "#0ea5e9"], dark: ["#38bdf8", "#7dd3fc"] },
   },
   affiliate: {
-    label: "Affiliate",
+    label: "Donations",
     colors: { light: ["#059669", "#10b981"], dark: ["#34d399", "#6ee7b7"] },
   },
 } satisfies ChartConfig;
 
-const ORDERS = 1284;
+const ORDERS = 1462;
 
 const money = (value: number) => value.toLocaleString("en-US");
 
@@ -80,7 +81,7 @@ export function RevenueMixPieChart() {
             <span className="text-primary text-lg leading-none font-semibold tracking-tight sm:text-2xl">
               {money(ORDERS)}
             </span>
-            <span className="text-muted-foreground mt-1 text-[10px] sm:text-xs">Total orders</span>
+            <span className="text-muted-foreground mt-1 text-[10px] sm:text-xs">Annual visitors</span>
           </div>
         </div>
       </div>

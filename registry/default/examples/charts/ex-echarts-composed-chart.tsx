@@ -2,31 +2,32 @@
 
 import { ComposedChart, type ChartConfig } from "@/registry/default/charts/composed-chart";
 
+// Scenario: Hospital operations
 const data = [
-  { month: "January", revenue: 4200, profit: 1800 },
-  { month: "February", revenue: 5800, profit: 2400 },
-  { month: "March", revenue: 4100, profit: 1600 },
-  { month: "April", revenue: 6200, profit: 2800 },
-  { month: "May", revenue: 5400, profit: 2200 },
-  { month: "June", revenue: 7800, profit: 3400 },
-  { month: "July", revenue: 6100, profit: 2600 },
-  { month: "August", revenue: 8200, profit: 3800 },
-  { month: "September", revenue: 5900, profit: 2500 },
-  { month: "October", revenue: 6800, profit: 3000 },
-  { month: "November", revenue: 7200, profit: 3200 },
-  { month: "December", revenue: 9100, profit: 4200 },
+  { month: "January", procedures: 4509, waitTime: 1594 },
+  { month: "February", procedures: 6232, waitTime: 2129 },
+  { month: "March", procedures: 4424, waitTime: 1432 },
+  { month: "April", procedures: 6682, waitTime: 2495 },
+  { month: "May", procedures: 5793, waitTime: 1974 },
+  { month: "June", procedures: 8372, waitTime: 3002 },
+  { month: "July", procedures: 6564, waitTime: 2305 },
+  { month: "August", procedures: 8822, waitTime: 3368 },
+  { month: "September", procedures: 6328, waitTime: 2231 },
+  { month: "October", procedures: 7302, waitTime: 2678 },
+  { month: "November", procedures: 7741, waitTime: 2826 },
+  { month: "December", procedures: 9785, waitTime: 3713 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  procedures: {
+    label: "Procedures",
     colors: {
       light: ["#3b82f6"],
       dark: ["#6A5ACD"],
     },
   },
-  profit: {
-    label: "Profit",
+  waitTime: {
+    label: "Wait time",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
@@ -47,8 +48,8 @@ export function ExampleComposedChart() {
       <ComposedChart.Brush formatLabel={(value) => String(value).substring(0, 3)} />
       <ComposedChart.Legend isClickable />
       <ComposedChart.Tooltip />
-      <ComposedChart.Bar dataKey="revenue" isClickable />
-      <ComposedChart.Line dataKey="profit" isClickable>
+      <ComposedChart.Bar dataKey="procedures" isClickable />
+      <ComposedChart.Line dataKey="waitTime" isClickable>
         <ComposedChart.ActiveDot variant="colored-border" />
         <ComposedChart.Dot variant="default" />
       </ComposedChart.Line>

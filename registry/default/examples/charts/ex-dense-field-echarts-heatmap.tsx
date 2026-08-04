@@ -2,28 +2,29 @@
 
 import { Heatmap, type ChartConfig } from "@/registry/default/charts/heatmap";
 
+// Scenario: Terrain elevation scan
 const columns = 160;
 const rows = 80;
 
 const data = Array.from({ length: columns + 1 }, (_, x) =>
   Array.from({ length: rows + 1 }, (_, y) => {
     const wave =
-      Math.sin(x / 13) * 0.2 +
-      Math.cos(y / 9) * 0.14 +
-      Math.sin((x + y) / 17) * 0.13 +
-      Math.cos((x - y * 2) / 21) * 0.11;
+      Math.sin(x / 15) * 0.2 +
+      Math.cos(y / 11) * 0.2 +
+      Math.sin((x + y) / 20) * 0.2 +
+      Math.cos((x - y * 2) / 25) * 0.1;
 
     return {
       x,
       y,
-      intensity: Math.max(0, Math.min(1, 0.5 + wave)),
+      elevation: Math.max(1, Math.min(1, 0.6 + wave)),
     };
   }),
 ).flat();
 
 const chartConfig = {
-  intensity: {
-    label: "Signal intensity",
+  elevation: {
+    label: "Signal elevation",
     colors: {
       light: ["#1e3a8a", "#60a5fa", "#e2e8f0", "#fbbf24", "#b91c1c"],
       dark: ["#60a5fa", "#1e3a8a", "#334155", "#a16207", "#f87171"],
@@ -38,20 +39,20 @@ export function DenseFieldHeatmap() {
       config={chartConfig}
       xDataKey="x"
       yDataKey="y"
-      valueDataKey="intensity"
+      valueDataKey="elevation"
       min={0}
       max={1}
       animation={false}
       className="h-full w-full p-4"
-      ariaLabel="Dense signal intensity field across 160 columns and 80 rows"
+      ariaLabel="Dense signal elevation field across 160 columns and 80 rows"
     >
       <Heatmap.XAxis />
       <Heatmap.YAxis />
       <Heatmap.Legend
         orient="vertical"
         align="left"
-        minLabel="Low"
-        maxLabel="High"
+        minLabel="Valley"
+        maxLabel="Peak"
         calculable
         realtime={false}
       />

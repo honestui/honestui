@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Hospital census
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", admissions: 239, discharges: 136 },
+  { month: "February", admissions: 581, discharges: 339 },
+  { month: "March", admissions: 366, discharges: 218 },
+  { month: "April", admissions: 450, discharges: 289 },
+  { month: "May", admissions: 311, discharges: 244 },
+  { month: "June", admissions: 522, discharges: 305 },
+  { month: "July", admissions: 293, discharges: 175 },
+  { month: "August", admissions: 634, discharges: 388 },
+  { month: "September", admissions: 428, discharges: 274 },
+  { month: "October", admissions: 368, discharges: 274 },
+  { month: "November", admissions: 547, discharges: 348 },
+  { month: "December", admissions: 228, discharges: 120 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  admissions: {
+    label: "Admissions",
     colors: {
       light: ["red", "orange", "rosybrown", "purple", "blue"],
       dark: ["red", "orange", "rosybrown", "purple", "blue"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  discharges: {
+    label: "Discharges",
     colors: {
       light: ["gray"],
       dark: ["gray"],
@@ -41,7 +42,7 @@ export function ExampleLineChart() {
       <LineChart.Legend isClickable />
       <LineChart.Tooltip />
       <LineChart.Line
-        dataKey="desktop"
+        dataKey="admissions"
         strokeVariant="solid"
         glowing // [!code highlight]
         isClickable
@@ -49,7 +50,7 @@ export function ExampleLineChart() {
         <LineChart.Dot variant="colored-border" />
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="discharges" strokeVariant="solid" isClickable>
         <LineChart.Dot variant="colored-border" />
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>

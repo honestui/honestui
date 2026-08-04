@@ -2,23 +2,24 @@
 
 import { BoxPlot, type BoxPlotValue, type ChartConfig } from "@/registry/default/charts/box-plot";
 
+// Scenario: Warehouse fulfillment time
 const data = [
-  { region: "North America", api: [42, 58, 71, 86, 119], web: [48, 63, 75, 91, 126] },
-  { region: "Europe", api: [38, 52, 66, 79, 108], web: [44, 57, 70, 84, 114] },
-  { region: "Asia Pacific", api: [51, 69, 84, 103, 142], web: [58, 74, 91, 111, 151] },
-  { region: "South America", api: [55, 72, 88, 106, 148], web: [61, 80, 96, 117, 159] },
-] satisfies { region: string; api: BoxPlotValue; web: BoxPlotValue }[];
+  { warehouse: "Denver", picking: [49, 68, 83, 101, 139], packing: [56, 74, 88, 106, 147] },
+  { warehouse: "Rotterdam", picking: [44, 61, 77, 92, 126], packing: [51, 67, 82, 98, 133] },
+  { warehouse: "Singapore", picking: [60, 81, 98, 121, 166], packing: [68, 87, 106, 130, 177] },
+  { warehouse: "Santiago", picking: [64, 84, 103, 124, 173], packing: [71, 94, 112, 137, 186] },
+] satisfies { warehouse: string; picking: BoxPlotValue; packing: BoxPlotValue }[];
 
 const chartConfig = {
-  api: {
-    label: "API",
+  picking: {
+    label: "Picking",
     colors: {
       light: ["#2563eb", "#60a5fa"],
       dark: ["#60a5fa", "#93c5fd"],
     },
   },
-  web: {
-    label: "Web",
+  packing: {
+    label: "Packing",
     colors: {
       light: ["#059669", "#6ee7b7"],
       dark: ["#34d399", "#a7f3d0"],
@@ -31,16 +32,16 @@ export function ExampleBoxPlot() {
     <BoxPlot
       data={data}
       config={chartConfig}
-      xDataKey="region"
+      xDataKey="warehouse"
       className="h-full w-full p-4"
     >
       <BoxPlot.Grid />
-      <BoxPlot.XAxis tickFormatter={(value) => value.replace("North America", "N. America").replace("South America", "S. America")} />
+      <BoxPlot.XAxis tickFormatter={(value) => value.replace("Denver", "N. America").replace("Santiago", "S. America")} />
       <BoxPlot.YAxis tickFormatter={(value) => `${value} ms`} />
       <BoxPlot.Legend isClickable />
       <BoxPlot.Tooltip valueFormatter={(value) => `${value} ms`} />
-      <BoxPlot.Box dataKey="api" variant="default" isClickable />
-      <BoxPlot.Box dataKey="web" variant="default" isClickable />
+      <BoxPlot.Box dataKey="picking" variant="default" isClickable />
+      <BoxPlot.Box dataKey="packing" variant="default" isClickable />
     </BoxPlot>
   );
 }

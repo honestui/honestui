@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Rental utilization
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", reserved: 509, available: 166 },
+  { month: "February", reserved: 1236, available: 395 },
+  { month: "March", reserved: 759, available: 257 },
+  { month: "April", reserved: 927, available: 337 },
+  { month: "May", reserved: 665, available: 284 },
+  { month: "June", reserved: 1109, available: 357 },
+  { month: "July", reserved: 601, available: 209 },
+  { month: "August", reserved: 1323, available: 449 },
+  { month: "September", reserved: 918, available: 319 },
+  { month: "October", reserved: 775, available: 319 },
+  { month: "November", reserved: 1149, available: 405 },
+  { month: "December", reserved: 447, available: 148 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  reserved: {
+    label: "Reserved",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  available: {
+    label: "Available",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -46,8 +47,8 @@ export function LegendRoundedSquareLineChart() {
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Legend variant="rounded-square" />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" />
-      <LineChart.Line dataKey="mobile" />
+      <LineChart.Line dataKey="reserved" />
+      <LineChart.Line dataKey="available" />
     </LineChart>
   );
 }

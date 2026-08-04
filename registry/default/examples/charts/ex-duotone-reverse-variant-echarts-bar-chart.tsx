@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Construction milestones
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", planned: 381, completed: 172 },
+  { month: "February", planned: 963, completed: 449 },
+  { month: "March", planned: 585, completed: 279 },
+  { month: "April", planned: 721, completed: 375 },
+  { month: "May", planned: 505, completed: 310 },
+  { month: "June", planned: 862, completed: 405 },
+  { month: "July", planned: 459, completed: 223 },
+  { month: "August", planned: 1038, completed: 514 },
+  { month: "September", planned: 707, completed: 354 },
+  { month: "October", planned: 595, completed: 352 },
+  { month: "November", planned: 896, completed: 463 },
+  { month: "December", planned: 338, completed: 148 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  planned: {
+    label: "Planned",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  completed: {
+    label: "Completed",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -42,12 +43,12 @@ export function ExampleBarChart() {
       <BarChart.Legend isClickable />
       <BarChart.Tooltip />
       <BarChart.Bar
-        dataKey="desktop"
+        dataKey="planned"
         variant="duotone-reverse" // [!code highlight]
         isClickable
       />
       <BarChart.Bar
-        dataKey="mobile"
+        dataKey="completed"
         variant="duotone-reverse" // [!code highlight]
         isClickable
       />

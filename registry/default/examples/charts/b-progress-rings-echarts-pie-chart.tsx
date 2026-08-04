@@ -2,12 +2,13 @@
 
 import { PieChart, type ChartConfig } from "@/registry/default/charts/pie-chart";
 
+// Scenario: Habitat recovery survey
 const DOT_COUNT = 40;
 const SECTORS = DOT_COUNT * 2;
 
 const STATS = [
-  { id: "support", value: 48, caption: "Additional support requests from users." },
-  { id: "forecast", value: 67, caption: "Inaccurate forecasts disrupt planning." },
+  { id: "support", value: 62, caption: "Wetland habitat restored this season." },
+  { id: "forecast", value: 38, caption: "Wildlife corridors now connected." },
 ] as const;
 
 const FILLED = { light: ["#E43861"], dark: ["#E43861"] };
@@ -33,14 +34,14 @@ export function ProgressRingsPieChart() {
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-0.5">
           <span className="text-muted-foreground text-[10px] tracking-wide uppercase">
-            User research
+            Field survey
           </span>
           <span className="text-primary text-base leading-tight font-medium tracking-tight sm:text-xl">
-            Where the workday leaks
+            Habitat recovery priorities
           </span>
         </div>
         <span className="text-muted-foreground shrink-0 text-[10px] sm:text-xs">
-          1,240 responses
+          860 field observations
         </span>
       </div>
 

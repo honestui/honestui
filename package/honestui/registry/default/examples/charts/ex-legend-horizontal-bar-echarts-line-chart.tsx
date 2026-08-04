@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Café demand
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", coffee: 476, tea: 150 },
+  { month: "February", coffee: 1154, tea: 353 },
+  { month: "March", coffee: 710, tea: 232 },
+  { month: "April", coffee: 867, tea: 303 },
+  { month: "May", coffee: 621, tea: 258 },
+  { month: "June", coffee: 1035, tea: 319 },
+  { month: "July", coffee: 563, tea: 189 },
+  { month: "August", coffee: 1237, tea: 402 },
+  { month: "September", coffee: 857, tea: 288 },
+  { month: "October", coffee: 724, tea: 288 },
+  { month: "November", coffee: 1074, tea: 362 },
+  { month: "December", coffee: 420, tea: 134 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  coffee: {
+    label: "Coffee",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  tea: {
+    label: "Tea",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -46,8 +47,8 @@ export function LegendHorizontalBarLineChart() {
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Legend variant="horizontal-bar" />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" />
-      <LineChart.Line dataKey="mobile" />
+      <LineChart.Line dataKey="coffee" />
+      <LineChart.Line dataKey="tea" />
     </LineChart>
   );
 }

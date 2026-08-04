@@ -2,31 +2,32 @@
 
 import { AreaChart, type ChartConfig } from "@/registry/default/charts/area-chart";
 
+// Scenario: Power grid load
 const data = [
-  { month: "January", desktop: 342, mobile: 245 },
-  { month: "February", desktop: 876, mobile: 654 },
-  { month: "March", desktop: 512, mobile: 387 },
-  { month: "April", desktop: 629, mobile: 521 },
-  { month: "May", desktop: 458, mobile: 412 },
-  { month: "June", desktop: 781, mobile: 598 },
-  { month: "July", desktop: 394, mobile: 312 },
-  { month: "August", desktop: 925, mobile: 743 },
-  { month: "September", desktop: 647, mobile: 489 },
-  { month: "October", desktop: 532, mobile: 476 },
-  { month: "November", desktop: 803, mobile: 687 },
-  { month: "December", desktop: 271, mobile: 198 },
+  { month: "January", baseLoad: 300, peakLoad: 254 },
+  { month: "February", baseLoad: 690, peakLoad: 621 },
+  { month: "March", baseLoad: 443, peakLoad: 393 },
+  { month: "April", baseLoad: 537, peakLoad: 517 },
+  { month: "May", baseLoad: 382, peakLoad: 429 },
+  { month: "June", baseLoad: 623, peakLoad: 564 },
+  { month: "July", baseLoad: 359, peakLoad: 320 },
+  { month: "August", baseLoad: 747, peakLoad: 706 },
+  { month: "September", baseLoad: 516, peakLoad: 489 },
+  { month: "October", baseLoad: 446, peakLoad: 485 },
+  { month: "November", baseLoad: 649, peakLoad: 643 },
+  { month: "December", baseLoad: 282, peakLoad: 219 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  baseLoad: {
+    label: "Base load",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  peakLoad: {
+    label: "Peak load",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -44,18 +45,18 @@ export function ExampleAreaChart() {
     >
       <AreaChart.Grid />
       <AreaChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
-      <AreaChart.YAxis dataKey="desktop" />
+      <AreaChart.YAxis dataKey="baseLoad" />
       <AreaChart.Legend isClickable />
       <AreaChart.Tooltip />
       <AreaChart.Area
-        dataKey="desktop"
+        dataKey="baseLoad"
         variant="solid" // [!code highlight]
         isClickable
       >
         <AreaChart.ActiveDot variant="default" />
       </AreaChart.Area>
       <AreaChart.Area
-        dataKey="mobile"
+        dataKey="peakLoad"
         variant="solid" // [!code highlight]
         isClickable
       >

@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Airport operations
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 503, mobile: 215 },
-  { month: "December", desktop: 971, mobile: 749 },
+  { month: "January", onTime: 246, delayed: 105 },
+  { month: "February", onTime: 636, delayed: 284 },
+  { month: "March", onTime: 389, delayed: 178 },
+  { month: "April", onTime: 483, delayed: 242 },
+  { month: "May", onTime: 328, delayed: 203 },
+  { month: "June", onTime: 569, delayed: 253 },
+  { month: "July", onTime: 305, delayed: 140 },
+  { month: "August", onTime: 693, delayed: 328 },
+  { month: "September", onTime: 462, delayed: 229 },
+  { month: "October", onTime: 392, delayed: 230 },
+  { month: "November", onTime: 382, delayed: 122 },
+  { month: "December", onTime: 725, delayed: 428 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  onTime: {
+    label: "On time",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  delayed: {
+    label: "Delayed",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -42,13 +43,13 @@ export function ExampleBarChart() {
       <BarChart.Legend isClickable />
       <BarChart.Tooltip />
       <BarChart.Bar
-        dataKey="desktop"
+        dataKey="onTime"
         variant="default"
         bufferBar // [!code highlight]
         isClickable
       />
       <BarChart.Bar
-        dataKey="mobile"
+        dataKey="delayed"
         variant="default"
         bufferBar // [!code highlight]
         isClickable

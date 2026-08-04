@@ -2,16 +2,17 @@
 
 import { RadarChart, type ChartConfig } from "@/registry/default/charts/radar-chart";
 
+// Scenario: Security posture
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  current: {
+    label: "Current",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  target: {
+    label: "Target",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
@@ -31,8 +32,8 @@ export function ExampleRadarChart() {
       <RadarChart.PolarAngleAxis dataKey="skill" />
       <RadarChart.Legend />
       <RadarChart.Tooltip />
-      <RadarChart.Radar dataKey="desktop" variant="filled" />
-      <RadarChart.Radar dataKey="mobile" variant="filled" />
+      <RadarChart.Radar dataKey="current" variant="filled" />
+      <RadarChart.Radar dataKey="target" variant="filled" />
     </RadarChart>
   );
 }

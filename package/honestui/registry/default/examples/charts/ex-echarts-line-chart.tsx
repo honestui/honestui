@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Exchange volume
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", buys: 482, sells: 119 },
+  { month: "February", buys: 1209, sells: 298 },
+  { month: "March", buys: 732, sells: 192 },
+  { month: "April", buys: 900, sells: 256 },
+  { month: "May", buys: 638, sells: 217 },
+  { month: "June", buys: 1082, sells: 267 },
+  { month: "July", buys: 574, sells: 154 },
+  { month: "August", buys: 1296, sells: 342 },
+  { month: "September", buys: 891, sells: 243 },
+  { month: "October", buys: 748, sells: 244 },
+  { month: "November", buys: 1122, sells: 304 },
+  { month: "December", buys: 420, sells: 106 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  buys: {
+    label: "Buys",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  sells: {
+    label: "Sells",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -46,11 +47,11 @@ export function ExampleLineChart() {
       <LineChart.Brush formatLabel={(value) => String(value).substring(0, 3)} />
       <LineChart.Legend isClickable />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="buys" strokeVariant="solid" isClickable>
         <LineChart.Dot variant="border" />
         <LineChart.ActiveDot variant="colored-border" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="sells" strokeVariant="solid" isClickable>
         <LineChart.Dot variant="border" />
         <LineChart.ActiveDot variant="colored-border" />
       </LineChart.Line>

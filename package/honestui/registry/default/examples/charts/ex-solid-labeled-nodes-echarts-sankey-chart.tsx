@@ -6,7 +6,7 @@ import {
   type ChartConfig,
 } from "@/registry/default/charts/sankey-chart";
 
-// Sales report data with solid colors
+// Scenario: Water treatment stages
 const data: SankeyData = {
   nodes: [
     { name: "CRT_L" }, // Left CRT
@@ -20,80 +20,80 @@ const data: SankeyData = {
   ],
   links: [
     // From left CRT to middle nodes
-    { source: 0, target: 3, value: 800 },
-    { source: 0, target: 4, value: 502 },
+    { source: 0, target: 3, value: 1600 },
+    { source: 0, target: 4, value: 1004 },
 
     // From left PPT to middle nodes
-    { source: 1, target: 3, value: 1500 },
-    { source: 1, target: 4, value: 1498 },
+    { source: 1, target: 3, value: 3000 },
+    { source: 1, target: 4, value: 2996 },
 
     // From left DMG to middle nodes
-    { source: 2, target: 3, value: 3931 },
-    { source: 2, target: 4, value: 1612 },
+    { source: 2, target: 3, value: 7862 },
+    { source: 2, target: 4, value: 3224 },
 
     // From middle PPT to right nodes
-    { source: 3, target: 5, value: 2000 },
-    { source: 3, target: 6, value: 2091 },
-    { source: 3, target: 7, value: 1840 },
+    { source: 3, target: 5, value: 4000 },
+    { source: 3, target: 6, value: 4182 },
+    { source: 3, target: 7, value: 3680 },
 
     // From middle DMG to right nodes
-    { source: 4, target: 5, value: 1991 },
-    { source: 4, target: 7, value: 1158 },
+    { source: 4, target: 5, value: 3982 },
+    { source: 4, target: 7, value: 2316 },
   ],
 };
 
 const chartConfig = {
   CRT_L: {
-    label: "CRT",
+    label: "Raw water",
     colors: {
       light: ["#a3a3a3"], // lighter than #525252
       dark: ["#525252"],
     },
   },
   PPT_L: {
-    label: "PPT",
+    label: "Filtered",
     colors: {
       light: ["#d1b3ff"], // lighter than #8b5cf6
       dark: ["#8b5cf6"],
     },
   },
   DMG_L: {
-    label: "DMG",
+    label: "Treated",
     colors: {
       light: ["#a3a3a3"], // lighter than #404040
       dark: ["#404040"],
     },
   },
   PPT_M: {
-    label: "PPT",
+    label: "Filtered",
     colors: {
       light: ["#c4b5fd"], // lighter than #7c3aed
       dark: ["#7c3aed"],
     },
   },
   DMG_M: {
-    label: "DMG",
+    label: "Treated",
     colors: {
       light: ["#67e8f9"], // lighter than #06b6d4
       dark: ["#06b6d4"],
     },
   },
   CRT_R: {
-    label: "CRT",
+    label: "Raw water",
     colors: {
       light: ["#6ee7b7"], // lighter than #10b981
       dark: ["#10b981"],
     },
   },
   PPT_R: {
-    label: "PPT",
+    label: "Filtered",
     colors: {
       light: ["#a3a3a3"], // lighter than #525252
       dark: ["#525252"],
     },
   },
   DMG_R: {
-    label: "DMG",
+    label: "Treated",
     colors: {
       light: ["#a3a3a3"], // lighter than #404040
       dark: ["#404040"],

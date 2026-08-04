@@ -3,43 +3,44 @@
 import { SankeyChart, type ChartConfig } from "@/registry/default/charts/sankey-chart";
 import { cn } from "@/lib/utils";
 
+// Scenario: City budget allocation
 const chartData = {
   nodes: [
-    { name: "Inflow" },
-    { name: "Equities" },
-    { name: "Bonds" },
-    { name: "Cash" },
-    { name: "Growth" },
-    { name: "Income" },
-    { name: "Reserve" },
+    { name: "Revenue" },
+    { name: "Transit" },
+    { name: "Housing" },
+    { name: "Parks" },
+    { name: "CapitalProjects" },
+    { name: "CommunityServices" },
+    { name: "EmergencyFund" },
   ],
   links: [
-    { source: 0, target: 1, value: 78 },
-    { source: 0, target: 2, value: 46 },
-    { source: 0, target: 3, value: 24 },
-    { source: 1, target: 4, value: 52 },
-    { source: 1, target: 5, value: 26 },
-    { source: 2, target: 5, value: 19 },
-    { source: 2, target: 6, value: 27 },
-    { source: 3, target: 4, value: 9 },
-    { source: 3, target: 6, value: 15 },
+    { source: 0, target: 1, value: 87 },
+    { source: 0, target: 2, value: 51 },
+    { source: 0, target: 3, value: 27 },
+    { source: 1, target: 4, value: 58 },
+    { source: 1, target: 5, value: 29 },
+    { source: 2, target: 5, value: 21 },
+    { source: 2, target: 6, value: 30 },
+    { source: 3, target: 4, value: 10 },
+    { source: 3, target: 6, value: 17 },
   ],
 };
 
 const chartConfig = {
-  Inflow: { label: "Inflow", colors: { light: ["#0d9488"], dark: ["#2dd4bf"] } },
-  Equities: { label: "Equities", colors: { light: ["#d97706"], dark: ["#fbbf24"] } },
-  Bonds: { label: "Bonds", colors: { light: ["#ea580c"], dark: ["#fb923c"] } },
-  Cash: { label: "Cash", colors: { light: ["#b45309"], dark: ["#f59e0b"] } },
-  Growth: { label: "Growth", colors: { light: ["#7c3aed"], dark: ["#a78bfa"] } },
-  Income: { label: "Income", colors: { light: ["#6d28d9"], dark: ["#8b5cf6"] } },
-  Reserve: { label: "Reserve", colors: { light: ["#4f46e5"], dark: ["#818cf8"] } },
+  Revenue: { label: "Revenue", colors: { light: ["#0d9488"], dark: ["#2dd4bf"] } },
+  Transit: { label: "Transit", colors: { light: ["#d97706"], dark: ["#fbbf24"] } },
+  Housing: { label: "Housing", colors: { light: ["#ea580c"], dark: ["#fb923c"] } },
+  Parks: { label: "Parks", colors: { light: ["#b45309"], dark: ["#f59e0b"] } },
+  CapitalProjects: { label: "Capital projects", colors: { light: ["#7c3aed"], dark: ["#a78bfa"] } },
+  CommunityServices: { label: "Community services", colors: { light: ["#6d28d9"], dark: ["#8b5cf6"] } },
+  EmergencyFund: { label: "Emergency fund", colors: { light: ["#4f46e5"], dark: ["#818cf8"] } },
 } satisfies ChartConfig;
 
 const STATS = [
-  { key: "positions", label: "Open positions", value: "204" },
-  { key: "aum", label: "Assets under management", value: "$65,430" },
-  { key: "hedged", label: "Hedged", value: "87%" },
+  { key: "positions", label: "Funded programs", value: "146" },
+  { key: "aum", label: "Annual budget", value: "$82.6M" },
+  { key: "hedged", label: "Contingency funded", value: "94%" },
 ];
 
 export function AllocationSankeyChart() {
@@ -47,9 +48,9 @@ export function AllocationSankeyChart() {
     <div className="flex h-full w-full flex-col p-4">
       <div className="flex items-baseline justify-between gap-4">
         <span className="text-primary text-base font-medium tracking-tight sm:text-lg">
-          Where the fund flows
+          Where the city budget goes
         </span>
-        <span className="text-muted-foreground text-xs">Quarter to date</span>
+        <span className="text-muted-foreground text-xs">Approved plan</span>
       </div>
 
       <div className="mt-2 min-h-0 w-full flex-1">

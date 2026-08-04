@@ -2,45 +2,46 @@
 
 import { RadialChart, type ChartConfig } from "@/registry/default/charts/radial-chart";
 
+// Scenario: Fleet availability
 const data = [
-  { browser: "chrome", visitors: 275 },
-  { browser: "safari", visitors: 200 },
-  { browser: "firefox", visitors: 187 },
-  { browser: "edge", visitors: 173 },
-  { browser: "other", visitors: 90 },
+  { category: "available", vehicles: 118 },
+  { category: "service", vehicles: 84 },
+  { category: "maintenance", vehicles: 26 },
+  { category: "charging", vehicles: 19 },
+  { category: "retired", vehicles: 7 },
 ];
 
 const chartConfig = {
-  chrome: {
-    label: "Chrome",
+  available: {
+    label: "Available",
     colors: {
       light: ["#3b82f6"],
       dark: ["#60a5fa"],
     },
   },
-  safari: {
-    label: "Safari",
+  service: {
+    label: "In service",
     colors: {
       light: ["#10b981"],
       dark: ["#34d399"],
     },
   },
-  firefox: {
-    label: "Firefox",
+  maintenance: {
+    label: "Maintenance",
     colors: {
       light: ["#f59e0b"],
       dark: ["#fbbf24"],
     },
   },
-  edge: {
-    label: "Edge",
+  charging: {
+    label: "Charging",
     colors: {
       light: ["#8b5cf6"],
       dark: ["#a78bfa"],
     },
   },
-  other: {
-    label: "Other",
+  retired: {
+    label: "Retired",
     colors: {
       light: ["#6b7280"],
       dark: ["#9ca3af"],
@@ -53,13 +54,13 @@ export function ExampleRadialChart() {
     <RadialChart
       className="h-full w-full p-4"
       data={data}
-      nameKey="browser"
+      nameKey="category"
       config={chartConfig}
       isLoading // [!code highlight]
     >
       <RadialChart.Legend />
       <RadialChart.Tooltip />
-      <RadialChart.RadialBar dataKey="visitors" />
+      <RadialChart.RadialBar dataKey="vehicles" />
     </RadialChart>
   );
 }

@@ -2,31 +2,32 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Manufacturing defects
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", accepted: 509, reworked: 166 },
+  { month: "February", accepted: 1236, reworked: 395 },
+  { month: "March", accepted: 759, reworked: 257 },
+  { month: "April", accepted: 927, reworked: 337 },
+  { month: "May", accepted: 665, reworked: 284 },
+  { month: "June", accepted: 1109, reworked: 357 },
+  { month: "July", accepted: 601, reworked: 209 },
+  { month: "August", accepted: 1323, reworked: 449 },
+  { month: "September", accepted: 918, reworked: 319 },
+  { month: "October", accepted: 775, reworked: 319 },
+  { month: "November", accepted: 1149, reworked: 405 },
+  { month: "December", accepted: 447, reworked: 148 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  accepted: {
+    label: "Accepted",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  reworked: {
+    label: "Reworked",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -45,8 +46,8 @@ export function ExampleBarChart() {
       <BarChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <BarChart.Legend />
       <BarChart.Tooltip />
-      <BarChart.Bar dataKey="desktop" />
-      <BarChart.Bar dataKey="mobile" />
+      <BarChart.Bar dataKey="accepted" />
+      <BarChart.Bar dataKey="reworked" />
     </BarChart>
   );
 }

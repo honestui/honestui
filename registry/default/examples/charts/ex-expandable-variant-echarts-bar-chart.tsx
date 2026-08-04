@@ -2,24 +2,25 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Freight capacity
 const data = [
-  { month: "January", desktop: 342 },
-  { month: "February", desktop: 876 },
-  { month: "March", desktop: 512 },
-  { month: "April", desktop: 629 },
-  { month: "May", desktop: 458 },
-  { month: "June", desktop: 781 },
-  { month: "July", desktop: 394 },
-  { month: "August", desktop: 925 },
-  { month: "September", desktop: 647 },
-  { month: "October", desktop: 532 },
-  { month: "November", desktop: 803 },
-  { month: "December", desktop: 271 },
+  { month: "January", used: 482 },
+  { month: "February", used: 1209 },
+  { month: "March", used: 732 },
+  { month: "April", used: 900 },
+  { month: "May", used: 638 },
+  { month: "June", used: 1082 },
+  { month: "July", used: 574 },
+  { month: "August", used: 1296 },
+  { month: "September", used: 891 },
+  { month: "October", used: 748 },
+  { month: "November", used: 1122 },
+  { month: "December", used: 420 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  used: {
+    label: "Used capacity",
     colors: {
       light: ["#0a0a0a"],
       dark: ["#fafafa"],
@@ -33,7 +34,7 @@ export function ExampleBarChart() {
       <BarChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <BarChart.Tooltip />
       <BarChart.Bar
-        dataKey="desktop"
+        dataKey="used"
         variant="expandable" // [!code highlight]
       />
     </BarChart>

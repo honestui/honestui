@@ -2,31 +2,32 @@
 
 import { ComposedChart, type ChartConfig } from "@/registry/default/charts/composed-chart";
 
+// Scenario: Ad campaign
 const data = [
-  { month: "January", revenue: 4200, profit: 1800 },
-  { month: "February", revenue: 5800, profit: 2400 },
-  { month: "March", revenue: 4100, profit: 1600 },
-  { month: "April", revenue: 6200, profit: 2800 },
-  { month: "May", revenue: 5400, profit: 2200 },
-  { month: "June", revenue: 7800, profit: 3400 },
-  { month: "July", revenue: 6100, profit: 2600 },
-  { month: "August", revenue: 8200, profit: 3800 },
-  { month: "September", revenue: 5900, profit: 2500 },
-  { month: "October", revenue: 6800, profit: 3000 },
-  { month: "November", revenue: 7200, profit: 3200 },
-  { month: "December", revenue: 9100, profit: 4200 },
+  { month: "January", impressions: 5271, clickRate: 878 },
+  { month: "February", impressions: 7282, clickRate: 1173 },
+  { month: "March", impressions: 5168, clickRate: 796 },
+  { month: "April", impressions: 7804, clickRate: 1379 },
+  { month: "May", impressions: 6771, clickRate: 1098 },
+  { month: "June", impressions: 9782, clickRate: 1646 },
+  { month: "July", impressions: 7668, clickRate: 1269 },
+  { month: "August", impressions: 10304, clickRate: 1852 },
+  { month: "September", impressions: 7396, clickRate: 1235 },
+  { month: "October", impressions: 8532, clickRate: 1482 },
+  { month: "November", impressions: 9043, clickRate: 1550 },
+  { month: "December", impressions: 11429, clickRate: 2037 },
 ];
 
 const chartConfig = {
-  revenue: {
-    label: "Revenue",
+  impressions: {
+    label: "Impressions",
     colors: {
       light: ["#f43f5e", "#ec4899", "#a855f7", "#6366f1", "#3b82f6"], // [!code highlight]
       dark: ["#f43f5e", "#ec4899", "#a855f7", "#6366f1", "#3b82f6"], // [!code highlight]
     },
   },
-  profit: {
-    label: "Profit",
+  clickRate: {
+    label: "Click rate",
     colors: {
       light: ["#10b981", "#14b8a6", "#06b6d4"], // [!code highlight]
       dark: ["#10b981", "#14b8a6", "#06b6d4"], // [!code highlight]
@@ -46,8 +47,8 @@ export function ExampleComposedChart() {
       <ComposedChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <ComposedChart.Legend isClickable />
       <ComposedChart.Tooltip />
-      <ComposedChart.Bar dataKey="revenue" isClickable />
-      <ComposedChart.Line dataKey="profit" isClickable />
+      <ComposedChart.Bar dataKey="impressions" isClickable />
+      <ComposedChart.Line dataKey="clickRate" isClickable />
     </ComposedChart>
   );
 }

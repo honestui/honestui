@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Newsletter growth
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", subscribers: 307, unsubscribes: 169 },
+  { month: "February", subscribers: 745, unsubscribes: 422 },
+  { month: "March", subscribers: 465, unsubscribes: 268 },
+  { month: "April", subscribers: 569, unsubscribes: 356 },
+  { month: "May", subscribers: 399, unsubscribes: 297 },
+  { month: "June", subscribers: 669, unsubscribes: 381 },
+  { month: "July", subscribers: 370, unsubscribes: 216 },
+  { month: "August", subscribers: 806, unsubscribes: 482 },
+  { month: "September", subscribers: 551, unsubscribes: 337 },
+  { month: "October", subscribers: 470, unsubscribes: 336 },
+  { month: "November", subscribers: 697, unsubscribes: 434 },
+  { month: "December", subscribers: 283, unsubscribes: 148 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  subscribers: {
+    label: "Subscribers",
     colors: {
       light: ["red", "orange", "rosybrown", "purple", "blue"],
       dark: ["red", "orange", "rosybrown", "purple", "blue"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  unsubscribes: {
+    label: "Unsubscribes",
     colors: {
       light: ["gray"],
       dark: ["gray"],
@@ -45,11 +46,11 @@ export function ExampleLineChart() {
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Legend isClickable />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="subscribers" strokeVariant="solid" isClickable>
         <LineChart.Dot variant="colored-border" />
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile" strokeVariant="solid" isClickable>
+      <LineChart.Line dataKey="unsubscribes" strokeVariant="solid" isClickable>
         <LineChart.Dot variant="colored-border" />
         <LineChart.ActiveDot variant="default" />
       </LineChart.Line>

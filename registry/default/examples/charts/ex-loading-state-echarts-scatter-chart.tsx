@@ -2,9 +2,10 @@
 
 import { ScatterChart, type ChartConfig } from "@/registry/default/charts/scatter-chart";
 
-const data = [{ x: 10, y: 20 }];
+// Scenario: Loan applications
+const data = [{ x: 12, y: 23 }];
 const chartConfig = {
-  points: { label: "Points", colors: { light: ["#2563eb"], dark: ["#60a5fa"] } },
+  applications: { label: "Applications", colors: { light: ["#2563eb"], dark: ["#60a5fa"] } },
 } satisfies ChartConfig;
 
 export function LoadingScatterChart() {
@@ -19,7 +20,7 @@ export function LoadingScatterChart() {
     >
       <ScatterChart.XAxis />
       <ScatterChart.YAxis />
-      <ScatterChart.Scatter dataKey="points" />
+      <ScatterChart.Scatter dataKey="applications" />
     </ScatterChart>
   );
 }

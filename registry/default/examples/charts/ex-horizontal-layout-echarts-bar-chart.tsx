@@ -2,18 +2,19 @@
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
 
+// Scenario: Farmers market
 const data = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 173 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { month: "January", produce: 241 },
+  { month: "February", produce: 379 },
+  { month: "March", produce: 318 },
+  { month: "April", produce: 260 },
+  { month: "May", produce: 266 },
+  { month: "June", produce: 282 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  produce: {
+    label: "Produce sales",
     colors: {
       light: ["#2563eb"],
       dark: ["#3b82f6"],
@@ -36,7 +37,7 @@ export function ExampleBarChart() {
       />
       <BarChart.Legend />
       <BarChart.Tooltip />
-      <BarChart.Bar dataKey="desktop" variant="default" />
+      <BarChart.Bar dataKey="produce" variant="default" />
     </BarChart>
   );
 }

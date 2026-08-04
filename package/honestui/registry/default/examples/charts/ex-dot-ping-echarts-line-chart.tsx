@@ -2,31 +2,32 @@
 
 import { LineChart, type ChartConfig } from "@/registry/default/charts/line-chart";
 
+// Scenario: Crop moisture
 const data = [
-  { month: "January", desktop: 342, mobile: 184 },
-  { month: "February", desktop: 876, mobile: 491 },
-  { month: "March", desktop: 512, mobile: 290 },
-  { month: "April", desktop: 629, mobile: 391 },
-  { month: "May", desktop: 458, mobile: 309 },
-  { month: "June", desktop: 781, mobile: 449 },
-  { month: "July", desktop: 394, mobile: 234 },
-  { month: "August", desktop: 925, mobile: 557 },
-  { month: "September", desktop: 647, mobile: 367 },
-  { month: "October", desktop: 532, mobile: 357 },
-  { month: "November", desktop: 803, mobile: 515 },
-  { month: "December", desktop: 271, mobile: 149 },
+  { month: "January", topsoil: 449, subsoil: 102 },
+  { month: "February", topsoil: 1127, subsoil: 257 },
+  { month: "March", topsoil: 683, subsoil: 167 },
+  { month: "April", topsoil: 840, subsoil: 223 },
+  { month: "May", topsoil: 594, subsoil: 190 },
+  { month: "June", topsoil: 1008, subsoil: 230 },
+  { month: "July", topsoil: 536, subsoil: 133 },
+  { month: "August", topsoil: 1210, subsoil: 295 },
+  { month: "September", topsoil: 830, subsoil: 211 },
+  { month: "October", topsoil: 697, subsoil: 213 },
+  { month: "November", topsoil: 1047, subsoil: 261 },
+  { month: "December", topsoil: 393, subsoil: 93 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  topsoil: {
+    label: "Topsoil",
     colors: {
       light: ["#047857"],
       dark: ["#10b981"],
     },
   },
-  mobile: {
-    label: "Mobile",
+  subsoil: {
+    label: "Subsoil",
     colors: {
       light: ["#be123c"],
       dark: ["#f43f5e"],
@@ -45,10 +46,10 @@ export function DotPingLineChart() {
       <LineChart.Grid />
       <LineChart.XAxis dataKey="month" tickFormatter={(value) => value.substring(0, 3)} />
       <LineChart.Tooltip />
-      <LineChart.Line dataKey="desktop">
+      <LineChart.Line dataKey="topsoil">
         <LineChart.Dot variant="ping" />
       </LineChart.Line>
-      <LineChart.Line dataKey="mobile">
+      <LineChart.Line dataKey="subsoil">
         <LineChart.Dot variant="ping" />
       </LineChart.Line>
     </LineChart>
