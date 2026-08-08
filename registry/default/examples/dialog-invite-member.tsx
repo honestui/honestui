@@ -1,6 +1,7 @@
 import { Button } from "@/registry/default/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogDescription,
   DialogFooter,
@@ -20,10 +21,12 @@ export default function DialogInviteMember() {
           <DialogTitle>Invite teammate</DialogTitle>
           <DialogDescription>Send an invitation to collaborate in this workspace.</DialogDescription>
         </DialogHeader>
-        <Field>
-          <FieldLabel>Email</FieldLabel>
-          <FieldControl type="email" placeholder="name@company.com" />
-        </Field>
+        <DialogBody>
+          <Field>
+            <FieldLabel>Email</FieldLabel>
+            <FieldControl type="email" placeholder="name@company.com" />
+          </Field>
+        </DialogBody>
         <DialogFooter>
           <DialogClose render={<Button variant="ghost" />}>Cancel</DialogClose>
           <Button>Send invite</Button>

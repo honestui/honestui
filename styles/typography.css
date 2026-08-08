@@ -1,0 +1,143 @@
+:root {
+  /* Fonts */
+  --rs-font-inter: "Inter";
+  --rs-font-lora: "Lora";
+  --rs-font-josefin-sans: "Josefin Sans";
+  --rs-font-jetbrains-mono: "JetBrains Mono";
+  --rs-font-menlo: "Menlo";
+
+  /* Font Families */
+  --rs-font-title: var(--rs-font-inter), sans-serif;
+  --rs-font-body: var(--rs-font-inter), sans-serif;
+  --rs-font-mono:
+    var(--rs-font-menlo), var(--rs-font-jetbrains-mono), monospace;
+
+  /* Font Weights */
+  --rs-font-weight-regular: 400;
+  --rs-font-weight-medium: 500;
+  --rs-font-weight-semibold: var(--rs-font-weight-medium);
+
+  /* Body Font Sizes */
+  --rs-font-size-micro: 10px;
+  --rs-font-size-mini: 11px;
+  --rs-font-size-small: 12px;
+  --rs-font-size-regular: 14px;
+  --rs-font-size-large: 16px;
+  --rs-font-size-base: var(--rs-font-size-regular);
+
+  /* Body Line Heights */
+  --rs-line-height-micro: 12px;
+  --rs-line-height-mini: 14px;
+  --rs-line-height-small: 16px;
+  --rs-line-height-regular: 20px;
+  --rs-line-height-large: 24px;
+  --rs-line-height-base: var(--rs-line-height-regular);
+
+  /* Body Letter spacing — tuned for Inter, which is spaced generously already.
+     Near-zero at small sizes, slightly negative as size grows. em-based so it
+     scales with font-size. */
+  --rs-letter-spacing-micro: 0.01em;
+  --rs-letter-spacing-mini: 0.005em;
+  --rs-letter-spacing-small: 0em;
+  --rs-letter-spacing-regular: -0.006em;
+  --rs-letter-spacing-large: -0.011em;
+  --rs-letter-spacing-base: var(--rs-letter-spacing-regular);
+
+  /* Title Font Sizes */
+  --rs-font-size-t1: 20px;
+  --rs-font-size-t2: 24px;
+  --rs-font-size-t3: 28px;
+  --rs-font-size-t4: 32px;
+
+  /* Title Line Heights */
+  --rs-line-height-t1: 28px;
+  --rs-line-height-t2: 32px;
+  --rs-line-height-t3: 36px;
+  --rs-line-height-t4: 40px;
+
+  /* Title Letter Spacing */
+  --rs-letter-spacing-t1: -0.01em;
+  --rs-letter-spacing-t2: -0.013em;
+  --rs-letter-spacing-t3: -0.016em;
+  --rs-letter-spacing-t4: -0.02em;
+
+  /* Mono Font Sizes */
+  --rs-font-size-mono-mini: 11px;
+  --rs-font-size-mono-small: 12px;
+  --rs-font-size-mono-regular: 14px;
+  --rs-font-size-mono-large: 16px;
+
+  /* Mono Line Heights */
+  --rs-line-height-mono-mini: 16px;
+  --rs-line-height-mono-small: 16px;
+  --rs-line-height-mono-regular: 20px;
+  --rs-line-height-mono-large: 24px;
+
+  /* Mono Letter Spacing */
+  --rs-letter-spacing-mono-mini: 0px;
+  --rs-letter-spacing-mono-small: 0px;
+  --rs-letter-spacing-mono-regular: 0px;
+  --rs-letter-spacing-mono-large: 0px;
+}
+
+[data-style="modern"] {
+  /* Re-declare (not just inherit from :root) so a modern theme nested inside a
+     traditional one resets to Inter instead of inheriting Lora/Josefin. */
+  --rs-font-title: var(--rs-font-inter), sans-serif;
+  --rs-font-body: var(--rs-font-inter), sans-serif;
+  font-family: var(--rs-font-body);
+}
+
+[data-style="traditional"] {
+  --rs-font-title: var(--rs-font-lora), serif;
+  --rs-font-body: var(--rs-font-josefin-sans), sans-serif;
+  font-family: var(--rs-font-body);
+}
+
+body {
+  /* Default Font */
+  font-family: var(--rs-font-body);
+
+  /* Font Smoothing */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Only weights 400 and 500 are loaded (see @import above). Fail visibly
+     on any missing weight or style instead of rendering a faked bold/italic. */
+  font-synthesis: none;
+}
+
+h1 {
+  font-family: var(--rs-font-title);
+  font-size: var(--rs-font-size-t4);
+  font-weight: var(--rs-font-weight-medium);
+  line-height: var(--rs-line-height-t4);
+  text-wrap: balance;
+}
+h2 {
+  font-family: var(--rs-font-title);
+  font-size: var(--rs-font-size-t3);
+  font-weight: var(--rs-font-weight-medium);
+  line-height: var(--rs-line-height-t3);
+  text-wrap: balance;
+}
+h3 {
+  font-family: var(--rs-font-title);
+  font-size: var(--rs-font-size-t2);
+  font-weight: var(--rs-font-weight-medium);
+  line-height: var(--rs-line-height-t2);
+  text-wrap: balance;
+}
+h4 {
+  font-family: var(--rs-font-title);
+  font-size: var(--rs-font-size-t1);
+  font-weight: var(--rs-font-weight-medium);
+  line-height: var(--rs-line-height-t1);
+  text-wrap: balance;
+}
+
+/* CSS for the text cursor */
+input,
+textarea {
+  caret-color: var(--rs-color-border-accent-emphasis);
+}

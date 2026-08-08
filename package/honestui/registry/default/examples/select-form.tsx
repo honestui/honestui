@@ -7,6 +7,7 @@ import {
   Field,
   FieldDescription,
   FieldError,
+  FieldHelperSlot,
   FieldLabel,
 } from "@/registry/default/ui/field"
 import { Form } from "@/registry/default/ui/form"
@@ -52,8 +53,10 @@ export default function SelectForm() {
             ))}
           </SelectPopup>
         </Select>
-        <FieldDescription>Pick your favorite.</FieldDescription>
-        <FieldError>Please select a value.</FieldError>
+        <FieldHelperSlot>
+          <FieldDescription>Pick your favorite.</FieldDescription>
+          <FieldError>Please select a value.</FieldError>
+        </FieldHelperSlot>
       </Field>
 
       <Button type="submit" disabled={loading}>

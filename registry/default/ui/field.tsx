@@ -8,7 +8,10 @@ function Field({ className, ...props }: FieldPrimitive.Root.Props) {
   return (
     <FieldPrimitive.Root
       data-slot="field"
-      className={cn("flex flex-col items-start gap-2", className)}
+      className={cn(
+        "flex w-full flex-col gap-[var(--rs-space-2)]",
+        className
+      )}
       {...props}
     />
   )
@@ -32,24 +35,29 @@ function FieldControl({
   size?: "sm" | "default" | "lg" | number
 }) {
   if (props.render) {
-    return <FieldPrimitive.Control data-slot="field-control" {...props} />
+    return (
+      <FieldPrimitive.Control
+        data-slot="field-control"
+        className={className}
+        {...props}
+      />
+    )
   }
 
   return (
     <span
       data-slot="field-control"
       className={cn(
-        "relative inline-flex w-full rounded-lg border border-input bg-transparent bg-clip-padding text-base/5 shadow-xs ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] has-focus-visible:border-ring has-focus-visible:ring-[3px] has-disabled:opacity-64 has-aria-invalid:border-destructive/36 has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 sm:text-sm dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:has-aria-invalid:ring-destructive/24 [&:has(:disabled,:focus-visible,[aria-invalid])]:shadow-none",
+        "flex w-full flex-col",
         className
       )}
     >
       <FieldPrimitive.Control
         data-slot="field-control"
         className={cn(
-          "w-full min-w-0 rounded-[inherit] px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)] outline-none placeholder:text-muted-foreground/64",
-          size === "sm" &&
-            "px-[calc(--spacing(2.5)-1px)] py-[calc(--spacing(1)-1px)]",
-          size === "lg" && "py-[calc(--spacing(2)-1px)]",
+          "box-border h-[var(--rs-space-9)] w-full min-w-0 rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-primary)] px-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] outline-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] [transition:var(--rs-transition-interactive)] placeholder:text-[var(--rs-color-foreground-base-tertiary)] focus:border-[var(--rs-color-border-accent-emphasis)] data-disabled:cursor-not-allowed data-disabled:opacity-40 data-invalid:border-[var(--rs-color-border-danger-emphasis)] data-invalid:focus:border-[var(--rs-color-border-danger-emphasis-hover)]",
+          size === "sm" && "h-[var(--rs-space-8)]",
+          size === "lg" && "h-[var(--rs-space-10)]",
           props.type === "search" &&
             "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
           props.type === "file" &&
@@ -68,7 +76,10 @@ function FieldDescription({
   return (
     <FieldPrimitive.Description
       data-slot="field-description"
-      className={cn("text-xs text-muted-foreground", className)}
+      className={cn(
+        "m-0 text-[var(--rs-color-foreground-base-secondary)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)]",
+        className
+      )}
       {...props}
     />
   )
@@ -78,7 +89,26 @@ function FieldError({ className, ...props }: FieldPrimitive.Error.Props) {
   return (
     <FieldPrimitive.Error
       data-slot="field-error"
-      className={cn("text-xs text-destructive-foreground", className)}
+      className={cn(
+        "m-0 text-[var(--rs-color-foreground-danger-primary)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)] starting:opacity-0",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function FieldHelperSlot({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="field-helper-slot"
+      className={cn(
+        "grid [&>*]:[grid-area:1/1] [&>[data-slot=field-description][data-invalid]]:invisible [&>[data-slot=field-description][data-invalid]]:opacity-0 motion-safe:[&>*]:[transition:opacity_var(--rs-duration-fast)_var(--rs-ease-out),visibility_var(--rs-duration-fast)_var(--rs-ease-out)]",
+        className
+      )}
       {...props}
     />
   )
@@ -122,6 +152,7 @@ export {
   FieldControl,
   FieldDescription,
   FieldError,
+  FieldHelperSlot,
   FieldValidity,
   FieldGroup,
   FieldSeparator,

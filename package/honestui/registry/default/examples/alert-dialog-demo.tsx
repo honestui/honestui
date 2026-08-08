@@ -1,5 +1,6 @@
 import {
   AlertDialog,
+  AlertDialogBody,
   AlertDialogClose,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -19,11 +20,13 @@ export default function AlertDialogDemo() {
       <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogBody>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete
             your account and remove your data from our servers.
           </AlertDialogDescription>
-        </AlertDialogHeader>
+        </AlertDialogBody>
         <AlertDialogFooter>
           <AlertDialogClose render={<Button variant="ghost" />}>
             Cancel

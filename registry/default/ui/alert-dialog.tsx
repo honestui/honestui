@@ -9,6 +9,7 @@ export {
   AlertDialogPopup,
   AlertDialogPopup as AlertDialogContent,
   AlertDialogHeader,
+  AlertDialogBody,
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogDescription,

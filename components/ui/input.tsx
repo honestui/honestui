@@ -7,25 +7,31 @@ import { cn } from "@/lib/utils"
 function Input({
   className,
   size = "default",
+  variant = "default",
   ...props
 }: Omit<InputPrimitive.Props, "size"> & {
   size?: "sm" | "default" | "lg" | number
+  variant?: "default" | "borderless"
 }) {
   return (
     <span
       data-slot="input-control"
+      data-disabled={props.disabled ? "" : undefined}
+      data-variant={variant}
       className={cn(
-        "relative inline-flex w-full rounded-lg border border-input bg-background bg-clip-padding text-base/5 shadow-xs ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] has-focus-visible:border-ring has-focus-visible:ring-[3px] has-disabled:opacity-64 has-aria-invalid:border-destructive/36 has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 sm:text-sm dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:has-aria-invalid:ring-destructive/24 [&:has(:disabled,:focus-visible,[aria-invalid])]:shadow-none",
+        "relative flex min-h-[var(--rs-space-9)] w-full items-center overflow-hidden rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-primary)] [transition:var(--rs-transition-interactive)] focus-within:border-[var(--rs-color-border-accent-emphasis)] focus-within:bg-[var(--rs-color-background-base-primary)] focus-within:outline-none has-[[data-slot=input][data-active=true]]:border-[var(--rs-color-border-accent-emphasis)] has-[[data-slot=input][data-invalid]]:border-[var(--rs-color-border-danger-emphasis)] has-[[data-slot=input][data-invalid]]:focus-within:border-[var(--rs-color-border-danger-emphasis-hover)] has-[[data-slot=input][aria-invalid=true]]:border-[var(--rs-color-border-danger-emphasis)] has-[[data-slot=input][aria-invalid=true]]:focus-within:border-[var(--rs-color-border-danger-emphasis-hover)] has-[[data-slot=input][data-disabled]]:cursor-not-allowed has-[[data-slot=input][data-disabled]]:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50",
+        size === "sm" && "min-h-[var(--rs-space-7)]",
+        variant === "borderless" &&
+          "border-transparent focus-within:border-transparent has-[[data-slot=input]:focus-visible]:shadow-[var(--rs-focus-ring-shadow)]",
         className
       )}
     >
       <InputPrimitive
         data-slot="input"
         className={cn(
-          "w-full min-w-0 rounded-[inherit] px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)] outline-none placeholder:text-muted-foreground/64",
+          "m-0 box-border h-[var(--rs-space-9)] w-full min-w-0 rounded-none border-0 bg-transparent pr-[var(--rs-space-2)] pl-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] outline-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-t2)] placeholder:text-[var(--rs-color-foreground-base-tertiary)] placeholder:[font-size:var(--rs-font-size-small)] placeholder:[font-weight:var(--rs-font-weight-regular)] placeholder:[letter-spacing:var(--rs-letter-spacing-small)] placeholder:[line-height:var(--rs-line-height-t2)] focus:border-[var(--rs-color-border-accent-emphasis)] data-disabled:cursor-not-allowed data-disabled:text-[var(--rs-color-foreground-base-tertiary)]",
           size === "sm" &&
-            "px-[calc(--spacing(2.5)-1px)] py-[calc(--spacing(1)-1px)]",
-          size === "lg" && "py-[calc(--spacing(2)-1px)]",
+            "h-[var(--rs-space-7)] [line-height:var(--rs-line-height-large)]",
           props.type === "search" &&
             "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
           props.type === "file" &&

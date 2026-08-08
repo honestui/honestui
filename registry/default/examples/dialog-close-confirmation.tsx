@@ -4,6 +4,7 @@ import * as React from "react"
 
 import {
   AlertDialog,
+  AlertDialogBody,
   AlertDialogClose,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -14,6 +15,7 @@ import {
 import { Button } from "@/registry/default/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogDescription,
   DialogFooter,
@@ -53,19 +55,21 @@ export default function DialogCloseConfirmationDemo() {
           </DialogDescription>
         </DialogHeader>
         <Form
-          className="grid gap-4"
+          className="grid"
           onSubmit={(event) => {
             event.preventDefault()
             // Close the dialog when submitting
             setDialogOpen(false)
           }}
         >
-          <Field>
-            <Textarea
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            />
-          </Field>
+          <DialogBody>
+            <Field>
+              <Textarea
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+              />
+            </Field>
+          </DialogBody>
           <DialogFooter>
             <DialogClose render={<Button variant="ghost" />}>
               Cancel
@@ -87,10 +91,12 @@ export default function DialogCloseConfirmationDemo() {
         <AlertDialogPopup>
           <AlertDialogHeader>
             <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogBody>
             <AlertDialogDescription>
               Your message will be lost.
             </AlertDialogDescription>
-          </AlertDialogHeader>
+          </AlertDialogBody>
           <AlertDialogFooter>
             <AlertDialogClose render={<Button variant="ghost" />}>
               Go back

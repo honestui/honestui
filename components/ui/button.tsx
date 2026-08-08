@@ -6,33 +6,34 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border bg-clip-padding text-sm leading-none font-medium whitespace-nowrap transition-shadow outline-none before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative inline-flex w-fit shrink-0 cursor-pointer items-center justify-center gap-[var(--rs-space-3)] whitespace-nowrap rounded-[var(--rs-radius-2)] border-0 bg-transparent px-[var(--rs-space-4)] py-[var(--rs-space-3)] [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-medium)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] outline-none motion-safe:[transition:var(--rs-transition-interactive)] motion-safe:active:[transition:var(--rs-transition-pressed)] focus-visible:[outline:var(--rs-focus-ring)] not-disabled:active:scale-[var(--rs-scale-pressed)] disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:after:pointer-events-none pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "border-primary bg-primary text-primary-foreground shadow-xs shadow-primary/24 not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] hover:bg-primary/90 [&:is(:active,[data-pressed])]:inset-shadow-[0_1px_--theme(--color-black/8%)] [&:is(:disabled,:active,[data-pressed])]:shadow-none",
+          "bg-[var(--rs-color-background-accent-emphasis)] text-[var(--rs-color-foreground-accent-emphasis)] shadow-[var(--rs-shadow-feather)] hover:bg-[var(--rs-color-background-accent-emphasis-hover)] active:bg-[var(--rs-color-background-accent-emphasis-hover)] focus-visible:outline-offset-[var(--rs-focus-ring-offset-accent)] disabled:hover:bg-[var(--rs-color-background-accent-emphasis)]",
         outline:
-          "border-border bg-background shadow-xs not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:not-disabled:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/4%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/8%)] [&:is(:disabled,:active,[data-pressed])]:shadow-none [&:is(:hover,[data-pressed])]:bg-accent/50 dark:[&:is(:hover,[data-pressed])]:bg-input/64",
+          "border-[0.5px] border-[var(--rs-color-border-accent-emphasis)] bg-[var(--rs-color-background-base-primary)] text-[var(--rs-color-foreground-accent-primary)] shadow-[var(--rs-shadow-feather)] hover:bg-[var(--rs-color-background-accent-primary)] active:bg-[var(--rs-color-background-accent-primary)] disabled:bg-transparent disabled:hover:border-[var(--rs-color-border-accent-emphasis)] disabled:hover:bg-transparent disabled:hover:text-[var(--rs-color-foreground-accent-primary)]",
         secondary:
-          "border-border bg-secondary text-secondary-foreground shadow-xs not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] hover:bg-secondary/80 data-pressed:bg-secondary/80 dark:border-secondary dark:shadow-none dark:not-disabled:not-active:not-data-pressed:before:shadow-none dark:hover:bg-secondary/90 dark:data-pressed:bg-secondary/90",
+          "bg-[var(--rs-color-background-neutral-secondary)] text-[var(--rs-color-foreground-base-primary)] shadow-[var(--rs-shadow-feather)] hover:bg-[var(--rs-color-background-neutral-secondary-hover)] active:bg-[var(--rs-color-background-neutral-secondary-hover)] disabled:hover:bg-[var(--rs-color-background-neutral-secondary)] disabled:hover:text-[var(--rs-color-foreground-base-primary)]",
         destructive:
-          "border-destructive bg-destructive text-white shadow-xs shadow-destructive/24 not-disabled:inset-shadow-[0_1px_--theme(--color-white/16%)] hover:bg-destructive/90 [&:is(:active,[data-pressed])]:inset-shadow-[0_1px_--theme(--color-black/8%)] [&:is(:disabled,:active,[data-pressed])]:shadow-none",
+          "bg-[var(--rs-color-background-danger-emphasis)] text-[var(--rs-color-foreground-danger-emphasis)] shadow-[var(--rs-shadow-feather)] hover:bg-[var(--rs-color-background-danger-emphasis-hover)] active:bg-[var(--rs-color-background-danger-emphasis-hover)] focus-visible:[outline-color:var(--rs-color-border-danger-emphasis)] focus-visible:outline-offset-[var(--rs-focus-ring-offset-accent)] disabled:hover:bg-[var(--rs-color-background-danger-emphasis)]",
         "destructive-outline":
-          "border-border bg-transparent text-destructive-foreground shadow-xs not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] dark:bg-input/32 dark:not-in-data-[slot=group]:bg-clip-border dark:not-disabled:before:shadow-[0_-1px_--theme(--color-white/4%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/8%)] [&:is(:disabled,:active,[data-pressed])]:shadow-none [&:is(:hover,[data-pressed])]:border-destructive/32 [&:is(:hover,[data-pressed])]:bg-destructive/4",
-        ghost: "border-transparent hover:bg-accent data-pressed:bg-accent",
-        link: "border-transparent underline-offset-4 hover:underline",
+          "border-[0.5px] border-[var(--rs-color-border-danger-emphasis)] bg-[var(--rs-color-background-base-primary)] text-[var(--rs-color-foreground-danger-primary)] shadow-[var(--rs-shadow-feather)] hover:border-[var(--rs-color-border-danger-emphasis-hover)] hover:bg-[var(--rs-color-background-danger-primary)] active:border-[var(--rs-color-border-danger-emphasis-hover)] active:bg-[var(--rs-color-background-danger-primary)] focus-visible:[outline-color:var(--rs-color-border-danger-emphasis)] disabled:bg-transparent disabled:hover:border-[var(--rs-color-border-danger-emphasis)] disabled:hover:bg-transparent disabled:hover:text-[var(--rs-color-foreground-danger-primary)]",
+        ghost:
+          "border border-dashed border-[var(--rs-color-border-base-primary)] text-[var(--rs-color-foreground-base-primary)] hover:bg-[var(--rs-color-background-base-primary-hover)] active:bg-[var(--rs-color-background-base-primary-hover)] disabled:hover:border-[var(--rs-color-border-base-primary)] disabled:hover:bg-transparent disabled:hover:text-[var(--rs-color-foreground-base-primary)]",
+        link: "text-[var(--rs-color-foreground-base-primary)] hover:bg-[var(--rs-color-background-base-primary-hover)] active:bg-[var(--rs-color-background-base-primary-hover)] disabled:hover:bg-transparent disabled:hover:text-[var(--rs-color-foreground-base-primary)]",
       },
       size: {
         default:
-          "min-h-8 px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)]",
-        xs: "min-h-6 gap-1 rounded-md px-[calc(--spacing(2)-1px)] py-[calc(--spacing(1)-1px)] text-xs before:rounded-[calc(var(--radius-md)-1px)] [&_svg:not([class*='size-'])]:size-3",
-        sm: "min-h-7 gap-1.5 px-[calc(--spacing(2.5)-1px)] py-[calc(--spacing(1)-1px)]",
-        lg: "min-h-9 px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2)-1px)]",
-        xl: "min-h-10 px-[calc(--spacing(4)-1px)] py-[calc(--spacing(2)-1px)] text-base [&_svg:not([class*='size-'])]:size-4.5",
-        icon: "size-8",
-        "icon-sm": "size-7",
-        "icon-lg": "size-9",
+          "px-[var(--rs-space-4)] py-[var(--rs-space-3)] [font-size:var(--rs-font-size-small)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]",
+        xs: "gap-[var(--rs-space-2)] rounded-[var(--rs-radius-1)] px-[var(--rs-space-2)] py-[var(--rs-space-1)] [font-size:var(--rs-font-size-micro)] [letter-spacing:var(--rs-letter-spacing-micro)] [line-height:var(--rs-line-height-micro)] [&_svg:not([class*='size-'])]:size-3",
+        sm: "gap-[var(--rs-space-2)] px-[var(--rs-space-3)] py-[var(--rs-space-2)] [font-size:var(--rs-font-size-mini)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)]",
+        lg: "px-[var(--rs-space-5)] py-[var(--rs-space-3)] [font-size:var(--rs-font-size-regular)] [letter-spacing:var(--rs-letter-spacing-regular)] [line-height:var(--rs-line-height-regular)]",
+        xl: "px-[var(--rs-space-6)] py-[var(--rs-space-4)] [font-size:var(--rs-font-size-large)] [letter-spacing:var(--rs-letter-spacing-large)] [line-height:var(--rs-line-height-large)] [&_svg:not([class*='size-'])]:size-4.5",
+        icon: "size-8 p-0",
+        "icon-sm": "size-6 p-0",
+        "icon-lg": "size-9 p-0",
       },
       appearance: {
         flat: null,

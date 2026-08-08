@@ -1,6 +1,7 @@
 import { Button } from "@/registry/default/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogDescription,
   DialogFooter,
@@ -24,7 +25,7 @@ export default function DialogNestedDemo() {
             View and manage a user in your team.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4">
+        <DialogBody className="grid gap-4">
           <div className="grid gap-1">
             <p className="text-sm text-muted-foreground">Name</p>
             <p className="text-sm font-medium">Connor Love</p>
@@ -33,7 +34,7 @@ export default function DialogNestedDemo() {
             <p className="text-sm text-muted-foreground">Email</p>
             <p className="text-sm font-medium">loveconnor2005@gmail.com</p>
           </div>
-        </div>
+        </DialogBody>
         <DialogFooter>
           <Dialog>
             <DialogTrigger render={<Button variant="outline" />}>
@@ -46,7 +47,7 @@ export default function DialogNestedDemo() {
                   Make changes to the member&apos;s information.
                 </DialogDescription>
               </DialogHeader>
-              <div className="flex flex-col gap-4">
+              <DialogBody className="flex flex-col gap-4">
                 <Field>
                   <FieldLabel>Name</FieldLabel>
                   <FieldControl type="text" defaultValue="Connor Love" />
@@ -55,7 +56,7 @@ export default function DialogNestedDemo() {
                   <FieldLabel>Email</FieldLabel>
                   <FieldControl type="text" defaultValue="loveconnor2005@gmail.com" />
                 </Field>
-              </div>
+              </DialogBody>
               <DialogFooter>
                 <DialogClose render={<Button variant="ghost" />}>
                   Cancel

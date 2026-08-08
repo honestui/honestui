@@ -1,6 +1,7 @@
 import { Button } from "@/registry/default/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogDescription,
   DialogFooter,
@@ -19,7 +20,7 @@ export default function DialogDemo() {
         Open Dialog
       </DialogTrigger>
       <DialogPopup className="sm:max-w-sm">
-        <Form className="grid gap-4">
+        <Form className="grid">
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
             <DialogDescription>
@@ -27,7 +28,7 @@ export default function DialogDemo() {
               you&apos;re done.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-4">
+          <DialogBody className="flex flex-col gap-4">
             <Field>
               <FieldLabel>Name</FieldLabel>
               <FieldControl type="text" defaultValue="Connor Love" />
@@ -36,7 +37,7 @@ export default function DialogDemo() {
               <FieldLabel>Username</FieldLabel>
               <FieldControl type="text" defaultValue="@loveconnor" />
             </Field>
-          </div>
+          </DialogBody>
           <DialogFooter>
             <DialogClose render={<Button variant="ghost" />}>
               Cancel

@@ -69,12 +69,31 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Meter, MeterLabel, MeterValue } from "@/components/ui/meter"
+import {
+  Meter,
+  MeterCircularTrack,
+  MeterIndicator,
+  MeterLabel,
+  MeterTrack,
+  MeterValue,
+} from "@/components/ui/meter"
 ```
 
 ```tsx
 <Meter value={40}>
-  <MeterLabel>Progress</MeterLabel>
+  <div className="flex items-center justify-between">
+    <MeterLabel>Progress</MeterLabel>
+    <MeterValue />
+  </div>
+  <MeterTrack>
+    <MeterIndicator />
+  </MeterTrack>
+</Meter>
+```
+
+```tsx
+<Meter value={40} variant="circular">
+  <MeterCircularTrack />
   <MeterValue />
 </Meter>
 ```

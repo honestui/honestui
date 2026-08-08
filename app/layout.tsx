@@ -186,8 +186,8 @@ const structuredData = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#fbfcfd" },
+    { media: "(prefers-color-scheme: dark)", color: "#151718" },
   ],
   colorScheme: "light dark",
 };
@@ -198,7 +198,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      data-style="modern"
+      suppressHydrationWarning
+    >
       <body
         className={cn(
           loveSans.variable,
@@ -213,7 +218,10 @@ export default function RootLayout({
             __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
           }}
         />
-        <ThemeProvider defaultTheme="system" attribute="class">
+        <ThemeProvider
+          defaultTheme="system"
+          attribute={["class", "data-theme"]}
+        >
           <VercelAnalytics />
           {children}
         </ThemeProvider>

@@ -26,23 +26,21 @@ function PopoverPopup({
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
         data-slot="popover-positioner"
-        className="z-50"
+        className="z-[var(--rs-z-index-portal)]"
         side={side}
         sideOffset={sideOffset}
         align={align}
       >
-        <span className="relative flex origin-(--transform-origin) rounded-lg border bg-popover bg-clip-padding shadow-lg transition-[scale,opacity] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] has-data-starting-style:scale-98 has-data-starting-style:opacity-0 dark:bg-clip-border dark:before:shadow-[0_-1px_--theme(--color-white/8%)]">
-          <PopoverPrimitive.Popup
-            data-slot="popover-content"
-            className={cn(
-              "max-h-(--available-height) min-w-80 overflow-y-auto p-4",
-              className
-            )}
-            {...props}
-          >
-            {children}
-          </PopoverPrimitive.Popup>
-        </span>
+        <PopoverPrimitive.Popup
+          data-slot="popover-content"
+          className={cn(
+            "box-border max-h-(--available-height) min-w-[var(--rs-space-17)] max-w-[18rem] origin-(--transform-origin) overflow-hidden rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] p-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] shadow-[var(--rs-shadow-soft)] outline-0 [font-size:var(--rs-font-size-small)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] [transition:opacity_var(--rs-duration-normal)_var(--rs-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--rs-duration-normal)_var(--rs-ease-out),transform_var(--rs-duration-normal)_var(--rs-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </PopoverPrimitive.Popup>
       </PopoverPrimitive.Positioner>
     </PopoverPrimitive.Portal>
   )
@@ -74,7 +72,6 @@ function PopoverDescription({
     />
   )
 }
-
 export {
   Popover,
   PopoverTrigger,

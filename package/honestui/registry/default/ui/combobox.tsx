@@ -123,15 +123,15 @@ function ComboboxPopup({
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
         data-slot="combobox-positioner"
-        className="z-50 select-none"
+        className="z-[var(--rs-z-index-portal)] select-none"
         sideOffset={sideOffset}
         anchor={chipsRef}
       >
-        <span className="relative flex max-h-full origin-(--transform-origin) rounded-lg border bg-popover bg-clip-padding transition-[scale,opacity] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-lg has-data-starting-style:scale-98 has-data-starting-style:opacity-0 dark:not-in-data-[slot=group]:bg-clip-border">
+        <span className="relative flex max-h-full">
           <ComboboxPrimitive.Popup
             data-slot="combobox-popup"
             className={cn(
-              "flex max-h-[min(var(--available-height),23rem)] w-(--anchor-width) max-w-(--available-width) flex-col",
+              "box-border flex max-h-[min(var(--available-height),320px)] min-w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) flex-col overflow-auto rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] shadow-[var(--rs-shadow-soft)] [font-size:var(--rs-font-size-small)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] motion-safe:[transition:opacity_var(--rs-duration-fast)_var(--rs-ease-out),transform_var(--rs-duration-fast)_var(--rs-ease-out)] data-ending-style:scale-[0.97] data-ending-style:opacity-0 data-starting-style:scale-[0.97] data-starting-style:opacity-0 [&:has([data-slot=combobox-list]:empty)]:border-0",
               className
             )}
             {...props}
@@ -153,12 +153,12 @@ function ComboboxItem({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "grid cursor-default grid-cols-[1rem_1fr] items-center gap-2 rounded-sm py-1 ps-2 pe-4 text-base outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-64 data-highlighted:bg-accent data-highlighted:text-accent-foreground sm:text-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex items-center gap-[var(--rs-space-3)] whitespace-normal break-words rounded-[var(--rs-radius-2)] p-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:bg-[var(--rs-color-background-base-primary-hover)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--rs-space-5)]",
         className
       )}
       {...props}
     >
-      <ComboboxPrimitive.ItemIndicator className="col-start-1">
+      <ComboboxPrimitive.ItemIndicator className="flex shrink-0 items-center justify-center [&_svg]:size-[var(--rs-space-5)]">
         <svg
           xmlns="http://www.w3.org/1500/svg"
           width="24"
@@ -173,7 +173,7 @@ function ComboboxItem({
           <path d="M5.252 12.7 10.2 18.63 18.748 5.37" />
         </svg>
       </ComboboxPrimitive.ItemIndicator>
-      <div className="col-start-2">{children}</div>
+      <div className="min-w-0">{children}</div>
     </ComboboxPrimitive.Item>
   )
 }
@@ -184,7 +184,10 @@ function ComboboxSeparator({
 }: ComboboxPrimitive.Separator.Props) {
   return (
     <ComboboxPrimitive.Separator
-      className={cn("mx-2 my-1 h-px bg-border last:hidden", className)}
+      className={cn(
+        "mx-[calc(var(--rs-space-3)*-1)] my-[var(--rs-space-2)] h-px bg-[var(--rs-color-border-base-primary)] last:hidden",
+        className
+      )}
       data-slot="combobox-separator"
       {...props}
     />
@@ -208,7 +211,7 @@ function ComboboxGroupLabel({
   return (
     <ComboboxPrimitive.GroupLabel
       className={cn(
-        "px-2 py-1.5 text-xs font-medium text-muted-foreground",
+        "px-[var(--rs-space-3)] py-[var(--rs-space-2)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-medium)]",
         className
       )}
       data-slot="combobox-group-label"
@@ -250,7 +253,7 @@ function ComboboxList({ className, ...props }: ComboboxPrimitive.List.Props) {
       <ComboboxPrimitive.List
         data-slot="combobox-list"
         className={cn(
-          "not-empty:scroll-py-1 not-empty:px-1 not-empty:py-1 in-data-has-overflow-y:pe-3",
+          "p-[var(--rs-space-2)] empty:p-0 in-data-has-overflow-y:pe-3",
           className
         )}
         {...props}

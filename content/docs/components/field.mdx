@@ -77,6 +77,7 @@ import {
   FieldControl,
   FieldDescription,
   FieldError,
+  FieldHelperSlot,
   FieldLabel,
   FieldValidity,
 } from "@/components/ui/field"
@@ -86,8 +87,10 @@ import {
 <Field>
   <FieldLabel>Name</FieldLabel>
   <FieldControl type="text" placeholder="Enter your name" />
-  <FieldDescription>Visible on your profile</FieldDescription>
-  <FieldError>Please enter a valid name</FieldError>
+  <FieldHelperSlot>
+    <FieldDescription>Visible on your profile</FieldDescription>
+    <FieldError>Please enter a valid name</FieldError>
+  </FieldHelperSlot>
   <FieldValidity>
     {(validity) => (
       {validity.error && <p>{validity.error}</p>}

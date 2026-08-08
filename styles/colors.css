@@ -1,0 +1,209 @@
+/*
+ * Note: Use color variables from this file only.
+ * Avoid using color variables from other files in the styles folder directly.
+ */
+
+[data-theme="light"],
+[data-theme="dark"] {
+  /* Base Foreground Colors */
+  --rs-color-foreground-base-primary: var(--rs-neutral-12);
+  --rs-color-foreground-base-secondary: var(--rs-neutral-11);
+  --rs-color-foreground-base-tertiary: var(--rs-neutral-10);
+  --rs-color-foreground-base-emphasis: var(--rs-neutral-1);
+
+  /* Semantic Foreground Colors */
+  --rs-color-foreground-accent-primary: var(--rs-accent-9);
+  --rs-color-foreground-attention-primary: var(--rs-attention-9);
+  --rs-color-foreground-danger-primary: var(--rs-danger-9);
+  --rs-color-foreground-success-primary: var(--rs-success-9);
+
+  /* Base Background Colors */
+  --rs-color-background-base-primary: var(--rs-neutral-1);
+  --rs-color-background-neutral-secondary: var(--rs-neutral-4);
+  --rs-color-background-base-secondary: var(--rs-neutral-2);
+  --rs-color-background-neutral-tertiary: var(--rs-neutral-9);
+
+  /* Semantic Background Colors */
+  --rs-color-background-accent-primary: var(--rs-accent-4);
+  --rs-color-background-attention-primary: var(--rs-attention-4);
+  --rs-color-background-danger-primary: var(--rs-danger-4);
+  --rs-color-background-success-primary: var(--rs-success-4);
+
+  /* Hover and Emphasis Background Colors */
+  --rs-color-background-base-primary-hover: var(--rs-neutral-3);
+  --rs-color-background-neutral-secondary-hover: var(--rs-neutral-5);
+  --rs-color-background-accent-emphasis: var(--rs-accent-9);
+  --rs-color-background-accent-emphasis-hover: var(--rs-accent-10);
+  --rs-color-background-attention-emphasis: var(--rs-attention-9);
+  --rs-color-background-danger-emphasis: var(--rs-danger-9);
+  --rs-color-background-danger-emphasis-hover: var(--rs-danger-10);
+  --rs-color-background-success-emphasis: var(--rs-success-9);
+
+  /* Foreground Hover Colors */
+  --rs-color-foreground-accent-primary-hover: var(--rs-accent-11);
+  --rs-color-foreground-attention-primary-hover: var(--rs-attention-11);
+  --rs-color-foreground-danger-primary-hover: var(--rs-danger-11);
+  --rs-color-foreground-success-primary-hover: var(--rs-success-11);
+
+  /* Border Colors */
+  --rs-color-border-base-tertiary: var(--rs-neutral-7);
+  --rs-color-border-base-focus: var(--rs-neutral-8);
+  --rs-color-border-base-primary: var(--rs-neutral-4);
+  --rs-color-border-accent-primary: var(--rs-accent-7);
+  --rs-color-border-accent-emphasis: var(--rs-accent-9);
+  --rs-color-border-accent-emphasis-hover: var(--rs-accent-10);
+  --rs-color-border-attention-primary: var(--rs-attention-7);
+  --rs-color-border-attention-emphasis: var(--rs-attention-9);
+  --rs-color-border-danger-primary: var(--rs-danger-7);
+  --rs-color-border-danger-emphasis: var(--rs-danger-9);
+  --rs-color-border-danger-emphasis-hover: var(--rs-danger-10);
+  --rs-color-border-success-primary: var(--rs-success-7);
+  --rs-color-border-success-emphasis: var(--rs-success-9);
+
+  /* Overlay Base Colors */
+  --rs-color-overlay-base-a1: var(--rs-alpha-a1);
+  --rs-color-overlay-base-a2: var(--rs-alpha-a2);
+  --rs-color-overlay-base-a3: var(--rs-alpha-a3);
+  --rs-color-overlay-base-a4: var(--rs-alpha-a4);
+  --rs-color-overlay-base-a5: var(--rs-alpha-a5);
+  --rs-color-overlay-base-a6: var(--rs-alpha-a6);
+  --rs-color-overlay-base-a7: var(--rs-alpha-a7);
+  --rs-color-overlay-base-a8: var(--rs-alpha-a8);
+  --rs-color-overlay-base-a9: var(--rs-alpha-a9);
+  --rs-color-overlay-base-a10: var(--rs-alpha-a10);
+  --rs-color-overlay-base-a11: var(--rs-alpha-a11);
+  --rs-color-overlay-base-a12: var(--rs-alpha-a12);
+
+  /* Black Overlay */
+  --rs-color-overlay-black-a1: oklch(0 0 0 / 0.05);
+  --rs-color-overlay-black-a2: oklch(0 0 0 / 0.1);
+  --rs-color-overlay-black-a3: oklch(0 0 0 / 0.15);
+  --rs-color-overlay-black-a4: oklch(0 0 0 / 0.2);
+  --rs-color-overlay-black-a5: oklch(0 0 0 / 0.3);
+  --rs-color-overlay-black-a6: oklch(0 0 0 / 0.4);
+  --rs-color-overlay-black-a7: oklch(0 0 0 / 0.5);
+  --rs-color-overlay-black-a8: oklch(0 0 0 / 0.6);
+  --rs-color-overlay-black-a9: oklch(0 0 0 / 0.7);
+  --rs-color-overlay-black-a10: oklch(0 0 0 / 0.8);
+  --rs-color-overlay-black-a11: oklch(0 0 0 / 0.9);
+  --rs-color-overlay-black-a12: oklch(0 0 0 / 0.95);
+
+  /* White Overlay */
+  --rs-color-overlay-white-a1: oklch(1 0 0 / 0.05);
+  --rs-color-overlay-white-a2: oklch(1 0 0 / 0.1);
+  --rs-color-overlay-white-a3: oklch(1 0 0 / 0.15);
+  --rs-color-overlay-white-a4: oklch(1 0 0 / 0.2);
+  --rs-color-overlay-white-a5: oklch(1 0 0 / 0.3);
+  --rs-color-overlay-white-a6: oklch(1 0 0 / 0.4);
+  --rs-color-overlay-white-a7: oklch(1 0 0 / 0.5);
+  --rs-color-overlay-white-a8: oklch(1 0 0 / 0.6);
+  --rs-color-overlay-white-a9: oklch(1 0 0 / 0.7);
+  --rs-color-overlay-white-a10: oklch(1 0 0 / 0.8);
+  --rs-color-overlay-white-a11: oklch(1 0 0 / 0.9);
+  --rs-color-overlay-white-a12: oklch(1 0 0 / 0.95);
+
+  /* Additional Background Colors */
+  --rs-color-background-neutral-primary: var(--rs-neutral-3);
+  --rs-color-background-neutral-tertiary-hover: var(--rs-neutral-10);
+  --rs-color-background-attention-emphasis-hover: var(--rs-attention-10);
+  --rs-color-background-success-emphasis-hover: var(--rs-success-10);
+
+  /* Additional Border Colors */
+  --rs-color-border-base-secondary: var(--rs-neutral-6);
+  --rs-color-border-attention-emphasis-hover: var(--rs-attention-10);
+  --rs-color-border-success-emphasis-hover: var(--rs-success-10);
+  --rs-color-border-base-tertiary-hover: var(--rs-neutral-5);
+  --rs-color-border-base-emphasis: var(--rs-neutral-12);
+  --rs-color-background-neutral-emphasis: var(--rs-neutral-12);
+
+  /* Emphasis Foreground Colors */
+  --rs-color-foreground-accent-emphasis: var(--rs-accent-contrast);
+  --rs-color-foreground-danger-emphasis: var(--rs-danger-contrast);
+  --rs-color-foreground-attention-emphasis: var(--rs-attention-contrast);
+  --rs-color-foreground-success-emphasis: var(--rs-success-contrast);
+
+  /* Visualization Colors */
+  /* Sky */
+  --rs-color-viz-sky-11: var(--rs-viz-sky-11);
+  --rs-color-viz-sky-9: var(--rs-viz-sky-9);
+  --rs-color-viz-sky-8: var(--rs-viz-sky-8);
+  --rs-color-viz-sky-6: var(--rs-viz-sky-6);
+
+  /* Mint */
+  --rs-color-viz-mint-11: var(--rs-viz-mint-11);
+  --rs-color-viz-mint-9: var(--rs-viz-mint-9);
+  --rs-color-viz-mint-8: var(--rs-viz-mint-8);
+  --rs-color-viz-mint-6: var(--rs-viz-mint-6);
+
+  /* Lime */
+  --rs-color-viz-lime-11: var(--rs-viz-lime-11);
+  --rs-color-viz-lime-9: var(--rs-viz-lime-9);
+  --rs-color-viz-lime-8: var(--rs-viz-lime-8);
+  --rs-color-viz-lime-6: var(--rs-viz-lime-6);
+
+  /* Grass */
+  --rs-color-viz-grass-11: var(--rs-viz-grass-11);
+  --rs-color-viz-grass-9: var(--rs-viz-grass-9);
+  --rs-color-viz-grass-8: var(--rs-viz-grass-8);
+  --rs-color-viz-grass-6: var(--rs-viz-grass-6);
+
+  /* Green */
+  --rs-color-viz-green-11: var(--rs-viz-green-11);
+  --rs-color-viz-green-9: var(--rs-viz-green-9);
+  --rs-color-viz-green-8: var(--rs-viz-green-8);
+  --rs-color-viz-green-6: var(--rs-viz-green-6);
+
+  /* Jade */
+  --rs-color-viz-jade-11: var(--rs-viz-jade-11);
+  --rs-color-viz-jade-9: var(--rs-viz-jade-9);
+  --rs-color-viz-jade-8: var(--rs-viz-jade-8);
+  --rs-color-viz-jade-6: var(--rs-viz-jade-6);
+
+  /* Cyan */
+  --rs-color-viz-cyan-11: var(--rs-viz-cyan-11);
+  --rs-color-viz-cyan-9: var(--rs-viz-cyan-9);
+  --rs-color-viz-cyan-8: var(--rs-viz-cyan-8);
+  --rs-color-viz-cyan-6: var(--rs-viz-cyan-6);
+
+  /* Blue */
+  --rs-color-viz-blue-11: var(--rs-viz-blue-11);
+  --rs-color-viz-blue-9: var(--rs-viz-blue-9);
+  --rs-color-viz-blue-8: var(--rs-viz-blue-8);
+  --rs-color-viz-blue-6: var(--rs-viz-blue-6);
+
+  /* Iris */
+  --rs-color-viz-iris-11: var(--rs-viz-iris-11);
+  --rs-color-viz-iris-9: var(--rs-viz-iris-9);
+  --rs-color-viz-iris-8: var(--rs-viz-iris-8);
+  --rs-color-viz-iris-6: var(--rs-viz-iris-6);
+
+  /* Purple */
+  --rs-color-viz-purple-11: var(--rs-viz-purple-11);
+  --rs-color-viz-purple-9: var(--rs-viz-purple-9);
+  --rs-color-viz-purple-8: var(--rs-viz-purple-8);
+  --rs-color-viz-purple-6: var(--rs-viz-purple-6);
+
+  /* Pink */
+  --rs-color-viz-pink-11: var(--rs-viz-pink-11);
+  --rs-color-viz-pink-9: var(--rs-viz-pink-9);
+  --rs-color-viz-pink-8: var(--rs-viz-pink-8);
+  --rs-color-viz-pink-6: var(--rs-viz-pink-6);
+
+  /* Crimson */
+  --rs-color-viz-crimson-11: var(--rs-viz-crimson-11);
+  --rs-color-viz-crimson-9: var(--rs-viz-crimson-9);
+  --rs-color-viz-crimson-8: var(--rs-viz-crimson-8);
+  --rs-color-viz-crimson-6: var(--rs-viz-crimson-6);
+
+  /* Orange */
+  --rs-color-viz-orange-11: var(--rs-viz-orange-11);
+  --rs-color-viz-orange-9: var(--rs-viz-orange-9);
+  --rs-color-viz-orange-8: var(--rs-viz-orange-8);
+  --rs-color-viz-orange-6: var(--rs-viz-orange-6);
+
+  /* Gold */
+  --rs-color-viz-gold-11: var(--rs-viz-gold-11);
+  --rs-color-viz-gold-9: var(--rs-viz-gold-9);
+  --rs-color-viz-gold-8: var(--rs-viz-gold-8);
+  --rs-color-viz-gold-6: var(--rs-viz-gold-6);
+}
