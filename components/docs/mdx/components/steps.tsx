@@ -26,18 +26,40 @@ function isStepElement(child: React.ReactNode): child is React.ReactElement<Step
 
 function Steps({ className, children, ...props }: StepsProps) {
   const childArray = React.Children.toArray(children);
-  const stepCount = childArray.filter(isStepElement).length;
+  const sections: Array<{
+    step: React.ReactElement<StepProps>;
+    content: React.ReactNode[];
+    key: React.Key;
+  }> = [];
+  const leadingContent: React.ReactNode[] = [];
+
+  childArray.forEach((child, childIndex) => {
+    if (isStepElement(child)) {
+      sections.push({
+        step: child,
+        content: [],
+        key: child.key ?? childIndex,
+      });
+      return;
+    }
+
+    const currentSection = sections.at(-1);
+    if (currentSection) {
+      currentSection.content.push(child);
+    } else {
+      leadingContent.push(child);
+    }
+  });
 
   return (
     <div className={cn("relative mt-4", className)} {...props}>
-      {childArray.map((child, childIndex) => {
-        if (!isStepElement(child)) return child;
-
-        const stepNumber = childArray.slice(0, childIndex + 1).filter(isStepElement).length;
-        const isLastStep = stepNumber === stepCount;
+      {leadingContent}
+      {sections.map(({ step, content, key }, sectionIndex) => {
+        const stepNumber = sectionIndex + 1;
+        const isLastStep = stepNumber === sections.length;
 
         return (
-          <div key={child.key ?? childIndex} className="relative">
+          <div key={key} className="relative">
             <div
               className={cn(
                 "bg-border absolute top-[26px] left-[12px] h-full w-px",
@@ -45,10 +67,16 @@ function Steps({ className, children, ...props }: StepsProps) {
               )}
               aria-hidden="true"
             />
-            {React.cloneElement(child, {
-              ...child.props,
+            {React.cloneElement(step, {
+              ...step.props,
               stepNumber,
-              className: cn(child.props.className, "relative"),
+              className: cn(step.props.className, "relative"),
+              children: (
+                <>
+                  {step.props.children}
+                  {content}
+                </>
+              ),
             })}
           </div>
         );
@@ -79,12 +107,15 @@ const StepDescription = ({ className, children }: { className?: string; children
 };
 
 function Step({ stepNumber, className, children, ...props }: StepProps & { stepNumber?: number }) {
+  const isNumbered = stepNumber !== undefined;
+
   return (
-    <div className={cn("mt-6 pl-9", className)} {...props}>
-      {/* Step number circle */}
-      <div className="bg-border text-primary jetbrains absolute top-0.5 left-0 flex size-6 items-center justify-center rounded-md text-xs">
-        {stepNumber}
-      </div>
+    <div className={cn("relative mt-6", isNumbered && "pl-9", className)} {...props}>
+      {isNumbered && (
+        <div className="bg-border text-primary jetbrains absolute top-0.5 left-0 flex size-6 items-center justify-center rounded-md text-xs">
+          {stepNumber}
+        </div>
+      )}
       <div>{children}</div>
     </div>
   );

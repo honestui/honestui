@@ -44,7 +44,7 @@ export default function DialogCloseConfirmationDemo() {
         }
       }}
     >
-      <DialogTrigger render={<Button variant="outline" />}>
+      <DialogTrigger render={<Button variant="secondary" />}>
         Compose
       </DialogTrigger>
       <DialogPopup showCloseButton={false}>

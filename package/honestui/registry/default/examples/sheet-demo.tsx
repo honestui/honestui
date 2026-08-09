@@ -19,7 +19,7 @@ export default function DialogDemo() {
     <Sheet>
       <SheetTrigger
         render={(props) => (
-          <Button {...props} variant="outline">
+          <Button {...props} variant="secondary">
             Open Sheet
           </Button>
         )}

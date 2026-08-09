@@ -51,7 +51,7 @@ npx honestui@latest add select
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -92,12 +92,12 @@ const items = [
   </SelectTrigger>
   <SelectPopup>
     {items.map((item) => (
-      <SelectItem key={item.value} value={item}>
+      <SelectItem key={item.value} value={item.value}>
         {item.label}
       </SelectItem>
     ))}
   </SelectPopup>
-  </Select>
+</Select>
 ```
 
 ## Examples

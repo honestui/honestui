@@ -9,19 +9,21 @@ import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 
 const toggleVariants = cva(
-  "relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-lg border text-sm font-medium whitespace-nowrap transition-shadow outline-none select-none before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 data-pressed:bg-accent data-pressed:text-accent-foreground data-pressed:transition-none dark:hover:bg-accent dark:data-pressed:bg-input/80 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "box-border inline-flex w-auto shrink-0 cursor-pointer items-center justify-center rounded-[var(--rs-radius-1)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-secondary)] p-[var(--rs-space-1)] text-[var(--rs-color-foreground-base-secondary)] outline-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-medium)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] [transition:color_var(--rs-duration-normal)_var(--rs-ease-out)] hover:text-[var(--rs-color-foreground-base-primary)] data-pressed:text-[var(--rs-color-foreground-base-primary)] data-disabled:pointer-events-auto data-disabled:cursor-not-allowed data-disabled:opacity-50 focus-visible:[outline:var(--rs-focus-ring)] [&:hover>[data-slot=toggle-content]]:bg-[var(--rs-color-background-base-primary-hover)] data-pressed:[&>[data-slot=toggle-content]]:bg-[var(--rs-color-background-neutral-secondary)] data-pressed:[&>[data-slot=toggle-content]]:shadow-[var(--rs-shadow-inset)] data-pressed:[&:hover>[data-slot=toggle-content]]:bg-[var(--rs-color-background-neutral-secondary-hover)] [&[data-disabled]:not([data-pressed]):hover]:text-[var(--rs-color-foreground-base-secondary)] [&[data-disabled]:not([data-pressed]):hover>[data-slot=toggle-content]]:bg-transparent [&[data-disabled]:not([data-pressed]):hover>[data-slot=toggle-content]]:shadow-none [&[data-disabled][data-pressed]:hover>[data-slot=toggle-content]]:bg-[var(--rs-color-background-neutral-secondary)]",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-transparent text-foreground shadow-none data-pressed:border-border data-pressed:bg-accent data-pressed:text-accent-foreground dark:data-pressed:border-transparent dark:data-pressed:bg-input/80",
-        outline:
-          "border-border bg-clip-padding shadow-xs not-disabled:not-active:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] dark:bg-input/32 dark:not-disabled:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/4%)] dark:not-disabled:not-active:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:hover:bg-input/64 [&:is(:disabled,:active,[data-pressed])]:shadow-none",
+        default: null,
+        outline: null,
       },
       size: {
-        default: "h-8 min-w-8 px-[calc(--spacing(2)-1px)]",
-        sm: "h-7 min-w-7 px-[calc(--spacing(1.5)-1px)]",
-        lg: "h-9 min-w-9 px-[calc(--spacing(2.5)-1px)]",
+        "1": "h-[var(--rs-space-4)] min-w-[var(--rs-space-4)]",
+        "2": "h-[var(--rs-space-5)] min-w-[var(--rs-space-5)]",
+        "3": "h-[var(--rs-space-6)] min-w-[var(--rs-space-6)]",
+        "4": "h-[var(--rs-space-7)] min-w-[var(--rs-space-7)]",
+        sm: "h-[var(--rs-space-6)] min-w-[var(--rs-space-6)]",
+        default: "h-[var(--rs-space-7)] min-w-[var(--rs-space-7)]",
+        lg: "h-[var(--rs-space-7)] min-w-[var(--rs-space-7)]",
       },
     },
     defaultVariants: {
@@ -54,13 +56,17 @@ function Toggle({
       className={cn(
         toggleVariants({ variant: resolvedVariant, size: resolvedSize }),
         context &&
-          resolvedVariant === "outline" &&
-          "border-x-0 not-first:rounded-s-none not-last:rounded-e-none before:[clip-path:inset(-1rem_var(--clip-end)_-1rem_var(--clip-start))] not-first:before:-start-0.5 not-first:before:rounded-s-none not-first:before:[--clip-start:2px] not-last:before:-end-0.5 not-last:before:rounded-e-none not-last:before:[--clip-end:2px] first:border-s last:border-e focus-visible:z-10 not-last:has-[+[data-slot=separator]]:before:[--clip-end:1.5px] [[data-slot=separator]+&]:before:[--clip-start:1.5px]",
+          "rounded-none border-0 bg-transparent focus-visible:outline-offset-[var(--rs-focus-ring-offset-inset-border)] hover:bg-[var(--rs-color-background-base-primary-hover)] data-pressed:bg-[var(--rs-color-background-base-primary)] data-pressed:shadow-[var(--rs-shadow-inset)] data-pressed:[&>[data-slot=toggle-content]]:bg-transparent data-pressed:[&>[data-slot=toggle-content]]:shadow-none data-pressed:[&:hover>[data-slot=toggle-content]]:bg-transparent data-disabled:not-data-pressed:hover:bg-transparent data-disabled:not-data-pressed:hover:shadow-none motion-safe:[transition:color_var(--rs-duration-normal)_var(--rs-ease-out),background-color_var(--rs-duration-fast)_var(--rs-ease-out),box-shadow_var(--rs-duration-fast)_var(--rs-ease-out)]",
         className
       )}
       {...props}
     >
-      {children}
+      <span
+        data-slot="toggle-content"
+        className="flex h-full min-w-0 flex-1 items-center justify-center rounded-[var(--rs-radius-1)] motion-safe:[transition:background-color_var(--rs-duration-fast)_var(--rs-ease-out),box-shadow_var(--rs-duration-fast)_var(--rs-ease-out)] [&>svg]:max-h-full [&>svg]:max-w-full [&>svg]:shrink-0"
+      >
+        {children}
+      </span>
     </TogglePrimitive>
   )
 }
@@ -78,10 +84,7 @@ function ToggleGroup({
       data-variant={variant}
       data-size={size}
       className={cn(
-        "flex w-fit *:pointer-coarse:after:min-w-auto",
-        variant === "default"
-          ? "gap-0.5"
-          : "[--clip-end:-1rem] [--clip-start:-1rem]",
+        "inline-flex w-fit items-center gap-px overflow-clip rounded-[var(--rs-radius-1)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-secondary)] p-[var(--rs-space-1)] data-[orientation=vertical]:flex-col data-disabled:pointer-events-auto data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className
       )}
       {...props}

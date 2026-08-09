@@ -25,7 +25,7 @@ export default function EmptyDemo() {
       <EmptyContent>
         <div className="flex gap-2">
           <Button size="sm">Create meeting</Button>
-          <Button variant="outline" size="sm">
+          <Button variant="secondary" size="sm">
             <BookIcon className="opacity-72" />
             View docs
           </Button>

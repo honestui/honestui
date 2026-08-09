@@ -6,7 +6,7 @@ import { toastManager } from "@/registry/default/ui/toast"
 export default function ToastSyncComplete() {
   return (
     <Button
-      variant="outline"
+      variant="secondary"
       onClick={() => toastManager.add({ title: "Synced", description: "All local changes are backed up." })}
     >
       Show sync toast

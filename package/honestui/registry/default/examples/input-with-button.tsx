@@ -9,7 +9,7 @@ export default function InputWithButton() {
         placeholder="you@example.com"
         aria-label="Email"
       />
-      <Button variant="outline">Send</Button>
+      <Button variant="secondary">Send</Button>
     </div>
   )
 }

@@ -141,9 +141,8 @@ function renderRegistrySource(
           "registry/default/examples/charts",
           "registry/default/examples/animated",
         ]
-  const resolvedName = name === "animated-popover" ? "popover" : name
   const absolutePath = directories
-    .map((directory) => path.join(process.cwd(), directory, `${resolvedName}.tsx`))
+    .map((directory) => path.join(process.cwd(), directory, `${name}.tsx`))
     .find((candidate) => fs.existsSync(candidate))
 
   if (!absolutePath) {

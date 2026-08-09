@@ -18,7 +18,7 @@ export default function EmptyFilteredResults() {
         <EmptyTitle>No matching filters</EmptyTitle>
         <EmptyDescription>Try clearing a status or date filter.</EmptyDescription>
       </EmptyHeader>
-      <EmptyContent><Button variant="outline" size="sm">Reset filters</Button></EmptyContent>
+      <EmptyContent><Button variant="secondary" size="sm">Reset filters</Button></EmptyContent>
     </Empty>
   )
 }

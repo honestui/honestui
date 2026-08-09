@@ -16,7 +16,7 @@ import { Form } from "@/registry/default/ui/form"
 export default function DialogDemo() {
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" />}>
+      <DialogTrigger render={<Button variant="secondary" />}>
         Open Dialog
       </DialogTrigger>
       <DialogPopup className="sm:max-w-sm">

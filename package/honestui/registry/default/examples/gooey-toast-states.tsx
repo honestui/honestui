@@ -7,7 +7,7 @@ export default function GooeyToastStates() {
   return (
     <div className="flex flex-wrap gap-2">
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             variant: "gooey",
@@ -20,7 +20,7 @@ export default function GooeyToastStates() {
         Success
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             variant: "gooey",
@@ -33,7 +33,7 @@ export default function GooeyToastStates() {
         Error
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             variant: "gooey",
@@ -46,7 +46,7 @@ export default function GooeyToastStates() {
         Warning
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             variant: "gooey",
@@ -59,7 +59,7 @@ export default function GooeyToastStates() {
         Info
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             variant: "gooey",

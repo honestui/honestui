@@ -1,13 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { Toast } from "@base-ui-components/react/toast"
+import { Toast } from "@base-ui/react/toast"
 import {
   CircleAlert as CircleAlertIcon,
   CircleCheck as CircleCheckIcon,
   Info as InfoIcon,
   LoaderCircle as LoaderCircleIcon,
   TriangleAlert as TriangleAlertIcon,
+  X as XIcon,
 } from "honestui/icons"
 
 import {
@@ -17,7 +18,7 @@ import {
   type GooeyState,
 } from "./toast-gooey"
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/registry/default/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 
 const standardToastManager = Toast.createToastManager()
 
@@ -139,19 +140,18 @@ function addGooeyToast(options: ToastOptions) {
 }
 
 function toStandardOptions(options: ToastOptions | ToastUpdateOptions) {
-  const {
-    variant,
-    position,
-    state,
-    duration,
-    icon,
-    styles,
-    fill,
-    roundness,
-    autopilot,
-    button,
-    ...standardOptions
-  } = options
+  const standardOptions = { ...options }
+
+  delete standardOptions.variant
+  delete standardOptions.position
+  delete standardOptions.state
+  delete standardOptions.duration
+  delete standardOptions.icon
+  delete standardOptions.styles
+  delete standardOptions.fill
+  delete standardOptions.roundness
+  delete standardOptions.autopilot
+  delete standardOptions.button
 
   return standardOptions
 }
@@ -242,14 +242,13 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
     <Toast.Portal data-slot="toast-portal">
       <Toast.Viewport
         className={cn(
-          "fixed z-50 mx-auto flex w-[calc(100%-var(--toast-inset)*2)] max-w-90 [--toast-inset:--spacing(4)] sm:[--toast-inset:--spacing(8)]",
-          // Vertical positioning
-          "data-[position*=top]:top-(--toast-inset)",
-          "data-[position*=bottom]:bottom-(--toast-inset)",
-          // Horizontal positioning
-          "data-[position*=left]:left-(--toast-inset)",
-          "data-[position*=right]:right-(--toast-inset)",
-          "data-[position*=center]:left-1/2 data-[position*=center]:-translate-x-1/2"
+          "fixed z-[var(--rs-z-index-toast)] w-[360px] max-w-[calc(100vw-var(--rs-space-10))] outline-none [--gap:var(--rs-space-4)]",
+          "data-[position=top-left]:top-[var(--rs-space-7)] data-[position=top-left]:left-[var(--rs-space-7)]",
+          "data-[position=top-center]:top-[var(--rs-space-7)] data-[position=top-center]:left-1/2 data-[position=top-center]:-translate-x-1/2",
+          "data-[position=top-right]:top-[var(--rs-space-7)] data-[position=top-right]:right-[var(--rs-space-7)]",
+          "data-[position=bottom-left]:bottom-[var(--rs-space-7)] data-[position=bottom-left]:left-[var(--rs-space-7)]",
+          "data-[position=bottom-center]:bottom-[var(--rs-space-7)] data-[position=bottom-center]:left-1/2 data-[position=bottom-center]:-translate-x-1/2",
+          "data-[position=bottom-right]:right-[var(--rs-space-7)] data-[position=bottom-right]:bottom-[var(--rs-space-7)]"
         )}
         data-slot="toast-viewport"
         data-position={position}
@@ -272,77 +271,67 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
                     : ["right", isTop ? "up" : "down"]
               }
               className={cn(
-                "absolute z-[calc(9999-var(--toast-index))] h-(--toast-calc-height) w-full rounded-lg border bg-popover bg-clip-padding px-3.5 py-3 text-popover-foreground shadow-lg select-none [transition:transform_.5s_cubic-bezier(.22,1,.36,1),opacity_.5s,height_.15s] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:bg-clip-border dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
-                // Base positioning using data-position
-                "data-[position*=right]:right-0 data-[position*=right]:left-auto",
-                "data-[position*=left]:right-auto data-[position*=left]:left-0",
-                "data-[position*=center]:right-0 data-[position*=center]:left-0",
-                "data-[position*=top]:top-0 data-[position*=top]:bottom-auto data-[position*=top]:origin-top",
-                "data-[position*=bottom]:top-auto data-[position*=bottom]:bottom-0 data-[position*=bottom]:origin-bottom",
-                // Gap fill for hover
-                "after:absolute after:left-0 after:h-[calc(var(--toast-gap)+1px)] after:w-full",
-                "data-[position*=top]:after:top-full",
-                "data-[position*=bottom]:after:bottom-full",
-                // Define some variables
-                "[--toast-calc-height:var(--toast-frontmost-height,var(--toast-height))] [--toast-gap:--spacing(3)] [--toast-peek:--spacing(3)] [--toast-scale:calc(max(0,1-(var(--toast-index)*.1)))] [--toast-shrink:calc(1-var(--toast-scale))]",
-                // Define offset-y variable
-                "data-[position*=top]:[--toast-calc-offset-y:calc(var(--toast-offset-y)+var(--toast-index)*var(--toast-gap)+var(--toast-swipe-movement-y))]",
-                "data-[position*=bottom]:[--toast-calc-offset-y:calc(var(--toast-offset-y)*-1+var(--toast-index)*var(--toast-gap)*-1+var(--toast-swipe-movement-y))]",
-                // Default state transform
-                "data-[position*=top]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)+(var(--toast-index)*var(--toast-peek))+(var(--toast-shrink)*var(--toast-calc-height))))_scale(var(--toast-scale))]",
-                "data-[position*=bottom]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--toast-peek))-(var(--toast-shrink)*var(--toast-calc-height))))_scale(var(--toast-scale))]",
-                // Limited state
-                "data-limited:opacity-0",
-                // Expanded state
-                "data-expanded:h-(--toast-height)",
-                "data-[position]:data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--toast-calc-offset-y))]",
-                // Starting and ending animations
-                "data-[position*=top]:data-starting-style:[transform:translateY(calc(-100%-var(--toast-inset)))]",
-                "data-[position*=bottom]:data-starting-style:[transform:translateY(calc(100%+var(--toast-inset)))]",
-                "data-ending-style:opacity-0",
-                // Ending animations (direction-aware)
-                "data-ending-style:not-data-limited:not-data-swipe-direction:[transform:translateY(calc(100%+var(--toast-inset)))]",
-                "data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-100%-var(--toast-inset)))_translateY(var(--toast-calc-offset-y))]",
-                "data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+100%+var(--toast-inset)))_translateY(var(--toast-calc-offset-y))]",
-                "data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-100%-var(--toast-inset)))]",
-                "data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+100%+var(--toast-inset)))]",
-                // Ending animations (expanded)
-                "data-expanded:data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-100%-var(--toast-inset)))_translateY(var(--toast-calc-offset-y))]",
-                "data-expanded:data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+100%+var(--toast-inset)))_translateY(var(--toast-calc-offset-y))]",
-                "data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-100%-var(--toast-inset)))]",
-                "data-expanded:data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+100%+var(--toast-inset)))]"
+                "absolute box-border h-[var(--height)] w-full cursor-default overflow-clip rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] bg-clip-padding p-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] shadow-[var(--rs-shadow-lifted)] select-none [--height:var(--toast-frontmost-height,var(--toast-height))] [--peek:var(--rs-space-4)] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))] [transition:opacity_var(--rs-duration-slow)_var(--rs-ease-out)] z-[calc(var(--rs-z-index-toast)-var(--toast-index))] motion-safe:[transition:transform_var(--rs-duration-slow)_var(--rs-ease-out),opacity_var(--rs-duration-slow)_var(--rs-ease-out),height_var(--rs-duration-fast)_var(--rs-ease-out)] data-swiping:[transition:none]!",
+                "data-[position*=right]:right-0 data-[position*=right]:left-auto data-[position*=left]:right-auto data-[position*=left]:left-0 data-[position*=center]:right-0 data-[position*=center]:left-0",
+                "data-[position*=bottom]:top-auto data-[position*=bottom]:bottom-0 data-[position*=bottom]:origin-bottom data-[position*=bottom]:[--offset-y:calc(var(--toast-offset-y)*-1+(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] data-[position*=bottom]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]",
+                "data-[position*=top]:top-0 data-[position*=top]:bottom-auto data-[position*=top]:origin-top data-[position*=top]:[--offset-y:calc(var(--toast-offset-y)+(var(--toast-index)*var(--gap))+var(--toast-swipe-movement-y))] data-[position*=top]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)+(var(--toast-index)*var(--peek))+(var(--shrink)*var(--height))))_scale(var(--scale))]",
+                "after:absolute after:left-0 after:w-full after:content-[''] data-[position*=bottom]:after:bottom-full data-[position*=bottom]:after:h-[calc(var(--gap)+1px)] data-[position*=top]:after:top-full data-[position*=top]:after:h-[calc(var(--gap)+1px)]",
+                "data-expanded:h-[var(--toast-height)] data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--offset-y))]",
+                "data-starting-style:opacity-0 data-limited:opacity-0 data-ending-style:opacity-0",
+                "data-[position*=bottom]:data-starting-style:[transform:translateY(calc(100%+var(--rs-space-7)))] data-[position*=top]:data-starting-style:[transform:translateY(calc(-100%-var(--rs-space-7)))]",
+                "data-[position*=bottom]:data-ending-style:not-data-swipe-direction:[transform:translateY(calc(100%+var(--rs-space-7)))] data-[position*=top]:data-ending-style:not-data-swipe-direction:[transform:translateY(calc(-100%-var(--rs-space-7)))]",
+                "data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
+                "data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]"
               )}
             >
-              <Toast.Content className="flex items-center justify-between gap-1.5 overflow-hidden text-sm transition-opacity duration-250 data-behind:pointer-events-none data-behind:opacity-0 data-expanded:pointer-events-auto data-expanded:opacity-100">
-                <div className="flex gap-2">
-                  {Icon && (
-                    <div
-                      className="mt-.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&>svg]:h-[1lh] [&>svg]:w-4"
-                      data-slot="toast-icon"
-                    >
-                      <Icon className="in-data-[type=error]:text-destructive in-data-[type=info]:text-info in-data-[type=loading]:animate-spin in-data-[type=loading]:opacity-72 in-data-[type=success]:text-success in-data-[type=warning]:text-warning" />
-                    </div>
-                  )}
+              <Toast.Content className="flex items-start gap-[var(--rs-space-3)] overflow-hidden [transition:opacity_var(--rs-duration-moderate)_var(--rs-ease-out)] data-behind:pointer-events-none data-behind:opacity-0 data-expanded:pointer-events-auto data-expanded:opacity-100">
+                {Icon && (
+                  <div
+                    className="inline-flex min-h-[var(--rs-space-7)] w-[var(--rs-space-5)] shrink-0 items-center justify-center text-[var(--rs-color-foreground-base-secondary)] in-data-[type=error]:text-[var(--rs-color-foreground-danger-primary)] in-data-[type=info]:text-[var(--rs-color-foreground-accent-primary)] in-data-[type=success]:text-[var(--rs-color-foreground-success-primary)] in-data-[type=warning]:text-[var(--rs-color-foreground-attention-primary)] [&>svg]:size-[var(--rs-space-5)] [&>svg]:shrink-0 in-data-[type=loading]:[&>svg]:animate-spin"
+                    data-slot="toast-icon"
+                  >
+                    <Icon />
+                  </div>
+                )}
 
-                  <div className="flex flex-col gap-0.5">
+                <div className="min-w-0 flex-1" data-slot="toast-main">
+                  <div className="flex min-h-[var(--rs-space-7)] items-center justify-between gap-[var(--rs-space-3)]">
                     <Toast.Title
-                      className="font-medium"
+                      className="m-0 min-w-0 flex-1 text-[var(--rs-color-foreground-base-primary)] [font-size:var(--rs-font-size-regular)]! [font-weight:var(--rs-font-weight-medium)] [letter-spacing:var(--rs-letter-spacing-regular)] [line-height:var(--rs-line-height-regular)]! [text-wrap:wrap]!"
                       data-slot="toast-title"
                     />
-                    <Toast.Description
-                      className="text-muted-foreground"
-                      data-slot="toast-description"
-                    />
+                    <div
+                      className="flex shrink-0 items-center gap-[var(--rs-space-1)]"
+                      data-slot="toast-actions"
+                    >
+                      {toast.actionProps && (
+                        <Toast.Action
+                          className={buttonVariants({
+                            variant: "secondary",
+                            size: "xs",
+                          })}
+                          data-slot="toast-action"
+                        >
+                          {toast.actionProps.children}
+                        </Toast.Action>
+                      )}
+                      <Toast.Close
+                        aria-label="Dismiss notification"
+                        className={buttonVariants({
+                          variant: "link",
+                          size: "icon-sm",
+                        })}
+                        data-slot="toast-close"
+                      >
+                        <XIcon />
+                      </Toast.Close>
+                    </div>
                   </div>
+                  <Toast.Description
+                    className="m-0 text-[var(--rs-color-foreground-base-primary)] [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]"
+                    data-slot="toast-description"
+                  />
                 </div>
-                {toast.actionProps && (
-                  <Toast.Action
-                    className={buttonVariants({ size: "xs" })}
-                    data-slot="toast-action"
-                  >
-                    {toast.actionProps.children}
-                  </Toast.Action>
-                )}
               </Toast.Content>
             </Toast.Root>
           )

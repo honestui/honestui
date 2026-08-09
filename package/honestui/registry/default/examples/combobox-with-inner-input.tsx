@@ -849,7 +849,7 @@ export default function ComboboxWithInnerInput() {
         <ComboboxTrigger
           render={
             <Button
-              variant="outline"
+              variant="secondary"
               className="w-full justify-between font-normal"
             />
           }

@@ -6,7 +6,7 @@ import { toastManager } from "@/registry/default/ui/toast"
 export default function ToastDemo() {
   return (
     <Button
-      variant="outline"
+      variant="secondary"
       onClick={() => {
         toastManager.add({
           title: "Event has been created",

@@ -4,31 +4,27 @@ import { cn } from "@/lib/utils"
 
 function Textarea({
   className,
-  size = "default",
+  size = "large",
+  variant = "default",
   ...props
 }: React.ComponentProps<"textarea"> & {
-  size?: "sm" | "default" | "lg" | number
+  size?: "sm" | "small" | "default" | "lg" | "large" | number
+  variant?: "default" | "borderless"
 }) {
   return (
-    <span
-      data-slot="textarea-control"
+    <textarea
+      data-slot="textarea"
       className={cn(
-        "relative inline-flex w-full rounded-lg border border-input bg-background bg-clip-padding text-base shadow-xs ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] has-focus-visible:border-ring has-focus-visible:ring-[3px] has-disabled:opacity-64 has-aria-invalid:border-destructive/36 has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 sm:text-sm dark:bg-input/32 dark:bg-clip-border dark:not-has-disabled:has-not-focus-visible:not-has-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:has-aria-invalid:ring-destructive/24 [&:has(:disabled,:focus-visible,[aria-invalid])]:shadow-none",
+        "m-0 box-border h-auto w-full appearance-none overflow-auto rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-primary)] text-[var(--rs-color-foreground-base-primary)] outline-none [font-size:var(--rs-font-size-small)] [line-height:var(--rs-line-height-small)] placeholder:text-[var(--rs-color-foreground-base-tertiary)] placeholder:[font-size:var(--rs-font-size-small)] placeholder:[font-weight:var(--rs-font-weight-regular)] placeholder:[line-height:var(--rs-line-height-small)] read-only:bg-[var(--rs-color-background-base-secondary)] disabled:cursor-not-allowed disabled:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-invalid:border-[var(--rs-color-border-danger-emphasis)] aria-invalid:border-[var(--rs-color-border-danger-emphasis)] [&:focus:not(:disabled)]:border-[var(--rs-color-border-accent-emphasis)] [&:focus:not(:disabled)]:bg-[var(--rs-color-background-base-primary)] data-invalid:focus:border-[var(--rs-color-border-danger-emphasis-hover)] aria-invalid:focus:border-[var(--rs-color-border-danger-emphasis-hover)] motion-safe:[transition:var(--rs-transition-interactive)]",
+        (size === "large" || size === "lg" || size === "default") &&
+          "p-[var(--rs-space-3)]",
+        (size === "small" || size === "sm") && "p-[var(--rs-space-2)]",
+        variant === "borderless" &&
+          "border-transparent [&:focus:not(:disabled)]:border-transparent! [&:focus-visible:not(:disabled)]:shadow-[var(--rs-focus-ring-shadow)]",
         className
       )}
-    >
-      <textarea
-        data-slot="textarea"
-        className={cn(
-          "field-sizing-content min-h-17.5 w-full rounded-[inherit] px-[calc(--spacing(3)-1px)] py-[calc(--spacing(1.5)-1px)] outline-none max-sm:min-h-20.5",
-          size === "sm" &&
-            "min-h-16.5 px-[calc(--spacing(2.5)-1px)] py-[calc(--spacing(1)-1px)] max-sm:min-h-19.5",
-          size === "lg" &&
-            "min-h-18.5 py-[calc(--spacing(2)-1px)] max-sm:min-h-21.5"
-        )}
-        {...props}
-      />
-    </span>
+      {...props}
+    />
   )
 }
 

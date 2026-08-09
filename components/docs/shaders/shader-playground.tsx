@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { RangeSlider } from "@/registry/default/animated/range-slider";
+import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 type ShaderCodePrimitive = string | number | boolean;
@@ -144,7 +144,6 @@ export function ShaderSliderControl({
   max,
   step,
   onChange,
-  showTicks,
   formatValue,
   className,
 }: {
@@ -154,7 +153,6 @@ export function ShaderSliderControl({
   max: number;
   step: number;
   onChange: (value: number) => void;
-  showTicks?: boolean;
   formatValue?: (value: number) => string;
   className?: string;
 }) {
@@ -169,13 +167,17 @@ export function ShaderSliderControl({
           {displayValue}
         </output>
       </div>
-      <RangeSlider
+      <Slider
         aria-label={label}
-        className="h-8 rounded-md"
+        className="h-8"
         max={max}
         min={min}
-        onValueChange={(nextValue) => onChange(Number(nextValue.toFixed(precision)))}
-        showTicks={showTicks ?? (max - min) / step <= 10}
+        onValueChange={(nextValue) => {
+          const scalarValue =
+            typeof nextValue === "number" ? nextValue : nextValue[0];
+          onChange(Number(scalarValue.toFixed(precision)));
+        }}
+        size="small"
         step={step}
         value={value}
       />
@@ -233,7 +235,7 @@ export function ShaderSelectControl({
         }}
         value={value}
       >
-        <SelectTrigger id={id} size="sm">
+        <SelectTrigger id={id} size="medium" className="w-full">
           <SelectValue>{selectedLabel}</SelectValue>
         </SelectTrigger>
         <SelectPopup>

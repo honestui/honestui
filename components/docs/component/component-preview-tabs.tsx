@@ -51,7 +51,7 @@ export function ComponentPreviewTabs({
         <Tabs defaultValue="preview" className="relative w-full">
           <div
             className={cn(
-              "dark:bg-primary-foreground flex flex-col rounded-[8px] bg-[#F5F5F5] p-1",
+              "flex flex-col rounded-[8px] bg-[var(--rs-color-background-neutral-primary)] p-1",
               containerClassName,
             )}
           >
@@ -92,7 +92,7 @@ export function ComponentPreviewTabs({
               </div>
             </div>
 
-            <div className="bg-background overflow-hidden rounded-[5px] border">
+            <div className="bg-background overflow-hidden rounded-[5px] border-[0.5px] border-[var(--rs-color-border-base-primary)]">
               <TabsPanel keepMounted={playground} value="preview">
                 <div
                   className={cn(

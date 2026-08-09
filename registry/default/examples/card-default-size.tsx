@@ -24,7 +24,7 @@ export default function CardDefaultSize() {
         </p>
       </CardContent>
       <CardFooter>
-        <Button variant="outline" className="w-full">
+        <Button variant="secondary" className="w-full">
           Action
         </Button>
       </CardFooter>

@@ -5,7 +5,7 @@ import { PreviewCard, PreviewCardPopup, PreviewCardTrigger } from "@/registry/de
 export default function PreviewCardProduct() {
   return (
     <PreviewCard>
-      <PreviewCardTrigger render={<Button variant="outline" />}>View plan</PreviewCardTrigger>
+      <PreviewCardTrigger render={<Button variant="secondary" />}>View plan</PreviewCardTrigger>
       <PreviewCardPopup>
         <div className="grid gap-2">
           <Badge className="w-fit">Pro</Badge>

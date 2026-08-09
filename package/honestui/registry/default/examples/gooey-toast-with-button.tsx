@@ -6,7 +6,7 @@ import { toastManager } from "@/registry/default/ui/toast"
 export default function GooeyToastWithButton() {
   return (
     <Button
-      variant="outline"
+      variant="secondary"
       onClick={() => {
         const id = toastManager.add({
           variant: "gooey",

@@ -6,7 +6,7 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from "@/registry/default/ui/too
 export default function TooltipIconRow() {
   return (
     <Tooltip>
-      <TooltipTrigger render={<Button variant="outline" size="icon" />} aria-label="Info"><InfoIcon /></TooltipTrigger>
+      <TooltipTrigger render={<Button variant="secondary" size="icon" />} aria-label="Info"><InfoIcon /></TooltipTrigger>
       <TooltipPopup>Includes keyboard and screen reader support.</TooltipPopup>
     </Tooltip>
   )

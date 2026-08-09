@@ -97,3 +97,21 @@
     ), 0px 4px 30px 0px oklch(0 0 0 / 0.4);
   --rs-shadow-inset: 0px 1px 1px 0px oklch(0 0 0 / 0.25) inset;
 }
+
+@keyframes progress-indeterminate-sweep {
+  from {
+    transform: translateX(-45%) scaleX(0.4);
+  }
+  to {
+    transform: translateX(105%) scaleX(0.4);
+  }
+}
+
+@keyframes progress-indeterminate-rotate {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
+}

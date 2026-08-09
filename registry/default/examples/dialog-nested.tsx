@@ -15,7 +15,7 @@ import { Field, FieldControl, FieldLabel } from "@/registry/default/ui/field"
 export default function DialogNestedDemo() {
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" />}>
+      <DialogTrigger render={<Button variant="secondary" />}>
         Open parent
       </DialogTrigger>
       <DialogPopup showCloseButton={false}>
@@ -37,7 +37,7 @@ export default function DialogNestedDemo() {
         </DialogBody>
         <DialogFooter>
           <Dialog>
-            <DialogTrigger render={<Button variant="outline" />}>
+            <DialogTrigger render={<Button variant="secondary" />}>
               Edit details
             </DialogTrigger>
             <DialogPopup showCloseButton={false}>

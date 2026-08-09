@@ -77,7 +77,7 @@ import {
 
 ```tsx
 <Tooltip>
-  <TooltipTrigger render={<Button variant="outline" />}>
+  <TooltipTrigger render={<Button variant="secondary" />}>
     Hover me
   </TooltipTrigger>
   <TooltipPopup>Helpful hint</TooltipPopup>
@@ -91,13 +91,13 @@ To group multiple tooltips so they appear instantly after the first one is opene
 ```tsx
 <TooltipProvider>
   <Tooltip>
-    <TooltipTrigger render={<Button variant="outline" />}>
+    <TooltipTrigger render={<Button variant="secondary" />}>
       Tooltip 1
     </TooltipTrigger>
     <TooltipPopup>Content 1</TooltipPopup>
   </Tooltip>
   <Tooltip>
-    <TooltipTrigger render={<Button variant="outline" />}>
+    <TooltipTrigger render={<Button variant="secondary" />}>
       Tooltip 2
     </TooltipTrigger>
     <TooltipPopup>Content 2</TooltipPopup>

@@ -6,7 +6,7 @@ import { toastManager } from "@/registry/default/ui/toast"
 export default function ToastLoading() {
   return (
     <Button
-      variant="outline"
+      variant="secondary"
       onClick={() => {
         toastManager.add({
           title: "Loading…",

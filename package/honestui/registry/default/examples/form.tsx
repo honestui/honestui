@@ -305,7 +305,7 @@ const Example = () => {
 
         {/* Submit Button */}
         <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline">
+          <Button type="button" variant="secondary">
             Save as Draft
           </Button>
           <Button type="submit">Create Event</Button>

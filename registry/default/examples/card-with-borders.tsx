@@ -20,7 +20,7 @@ export default function CardWithBorders() {
         </p>
       </CardContent>
       <CardFooter className="border-t">
-        <Button variant="outline" className="w-full">
+        <Button variant="secondary" className="w-full">
           Action
         </Button>
       </CardFooter>

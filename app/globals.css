@@ -211,8 +211,8 @@
   --secondary-foreground: var(--rs-color-foreground-base-primary);
   --muted: var(--rs-color-background-base-secondary);
   --muted-foreground: var(--rs-color-foreground-base-secondary);
-  --accent: var(--rs-color-background-accent-primary);
-  --accent-foreground: var(--rs-color-foreground-accent-primary);
+  --accent: var(--rs-color-background-base-primary-hover);
+  --accent-foreground: var(--rs-color-foreground-base-primary);
   --destructive: var(--rs-color-background-danger-emphasis);
   --destructive-foreground: var(--rs-color-foreground-danger-primary);
   --border: var(--rs-color-border-base-secondary);

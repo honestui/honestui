@@ -31,7 +31,7 @@ const DocsHeader = async () => {
         <span className="text-muted">|</span>
         <ThemeSwitcher />
         <Link href="https://connorlove.com" target="_blank">
-          <Button className="group" size="sm" variant="ghost">
+          <Button className="group h-8" size="sm" variant="ghost">
             <span className="text-muted-foreground group-hover:text-primary text-xs">
               {" "}
               Built by Connor Love

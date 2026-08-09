@@ -45,7 +45,8 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     tagline: "Accessible building blocks",
     href: "/docs",
     icon: ComponentBlocksIcon,
-    tint: "text-[#E43861]",
+    tint:
+      "text-[#E43861] group-focus/dropdown-menu-item:text-[#E43861]!",
   },
   {
     id: "charts",
@@ -53,7 +54,8 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     tagline: "Composable data visualization",
     href: "/docs/charts",
     icon: ChartStackedLineIcon,
-    tint: "text-[#60DAFB]",
+    tint:
+      "text-[#60DAFB] group-focus/dropdown-menu-item:text-[#60DAFB]!",
   },
   {
     id: "icons",
@@ -61,7 +63,8 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     tagline: "Icons, logos, and vectors",
     href: "/docs/icons",
     icon: IconLibraryIcon,
-    tint: "text-amber-400",
+    tint:
+      "text-amber-400 group-focus/dropdown-menu-item:text-amber-400!",
   },
   {
     id: "animated",
@@ -69,7 +72,8 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     tagline: "Purposeful interaction patterns",
     href: "/docs/animated",
     icon: MotionIcon,
-    tint: "text-emerald-400",
+    tint:
+      "text-emerald-400 group-focus/dropdown-menu-item:text-emerald-400!",
   },
   {
     id: "shaders",
@@ -77,7 +81,8 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     tagline: "GPU-rendered visual effects",
     href: "/docs/shaders",
     icon: ShaderIcon,
-    tint: "text-fuchsia-400",
+    tint:
+      "text-fuchsia-400 group-focus/dropdown-menu-item:text-fuchsia-400!",
   },
 ];
 
@@ -178,16 +183,20 @@ export function ProviderSwitcher() {
                   <DropdownMenuItem
                     key={area.id}
                     onClick={() => selectArea(area)}
-                    className="gap-2 p-2"
+                    className="gap-2 p-2 focus:bg-[var(--rs-color-background-base-primary-hover)]! focus:text-[var(--rs-color-foreground-base-primary)]!"
                   >
                     <ProductAreaIcon area={area} className="size-6!" />
                     <div className="ml-0.5 grid min-w-0 flex-1 leading-tight">
-                      <span className="truncate text-sm">{area.name}</span>
-                      <span className="text-muted-foreground truncate text-[11px]">
+                      <span className="truncate text-sm group-focus/dropdown-menu-item:text-[var(--rs-color-foreground-base-primary)]!">
+                        {area.name}
+                      </span>
+                      <span className="text-muted-foreground truncate text-[11px] group-focus/dropdown-menu-item:text-[var(--rs-color-foreground-base-secondary)]!">
                         {area.tagline}
                       </span>
                     </div>
-                    {isActive && <CheckIcon className="size-3.5" />}
+                    {isActive && (
+                      <CheckIcon className="size-3.5 group-focus/dropdown-menu-item:text-[var(--rs-color-foreground-base-primary)]!" />
+                    )}
                   </DropdownMenuItem>
                 );
               })}

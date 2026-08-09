@@ -15,7 +15,6 @@ export async function getRegistryItem(name: string) {
     return null;
   }
 
-  const registryName = name === "animated-popover" ? "popover" : name;
   const locations = [
     {
       path: path.join(process.cwd(), "registry/default/ui"),
@@ -58,39 +57,15 @@ export async function getRegistryItem(name: string) {
       type: "registry:lib" as const,
     },
   ];
-  const fileNames = path.extname(registryName)
-    ? [registryName]
-    : [`${registryName}.tsx`, `${registryName}.ts`, `${registryName}.css`];
-  const candidates = [
-    ...(name === "animated-button"
-      ? [
-          {
-            path: path.join(
-              process.cwd(),
-              "registry/default/animated/button/index.tsx",
-            ),
-            type: "registry:component" as const,
-          },
-        ]
-      : []),
-    ...(name === "animated-popover"
-      ? [
-          {
-            path: path.join(
-              process.cwd(),
-              "registry/default/animated/popover.tsx",
-            ),
-            type: "registry:component" as const,
-          },
-        ]
-      : []),
-    ...locations.flatMap((location) =>
-      fileNames.map((fileName) => ({
-        path: path.join(location.path, fileName),
-        type: location.type,
-      })),
-    ),
-  ];
+  const fileNames = path.extname(name)
+    ? [name]
+    : [`${name}.tsx`, `${name}.ts`, `${name}.css`];
+  const candidates = locations.flatMap((location) =>
+    fileNames.map((fileName) => ({
+      path: path.join(location.path, fileName),
+      type: location.type,
+    })),
+  );
 
   let registryFile: (typeof candidates)[number] | undefined;
 
@@ -114,30 +89,6 @@ export async function getRegistryItem(name: string) {
   const isShaderComponent = registryFile.path.includes(
     `${path.sep}registry${path.sep}default${path.sep}shaders${path.sep}`,
   );
-  const animatedButtonFiles =
-    name === "animated-button"
-      ? [
-          ...["index.tsx", "base.tsx", "stateful.tsx", "magnetic.tsx"].map(
-            (fileName) => ({
-              path: path.join(
-                process.cwd(),
-                "registry/default/animated/button",
-                fileName,
-              ),
-              type: "registry:component" as const,
-              target: `components/animated/button/${fileName}`,
-            }),
-          ),
-          {
-            path: path.join(
-              process.cwd(),
-              "registry/default/animated/magnetic.tsx",
-            ),
-            type: "registry:component" as const,
-            target: "components/animated/magnetic.tsx",
-          },
-        ]
-      : null;
   const shaderFiles = isShaderComponent
     ? [
         {
@@ -164,7 +115,6 @@ export async function getRegistryItem(name: string) {
     name,
     type: registryFile.type,
     files:
-      animatedButtonFiles ??
       shaderFiles ??
       [
         {

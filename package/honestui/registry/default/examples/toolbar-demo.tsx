@@ -123,7 +123,6 @@ export default function ToolbarDemo() {
               <TooltipTrigger
                 render={
                   <ToolbarButton
-                    nativeButton={false}
                     render={
                       <SelectTrigger>
                         <SelectValue />

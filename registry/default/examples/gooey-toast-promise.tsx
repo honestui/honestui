@@ -24,7 +24,7 @@ export default function GooeyToastPromise() {
   }
 
   return (
-    <Button variant="outline" onClick={handlePromise}>
+    <Button variant="secondary" onClick={handlePromise}>
       Load Data
     </Button>
   )

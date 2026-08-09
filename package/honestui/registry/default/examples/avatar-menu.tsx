@@ -28,7 +28,7 @@ export default function AvatarMenu() {
       <DropdownMenuTrigger
         render={
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             className="h-8 gap-1.5 rounded-full pr-2.5 pl-1"
           />

@@ -9,7 +9,7 @@ function Toolbar({ className, ...props }: ToolbarPrimitive.Root.Props) {
     <ToolbarPrimitive.Root
       data-slot="toolbar"
       className={cn(
-        "relative flex gap-2 rounded-xl border bg-card bg-clip-padding p-1 text-card-foreground",
+        "flex items-center gap-[var(--rs-space-1)] overflow-clip rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] p-[var(--rs-space-1)] data-[orientation=vertical]:flex-col data-[orientation=vertical]:[&_[data-slot=toolbar-button]]:w-full data-[orientation=vertical]:[&_[data-slot=toolbar-group]]:flex-col [&>*]:border-0",
         className
       )}
       {...props}
@@ -51,7 +51,10 @@ function ToolbarGroup({ className, ...props }: ToolbarPrimitive.Group.Props) {
   return (
     <ToolbarPrimitive.Group
       data-slot="toolbar-group"
-      className={cn("flex items-center gap-1", className)}
+      className={cn(
+        "flex items-center gap-[var(--rs-space-1)] bg-transparent p-0 [&>*]:border-0",
+        className
+      )}
       {...props}
     />
   )
@@ -65,7 +68,7 @@ function ToolbarSeparator({
     <ToolbarPrimitive.Separator
       data-slot="toolbar-separator"
       className={cn(
-        "shrink-0 bg-border data-[orientation=horizontal]:my-0.5 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:my-1.5 data-[orientation=vertical]:w-px data-[orientation=vertical]:not-[[class^='h-']]:not-[[class*='_h-']]:self-stretch",
+        "shrink-0 bg-[var(--rs-color-border-base-primary)] data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-[calc(100%-var(--rs-space-3))] data-[orientation=vertical]:h-[var(--rs-space-5)] data-[orientation=vertical]:w-px",
         className
       )}
       {...props}

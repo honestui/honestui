@@ -26,7 +26,7 @@ export default function CardUsageExpandable() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>3 days remaining in cycle</CardTitle>
         <CardAction>
-          <Button variant="outline" size="sm">
+          <Button variant="secondary" size="sm">
             Billing
           </Button>
         </CardAction>
@@ -78,7 +78,7 @@ export default function CardUsageExpandable() {
 
       <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
         <Button
-          variant="outline"
+          variant="secondary"
           size="icon-sm"
           className="rounded-full bg-background shadow-sm hover:bg-background"
           onClick={() => setIsOpen(!isOpen)}

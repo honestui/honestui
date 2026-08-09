@@ -9,7 +9,7 @@ import {
 export default function MenuCloseOnClickDemo() {
   return (
     <Menu>
-      <MenuTrigger render={<Button variant="outline" />}>
+      <MenuTrigger render={<Button variant="secondary" />}>
         Open menu
       </MenuTrigger>
       <MenuPopup>

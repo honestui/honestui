@@ -7,7 +7,7 @@ export default function ToastWithStatus() {
   return (
     <div className="flex flex-wrap gap-2">
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             title: "Success!",
@@ -19,7 +19,7 @@ export default function ToastWithStatus() {
         Success Toast
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             title: "Uh oh! Something went wrong.",
@@ -31,7 +31,7 @@ export default function ToastWithStatus() {
         Error Toast
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             title: "Heads up!",
@@ -44,7 +44,7 @@ export default function ToastWithStatus() {
         Info Toast
       </Button>
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={() => {
           toastManager.add({
             title: "Warning!",

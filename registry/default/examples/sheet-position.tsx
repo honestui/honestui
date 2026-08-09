@@ -16,7 +16,7 @@ export default function DialogDemo() {
       <Sheet>
         <SheetTrigger
           render={(props) => (
-            <Button {...props} variant="outline">
+            <Button {...props} variant="secondary">
               Open Right
             </Button>
           )}
@@ -33,7 +33,7 @@ export default function DialogDemo() {
       <Sheet>
         <SheetTrigger
           render={(props) => (
-            <Button {...props} variant="outline">
+            <Button {...props} variant="secondary">
               Open Left
             </Button>
           )}
@@ -50,7 +50,7 @@ export default function DialogDemo() {
       <Sheet>
         <SheetTrigger
           render={(props) => (
-            <Button {...props} variant="outline">
+            <Button {...props} variant="secondary">
               Open Top
             </Button>
           )}
@@ -65,7 +65,7 @@ export default function DialogDemo() {
       <Sheet>
         <SheetTrigger
           render={(props) => (
-            <Button {...props} variant="outline">
+            <Button {...props} variant="secondary">
               Open Bottom
             </Button>
           )}

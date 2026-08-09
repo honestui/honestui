@@ -2,45 +2,27 @@
 import type { ComponentType } from "react";
 
 import animatedExample0 from "./default/examples/animated/action-swap-demo";
-import animatedExample1 from "./default/examples/animated/animated-button-demo";
-import animatedExample2 from "./default/examples/animated/animated-popover-demo";
-import animatedExample3 from "./default/examples/animated/animated-theme-toggle-demo";
-import animatedExample4 from "./default/examples/animated/bouncy-accordion-demo";
-import animatedExample5 from "./default/examples/animated/chromatic-text-reveal-demo";
-import animatedExample6 from "./default/examples/animated/cylinder-carousel-demo";
-import animatedExample7 from "./default/examples/animated/dock-demo";
-import animatedExample8 from "./default/examples/animated/magnetic-demo";
-import animatedExample9 from "./default/examples/animated/marquee-demo";
-import animatedExample10 from "./default/examples/animated/number-ticker-demo";
-import animatedExample11 from "./default/examples/animated/preview-rail-demo";
-import animatedExample12 from "./default/examples/animated/pull-to-refresh-demo";
-import animatedExample13 from "./default/examples/animated/range-slider-demo";
-import animatedExample14 from "./default/examples/animated/shared-layout-bg-demo";
-import animatedExample15 from "./default/examples/animated/text-cascade-demo";
-import animatedExample16 from "./default/examples/animated/text-reveal-demo";
-import animatedExample17 from "./default/examples/animated/text-shimmer-demo";
-import animatedExample18 from "./default/examples/animated/tilt-card-demo";
-import animatedExample19 from "./default/examples/animated/wheel-picker-demo";
+import animatedExample1 from "./default/examples/animated/bouncy-accordion-demo";
+import animatedExample2 from "./default/examples/animated/chromatic-text-reveal-demo";
+import animatedExample3 from "./default/examples/animated/dock-demo";
+import animatedExample4 from "./default/examples/animated/magnetic-demo";
+import animatedExample5 from "./default/examples/animated/marquee-demo";
+import animatedExample6 from "./default/examples/animated/number-ticker-demo";
+import animatedExample7 from "./default/examples/animated/shared-layout-bg-demo";
+import animatedExample8 from "./default/examples/animated/text-reveal-demo";
+import animatedExample9 from "./default/examples/animated/text-shimmer-demo";
+import animatedExample10 from "./default/examples/animated/tilt-card-demo";
 
 export const AnimatedIndex: Record<string, { component: ComponentType }> = {
   "action-swap-demo": { component: animatedExample0 },
-  "animated-button-demo": { component: animatedExample1 },
-  "animated-popover-demo": { component: animatedExample2 },
-  "animated-theme-toggle-demo": { component: animatedExample3 },
-  "bouncy-accordion-demo": { component: animatedExample4 },
-  "chromatic-text-reveal-demo": { component: animatedExample5 },
-  "cylinder-carousel-demo": { component: animatedExample6 },
-  "dock-demo": { component: animatedExample7 },
-  "magnetic-demo": { component: animatedExample8 },
-  "marquee-demo": { component: animatedExample9 },
-  "number-ticker-demo": { component: animatedExample10 },
-  "preview-rail-demo": { component: animatedExample11 },
-  "pull-to-refresh-demo": { component: animatedExample12 },
-  "range-slider-demo": { component: animatedExample13 },
-  "shared-layout-bg-demo": { component: animatedExample14 },
-  "text-cascade-demo": { component: animatedExample15 },
-  "text-reveal-demo": { component: animatedExample16 },
-  "text-shimmer-demo": { component: animatedExample17 },
-  "tilt-card-demo": { component: animatedExample18 },
-  "wheel-picker-demo": { component: animatedExample19 },
+  "bouncy-accordion-demo": { component: animatedExample1 },
+  "chromatic-text-reveal-demo": { component: animatedExample2 },
+  "dock-demo": { component: animatedExample3 },
+  "magnetic-demo": { component: animatedExample4 },
+  "marquee-demo": { component: animatedExample5 },
+  "number-ticker-demo": { component: animatedExample6 },
+  "shared-layout-bg-demo": { component: animatedExample7 },
+  "text-reveal-demo": { component: animatedExample8 },
+  "text-shimmer-demo": { component: animatedExample9 },
+  "tilt-card-demo": { component: animatedExample10 },
 };

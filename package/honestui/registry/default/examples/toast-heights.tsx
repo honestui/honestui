@@ -25,7 +25,7 @@ export default function ToastHeights() {
   }
 
   return (
-    <Button variant="outline" onClick={createToast}>
+    <Button variant="secondary" onClick={createToast}>
       With Varying Heights
     </Button>
   )

@@ -14,9 +14,16 @@ import * as React from "react";
 // DocsSidebar must stay a server component, `source` transitively imports
 // fs/promises; referencing it from a "use client" module breaks the browser
 // bundle. The page tree crosses into SidebarSections as a serializable prop.
-export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function DocsSidebar({
+  className,
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar
+      collapsible="icon"
+      className={cn("group-data-[side=left]:border-r-0!", className)}
+      {...props}
+    >
       <SidebarHeader className="px-4 pt-6 pb-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
         <Link
           href="/docs"

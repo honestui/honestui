@@ -6,7 +6,7 @@ import { toastManager } from "@/registry/default/ui/toast"
 export default function ToastWithAction() {
   return (
     <Button
-      variant="outline"
+      variant="secondary"
       onClick={() => {
         const id = toastManager.add({
           title: "Action performed",

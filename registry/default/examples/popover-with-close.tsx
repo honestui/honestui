@@ -13,7 +13,7 @@ import {
 export default function PopoverWithCloseDemo() {
   return (
     <Popover>
-      <PopoverTrigger render={<Button variant="outline" />}>
+      <PopoverTrigger render={<Button variant="secondary" />}>
         Open Popover
       </PopoverTrigger>
       <PopoverPopup className="w-80">
@@ -29,7 +29,7 @@ export default function PopoverWithCloseDemo() {
             You are all caught up. Good job!
           </PopoverDescription>
         </div>
-        <PopoverClose render={<Button variant="outline" />}>
+        <PopoverClose render={<Button variant="secondary" />}>
           Close
         </PopoverClose>
       </PopoverPopup>

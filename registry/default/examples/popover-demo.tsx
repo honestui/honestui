@@ -13,7 +13,7 @@ import { Textarea } from "@/registry/default/ui/textarea"
 export default function PopoverDemo() {
   return (
     <Popover>
-      <PopoverTrigger render={<Button variant="outline" />}>
+      <PopoverTrigger render={<Button variant="secondary" />}>
         Open Popover
       </PopoverTrigger>
       <PopoverPopup className="w-80">

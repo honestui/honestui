@@ -12,7 +12,7 @@ function Table({ className, ...props }: ComponentPropsWithoutRef<"table">) {
       <table
         data-slot="table"
         className={cn(
-          "w-full caption-bottom text-sm in-data-[slot=frame]:border-separate in-data-[slot=frame]:border-spacing-0",
+          "w-full caption-bottom border-collapse overflow-visible text-[var(--rs-color-foreground-base-primary)] tabular-nums [font-size:var(--rs-font-size-small)] [line-height:var(--rs-line-height-small)]",
           className
         )}
         {...props}
@@ -26,7 +26,7 @@ function TableHeader({ className, ...props }: ComponentPropsWithoutRef<"thead">)
     <thead
       data-slot="table-header"
       className={cn(
-        "[&_tr]:border-b in-data-[slot=frame]:**:[th]:h-9 in-data-[slot=frame]:*:[tr]:border-none in-data-[slot=frame]:*:[tr]:hover:bg-transparent",
+        "sticky top-0 z-1 m-0 bg-[var(--rs-color-background-base-primary)]",
         className
       )}
       {...props}
@@ -38,10 +38,7 @@ function TableBody({ className, ...props }: ComponentPropsWithoutRef<"tbody">) {
   return (
     <tbody
       data-slot="table-body"
-      className={cn(
-        "relative before:pointer-events-none before:absolute before:inset-px before:rounded-[calc(var(--radius-xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] not-in-data-[slot=frame]:before:hidden in-data-[slot=frame]:rounded-xl in-data-[slot=frame]:shadow-xs dark:bg-clip-border dark:before:shadow-[0_-1px_--theme(--color-white/8%)] [&_tr:last-child]:border-0 in-data-[slot=frame]:*:[tr]:border-0 in-data-[slot=frame]:*:[tr]:*:[td]:border-b in-data-[slot=frame]:*:[tr]:*:[td]:bg-card in-data-[slot=frame]:*:[tr]:*:[td]:bg-clip-padding in-data-[slot=frame]:*:[tr]:first:*:[td]:first:rounded-ss-xl in-data-[slot=frame]:*:[tr]:*:[td]:first:border-s in-data-[slot=frame]:*:[tr]:first:*:[td]:border-t in-data-[slot=frame]:*:[tr]:last:*:[td]:last:rounded-ee-xl in-data-[slot=frame]:*:[tr]:*:[td]:last:border-e in-data-[slot=frame]:*:[tr]:first:*:[td]:last:rounded-se-xl in-data-[slot=frame]:*:[tr]:last:*:[td]:first:rounded-es-xl in-data-[slot=frame]:*:[tr]:hover:*:[td]:bg-muted/32",
-        className
-      )}
+      className={className}
       {...props}
     />
   )
@@ -51,21 +48,24 @@ function TableFooter({ className, ...props }: ComponentPropsWithoutRef<"tfoot">)
   return (
     <tfoot
       data-slot="table-footer"
-      className={cn(
-        "border-t bg-muted/72 font-medium in-data-[slot=frame]:border-none in-data-[slot=frame]:bg-transparent in-data-[slot=frame]:*:[tr]:hover:bg-transparent [&>tr]:last:border-b-0",
-        className
-      )}
+      className={className}
       {...props}
     />
   )
 }
 
-function TableRow({ className, ...props }: ComponentPropsWithoutRef<"tr">) {
+function TableRow({
+  className,
+  interactive = false,
+  ...props
+}: ComponentPropsWithoutRef<"tr"> & { interactive?: boolean }) {
   return (
     <tr
       data-slot="table-row"
       className={cn(
-        "border-b transition-colors hover:bg-muted in-data-[slot=frame]:hover:bg-transparent data-[state=selected]:bg-muted in-data-[slot=frame]:data-[state=selected]:bg-transparent",
+        "bg-[var(--rs-color-background-base-primary)] [&>[data-slot=table-cell]]:bg-inherit data-[state=selected]:bg-[var(--rs-color-background-accent-primary)] data-[state=selected]:hover:bg-[var(--rs-color-background-accent-primary)] data-[state=selected]:active:bg-[var(--rs-color-background-accent-primary)]",
+        interactive &&
+          "cursor-pointer hover:bg-[var(--rs-color-background-base-primary-hover)] active:bg-[var(--rs-color-background-neutral-secondary)]",
         className
       )}
       {...props}
@@ -78,7 +78,7 @@ function TableHead({ className, ...props }: ComponentPropsWithoutRef<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "border-b-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] p-[var(--rs-space-3)] text-left align-middle text-[var(--rs-color-foreground-base-tertiary)] [font-size:var(--rs-font-size-small)] [font-style:normal] [font-weight:var(--rs-font-weight-medium)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]",
         className
       )}
       {...props}
@@ -91,7 +91,23 @@ function TableCell({ className, ...props }: ComponentPropsWithoutRef<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "overflow-hidden border-b-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] px-[var(--rs-space-3)] py-[var(--rs-space-4)] text-ellipsis whitespace-nowrap text-[var(--rs-color-foreground-base-secondary)] [font-size:var(--rs-font-size-regular)] [font-style:normal] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-regular)] [line-height:var(--rs-line-height-regular)]",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function TableSectionHeader({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<"tr">) {
+  return (
+    <tr
+      data-slot="table-section-header"
+      className={cn(
+        "bg-[var(--rs-color-background-neutral-primary)] text-left [&>th]:bg-inherit [&>th]:p-[var(--rs-space-3)] [&>th]:text-[var(--rs-color-foreground-base-primary)] [&>th]:[font-size:var(--rs-font-size-small)] [&>th]:[font-style:normal] [&>th]:[font-weight:var(--rs-font-weight-medium)] [&>th]:[letter-spacing:var(--rs-letter-spacing-small)] [&>th]:[line-height:var(--rs-line-height-small)]",
         className
       )}
       {...props}
@@ -107,7 +123,7 @@ function TableCaption({
     <caption
       data-slot="table-caption"
       className={cn(
-        "mt-4 text-sm text-muted-foreground in-data-[slot=frame]:my-4",
+        "mt-[var(--rs-space-4)] text-[var(--rs-color-foreground-base-secondary)] [font-size:var(--rs-font-size-small)] [line-height:var(--rs-line-height-small)]",
         className
       )}
       {...props}
@@ -122,6 +138,7 @@ export {
   TableFooter,
   TableHead,
   TableRow,
+  TableSectionHeader,
   TableCell,
   TableCaption,
 }

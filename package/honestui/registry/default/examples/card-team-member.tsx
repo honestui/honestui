@@ -49,7 +49,7 @@ export default function CardTeamMember() {
         <Button className="flex-1" size="sm">
           Message
         </Button>
-        <Button className="flex-1" variant="outline" size="sm">
+        <Button className="flex-1" variant="secondary" size="sm">
           Profile
         </Button>
       </CardFooter>

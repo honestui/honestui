@@ -83,19 +83,19 @@ export default function GooeyToastDemo() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" onClick={() => showToast("default")}>
+        <Button variant="secondary" onClick={() => showToast("default")}>
           Default
         </Button>
-        <Button variant="outline" onClick={() => showToast("success")}>
+        <Button variant="secondary" onClick={() => showToast("success")}>
           Success
         </Button>
-        <Button variant="outline" onClick={() => showToast("error")}>
+        <Button variant="secondary" onClick={() => showToast("error")}>
           Error
         </Button>
-        <Button variant="outline" onClick={() => showToast("warning")}>
+        <Button variant="secondary" onClick={() => showToast("warning")}>
           Warning
         </Button>
-        <Button variant="outline" onClick={() => showToast("info")}>
+        <Button variant="secondary" onClick={() => showToast("info")}>
           Info
         </Button>
       </div>

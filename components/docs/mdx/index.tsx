@@ -41,13 +41,7 @@ export const mdxComponents: MDXComponents = {
     return <Tabs className={cn(className)} {...props} />;
   },
   TabsList: ({ className, ...props }: React.ComponentProps<typeof TabsList>) => (
-    <TabsList
-      className={cn(
-        "*:data-[slot=tab-indicator]:bg-accent bg-transparent p-0 *:data-[slot=tab-indicator]:rounded-lg *:data-[slot=tab-indicator]:shadow-none",
-        className,
-      )}
-      {...props}
-    />
+    <TabsList className={className} {...props} />
   ),
   TabsPanel: ({ className, ...props }: React.ComponentProps<typeof TabsPanel>) => (
     <TabsPanel
@@ -59,14 +53,14 @@ export const mdxComponents: MDXComponents = {
     />
   ),
   TabsTab: ({ className, ...props }: React.ComponentProps<typeof TabsTab>) => (
-    <TabsTab className={cn("rounded-lg", className)} {...props} />
+    <TabsTab className={className} {...props} />
   ),
   pre: ({ className, children, ...props }: React.ComponentProps<"pre">) => {
     return (
-      <div className="dark:bg-primary-foreground group relative mt-4 rounded-[8px] bg-[#F5F5F5] p-1">
+      <div className="group relative mt-4 rounded-[8px] bg-[var(--rs-color-background-neutral-primary)] p-1">
         <pre
           className={cn(
-            "no-scrollbar bg-background min-w-0 overflow-x-auto rounded-sm border py-3.5 text-[.8125rem] outline-none has-data-highlighted-line:px-0 has-data-line-numbers:px-0 has-data-[slot=tabs]:p-0 [&>code]:px-0!",
+            "no-scrollbar bg-background min-w-0 overflow-x-auto rounded-sm border-[0.5px] border-[var(--rs-color-border-base-primary)] py-3.5 text-[.8125rem] outline-none has-data-highlighted-line:px-0 has-data-line-numbers:px-0 has-data-[slot=tabs]:p-0 [&>code]:px-0!",
             className,
           )}
           {...props}

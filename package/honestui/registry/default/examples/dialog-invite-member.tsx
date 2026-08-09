@@ -15,7 +15,7 @@ import { Field, FieldControl, FieldLabel } from "@/registry/default/ui/field"
 export default function DialogInviteMember() {
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" />}>Invite member</DialogTrigger>
+      <DialogTrigger render={<Button variant="secondary" />}>Invite member</DialogTrigger>
       <DialogPopup className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Invite teammate</DialogTitle>

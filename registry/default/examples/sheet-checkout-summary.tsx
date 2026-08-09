@@ -4,7 +4,7 @@ import { Sheet, SheetFooter, SheetHeader, SheetPopup, SheetTitle, SheetTrigger }
 export default function SheetCheckoutSummary() {
   return (
     <Sheet>
-      <SheetTrigger render={<Button variant="outline" />}>Order summary</SheetTrigger>
+      <SheetTrigger render={<Button variant="secondary" />}>Order summary</SheetTrigger>
       <SheetPopup>
         <SheetHeader><SheetTitle>Checkout</SheetTitle></SheetHeader>
         <div className="grid gap-3 px-4 text-sm">

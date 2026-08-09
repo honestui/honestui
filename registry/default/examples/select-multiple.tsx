@@ -25,14 +25,19 @@ type Language = keyof typeof languages
 
 const values = Object.keys(languages) as Language[]
 
-function renderValue(value: Language[]) {
-  if (value.length === 0) {
+function renderValue(
+  value?: { value: string } | { value: string }[]
+) {
+  const selectedItems = Array.isArray(value) ? value : value ? [value] : []
+
+  if (selectedItems.length === 0) {
     return "Select languages…"
   }
 
-  const firstLanguage = value[0] ? languages[value[0]] : ""
+  const firstValue = selectedItems[0]?.value as Language | undefined
+  const firstLanguage = firstValue ? languages[firstValue] : ""
   const additionalLanguages =
-    value.length > 1 ? ` (+${value.length - 1} more)` : ""
+    selectedItems.length > 1 ? ` (+${selectedItems.length - 1} more)` : ""
   return firstLanguage + additionalLanguages
 }
 

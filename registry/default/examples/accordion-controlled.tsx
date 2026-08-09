@@ -42,7 +42,7 @@ export default function AccordionControlledDemo() {
 
       <div className="flex flex-col items-start gap-4">
         <Button
-          variant="outline"
+          variant="secondary"
           onClick={() => setValue(["item-1", "item-2"])}
         >
           Open First Two

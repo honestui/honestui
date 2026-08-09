@@ -4,7 +4,7 @@ import { Popover, PopoverDescription, PopoverPopup, PopoverTitle, PopoverTrigger
 export default function PopoverAccountSummary() {
   return (
     <Popover>
-      <PopoverTrigger render={<Button variant="outline" />}>Account</PopoverTrigger>
+      <PopoverTrigger render={<Button variant="secondary" />}>Account</PopoverTrigger>
       <PopoverPopup className="w-72">
         <PopoverTitle>Acme workspace</PopoverTitle>
         <PopoverDescription>12 members, 4 active projects, and 84% storage used.</PopoverDescription>

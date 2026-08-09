@@ -6,7 +6,7 @@ import { toastManager } from "@/registry/default/ui/toast"
 export default function ToastPromise() {
   return (
     <Button
-      variant="outline"
+      variant="secondary"
       onClick={() => {
         toastManager.promise(
           new Promise<string>((resolve, reject) => {

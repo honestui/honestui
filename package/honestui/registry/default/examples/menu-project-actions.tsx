@@ -6,7 +6,7 @@ import { Menu, MenuItem, MenuPopup, MenuTrigger } from "@/registry/default/ui/me
 export default function MenuProjectActions() {
   return (
     <Menu>
-      <MenuTrigger render={<Button variant="outline" size="icon" />} aria-label="Project actions"><MoreHorizontalIcon /></MenuTrigger>
+      <MenuTrigger render={<Button variant="secondary" size="icon" />} aria-label="Project actions"><MoreHorizontalIcon /></MenuTrigger>
       <MenuPopup>
         <MenuItem>Rename</MenuItem>
         <MenuItem>Duplicate</MenuItem>

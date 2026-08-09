@@ -5,7 +5,7 @@ import { Sheet, SheetFooter, SheetHeader, SheetPopup, SheetTitle, SheetTrigger }
 export default function SheetProfileEditor() {
   return (
     <Sheet>
-      <SheetTrigger render={<Button variant="outline" />}>Edit profile</SheetTrigger>
+      <SheetTrigger render={<Button variant="secondary" />}>Edit profile</SheetTrigger>
       <SheetPopup>
         <SheetHeader><SheetTitle>Profile</SheetTitle></SheetHeader>
         <div className="grid gap-4 px-4">

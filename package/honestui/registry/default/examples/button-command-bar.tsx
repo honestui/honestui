@@ -9,7 +9,7 @@ export default function ButtonCommandBar() {
         <PlusIcon />
         New task
       </Button>
-      <Button variant="outline">
+      <Button variant="secondary">
         <CommandIcon />
         Command menu
       </Button>

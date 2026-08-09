@@ -12,8 +12,13 @@ function Slider({
   value,
   min = 0,
   max = 100,
+  showValue = false,
+  size = "large",
   ...props
-}: SliderPrimitive.Root.Props) {
+}: SliderPrimitive.Root.Props & {
+  showValue?: boolean
+  size?: "small" | "large"
+}) {
   const _values = React.useMemo(() => {
     if (value !== undefined) {
       return Array.isArray(value) ? value : [value]
@@ -26,8 +31,15 @@ function Slider({
 
   return (
     <SliderPrimitive.Root
-      thumbAlignment="edge-client-only"
-      className="data-[orientation=horizontal]:w-full"
+      thumbAlignment="center"
+      data-size={size}
+      data-variant={_values.length > 1 ? "range" : "single"}
+      className={cn(
+        "relative flex touch-none p-0 select-none data-disabled:opacity-50 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:min-w-[var(--rs-space-15)] data-[orientation=horizontal]:flex-col data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-[var(--rs-space-15)]",
+        !children &&
+          "data-[orientation=horizontal]:h-[var(--rs-space-8)] data-[orientation=horizontal]:items-center data-[orientation=vertical]:w-[var(--rs-space-8)]",
+        className
+      )}
       defaultValue={defaultValue}
       value={value}
       min={min}
@@ -37,26 +49,52 @@ function Slider({
       {children}
       <SliderPrimitive.Control
         data-slot="slider-control"
-        className={cn(
-          "flex touch-none select-none data-disabled:opacity-64 data-[disabled]:pointer-events-none data-[orientation=horizontal]:w-full data-[orientation=horizontal]:min-w-44 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:flex-col",
-          className
-        )}
+        className="relative flex items-center data-disabled:pointer-events-none data-[orientation=horizontal]:h-[var(--rs-space-8)] data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-[var(--rs-space-8)] data-[orientation=vertical]:flex-col"
       >
         <SliderPrimitive.Track
           data-slot="slider-track"
-          className="relative grow select-none before:absolute before:rounded-full before:bg-input data-[orientation=horizontal]:h-1 data-[orientation=horizontal]:w-full data-[orientation=horizontal]:before:inset-x-0.5 data-[orientation=horizontal]:before:inset-y-0 data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1 data-[orientation=vertical]:before:inset-x-0 data-[orientation=vertical]:before:inset-y-0.5"
+          className="relative grow rounded-[var(--rs-radius-full)] bg-[var(--rs-color-background-neutral-secondary)] data-[orientation=horizontal]:mx-[var(--rs-space-4)] data-[orientation=horizontal]:h-[var(--rs-space-2)] data-[orientation=vertical]:my-[var(--rs-space-4)] data-[orientation=vertical]:w-[var(--rs-space-2)]"
         >
           <SliderPrimitive.Indicator
             data-slot="slider-indicator"
-            className="rounded-full bg-primary select-none data-[orientation=horizontal]:ms-0.5 data-[orientation=vertical]:mb-0.5"
+            className="!absolute rounded-[var(--rs-radius-full)] bg-[var(--rs-color-background-accent-emphasis)] data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
           />
           {Array.from({ length: _values.length }, (_, index) => (
             <SliderPrimitive.Thumb
               data-slot="slider-thumb"
+              data-size={size}
               index={index}
               key={index}
-              className="block size-4 shrink-0 rounded-full border border-input bg-white bg-clip-padding shadow-xs transition-shadow outline-none select-none before:absolute before:inset-0 before:rounded-full before:shadow-[0_1px_--theme(--color-black/4%)] focus-visible:ring-[3px] focus-visible:ring-ring/24 has-focus-visible:ring-[3px] has-focus-visible:ring-ring/24 data-dragging:ring-[3px] data-dragging:ring-ring/24 dark:border-background dark:bg-clip-border dark:focus-visible:ring-ring/48 dark:data-dragging:ring-ring/48 [&:is(:focus-visible,[data-dragging])]:shadow-none"
-            />
+              className="group/slider-thumb absolute flex cursor-grab items-center justify-center outline-none active:cursor-grabbing active:outline-none has-focus-visible:[&_[data-slot=slider-thumb-visual]]:[outline:var(--rs-focus-ring)] hover:[&_[data-slot=slider-thumb-visual]]:bg-[var(--rs-color-background-base-secondary)] active:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] active:[&_[data-slot=slider-thumb-visual]]:shadow-[var(--rs-shadow-lifted)] data-dragging:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] data-dragging:[&_[data-slot=slider-thumb-visual]]:shadow-[var(--rs-shadow-lifted)] [&_input:focus-visible]:outline-none"
+            >
+              <span
+                data-slot="slider-thumb-visual"
+                className={cn(
+                  "relative flex items-center justify-center border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-primary)] shadow-[var(--rs-shadow-soft)] motion-safe:[transition:transform_var(--rs-duration-press)_var(--rs-ease-out),box-shadow_var(--rs-duration-press)_var(--rs-ease-out)]",
+                  size === "large"
+                    ? "h-[var(--rs-space-6)] w-[var(--rs-space-7)] gap-[3px] rounded-[var(--rs-radius-2)]"
+                    : "h-[var(--rs-space-5)] w-[var(--rs-space-3)] rounded-[var(--rs-radius-full)]"
+                )}
+              >
+                {size === "large" && (
+                  <>
+                    <span className="h-[6px] w-px rounded-[var(--rs-radius-1)] bg-[var(--rs-color-border-base-tertiary)]" />
+                    <span className="h-[6px] w-px rounded-[var(--rs-radius-1)] bg-[var(--rs-color-border-base-tertiary)]" />
+                  </>
+                )}
+              </span>
+              {showValue && (
+                <SliderPrimitive.Value
+                  data-slot="slider-thumb-label"
+                  className={cn(
+                    "absolute top-[calc(-1*(var(--rs-space-8)+1px))] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] p-[var(--rs-space-2)] text-[var(--rs-color-foreground-base-primary)] shadow-[var(--rs-shadow-soft)]",
+                    size === "small" && "top-[calc(-1*var(--rs-space-7))]"
+                  )}
+                >
+                  {(formattedValues) => formattedValues[index]}
+                </SliderPrimitive.Value>
+              )}
+            </SliderPrimitive.Thumb>
           ))}
         </SliderPrimitive.Track>
       </SliderPrimitive.Control>

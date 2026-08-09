@@ -18,7 +18,7 @@ export default function GooeyToastPosition() {
       {positions.map((position) => (
         <Button
           key={position}
-          variant="outline"
+          variant="secondary"
           onClick={() => {
             toastManager.add({
               variant: "gooey",

@@ -10,7 +10,7 @@ import {
 export default function MenuRadioGroupDemo() {
   return (
     <Menu>
-      <MenuTrigger render={<Button variant="outline" />}>
+      <MenuTrigger render={<Button variant="secondary" />}>
         Open menu
       </MenuTrigger>
       <MenuPopup>

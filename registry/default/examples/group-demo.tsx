@@ -6,19 +6,19 @@ import { Group, GroupItem, GroupSeparator } from "@/registry/default/ui/group"
 export default function GroupDemo() {
   return (
     <Group>
-      <GroupItem render={<Button variant="outline" />}>
+      <GroupItem render={<Button variant="secondary" />}>
         <FilesIcon />
         Files
       </GroupItem>
       <GroupSeparator />
-      <GroupItem render={<Button variant="outline" />}>
+      <GroupItem render={<Button variant="secondary" />}>
         <FilmIcon />
         Media
       </GroupItem>
       <GroupSeparator />
       <GroupItem
         render={
-          <Button variant="outline" size="icon" aria-label="Menu" />
+          <Button variant="secondary" size="icon" aria-label="Menu" />
         }
       >
         <EllipsisIcon />
