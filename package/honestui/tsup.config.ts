@@ -19,10 +19,6 @@ export default defineConfig({
     "react",
     "react-dom",
     "react/jsx-runtime",
-    "@react-three/fiber",
-    "@react-three/postprocessing",
     "ogl",
-    "postprocessing",
-    "three",
   ],
 })

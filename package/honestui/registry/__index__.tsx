@@ -115,6 +115,8 @@ import combobox_sm from "./default/examples/combobox-sm"
 import combobox_with_clear from "./default/examples/combobox-with-clear"
 import combobox_with_inner_input from "./default/examples/combobox-with-inner-input"
 import combobox_with_label from "./default/examples/combobox-with-label"
+import color_picker_controlled from "./default/examples/color-picker-controlled"
+import color_picker_demo from "./default/examples/color-picker-demo"
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation"
 import dialog_demo from "./default/examples/dialog-demo"
 import dialog_from_menu from "./default/examples/dialog-from-menu"
@@ -534,6 +536,8 @@ export const Index: Record<string, { component: ComponentType }> = {
   "combobox-with-clear": { component: combobox_with_clear },
   "combobox-with-inner-input": { component: combobox_with_inner_input },
   "combobox-with-label": { component: combobox_with_label },
+  "color-picker-controlled": { component: color_picker_controlled },
+  "color-picker-demo": { component: color_picker_demo },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-demo": { component: dialog_demo },
   "dialog-from-menu": { component: dialog_from_menu },

@@ -70,6 +70,7 @@
     "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "culori": "^4.0.2",
     "echarts": "^6.1.0",
     "fumadocs-core": "^16.12.1",
     "fumadocs-mdx": "^15.2.0",
@@ -97,6 +98,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/culori": "^4.0.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

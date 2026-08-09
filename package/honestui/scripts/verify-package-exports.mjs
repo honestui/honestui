@@ -14,9 +14,7 @@ assert.ok(vectors.Abstract1Shapes, "honestui/vectors must export Abstract1Shapes
 assert.ok(charts.BarChart, "honestui/charts must export BarChart")
 assert.ok(shaders.LightRays, "honestui/shaders must export LightRays")
 assert.deepEqual(Object.keys(shaders).sort(), [
-  "Dither",
   "GradientBlinds",
   "Grainient",
-  "GridDistortion",
   "LightRays",
 ])
