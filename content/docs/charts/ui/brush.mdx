@@ -35,17 +35,16 @@ import { AreaChart } from "honestui/charts";
 
 ## Supported Charts
 
-The brush is available on the cartesian charts, `AreaChart`, `LineChart`, `BarChart`, and `ComposedChart`. Attach it exactly the same way on each:
+The brush is available on the cartesian charts, `AreaChart`, `LineChart`, and `BarChart`. Attach it exactly the same way on each:
 
 ```tsx
 <LineChart.Brush />
 <BarChart.Brush />
-<ComposedChart.Brush />
 ```
 
-The miniature mirrors the chart it belongs to. Area and composed charts draw filled areas, line charts draw strokes only, and bar charts draw rounded bars, and it inherits the parent chart's stacking and series colors, dimming alongside the main plot when a series is selected.
+The miniature mirrors the chart it belongs to. Area charts draw filled areas, line charts draw strokes only, and bar charts draw rounded bars. It inherits the parent chart's stacking and series colors, dimming alongside the main plot when a series is selected.
 
-The brush is hidden while the chart is in its loading state, and it never renders for the non-cartesian charts (pie, radar, radial, sankey), which have no continuous axis to zoom.
+The brush is hidden while the chart is in its loading state, and it never renders for the non-cartesian pie chart, which has no continuous axis to zoom.
 
 ## Reacting to the Range
 

@@ -340,35 +340,6 @@ export function HeatmapIcon({
   );
 }
 
-export function BoxPlotIcon({
-  fill = "currentColor",
-  secondaryfill,
-  width = "1em",
-  height = "1em",
-  ...props
-}: IconProps) {
-  const secondary = secondaryfill || fill;
-
-  return (
-    <svg
-      height={height}
-      width={width}
-      viewBox="0 0 18 18"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <g fill="none" stroke={fill} strokeLinecap="round" strokeWidth="1.35">
-        <path d="M4.25 2.25v2.1m0 5.3v6.1M2.8 2.25h2.9m-2.9 13.5h2.9" />
-        <rect x="1.7" y="4.35" width="5.1" height="5.3" rx="1" fill={secondary} fillOpacity="0.35" />
-        <path d="M1.8 7h4.9" />
-        <path d="M13.75 2.25v4.1m0 5.3v4.1m-1.45-13.5h2.9m-2.9 13.5h2.9" />
-        <rect x="11.2" y="6.35" width="5.1" height="5.3" rx="1" fill={secondary} fillOpacity="0.65" />
-        <path d="M11.3 9h4.9" />
-      </g>
-    </svg>
-  );
-}
-
 export function ScatterChartIcon({
   fill = "currentColor",
   secondaryfill,
@@ -400,42 +371,6 @@ export function ScatterChartIcon({
       <circle cx="11.25" cy="10.35" r="1.2" fill={secondary} fillOpacity="0.5" />
       <circle cx="13.55" cy="5.35" r="2.25" fill={fill} />
       <circle cx="5.6" cy="5.9" r="1.1" fill={secondary} fillOpacity="0.4" />
-    </svg>
-  );
-}
-
-export function ComposedChartIcon({
-  fill = "currentColor",
-  secondaryfill,
-  width = "1em",
-  height = "1em",
-  ...props
-}: IconProps) {
-  secondaryfill = secondaryfill || fill;
-
-  return (
-    <svg
-      height={height}
-      width={width}
-      viewBox="0 0 18 18"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <g fill={fill}>
-        {/* Bar chart bars - narrower */}
-        <rect x="2.5" y="9" width="4" height="6.5" rx="1.5" fill={secondaryfill} opacity="0.4" />
-        <rect x="7.5" y="4" width="4" height="11.5" rx="1.5" fill={secondaryfill} opacity="0.4" />
-        <rect x="12.5" y="6" width="4" height="9.5" rx="1.5" fill={secondaryfill} opacity="0.4" />
-        {/* Line chart line overlay */}
-        <path
-          d="M2 10.5 L5 13.5L9 8.5L13 10.5L17 7.5"
-          fill="none"
-          stroke={fill}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </g>
     </svg>
   );
 }
@@ -473,110 +408,6 @@ export function PieChartIcon({
           fill={fill}
         />
       </g>
-    </svg>
-  );
-}
-
-export function RadialChartIcon({
-  fill = "currentColor",
-  secondaryfill,
-  width = "1em",
-  height = "1em",
-  ...props
-}: IconProps) {
-  secondaryfill = secondaryfill || fill;
-
-  return (
-    <svg
-      height={height}
-      width={width}
-      viewBox="0 0 18 18"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <g fill={fill}>
-        {/* Outer arc */}
-        <path
-          d="M9 1C13.4183 1 17 4.58172 17 9C17 13.4183 13.4183 17 9 17C4.58172 17 1 13.4183 1 9C1 4.58172 4.58172 1 9 1ZM9 3C5.68629 3 3 5.68629 3 9C3 12.3137 5.68629 15 9 15C12.3137 15 15 12.3137 15 9C15 5.68629 12.3137 3 9 3Z"
-          fill={secondaryfill}
-          fillOpacity="0.4"
-        />
-        {/* Middle arc */}
-        <path
-          d="M9 4C11.7614 4 14 6.23858 14 9C14 11.7614 11.7614 14 9 14C6.23858 14 4 11.7614 4 9C4 6.23858 6.23858 4 9 4ZM9 5.5C7.067 5.5 5.5 7.067 5.5 9C5.5 10.933 7.067 12.5 9 12.5C10.933 12.5 12.5 10.933 12.5 9C12.5 7.067 10.933 5.5 9 5.5Z"
-          fill={fill}
-        />
-        {/* Inner arc */}
-        <path
-          d="M9 6.5C10.3807 6.5 11.5 7.61929 11.5 9C11.5 10.3807 10.3807 11.5 9 11.5C7.61929 11.5 6.5 10.3807 6.5 9C6.5 7.61929 7.61929 6.5 9 6.5ZM9 7.5C8.17157 7.5 7.5 8.17157 7.5 9C7.5 9.82843 8.17157 10.5 9 10.5C9.82843 10.5 10.5 9.82843 10.5 9C10.5 8.17157 9.82843 7.5 9 7.5Z"
-          fill={secondaryfill}
-          fillOpacity="0.5"
-        />
-      </g>
-    </svg>
-  );
-}
-
-export function RadarChartIcon({
-  fill = "currentColor",
-  secondaryfill,
-  width = "1em",
-  height = "1em",
-  ...props
-}: IconProps) {
-  secondaryfill = secondaryfill || fill;
-
-  return (
-    <svg
-      height={height}
-      width={width}
-      viewBox="0 0 18 18"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <g fill={fill}>
-        <path
-          d="M10.5578 1.54834C9.64717 0.816721 8.35366 0.817187 7.44267 1.54798L2.43452 5.5691C1.67356 6.17993 1.33892 7.17832 1.57413 8.12487L3.06421 14.1062C3.34102 15.2176 4.33677 16 5.48198 16H12.518C13.6632 16 14.659 15.2177 14.9358 14.1062L16.4258 8.1253C16.6611 7.17961 16.3265 6.18003 15.5656 5.56918L10.5578 1.54834Z"
-          fill={secondaryfill}
-          fillOpacity="0.4"
-        />
-        <path
-          d="M8.63229 5.09632C8.88243 4.95562 9.19093 4.97 9.4269 5.13336L12.6769 7.38336C12.9601 7.57943 13.0734 7.94322 12.9515 8.26539L11.7185 11.5244C11.6298 11.7587 11.4301 11.9333 11.186 11.9897L6.90202 12.9807C6.54336 13.0637 6.17751 12.8741 6.03851 12.5332L4.30551 8.28319C4.16278 7.93317 4.30284 7.53164 4.63229 7.34632L8.63229 5.09632Z"
-          fill={fill}
-          fillRule="evenodd"
-        />
-      </g>
-    </svg>
-  );
-}
-
-export function SankeyChartIcon({
-  fill = "currentColor",
-  width = "1em",
-  height = "1em",
-  ...props
-}: IconProps) {
-  return (
-    <svg
-      height={height}
-      width={width}
-      viewBox="0 0 18 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path
-        d="M17 1H1V9H4.49217C5.11298 9.00084 6.23676 8.97225 6.79234 9.24927L9.5 10.5L6.28097 12.0061C5.72532 12.2832 5.12089 12.4992 4.5 12.5H1V17H5.12749C5.92577 16.9991 6.71299 16.8133 7.42743 16.4571L12 14.5C12.5556 14.223 13.3792 14.0008 14 14L17 13.9939V8H14C13.3792 7.99916 13.0983 7.92246 12 7.5L8 5.99389H17V1ZM2 2H3V8H2V2ZM2 13.5H3V16H2V13.5ZM16 13H15V9H16V13ZM7.42743 6.36517L12 8.5C12.5419 8.76976 13.3984 8.93253 14 9V11.5H13.5C12.5 11.5 12.0556 11.277 11.5 11L6.5 8.5C5.78553 8.14368 5.50783 9 4.5 8.5L4 8V6H5C5.62089 6.00081 6.87178 6.08812 7.42743 6.36517ZM16 5H15V2H16V5Z"
-        fill={fill}
-        fillOpacity="0.4"
-      />
-      <path
-        d="M3.5 8.5H1.5V1.5H3.5V5.5M3.5 8.5C4.5 8.5 6.5 8.5 9 10C12.4567 12.074 12 12 14.5 12M3.5 8.5V5.5M14.5 12V13.5H16.5V8.5H14.5M14.5 12V8.5M14.5 8.5C12.5 8.5 11.1 7.8 9.5 7C7.9 6.2 6.5 5.5 3.5 5.5"
-        stroke={fill}
-        fill={fill}
-        strokeOpacity="1"
-        fillOpacity="1"
-      />
     </svg>
   );
 }

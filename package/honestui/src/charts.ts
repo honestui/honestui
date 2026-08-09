@@ -28,21 +28,17 @@ export type {
   YAxisProps as BarYAxisProps,
 } from "../registry/default/charts/bar-chart"
 
-export { ComposedChart } from "../registry/default/charts/composed-chart"
+export { Heatmap } from "../registry/default/charts/heatmap"
 export type {
-  BarProps as ComposedBarProps,
-  BarVariant as ComposedBarVariant,
-  ComposedAnimationType,
-  ComposedChartProps,
-  CurveType as ComposedCurveType,
-  DotProps as ComposedDotProps,
-  LegendProps as ComposedLegendProps,
-  LineProps as ComposedLineProps,
-  StrokeVariant as ComposedStrokeVariant,
-  TooltipProps as ComposedTooltipProps,
-  XAxisProps as ComposedXAxisProps,
-  YAxisProps as ComposedYAxisProps,
-} from "../registry/default/charts/composed-chart"
+  AxisProps as HeatmapAxisProps,
+  CellsProps as HeatmapCellsProps,
+  HeatmapCell,
+  HeatmapProps,
+  HeatmapVariant,
+  LegendProps as HeatmapLegendProps,
+  TooltipProps as HeatmapTooltipProps,
+  YAxisProps as HeatmapYAxisProps,
+} from "../registry/default/charts/heatmap"
 
 export { LineChart } from "../registry/default/charts/line-chart"
 export type {
@@ -71,43 +67,19 @@ export type {
   TooltipProps as PieTooltipProps,
 } from "../registry/default/charts/pie-chart"
 
-export { RadarChart } from "../registry/default/charts/radar-chart"
+export { ScatterChart } from "../registry/default/charts/scatter-chart"
 export type {
-  DotProps as RadarDotProps,
-  GridType as RadarGridType,
-  LegendProps as RadarLegendProps,
-  PolarAngleAxisProps as RadarPolarAngleAxisProps,
-  PolarGridProps as RadarPolarGridProps,
-  RadarChartProps,
-  RadarProps,
-  RadarVariant,
-  TooltipProps as RadarTooltipProps,
-} from "../registry/default/charts/radar-chart"
-
-export { RadialChart } from "../registry/default/charts/radial-chart"
-export type {
-  BackgroundVariant as RadialBackgroundVariant,
-  LegendProps as RadialLegendProps,
-  RadialBarProps,
-  RadialChartProps,
-  RadialVariant,
-  TooltipProps as RadialTooltipProps,
-} from "../registry/default/charts/radial-chart"
-
-export { SankeyChart } from "../registry/default/charts/sankey-chart"
-export type {
-  LinkProps as SankeyLinkProps,
-  LinkVariant as SankeyLinkVariant,
-  NodeLabelPosition as SankeyNodeLabelPosition,
-  NodeLabelProps as SankeyNodeLabelProps,
-  NodeProps as SankeyNodeProps,
-  SankeyAnimationType,
-  SankeyChartProps,
-  SankeyData,
-  SankeyLink,
-  SankeyNode,
-  TooltipProps as SankeyTooltipProps,
-} from "../registry/default/charts/sankey-chart"
+  AxisProps as ScatterAxisProps,
+  LegendProps as ScatterLegendProps,
+  QuadrantLabels as ScatterQuadrantLabels,
+  QuadrantsProps as ScatterQuadrantsProps,
+  ScatterChartProps,
+  ScatterPoint,
+  ScatterProps,
+  ScatterSymbol,
+  ScatterVariant,
+  TooltipProps as ScatterTooltipProps,
+} from "../registry/default/charts/scatter-chart"
 
 export * from "../registry/default/ui/charts/brush"
 export * from "../registry/default/ui/charts/chart"

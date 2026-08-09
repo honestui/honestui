@@ -1,14 +1,9 @@
 import {
   BarChartIcon,
-  BoxPlotIcon,
   ChartStackedAreaIcon,
   ChartStackedLineIcon,
-  ComposedChartIcon,
   HeatmapIcon,
   PieChartIcon,
-  RadialChartIcon,
-  RadarChartIcon,
-  SankeyChartIcon,
   ScatterChartIcon,
 } from "@/assets/icons";
 import {
@@ -142,20 +137,10 @@ export function getNavItemIcon(tag?: string) {
       return <ChartStackedLineIcon />;
     case "bar-chart":
       return <BarChartIcon />;
-    case "composed-chart":
-      return <ComposedChartIcon />;
     case "pie-chart":
       return <PieChartIcon />;
-    case "radial-chart":
-      return <RadialChartIcon />;
-    case "radar-chart":
-      return <RadarChartIcon />;
-    case "sankey-chart":
-      return <SankeyChartIcon />;
     case "heatmap":
       return <HeatmapIcon />;
-    case "box-plot":
-      return <BoxPlotIcon />;
     case "scatter-chart":
       return <ScatterChartIcon />;
   }

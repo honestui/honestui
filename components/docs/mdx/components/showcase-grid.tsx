@@ -1,15 +1,10 @@
 "use client";
 
-import { ComposedPreview } from "@/components/docs/svg-previews/composed-preview";
-import { SankeyPreview } from "@/components/docs/svg-previews/sankey-preview";
-import { RadialPreview } from "@/components/docs/svg-previews/radial-preview";
-import { RadarPreview } from "@/components/docs/svg-previews/radar-preview";
 import { LinePreview } from "@/components/docs/svg-previews/line-preview";
 import { AreaPreview } from "@/components/docs/svg-previews/area-preview";
 import { PiePreview } from "@/components/docs/svg-previews/pie-preview";
 import { BarPreview } from "@/components/docs/svg-previews/bar-preview";
 import { HeatmapPreview } from "@/components/docs/svg-previews/heatmap-preview";
-import { BoxPlotPreview } from "@/components/docs/svg-previews/box-plot-preview";
 import { ScatterPreview } from "@/components/docs/svg-previews/scatter-preview";
 import { Grid } from "@/components/docs/svg-previews/background-grid";
 import Link from "next/link";
@@ -42,46 +37,16 @@ const CHARTS: Chart[] = [
     slug: "bar-chart",
   },
   {
-    name: "Composed Chart",
-    description: "Mix lines, bars, areas in one.",
-    Component: ComposedPreview,
-    slug: "composed-chart",
-  },
-  {
-    name: "Radar Chart",
-    description: "Compare multi-metric profiles on radial axes.",
-    Component: RadarPreview,
-    slug: "radar-chart",
-  },
-  {
     name: "Pie Chart",
     description: "Show parts of a whole, clearly.",
     Component: PiePreview,
     slug: "pie-chart",
   },
   {
-    name: "Radial Chart",
-    description: "Visualize totals in a circular layout.",
-    Component: RadialPreview,
-    slug: "radial-chart",
-  },
-  {
-    name: "Sankey Chart",
-    description: "Show flows between stages with weighted links.",
-    Component: SankeyPreview,
-    slug: "sankey-chart",
-  },
-  {
     name: "Heatmap",
     description: "Reveal intensity patterns across two dimensions.",
     Component: HeatmapPreview,
     slug: "heatmap",
-  },
-  {
-    name: "Box Plot",
-    description: "Compare distributions, medians, and spread.",
-    Component: BoxPlotPreview,
-    slug: "box-plot",
   },
   {
     name: "Scatter Chart",
