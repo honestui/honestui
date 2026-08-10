@@ -23,7 +23,7 @@ export const MDXNavigation = ({ type, title, url, description }: MDXNavigationPr
           <span className="group-hover:text-primary line-clamp-1 text-[13px] capitalize duration-200">
             {title}
           </span>
-          <span className="text-muted-foreground/70 line-clamp-1 text-xs">{description}</span>
+          <span className="text-muted-foreground line-clamp-1 text-xs">{description}</span>
         </div>
         <div className="group-hover:text-primary flex items-center duration-200 sm:px-2">
           {type === "previous" ? (

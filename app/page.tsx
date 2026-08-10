@@ -6,7 +6,7 @@ import { BrandWordmark } from "@/components/brand-wordmark"
 import ThemeSwitcher from "@/components/docs/sidebar/theme-switcher"
 import { LandingShowcase } from "@/components/landing-showcase"
 import { Button } from "@/components/ui/button"
-import { useGithubStars as getGithubStars } from "@/hooks/use-github-stars"
+import { getGithubStars } from "@/hooks/use-github-stars"
 
 export const metadata: Metadata = {
   title: {
@@ -48,7 +48,7 @@ export default async function Home() {
                   ? "Honest UI on GitHub (opens in a new tab)"
                   : `Honest UI on GitHub, ${stars.toLocaleString("en-US")} stars (opens in a new tab)`
               }
-              className="h-8"
+              className="hidden h-8 sm:inline-flex"
               render={
                 <Link
                   href="https://github.com/honestui/honestui"

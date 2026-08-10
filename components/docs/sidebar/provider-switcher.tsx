@@ -25,7 +25,6 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { CaretDown } from "@carbon/icons-react";
 import { cn } from "@/lib/utils";
-import posthog from "posthog-js";
 
 export type ProductArea = "components" | "charts" | "icons" | "animated" | "shaders";
 
@@ -135,9 +134,6 @@ export function ProviderSwitcher() {
     }
 
     if (area.id !== activeArea) {
-      posthog.capture("documentation_product_area_selected", {
-        product_area: area.id,
-      });
       router.push(area.href);
     }
   };

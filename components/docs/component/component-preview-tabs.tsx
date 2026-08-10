@@ -9,7 +9,6 @@ import { getIconForLanguageExtension } from "@/assets/language/icons";
 import { LazyMount } from "@/components/docs/component/lazy-mount";
 import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { cn } from "@/lib/utils";
-import posthog from "posthog-js";
 
 export function ComponentPreviewTabs({
   className,
@@ -64,13 +63,7 @@ export function ComponentPreviewTabs({
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={() => {
-                    setReloadKey((key) => key + 1);
-                    posthog.capture("documentation_preview_reloaded", {
-                      preview_title: title ?? "untitled",
-                      is_playground: playground,
-                    });
-                  }}
+                  onClick={() => setReloadKey((key) => key + 1)}
                   aria-label="Reload preview"
                   className="text-muted-foreground hover:text-foreground flex size-3 shrink-0 translate-x-1 cursor-pointer items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100"
                 >

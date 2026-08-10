@@ -60,7 +60,7 @@ function SignUpCard({ idPrefix }: { idPrefix: string }) {
       <CardHeader>
         <CardTitle>Sign up</CardTitle>
         <CardDescription>
-          A complete account flow built from components you can edit.
+          An account-flow composition built from components you can edit.
         </CardDescription>
       </CardHeader>
       <CardPanel className="space-y-4">
@@ -74,7 +74,7 @@ function SignUpCard({ idPrefix }: { idPrefix: string }) {
             GitHub
           </Button>
         </div>
-        <p className="text-center text-xs text-[var(--hui-color-foreground-base-tertiary)]">
+        <p className="text-center text-xs text-[var(--hui-color-foreground-base-secondary)]">
           or continue with email
         </p>
         <PreviewField
@@ -422,14 +422,26 @@ export function LandingShowcase() {
                 Browse components
               </Button>
             </div>
+            <p className="mt-4 text-xs text-[var(--hui-color-foreground-base-secondary)]">
+              These examples are interactive previews; they don’t submit data.
+            </p>
           </div>
         </div>
-        <p className="mt-12 hidden text-sm text-[var(--hui-color-foreground-base-tertiary)] lg:block">
-          MIT licensed. Source-first by design.
+        <p className="mt-12 hidden items-center gap-2 text-sm text-[var(--hui-color-foreground-base-secondary)] lg:flex">
+          <span>MIT licensed. Source-first by design.</span>
+          <Link
+            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+            href="/privacy"
+          >
+            Privacy
+          </Link>
         </p>
       </section>
 
-      <section aria-label="HonestUI component previews" className="overflow-x-auto pb-14 pl-5 sm:pl-8 lg:min-h-0 lg:overflow-visible lg:p-0">
+      <section
+        aria-label="Honest UI component previews"
+        className="min-w-0 overflow-x-auto pb-14 pl-5 sm:pl-8 lg:min-h-0 lg:overflow-visible lg:p-0"
+      >
         <div className="w-[74.5rem] origin-top-left pb-10 lg:rotate-[4deg] lg:translate-x-20 lg:translate-y-10 xl:translate-x-28">
           <div className="grid grid-cols-3 gap-7">
             <div className="flex flex-col gap-7">
@@ -451,8 +463,14 @@ export function LandingShowcase() {
         </div>
       </section>
 
-      <p className="px-5 pb-8 text-sm text-[var(--hui-color-foreground-base-tertiary)] sm:px-8 lg:hidden">
-        MIT licensed. Source-first by design.
+      <p className="flex items-center gap-2 px-5 pb-8 text-sm text-[var(--hui-color-foreground-base-secondary)] sm:px-8 lg:hidden">
+        <span>MIT licensed. Source-first by design.</span>
+        <Link
+          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+          href="/privacy"
+        >
+          Privacy
+        </Link>
       </p>
     </main>
   )

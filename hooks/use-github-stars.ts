@@ -1,4 +1,4 @@
-export const useGithubStars = async (): Promise<number | null> => {
+export const getGithubStars = async (): Promise<number | null> => {
   try {
     const res = await fetch(`https://api.github.com/repos/honestui/honestui`, {
       headers: {

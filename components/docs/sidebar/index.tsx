@@ -1,7 +1,7 @@
 import {
   Sidebar,
   SidebarContent,
-  // SidebarFooter,
+  SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { SidebarSections } from "./sidebar-sections";
@@ -45,6 +45,14 @@ export function DocsSidebar({
         <SidebarContent className={cn("scroll-fade select-none", "pt-2 pb-14")}>
           <SidebarSections tree={source.pageTree} />
         </SidebarContent>
+        <SidebarFooter className="px-4 py-3 group-data-[collapsible=icon]:hidden">
+          <Link
+            className="text-muted-foreground w-fit rounded-sm text-xs outline-none hover:text-foreground hover:underline hover:underline-offset-4 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            href="/privacy"
+          >
+            Privacy and analytics
+          </Link>
+        </SidebarFooter>
       </nav>
     </Sidebar>
   );

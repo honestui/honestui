@@ -3,7 +3,6 @@
 import { Plus, RotateCcw, X } from "lucide-react";
 import * as React from "react";
 import { createPortal } from "react-dom";
-import posthog from "posthog-js";
 
 import {
   useComponentPreviewPlaygroundPortal,
@@ -114,10 +113,7 @@ export function ShaderPlayground({
           </p>
         </div>
         <Button
-          onClick={() => {
-            onReset();
-            posthog.capture("shader_playground_reset", { shader: title });
-          }}
+          onClick={onReset}
           size="sm"
           variant="outline"
         >

@@ -1,8 +1,8 @@
-import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
+import { SiteAnalytics } from "@/components/site-analytics";
 import { absoluteUrl, SITE_URL } from "@/lib/utils";
 import {
   SITE_DESCRIPTION,
@@ -217,8 +217,8 @@ export default function RootLayout({
           defaultTheme="system"
           attribute={["class", "data-theme"]}
         >
-          <VercelAnalytics />
           {children}
+          <SiteAnalytics />
         </ThemeProvider>
       </body>
     </html>

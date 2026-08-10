@@ -70,12 +70,28 @@ function TokenSample({ token, type }: { token: TokenDefinition; type: TokenPrevi
 
   if (type === "blur") {
     return (
-      <span aria-hidden="true" className="relative block h-8 w-14 overflow-hidden rounded-[var(--hui-radius-2)]">
-        <span className="absolute inset-0 bg-[linear-gradient(135deg,var(--hui-color-background-accent-emphasis)_0_50%,var(--hui-color-background-danger-emphasis)_50%)]" />
+      <span
+        aria-hidden="true"
+        className="grid h-12 w-28 grid-rows-[1rem_1fr] overflow-hidden rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)]"
+        data-token-preview="blur"
+      >
+        <span className="grid grid-cols-2 px-2 text-[9px] leading-4 text-[var(--hui-color-foreground-base-secondary)]">
+          <span>Sharp</span>
+          <span className="text-right">Blurred</span>
+        </span>
         <span
-          className="absolute inset-1 bg-[var(--hui-color-overlay-white-a6)]"
-          style={{ backdropFilter: variable }}
-        />
+          className="relative block overflow-hidden"
+          style={{
+            background:
+              "repeating-conic-gradient(var(--hui-color-background-danger-emphasis) 0 25%, var(--hui-color-background-accent-emphasis) 0 50%) 0 0 / 12px 12px",
+          }}
+        >
+          <span
+            className="absolute inset-y-0 right-0 w-1/2 border-l border-[var(--hui-color-overlay-white-a8)] bg-[var(--hui-color-overlay-white-a5)]"
+            data-token-preview-effect="blur"
+            style={{ backdropFilter: variable }}
+          />
+        </span>
       </span>
     );
   }

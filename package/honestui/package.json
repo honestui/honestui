@@ -1,6 +1,6 @@
 {
   "name": "honestui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Build and manage Honest UI component libraries.",
   "license": "MIT",
   "homepage": "https://honestui.com",
@@ -47,7 +47,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "sideEffects": [
     "**/*.css"
@@ -117,6 +118,8 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.0.0",
     "@types/prompts": "^2.4.9",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "@types/stringify-object": "^4.0.5",
     "eslint": "^9.39.5",
     "msw": "^2.11.6",

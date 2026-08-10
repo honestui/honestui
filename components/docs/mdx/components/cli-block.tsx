@@ -5,7 +5,6 @@ import { BunIcon, NpmIcon, PnpmIcon, YarnIcon } from "@/assets/icons";
 import { useConfig } from "@/hooks/use-config";
 import CopyButton from "./copy-button";
 import { cn } from "@/lib/utils";
-import posthog from "posthog-js";
 
 type PackageManager = "npm" | "yarn" | "bun" | "pnpm";
 
@@ -33,9 +32,6 @@ function CliBlock({ commands }: CliBlockProps) {
       onValueChange={(value) => {
         const nextPackageManager = value as PackageManager;
         setConfig({ packageManager: nextPackageManager });
-        posthog.capture("documentation_cli_package_manager_selected", {
-          package_manager: nextPackageManager,
-        });
       }}
     >
       <div className="group mt-2 flex flex-col rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1">

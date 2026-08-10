@@ -48,6 +48,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
     "build:package": "npm --prefix package/honestui run build",
     "pack:package": "npm --prefix package/honestui pack",
     "start": "next start",
@@ -57,6 +59,8 @@
     "verify:component-docs": "node scripts/verify-component-docs.mjs",
     "verify:theme-docs": "node scripts/verify-theme-docs.mjs",
     "verify:tokens": "node scripts/verify-token-prefix.mjs",
+    "verify:site": "npm run lint && npm run typecheck && npm run verify:docs && npm run verify:tokens && npm run build",
+    "verify:release": "npm run verify:site && npm run test:e2e && npm audit",
     "verify:production-docs": "node scripts/verify-production-docs.mjs",
     "verify:production-registry": "node scripts/verify-production-registry.mjs",
     "registry:animated": "node scripts/generate-animated-index.mjs",
@@ -89,7 +93,6 @@
     "next": "^16.3.0",
     "next-themes": "^0.4.6",
     "ogl": "^1.0.11",
-    "posthog-js": "^1.410.6",
     "postprocessing": "^6.39.4",
     "shadcn": "^4.15.0",
     "tailwind-merge": "^3.6.0",
@@ -106,6 +109,8 @@
     "esbuild": "^0.28.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/culori": "^4.0.1",
     "@types/node": "^20",

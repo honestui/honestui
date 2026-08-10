@@ -1,14 +1,12 @@
-import { SidebarHeader, SidebarTrigger } from "@/components/ui/sidebar";
-import { useGithubStars } from "@/hooks/use-github-stars";
-import { Button } from "@/components/ui/button";
-import ThemeSwitcher from "./theme-switcher";
 import { GithubIcon } from "@/assets/icons";
+import { Button } from "@/components/ui/button";
+import { SidebarHeader, SidebarTrigger } from "@/components/ui/sidebar";
+import { getGithubStars } from "@/hooks/use-github-stars";
 import Link from "next/link";
+import ThemeSwitcher from "./theme-switcher";
 
 const DocsHeader = async () => {
-  // its a fucking custom function shutup fucking eslint
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const stars = await useGithubStars();
+  const stars = await getGithubStars();
 
   return (
     <SidebarHeader className="bg-background pointer-events-none fixed top-0 z-50 flex h-14 w-full flex-row justify-between border-b p-0 sm:sticky sm:h-[35px] sm:border-b-0 sm:bg-transparent">
@@ -16,28 +14,55 @@ const DocsHeader = async () => {
         <SidebarTrigger className="sidebar:hidden" />
       </div>
       <div className="pointer-events-auto relative z-10 flex h-full items-center gap-2 pl-6">
-        <Link
-          href="https://github.com/honestui/honestui"
-          target="_blank"
-          aria-label="Honest UI on GitHub"
+        <Button
+          aria-label={
+            stars === null
+              ? "Honest UI on GitHub (opens in a new tab)"
+              : "Honest UI on GitHub, " +
+                stars.toLocaleString("en-US") +
+                " stars (opens in a new tab)"
+          }
+          render={
+            <Link
+              href="https://github.com/honestui/honestui"
+              rel="noreferrer"
+              target="_blank"
+            />
+          }
+          size="sm"
+          variant="link"
         >
-          <Button variant="link" size="sm">
-            <GithubIcon className="size-4 text-primary" />
-            {stars !== null && (
-              <span className="text-primary text-xs">{stars}</span>
-            )}
-          </Button>
-        </Link>
-        <span className="text-muted">|</span>
-        <ThemeSwitcher />
-        <Link href="https://connorlove.com" target="_blank">
-          <Button className="group h-8" size="sm" variant="ghost">
-            <span className="text-muted-foreground group-hover:text-primary text-xs">
-              {" "}
-              Built by Connor Love
+          <GithubIcon aria-hidden="true" className="size-4 text-primary" />
+          {stars !== null && (
+            <span aria-hidden="true" className="text-primary text-xs">
+              {stars.toLocaleString("en-US")}
             </span>
-          </Button>
-        </Link>
+          )}
+        </Button>
+        <span aria-hidden="true" className="text-muted">
+          |
+        </span>
+        <ThemeSwitcher />
+        <Button
+          aria-label="Connor Love’s website (opens in a new tab)"
+          className="group h-8"
+          render={
+            <Link
+              href="https://connorlove.com"
+              rel="noreferrer"
+              target="_blank"
+            />
+          }
+          size="sm"
+          variant="ghost"
+        >
+          <span
+            aria-hidden="true"
+            className="text-muted-foreground group-hover:text-primary text-xs"
+          >
+            Built by Connor Love
+          </span>
+        </Button>
       </div>
     </SidebarHeader>
   );

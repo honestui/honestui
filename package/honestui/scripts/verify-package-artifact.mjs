@@ -8,6 +8,9 @@ import { promisify } from "node:util"
 
 const execFileAsync = promisify(execFile)
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+const packageJson = JSON.parse(
+  await readFile(path.join(packageRoot, "package.json"), "utf8")
+)
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "honestui-artifact-"))
 
 try {
@@ -20,6 +23,7 @@ try {
   const packedFiles = new Set(packResult.files.map((file) => file.path))
   const requiredFiles = [
     "README.md",
+    "CHANGELOG.md",
     "package.json",
     "dist/index.js",
     "dist/index.d.ts",
@@ -81,7 +85,7 @@ try {
   const installedPackageJson = JSON.parse(
     await readFile(path.join(tempRoot, "node_modules", "honestui", "package.json"), "utf8")
   )
-  assert.equal(installedPackageJson.version, "0.0.7")
+  assert.equal(installedPackageJson.version, packageJson.version)
 } finally {
   await rm(tempRoot, { force: true, recursive: true })
 }

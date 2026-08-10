@@ -237,7 +237,7 @@
   --selection-foreground: var(--hui-color-foreground-base-emphasis);
   --path: var(--hui-color-border-base-primary);
   /* code stuff */
-  --color-vesper-type: oklch(0.5645 0.1633 253.27);
+  --color-vesper-type: oklch(0.54 0.1633 253.27);
   --color-vesper-string: oklch(0.5464 0.1442 147.32);
 }
 

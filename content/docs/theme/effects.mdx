@@ -89,6 +89,8 @@ Wrap nonessential motion in a reduced-motion query. The state change must remain
 
 Blur tokens are filters, not distances. Apply them to `filter` or `backdrop-filter` and provide an opaque-enough surface or fallback so content remains legible when backdrop filtering is unavailable.
 
+Each preview keeps the left half sharp and applies the listed backdrop blur to the right half.
+
 <TokenTable
   caption="Honest UI blur tokens"
   type="blur"
