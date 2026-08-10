@@ -1,7 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "fumadocs-ui/css/shadcn.css";
@@ -145,8 +141,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--hui-font-body);
-  --font-inter: var(--hui-font-inter);
-  --font-google-sans: var(--font-google-sans);
+  --font-inter: var(--hui-font-body);
+  --font-google-sans: var(--hui-font-body);
   --font-mono: var(--hui-font-mono);
   --shadow-xs: var(--hui-shadow-feather);
   --shadow-sm: var(--hui-shadow-soft);

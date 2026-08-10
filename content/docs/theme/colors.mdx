@@ -1,0 +1,186 @@
+---
+title: Colors
+description: Use Honest UI's semantic foreground, background, border, overlay, and visualization color tokens across light and dark themes.
+---
+
+Honest UI names colors by purpose. Components ask for a primary foreground, an accent background, or a danger border; the theme then resolves that role to an appropriate value. This keeps the code understandable and lets light, dark, accent, and neutral palettes change without renaming component classes.
+
+Use the `--hui-color-*` tokens on this page in application and component code. The lower-level `--hui-neutral-*`, `--hui-accent-*`, `--hui-danger-*`, `--hui-attention-*`, and `--hui-success-*` scales feed these roles and are intended for building the theme itself.
+
+## Foreground colors
+
+Foreground tokens are for text, icons, and other content placed over a background.
+
+<TokenTable
+  caption="Honest UI foreground color tokens"
+  type="color"
+  tokens={[
+    { name: "--hui-color-foreground-base-primary", description: "Headings, labels, and primary content" },
+    { name: "--hui-color-foreground-base-secondary", description: "Supporting copy and secondary icons" },
+    { name: "--hui-color-foreground-base-tertiary", description: "Muted metadata and placeholder text" },
+    { name: "--hui-color-foreground-base-emphasis", description: "High-contrast content on a neutral emphasis background" },
+    { name: "--hui-color-foreground-accent-primary", description: "Accent links and interactive content" },
+    { name: "--hui-color-foreground-accent-primary-hover", description: "Hover state for accent foreground content" },
+    { name: "--hui-color-foreground-accent-emphasis", description: "Content on an accent emphasis background" },
+    { name: "--hui-color-foreground-attention-primary", description: "Warning and attention content" },
+    { name: "--hui-color-foreground-attention-primary-hover", description: "Hover state for attention foreground content" },
+    { name: "--hui-color-foreground-attention-emphasis", description: "Content on an attention emphasis background" },
+    { name: "--hui-color-foreground-danger-primary", description: "Error messages and destructive actions" },
+    { name: "--hui-color-foreground-danger-primary-hover", description: "Hover state for danger foreground content" },
+    { name: "--hui-color-foreground-danger-emphasis", description: "Content on a danger emphasis background" },
+    { name: "--hui-color-foreground-success-primary", description: "Success and positive-state content" },
+    { name: "--hui-color-foreground-success-primary-hover", description: "Hover state for success foreground content" },
+    { name: "--hui-color-foreground-success-emphasis", description: "Content on a success emphasis background" },
+  ]}
+/>
+
+## Background colors
+
+Background tokens define page surfaces, containers, selection states, and semantic emphasis.
+
+<TokenTable
+  caption="Honest UI background color tokens"
+  type="color"
+  tokens={[
+    { name: "--hui-color-background-base-primary", description: "Main page and component surface" },
+    { name: "--hui-color-background-base-primary-hover", description: "Hover state on a base surface" },
+    { name: "--hui-color-background-base-secondary", description: "Secondary page, card, or panel surface" },
+    { name: "--hui-color-background-neutral-primary", description: "Subtle neutral highlight" },
+    { name: "--hui-color-background-neutral-secondary", description: "Neutral control and grouped-content surface" },
+    { name: "--hui-color-background-neutral-secondary-hover", description: "Hover state for a neutral secondary surface" },
+    { name: "--hui-color-background-neutral-tertiary", description: "Strong neutral surface" },
+    { name: "--hui-color-background-neutral-tertiary-hover", description: "Hover state for a strong neutral surface" },
+    { name: "--hui-color-background-neutral-emphasis", description: "Highest-contrast neutral surface" },
+    { name: "--hui-color-background-accent-primary", description: "Subtle accent highlight or selection" },
+    { name: "--hui-color-background-accent-emphasis", description: "Accent-filled control or prominent state" },
+    { name: "--hui-color-background-accent-emphasis-hover", description: "Hover state for accent emphasis" },
+    { name: "--hui-color-background-attention-primary", description: "Subtle warning or attention surface" },
+    { name: "--hui-color-background-attention-emphasis", description: "Strong attention surface" },
+    { name: "--hui-color-background-attention-emphasis-hover", description: "Hover state for attention emphasis" },
+    { name: "--hui-color-background-danger-primary", description: "Subtle error or destructive surface" },
+    { name: "--hui-color-background-danger-emphasis", description: "Destructive filled control or strong error state" },
+    { name: "--hui-color-background-danger-emphasis-hover", description: "Hover state for danger emphasis" },
+    { name: "--hui-color-background-success-primary", description: "Subtle success surface" },
+    { name: "--hui-color-background-success-emphasis", description: "Strong success surface" },
+    { name: "--hui-color-background-success-emphasis-hover", description: "Hover state for success emphasis" },
+  ]}
+/>
+
+## Border colors
+
+Border tokens define separators, control boundaries, focus treatment, and semantic states.
+
+<TokenTable
+  caption="Honest UI border color tokens"
+  type="color"
+  tokens={[
+    { name: "--hui-color-border-base-primary", description: "Subtle boundaries and separators" },
+    { name: "--hui-color-border-base-secondary", description: "Clearer dividers and control boundaries" },
+    { name: "--hui-color-border-base-tertiary", description: "Strong base border for inputs and cards" },
+    { name: "--hui-color-border-base-tertiary-hover", description: "Hover treatment for a strong base border" },
+    { name: "--hui-color-border-base-focus", description: "Neutral focus or active boundary" },
+    { name: "--hui-color-border-base-emphasis", description: "Highest-contrast neutral border" },
+    { name: "--hui-color-border-accent-primary", description: "Subtle accent boundary" },
+    { name: "--hui-color-border-accent-emphasis", description: "Strong accent and default focus boundary" },
+    { name: "--hui-color-border-accent-emphasis-hover", description: "Hover state for accent emphasis borders" },
+    { name: "--hui-color-border-attention-primary", description: "Subtle warning boundary" },
+    { name: "--hui-color-border-attention-emphasis", description: "Strong warning boundary" },
+    { name: "--hui-color-border-attention-emphasis-hover", description: "Hover state for attention emphasis borders" },
+    { name: "--hui-color-border-danger-primary", description: "Subtle error or invalid boundary" },
+    { name: "--hui-color-border-danger-emphasis", description: "Strong danger boundary" },
+    { name: "--hui-color-border-danger-emphasis-hover", description: "Hover state for danger emphasis borders" },
+    { name: "--hui-color-border-success-primary", description: "Subtle success boundary" },
+    { name: "--hui-color-border-success-emphasis", description: "Strong success boundary" },
+    { name: "--hui-color-border-success-emphasis-hover", description: "Hover state for success emphasis borders" },
+  ]}
+/>
+
+## Overlay colors
+
+Overlay scales provide 12 opacity steps. `base` follows the active theme—black in light mode and white in dark mode. The `black` and `white` scales keep their hue fixed, which is useful for media scrims and effects whose direction must not change with the theme.
+
+<TokenTable
+  caption="Honest UI overlay color tokens"
+  type="color"
+  tokens={[
+    ...["base", "black", "white"].flatMap((family) =>
+      [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 95].map((opacity, index) => ({
+        name: `--hui-color-overlay-${family}-a${index + 1}`,
+        value: family === "base" ? "Theme-aware" : `${family}, ${opacity}% opacity`,
+        description: `${family === "base" ? "Theme-aware" : family[0].toUpperCase() + family.slice(1)} overlay at ${opacity}% opacity`,
+      })),
+    ),
+  ]}
+/>
+
+Choose the lightest step that still communicates the layer and preserves contrast for content above and below it. An overlay does not replace dialog semantics, focus management, or an accessible name.
+
+## Visualization colors
+
+Four steps are available in each of 14 visualization families. Step `6` is the lightest supplied value, `8` provides more separation, `9` is the main solid color, and `11` is suited to stronger foreground use. Their exact appearance changes between light and dark themes.
+
+<TokenTable
+  caption="Honest UI visualization color tokens"
+  type="color"
+  tokens={[
+    ...["sky", "mint", "lime", "grass", "green", "jade", "cyan", "blue", "iris", "purple", "pink", "crimson", "orange", "gold"].flatMap((family) =>
+      [6, 8, 9, 11].map((step) => ({
+        name: `--hui-color-viz-${family}-${step}`,
+        description: `${family[0].toUpperCase() + family.slice(1)} visualization family, step ${step}`,
+      })),
+    ),
+  ]}
+/>
+
+Visualization colors are not a promise that every pair has sufficient contrast or is distinguishable for every form of color vision. Label series directly where possible, keep a stable series-to-color mapping, and add shapes, line styles, patterns, or text when color would otherwise carry the meaning alone. See [Chart configuration](/docs/charts/chart-config) for chart-specific color setup.
+
+## Change the palette
+
+Indigo and gray are the defaults provided by `data-theme`. Set optional palette attributes on the same element to switch the accent or neutral source values:
+
+```html
+<html
+  data-theme="dark"
+  data-style="modern"
+  data-accent-color="orange"
+  data-gray-color="slate"
+>
+```
+
+Supported accent overrides are `orange` and `mint`. Supported neutral choices are `gray`, `mauve`, `slate`, and `sage`. An unsupported value does not create a fallback palette; use one of the documented values or define the complete source scale yourself.
+
+## Tailwind usage
+
+Map each product state to complete, static class strings so Tailwind can detect them at build time:
+
+```tsx
+const statusClass = {
+  success:
+    "border-[var(--hui-color-border-success-primary)] bg-[var(--hui-color-background-success-primary)] text-[var(--hui-color-foreground-success-primary)]",
+  warning:
+    "border-[var(--hui-color-border-attention-primary)] bg-[var(--hui-color-background-attention-primary)] text-[var(--hui-color-foreground-attention-primary)]",
+  error:
+    "border-[var(--hui-color-border-danger-primary)] bg-[var(--hui-color-background-danger-primary)] text-[var(--hui-color-foreground-danger-primary)]",
+} as const
+
+export function Status({ status, children }) {
+  return (
+    <span
+      className={`rounded-[var(--hui-radius-full)] border px-[var(--hui-space-3)] py-[var(--hui-space-1)] ${statusClass[status]}`}
+    >
+      {children}
+    </span>
+  )
+}
+```
+
+Do not interpolate a token fragment into a class name. Tailwind must see the complete class string in source. Read [Tailwind CSS](/docs/theme/tailwind) for typed shorthand and optional aliases.
+
+## Color checks before release
+
+- Pair emphasis backgrounds with the matching emphasis foreground token. Mint intentionally resolves to dark accent-contrast text, while indigo and orange resolve to light text.
+- Keep default, hover, active, focus, disabled, invalid, warning, success, and destructive states distinct in both themes.
+- Check WCAG contrast with the rendered color pair. A semantic name describes intent; it does not prove contrast in every custom combination.
+- Never rely on color alone for status, validation, selection, or chart meaning. Add text, icons, patterns, or another persistent cue.
+- Verify forced-colors mode and avoid overriding system colors when doing so would hide native accessibility behavior.
+- Prefer semantic tokens over raw OKLCH values in component code. Override the palette or semantic role in one owned location when the whole product needs to change.

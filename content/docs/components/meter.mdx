@@ -98,7 +98,7 @@ import {
 
 ## Examples
 
-The main example shows both built-in layouts. The examples below show custom children, formatted values, and a range whose meaning changes across thresholds.
+The main example compares the built-in linear and circular layouts. The examples below cover custom children, formatted values, non-zero ranges, circular sizing, and semantic states.
 
 ### Without Label and Value
 
@@ -112,8 +112,20 @@ The main example shows both built-in layouts. The examples below show custom chi
 
 <ComponentPreview name="meter-with-range" />
 
+### Circular Sizes
+
+Set `--hui-meter-size` and `--hui-meter-track-size` on `MeterCircularTrack` to change the rendered diameter and stroke without editing its SVG geometry. Keep the centered value readable as the ring gets smaller.
+
+<ComponentPreview name="meter-circular-sizes" />
+
+### Circular Semantic States
+
+You can change the circular indicator stroke with a semantic color token. Pair that color with a visible label such as “Weak signal” or “Strong signal” so the state does not depend on color alone.
+
+<ComponentPreview name="meter-circular-statuses" />
+
 ## API reference
 
-`Meter` accepts Base UI Meter root props plus `variant="linear" | "circular"`. Its defaults are `min={0}` and `max={100}`. When it has no children, it renders the matching track and value automatically. The label, track, indicator, and value parts forward Base UI props; `MeterCircularTrack` accepts native SVG props.
+`Meter` accepts Base UI Meter root props plus `variant="linear" | "circular"`. Its defaults are `min={0}` and `max={100}`. When it has no children, it renders the matching track and value automatically. The label, track, indicator, and value parts forward Base UI props; `MeterCircularTrack` accepts native SVG props and the `--hui-meter-size` and `--hui-meter-track-size` CSS variables.
 
 See the [Base UI Meter API](https://base-ui.com/react/components/meter#api-reference) for value formatting and state details.

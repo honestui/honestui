@@ -103,9 +103,15 @@ export function DocsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
     [pages],
   );
 
+  const themePages = useMemo(
+    () => pages.filter((page) => page.url.startsWith("/docs/theme/")),
+    [pages],
+  );
+
   return (
     <>
       <PageGroup label="Get Started" pages={overviewPages} />
+      <PageGroup label="Theme" pages={themePages} />
       <PageGroup label="Components" pages={componentPages} />
     </>
   );

@@ -6,6 +6,14 @@
   aria-labelledby="honest-ui-wordmark-title"
 >
   <title id="honest-ui-wordmark-title">Honest UI</title>
+  <style>
+    @font-face {
+      font-family: "Love UI";
+      src: url("/fonts/LoveSans-Semibold.woff") format("woff");
+      font-style: normal;
+      font-weight: 600;
+    }
+  </style>
 
   <g fill="currentColor" transform="translate(0 70) scale(.18)">
     <path d="M0 0h362v115H112v453H0V0Z" />
@@ -17,7 +25,7 @@
     x="138"
     y="157"
     fill="currentColor"
-    font-family="Geist, Inter, Arial, sans-serif"
+    font-family="Love UI, Arial, sans-serif"
     font-size="108"
     font-weight="600"
     letter-spacing="-3"

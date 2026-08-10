@@ -81,7 +81,7 @@ try {
   const installedPackageJson = JSON.parse(
     await readFile(path.join(tempRoot, "node_modules", "honestui", "package.json"), "utf8")
   )
-  assert.equal(installedPackageJson.version, "0.0.6")
+  assert.equal(installedPackageJson.version, "0.0.7")
 } finally {
   await rm(tempRoot, { force: true, recursive: true })
 }

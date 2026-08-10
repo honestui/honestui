@@ -4,6 +4,7 @@ import { promises as fs } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
+import { getRegistryLocations } from "@/lib/registry-locations";
 import { Index } from "@/registry/__index__";
 
 export function getRegistryComponent(name: string) {
@@ -15,48 +16,7 @@ export async function getRegistryItem(name: string) {
     return null;
   }
 
-  const locations = [
-    {
-      path: path.join(process.cwd(), "registry/default/ui"),
-      type: "registry:ui" as const,
-    },
-    {
-      path: path.join(process.cwd(), "registry/default/ui/charts"),
-      type: "registry:ui" as const,
-    },
-    {
-      path: path.join(process.cwd(), "registry/default/examples"),
-      type: "registry:example" as const,
-    },
-    {
-      path: path.join(process.cwd(), "registry/default/examples/charts"),
-      type: "registry:example" as const,
-    },
-    {
-      path: path.join(process.cwd(), "registry/default/animated"),
-      type: "registry:component" as const,
-    },
-    {
-      path: path.join(process.cwd(), "registry/default/examples/animated"),
-      type: "registry:example" as const,
-    },
-    {
-      path: path.join(process.cwd(), "registry/default/shaders"),
-      type: "registry:component" as const,
-    },
-    {
-      path: path.join(process.cwd(), "registry/default/examples/shaders"),
-      type: "registry:example" as const,
-    },
-    {
-      path: path.join(process.cwd(), "lib/hooks"),
-      type: "registry:hook" as const,
-    },
-    {
-      path: path.join(process.cwd(), "lib"),
-      type: "registry:lib" as const,
-    },
-  ];
+  const locations = getRegistryLocations();
   const fileNames = path.extname(name)
     ? [name]
     : [`${name}.tsx`, `${name}.ts`, `${name}.css`];

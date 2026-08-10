@@ -1,21 +1,17 @@
 :root {
   /* Fonts */
-  --hui-font-inter: "Inter";
-  --hui-font-lora: "Lora";
-  --hui-font-josefin-sans: "Josefin Sans";
-  --hui-font-jetbrains-mono: "JetBrains Mono";
-  --hui-font-menlo: "Menlo";
+  --hui-font-love-ui: var(--font-love-ui), Arial, sans-serif;
 
   /* Font Families */
-  --hui-font-title: var(--hui-font-inter), sans-serif;
-  --hui-font-body: var(--hui-font-inter), sans-serif;
+  --hui-font-title: var(--hui-font-love-ui);
+  --hui-font-body: var(--hui-font-love-ui);
   --hui-font-mono:
-    var(--hui-font-menlo), var(--hui-font-jetbrains-mono), monospace;
+    var(--font-jetbrains-mono), "JetBrains Mono", Menlo, monospace;
 
   /* Font Weights */
   --hui-font-weight-regular: 400;
   --hui-font-weight-medium: 500;
-  --hui-font-weight-semibold: var(--hui-font-weight-medium);
+  --hui-font-weight-semibold: 600;
 
   /* Body Font Sizes */
   --hui-font-size-micro: 10px;
@@ -33,7 +29,7 @@
   --hui-line-height-large: 24px;
   --hui-line-height-base: var(--hui-line-height-regular);
 
-  /* Body Letter spacing — tuned for Inter, which is spaced generously already.
+  /* Body letter spacing — tuned for LoveUI, which is spaced generously already.
      Near-zero at small sizes, slightly negative as size grows. em-based so it
      scales with font-size. */
   --hui-letter-spacing-micro: 0.01em;
@@ -81,16 +77,14 @@
 }
 
 [data-style="modern"] {
-  /* Re-declare (not just inherit from :root) so a modern theme nested inside a
-     traditional one resets to Inter instead of inheriting Lora/Josefin. */
-  --hui-font-title: var(--hui-font-inter), sans-serif;
-  --hui-font-body: var(--hui-font-inter), sans-serif;
+  --hui-font-title: var(--hui-font-love-ui);
+  --hui-font-body: var(--hui-font-love-ui);
   font-family: var(--hui-font-body);
 }
 
 [data-style="traditional"] {
-  --hui-font-title: var(--hui-font-lora), serif;
-  --hui-font-body: var(--hui-font-josefin-sans), sans-serif;
+  --hui-font-title: var(--hui-font-love-ui);
+  --hui-font-body: var(--hui-font-love-ui);
   font-family: var(--hui-font-body);
 }
 
@@ -102,8 +96,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Only weights 400 and 500 are loaded (see @import above). Fail visibly
-     on any missing weight or style instead of rendering a faked bold/italic. */
+  /* Every used weight and italic style is supplied by the local LoveUI family. */
   font-synthesis: none;
 }
 

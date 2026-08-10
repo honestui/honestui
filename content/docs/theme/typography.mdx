@@ -1,0 +1,179 @@
+---
+title: Typography
+description: Apply Honest UI's font-family, weight, body, title, and technical-text tokens with readable pairings.
+---
+
+Honest UI separates typography into family roles and coordinated scales. Each size has a matching line height and letter spacing value, so text remains consistent across component labels, body copy, headings, and technical content.
+
+The default family resolves through `--font-love-ui` and falls back to Arial, then the system sans-serif. You can load LoveUI in your application or point `--font-love-ui` at a typeface you already own.
+
+## Font families
+
+<TokenTable
+  caption="Honest UI font-family tokens"
+  type="typography"
+  tokens={[
+    { name: "--hui-font-love-ui", value: "var(--font-love-ui), Arial, sans-serif", description: "Shared family stack and customization point" },
+    { name: "--hui-font-title", value: "var(--hui-font-love-ui)", description: "Headings and display titles" },
+    { name: "--hui-font-body", value: "var(--hui-font-love-ui)", description: "Body copy, controls, labels, and supporting text" },
+    { name: "--hui-font-mono", value: "var(--hui-font-love-ui)", description: "Technical-text role; override it when true monospaced alignment is required" },
+  ]}
+/>
+
+Both `modern` and `traditional` currently use the same title and body family. The style attribute changes radius, not the typography scale.
+
+To provide an application font without changing component code:
+
+```css
+:root {
+  --font-love-ui: "Your Product Sans";
+  --hui-font-mono: "Your Product Mono", ui-monospace, monospace;
+}
+```
+
+If character alignment matters—for code, tabular output, or logs—do not assume the default `--hui-font-mono` value is monospaced. Override the role with a real monospace family and test the content you display.
+
+## Font weights
+
+<TokenTable
+  caption="Honest UI font-weight tokens"
+  type="typography"
+  tokens={[
+    { name: "--hui-font-weight-regular", value: "400", description: "Body copy, descriptions, and most control text" },
+    { name: "--hui-font-weight-medium", value: "500", description: "Labels, headings, and moderate emphasis" },
+    { name: "--hui-font-weight-semibold", value: "600", description: "Strong labels and compact structural emphasis" },
+  ]}
+/>
+
+Load every weight you use. Honest UI disables synthetic bold and italic through `font-synthesis: none`, so a missing face will not be fabricated by the browser.
+
+## Body scale
+
+Use the three tokens for a named step together. The `base` aliases point to the regular body step and are useful where a component needs the default without repeating its specific size name.
+
+<TokenTable
+  caption="Honest UI body font-size tokens"
+  type="typography"
+  tokens={[
+    { name: "--hui-font-size-micro", value: "10px", description: "Dense metadata and short supporting labels" },
+    { name: "--hui-font-size-mini", value: "11px", description: "Captions, badges, and compact field help" },
+    { name: "--hui-font-size-small", value: "12px", description: "Secondary text, labels, and compact controls" },
+    { name: "--hui-font-size-regular", value: "14px", description: "Default component and body text" },
+    { name: "--hui-font-size-large", value: "16px", description: "Prominent body copy and large controls" },
+    { name: "--hui-font-size-base", value: "var(--hui-font-size-regular)", description: "Alias for the default body size" },
+  ]}
+/>
+
+<TokenTable
+  caption="Honest UI body line-height tokens"
+  type="typography"
+  tokens={[
+    { name: "--hui-line-height-micro", value: "12px", description: "Line height paired with micro text" },
+    { name: "--hui-line-height-mini", value: "14px", description: "Line height paired with mini text" },
+    { name: "--hui-line-height-small", value: "16px", description: "Line height paired with small text" },
+    { name: "--hui-line-height-regular", value: "20px", description: "Line height paired with regular text" },
+    { name: "--hui-line-height-large", value: "24px", description: "Line height paired with large text" },
+    { name: "--hui-line-height-base", value: "var(--hui-line-height-regular)", description: "Alias for the default body line height" },
+  ]}
+/>
+
+<TokenTable
+  caption="Honest UI body letter-spacing tokens"
+  type="typography"
+  tokens={[
+    { name: "--hui-letter-spacing-micro", value: "0.01em", description: "Tracking paired with micro text" },
+    { name: "--hui-letter-spacing-mini", value: "0.005em", description: "Tracking paired with mini text" },
+    { name: "--hui-letter-spacing-small", value: "0em", description: "Tracking paired with small text" },
+    { name: "--hui-letter-spacing-regular", value: "-0.006em", description: "Tracking paired with regular text" },
+    { name: "--hui-letter-spacing-large", value: "-0.011em", description: "Tracking paired with large text" },
+    { name: "--hui-letter-spacing-base", value: "var(--hui-letter-spacing-regular)", description: "Alias for the default body tracking" },
+  ]}
+/>
+
+## Title scale
+
+The four title steps map to the global `h4` through `h1` styles included by Honest UI. Those selectors use the title family, medium weight, the matching line height, and balanced wrapping.
+
+<TokenTable
+  caption="Honest UI title typography tokens"
+  type="typography"
+  tokens={[
+    { name: "--hui-font-size-t1", value: "20px", description: "Small heading size; used by h4" },
+    { name: "--hui-line-height-t1", value: "28px", description: "Line height paired with t1" },
+    { name: "--hui-letter-spacing-t1", value: "-0.01em", description: "Tracking paired with t1" },
+    { name: "--hui-font-size-t2", value: "24px", description: "Section heading size; used by h3" },
+    { name: "--hui-line-height-t2", value: "32px", description: "Line height paired with t2" },
+    { name: "--hui-letter-spacing-t2", value: "-0.013em", description: "Tracking paired with t2" },
+    { name: "--hui-font-size-t3", value: "28px", description: "Page-section heading size; used by h2" },
+    { name: "--hui-line-height-t3", value: "36px", description: "Line height paired with t3" },
+    { name: "--hui-letter-spacing-t3", value: "-0.016em", description: "Tracking paired with t3" },
+    { name: "--hui-font-size-t4", value: "32px", description: "Page-title size; used by h1" },
+    { name: "--hui-line-height-t4", value: "40px", description: "Line height paired with t4" },
+    { name: "--hui-letter-spacing-t4", value: "-0.02em", description: "Tracking paired with t4" },
+  ]}
+/>
+
+## Technical-text scale
+
+The technical scale supplies size, line-height, and tracking pairs. Apply `--hui-font-mono` separately because these tokens do not set the family.
+
+<TokenTable
+  caption="Honest UI technical-text typography tokens"
+  type="typography"
+  tokens={[
+    { name: "--hui-font-size-mono-mini", value: "11px", description: "Small technical labels and timestamps" },
+    { name: "--hui-line-height-mono-mini", value: "16px", description: "Line height paired with mono mini" },
+    { name: "--hui-letter-spacing-mono-mini", value: "0px", description: "Tracking paired with mono mini" },
+    { name: "--hui-font-size-mono-small", value: "12px", description: "Inline code and compact output" },
+    { name: "--hui-line-height-mono-small", value: "16px", description: "Line height paired with mono small" },
+    { name: "--hui-letter-spacing-mono-small", value: "0px", description: "Tracking paired with mono small" },
+    { name: "--hui-font-size-mono-regular", value: "14px", description: "Default code blocks and technical output" },
+    { name: "--hui-line-height-mono-regular", value: "20px", description: "Line height paired with mono regular" },
+    { name: "--hui-letter-spacing-mono-regular", value: "0px", description: "Tracking paired with mono regular" },
+    { name: "--hui-font-size-mono-large", value: "16px", description: "Prominent technical output" },
+    { name: "--hui-line-height-mono-large", value: "24px", description: "Line height paired with mono large" },
+    { name: "--hui-letter-spacing-mono-large", value: "0px", description: "Tracking paired with mono large" },
+  ]}
+/>
+
+## Tailwind usage
+
+Use arbitrary properties for the complete type recipe. This avoids ambiguity between Tailwind's text-color and font-size utilities:
+
+```tsx
+<section>
+  <p
+    className="
+      [font-family:var(--hui-font-body)]
+      [font-size:var(--hui-font-size-small)]
+      [font-weight:var(--hui-font-weight-medium)]
+      [letter-spacing:var(--hui-letter-spacing-small)]
+      [line-height:var(--hui-line-height-small)]
+    "
+  >
+    Monthly revenue
+  </p>
+  <p
+    className="
+      [font-family:var(--hui-font-title)]
+      [font-size:var(--hui-font-size-t3)]
+      [font-weight:var(--hui-font-weight-medium)]
+      [letter-spacing:var(--hui-letter-spacing-t3)]
+      [line-height:var(--hui-line-height-t3)]
+    "
+  >
+    $42,180
+  </p>
+</section>
+```
+
+For Tailwind v4 shorthand, use a type hint when needed: `text-(length:--hui-font-size-regular)` sets font size, while `text-(color:--hui-color-foreground-base-primary)` sets color.
+
+## Readability checks
+
+- Keep body copy at a readable size for its context; micro and mini steps are for short supporting text, not long instructions.
+- Pair each size with its named line height and letter spacing instead of mixing steps casually.
+- Do not encode heading structure with size alone. Use semantic heading levels in a logical order, then style them.
+- Let text wrap. Avoid fixed heights on labels, buttons, and fields that break when text is enlarged or translated.
+- Test at 200% and 400% zoom, with browser text-spacing overrides, and with long unbroken content.
+- Use real text rather than text baked into an image, and maintain at least the contrast required by the product's accessibility target.

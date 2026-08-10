@@ -1,0 +1,79 @@
+---
+title: Radius
+description: Use Honest UI's modern and traditional radius scales for consistent corners, pills, and circular shapes.
+---
+
+Radius tokens keep corner decisions consistent across components and let a product change its overall character without rewriting component classes. Honest UI provides seven roles, from subtle rounding to a full pill or circle.
+
+Radius values are resolved by `data-style`, so set either `modern` or `traditional` on the same shared ancestor that owns the component theme.
+
+## Modern style
+
+Modern is the restrained, compact option. It uses small radii so boundaries remain clear in dense product interfaces.
+
+<TokenTable
+  caption="Modern Honest UI radius tokens"
+  type="radius"
+  tokens={[
+    { name: "--hui-radius-1", value: "2px", description: "Small controls and subtle corner treatment" },
+    { name: "--hui-radius-2", value: "4px", description: "Buttons, inputs, menus, badges, and compact cards" },
+    { name: "--hui-radius-3", value: "6px", description: "Cards and grouped component containers" },
+    { name: "--hui-radius-4", value: "8px", description: "Dialogs, sheets, and larger surfaces" },
+    { name: "--hui-radius-5", value: "12px", description: "Large panels and prominent containers" },
+    { name: "--hui-radius-6", value: "16px", description: "Extra-large or expressive surfaces" },
+    { name: "--hui-radius-full", value: "800px", description: "Pills, circular avatars, and round indicators" },
+  ]}
+/>
+
+## Traditional style
+
+Traditional keeps the same token names but resolves them to softer values. Component code does not need to change.
+
+<TokenTable
+  caption="Traditional Honest UI radius tokens"
+  type="radius"
+  tokens={[
+    { name: "--hui-radius-1", value: "8px", description: "Small controls and subtle corner treatment" },
+    { name: "--hui-radius-2", value: "16px", description: "Buttons, inputs, menus, badges, and compact cards" },
+    { name: "--hui-radius-3", value: "20px", description: "Cards and grouped component containers" },
+    { name: "--hui-radius-4", value: "24px", description: "Dialogs, sheets, and larger surfaces" },
+    { name: "--hui-radius-5", value: "32px", description: "Large panels and prominent containers" },
+    { name: "--hui-radius-6", value: "40px", description: "Extra-large or expressive surfaces" },
+    { name: "--hui-radius-full", value: "1600px", description: "Pills, circular avatars, and round indicators" },
+  ]}
+/>
+
+## Switch styles
+
+```html
+<!-- Compact corners -->
+<html data-theme="light" data-style="modern">
+
+<!-- Softer corners -->
+<html data-theme="light" data-style="traditional">
+```
+
+The attribute is not decorative metadata: without a supported `data-style` value, the radius variables are not defined.
+
+## Tailwind usage
+
+```tsx
+<article className="overflow-clip rounded-[var(--hui-radius-3)]">
+  <img
+    alt=""
+    className="rounded-[var(--hui-radius-2)]"
+    src="/project-cover.jpg"
+  />
+  <span className="rounded-[var(--hui-radius-full)]">Active</span>
+</article>
+```
+
+The class names stay the same when `data-style` changes; the browser resolves the radius token to the modern or traditional value.
+
+## Practical guidance
+
+- Pick a token by the element's role and reuse it. Similar controls should not have slightly different corners.
+- Keep nested radii visually related. An inner element normally uses the same or a smaller token than its container.
+- Use `--hui-radius-full` for pills and circles rather than choosing an arbitrarily large number.
+- Radius does not make an element interactive. Preserve visible boundaries, affordances, labels, and focus indicators in both styles.
+- Test clipped focus rings and content near rounded corners. Use the focus-ring offset tokens documented in [Effects](/docs/theme/effects) when a container would otherwise cut the indicator off.

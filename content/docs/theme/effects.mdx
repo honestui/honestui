@@ -1,0 +1,121 @@
+---
+title: Effects
+description: Use Honest UI's shadow, focus, pressed-state, motion, and blur tokens without compromising feedback or accessibility.
+---
+
+Effects explain depth, focus, and change. Honest UI gives these decisions named tokens so a popover, button, and dialog can use the same visual language without copying long shadow or transition values.
+
+Use effects to reinforce behavior. They should not be the only way a person can identify a state or understand what changed.
+
+## Shadows
+
+Shadows resolve to different values in light and dark themes. The role stays the same, while the shadow color and intensity adapt to the active surface.
+
+<TokenTable
+  caption="Honest UI shadow tokens"
+  type="shadow"
+  tokens={[
+    { name: "--hui-shadow-feather", value: "Theme-aware", description: "Subtle elevation for cards and resting controls" },
+    { name: "--hui-shadow-soft", value: "Theme-aware", description: "Interactive controls, menus, and small floating surfaces" },
+    { name: "--hui-shadow-lifted", value: "Theme-aware", description: "Popovers, dropdowns, and notification toasts" },
+    { name: "--hui-shadow-floating", value: "Theme-aware", description: "Dialogs and prominent floating surfaces" },
+    { name: "--hui-shadow-inset", value: "Theme-aware inset", description: "Pressed or recessed states" },
+  ]}
+/>
+
+Elevation is relational. A floating surface only needs enough separation to remain understandable against the surfaces beneath it.
+
+## Focus and pressed feedback
+
+Focus tokens keep keyboard indicators consistent. Use the outline form for most controls and the shadow form for a borderless text-entry surface where an outline would not fit the component structure.
+
+<TokenTable
+  caption="Honest UI focus and pressed-state tokens"
+  tokens={[
+    { name: "--hui-focus-ring", value: "1px solid accent emphasis", description: "Default visible keyboard-focus outline" },
+    { name: "--hui-focus-ring-shadow", value: "0 0 0 1px accent emphasis", description: "Focus indicator for borderless input surfaces" },
+    { name: "--hui-focus-ring-offset-accent", value: "2px", description: "Moves a ring outside an accent-filled control" },
+    { name: "--hui-focus-ring-offset-inset", value: "-2px", description: "Pulls a ring inside a clipped control" },
+    { name: "--hui-focus-ring-offset-inset-border", value: "-1px", description: "Pulls a ring just inside a bordered control" },
+    { name: "--hui-scale-pressed", value: "0.98", description: "Pressed feedback for buttons, tabs, and larger controls" },
+    { name: "--hui-scale-pressed-strong", value: "0.94", description: "Pressed feedback for compact controls such as checks and chips" },
+  ]}
+/>
+
+Never remove the visible focus indicator without replacing it. Confirm that the complete control remains visible at 200% and 400% zoom and that the ring is not hidden by clipping, sticky content, or an overlay.
+
+## Motion
+
+The duration and easing tokens cover the interaction speeds used by Honest UI components.
+
+<TokenTable
+  caption="Honest UI duration tokens"
+  tokens={[
+    { name: "--hui-duration-press", value: "100ms", description: "Immediate pointer-down feedback" },
+    { name: "--hui-duration-fast", value: "150ms", description: "Tooltips, menus, and small popups" },
+    { name: "--hui-duration-normal", value: "200ms", description: "Popovers, dialogs, switches, and common state changes" },
+    { name: "--hui-duration-moderate", value: "250ms", description: "Indicators, previews, and stepped changes" },
+    { name: "--hui-duration-slow", value: "400ms", description: "Toast movement and larger transitions" },
+    { name: "--hui-duration-drawer", value: "450ms", description: "Drawer and sheet movement" },
+  ]}
+/>
+
+<TokenTable
+  caption="Honest UI easing and transition tokens"
+  tokens={[
+    { name: "--hui-ease-out", value: "cubic-bezier(0.22, 1, 0.36, 1)", description: "Entrances, exits, and value changes" },
+    { name: "--hui-ease-in-out", value: "cubic-bezier(0.77, 0, 0.175, 1)", description: "Elements moving between positions" },
+    { name: "--hui-ease-drawer", value: "cubic-bezier(0.32, 0.72, 0, 1)", description: "Drawer and sheet movement" },
+    { name: "--hui-transition-interactive", value: "200ms interactive properties", description: "Default color, border, shadow, and opacity feedback" },
+    { name: "--hui-transition-pressed", value: "100ms interactive properties and transform", description: "Fast active-state response" },
+  ]}
+/>
+
+Wrap nonessential motion in a reduced-motion query. The state change must remain understandable when the transition is removed.
+
+```tsx
+<button
+  className="
+    motion-safe:[transition:var(--hui-transition-interactive)]
+    motion-safe:active:scale-[var(--hui-scale-pressed)]
+    motion-safe:active:[transition:var(--hui-transition-pressed)]
+  "
+>
+  Apply filters
+</button>
+```
+
+## Blur
+
+Blur tokens are filters, not distances. Apply them to `filter` or `backdrop-filter` and provide an opaque-enough surface or fallback so content remains legible when backdrop filtering is unavailable.
+
+<TokenTable
+  caption="Honest UI blur tokens"
+  type="blur"
+  tokens={[
+    { name: "--hui-blur-sm", value: "blur(0.5px)", description: "Very subtle separation" },
+    { name: "--hui-blur-md", value: "blur(1px)", description: "Soft translucent surface treatment" },
+    { name: "--hui-blur-lg", value: "blur(2px)", description: "Noticeable backdrop separation" },
+    { name: "--hui-blur-xl", value: "blur(4px)", description: "Strong backdrop treatment for overlays" },
+  ]}
+/>
+
+```tsx
+<div
+  className="
+    border border-[var(--hui-color-border-base-primary)]
+    bg-[var(--hui-color-background-base-primary)]
+    shadow-[var(--hui-shadow-floating)]
+    [backdrop-filter:var(--hui-blur-xl)]
+    supports-[backdrop-filter:blur(1px)]:bg-[var(--hui-color-overlay-white-a8)]
+  "
+/>
+```
+
+## Practical guidance
+
+- Use the lowest elevation that communicates the layer relationship.
+- Keep focus feedback immediate and visible; do not animate it into view.
+- Do not place moving blur behind text if it reduces readability or increases distraction.
+- Pause or remove looping decorative animation, and honor `prefers-reduced-motion`.
+- Verify dark theme, forced colors, keyboard focus, and fallbacks with blur and animation disabled.

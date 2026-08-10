@@ -5,6 +5,8 @@ description: Customize Honest UI's semantic CSS tokens, themes, and copied compo
 
 Honest UI separates visual decisions into CSS tokens and component classes. Tokens keep shared decisions consistent; copied component files give you local control when one component needs to change.
 
+For the complete token reference, start with [Theme](/docs/theme/overview), then open the page for [colors](/docs/theme/colors), [typography](/docs/theme/typography), [spacing](/docs/theme/spacing), [radius](/docs/theme/radius), or [effects](/docs/theme/effects). This page focuses on deciding where a customization belongs.
+
 ## Install the shared styles
 
 The `init` command installs the shared style setup and records the stylesheet path in `components.json`:
@@ -29,6 +31,25 @@ Every Honest UI token starts with `--hui-`; `hui` stands for Honest UI. Tokens a
 | Effects | `--hui-shadow-floating`, `--hui-focus-ring` | Elevation and focus visibility |
 
 Components should normally use semantic tokens rather than primitive palette values. For example, a destructive action uses a danger role so the component remains meaningful when the palette changes.
+
+## Use tokens in Tailwind
+
+Copied Honest UI components pass tokens through Tailwind CSS arbitrary-value utilities. Use the same pattern in your own component code:
+
+```tsx
+<div
+  className="
+    rounded-[var(--hui-radius-3)]
+    border border-[var(--hui-color-border-base-primary)]
+    bg-[var(--hui-color-background-base-secondary)]
+    p-[var(--hui-space-5)]
+    text-[var(--hui-color-foreground-base-primary)]
+    shadow-[var(--hui-shadow-feather)]
+  "
+/>
+```
+
+The same classes resolve in light and dark themes because the browser reads the current variable values. Tailwind v4 also supports shorter custom-property syntax and optional semantic aliases; see [Tailwind CSS](/docs/theme/tailwind) for the complete guidance.
 
 ## Light and dark themes
 

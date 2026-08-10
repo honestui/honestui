@@ -1,0 +1,12 @@
+{
+  "title": "Theme",
+  "pages": [
+    "overview",
+    "tailwind",
+    "colors",
+    "typography",
+    "spacing",
+    "radius",
+    "effects"
+  ]
+}

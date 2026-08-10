@@ -31,6 +31,7 @@ import type { MDXComponents } from "mdx/types";
 import { CodeBlock } from "./components/code";
 import { Kbd } from "./components/kbd";
 import { Hr } from "./components/hr";
+import { TokenTable } from "./components/token-table";
 import { cn } from "@/lib/utils";
 
 export const mdxComponents: MDXComponents = {
@@ -161,4 +162,5 @@ export const mdxComponents: MDXComponents = {
   ApiRow,
   ApiHeading,
   ShowcaseGrid,
+  TokenTable,
 };

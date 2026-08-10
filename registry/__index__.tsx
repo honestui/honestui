@@ -170,6 +170,9 @@ import menu_hover from "./default/examples/menu-hover";
 import menu_link from "./default/examples/menu-link";
 import menu_nested from "./default/examples/menu-nested";
 import menu_radio_group from "./default/examples/menu-radio-group";
+import menu_scrollable from "./default/examples/menu-scrollable";
+import meter_circular_sizes from "./default/examples/meter-circular-sizes";
+import meter_circular_statuses from "./default/examples/meter-circular-statuses";
 import meter_demo from "./default/examples/meter-demo";
 import meter_simple from "./default/examples/meter-simple";
 import meter_with_formatted_value from "./default/examples/meter-with-formatted-value";
@@ -600,6 +603,9 @@ export const Index: Record<string, { component: ComponentType }> = {
   "menu-link": { component: menu_link },
   "menu-nested": { component: menu_nested },
   "menu-radio-group": { component: menu_radio_group },
+  "menu-scrollable": { component: menu_scrollable },
+  "meter-circular-sizes": { component: meter_circular_sizes },
+  "meter-circular-statuses": { component: meter_circular_statuses },
   "meter-demo": { component: meter_demo },
   "meter-simple": { component: meter_simple },
   "meter-with-formatted-value": { component: meter_with_formatted_value },

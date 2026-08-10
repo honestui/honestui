@@ -127,18 +127,28 @@ function MeterCircularTrack({
       data-slot="meter-circular-track"
       viewBox="0 0 72 72"
       className={cn(
-        "aspect-square h-[var(--hui-space-14)] w-[var(--hui-space-14)] -rotate-90 [--hui-meter-circumference:calc(2*3.14159265*var(--hui-meter-radius))] [--hui-meter-radius:calc((var(--hui-space-14)-var(--hui-meter-track-size)*2)/2)] [--hui-meter-track-size:var(--hui-space-2)]",
+        "aspect-square h-[var(--hui-meter-size)] w-[var(--hui-meter-size)] -rotate-90 [--hui-meter-size:var(--hui-space-14)] [--hui-meter-track-size:var(--hui-space-2)]",
         className
       )}
       {...props}
     >
       <circle
+        cx="36"
+        cy="36"
         data-slot="meter-circular-track-circle"
-        className="fill-none stroke-[var(--hui-color-background-neutral-secondary)] [cx:50%] [cy:50%] [r:var(--hui-meter-radius)] [stroke-width:var(--hui-meter-track-size)]"
+        r="32"
+        vectorEffect="non-scaling-stroke"
+        className="fill-none stroke-[var(--hui-color-background-neutral-secondary)] [stroke-width:var(--hui-meter-track-size)]"
       />
       <circle
+        cx="36"
+        cy="36"
         data-slot="meter-circular-indicator-circle"
-        className="fill-none stroke-[var(--hui-color-background-accent-emphasis)] [cx:50%] [cy:50%] [r:var(--hui-meter-radius)] [stroke-dasharray:var(--hui-meter-circumference)] [stroke-dashoffset:calc(var(--hui-meter-circumference)*(1-var(--hui-meter-percentage,0)/100))] [stroke-linecap:butt] [stroke-width:var(--hui-meter-track-size)] motion-safe:[transition:stroke-dashoffset_var(--hui-duration-moderate)_linear]"
+        pathLength="100"
+        r="32"
+        strokeDasharray="100"
+        vectorEffect="non-scaling-stroke"
+        className="fill-none stroke-[var(--hui-color-background-accent-emphasis)] [stroke-dashoffset:calc(100-var(--hui-meter-percentage,0))] [stroke-linecap:butt] [stroke-width:var(--hui-meter-track-size)] motion-safe:[transition:stroke-dashoffset_var(--hui-duration-moderate)_linear]"
       />
     </svg>
   )

@@ -1,0 +1,126 @@
+---
+title: Theme
+metaTitle: Honest UI theme system
+description: Set up Honest UI's CSS-first theme system and understand how its semantic tokens, palettes, and scopes work.
+---
+
+Honest UI components get their color, typography, spacing, radius, and effects from CSS custom properties. The component code stays readable because each property describes a role—such as a primary background or regular body text—instead of repeating a raw value.
+
+There is no required Honest UI theme provider. You own the stylesheet and choose how your application writes the theme attributes.
+
+## Start with the shared styles
+
+Running `init` installs the shared style setup into the global stylesheet recorded in `components.json`:
+
+```bash
+npx honestui@latest init
+```
+
+Set a color theme and style on a shared ancestor. The document element is the simplest place for an application-wide theme:
+
+```html
+<html data-theme="light" data-style="modern">
+  <!-- Your application -->
+</html>
+```
+
+Use `data-theme="dark"` for the dark color theme. Honest UI supplies `modern` and `traditional` style values; they currently change the radius scale while keeping the same type roles.
+
+If a theme library controls your application, configure it to write `light` or `dark` to `data-theme`. Honest UI does not manage persistence, system-theme detection, or hydration for you.
+
+## Use tokens with Tailwind CSS
+
+Honest UI components use Tailwind CSS v4 utilities with the CSS variables passed as arbitrary values. No plugin or Tailwind JavaScript config is required:
+
+```tsx
+<div
+  className="
+    rounded-[var(--hui-radius-3)]
+    border border-[var(--hui-color-border-base-primary)]
+    bg-[var(--hui-color-background-base-secondary)]
+    p-[var(--hui-space-5)]
+    text-[var(--hui-color-foreground-base-primary)]
+    shadow-[var(--hui-shadow-feather)]
+  "
+/>
+```
+
+The utility is generated at build time; the browser resolves the variable at runtime. That means the same class responds to light, dark, and nested theme scopes without a `dark:` duplicate. Read [Tailwind CSS](/docs/theme/tailwind) for custom-property shorthand, variants, type hints, and optional `@theme inline` aliases.
+
+## How the token system works
+
+Every public token begins with `--hui-`; `hui` stands for Honest UI. The prefix makes ownership clear when Honest UI variables sit beside product tokens or variables from another library.
+
+Tokens move from shared scales to roles used by components:
+
+| Layer | Examples | What it controls |
+| --- | --- | --- |
+| Palette values | `--hui-neutral-9`, `--hui-accent-10` | Theme-specific source colors |
+| Semantic colors | `--hui-color-background-base-primary`, `--hui-color-foreground-danger-primary` | Meaningful surface, content, border, and status roles |
+| Spacing | `--hui-space-3`, `--hui-space-7` | Gaps, padding, control sizes, and layout rhythm |
+| Radius | `--hui-radius-2`, `--hui-radius-full` | Corners, pills, and circular shapes |
+| Typography | `--hui-font-body`, `--hui-font-size-regular` | Type families, sizes, weights, line heights, and tracking |
+| Effects | `--hui-shadow-floating`, `--hui-focus-ring` | Elevation, focus, motion, pressed feedback, and blur |
+
+Use semantic tokens in component code. Palette values are implementation details for building or replacing a color system; they should not decide what a component means.
+
+```css
+.account-card {
+  color: var(--hui-color-foreground-base-primary);
+  background: var(--hui-color-background-base-secondary);
+  border: 1px solid var(--hui-color-border-base-primary);
+  border-radius: var(--hui-radius-4);
+  padding: var(--hui-space-5);
+  box-shadow: var(--hui-shadow-feather);
+}
+```
+
+## Theme attributes
+
+The shared styles respond to four attributes. Put attributes that belong to one scope on the same element.
+
+| Attribute | Supported values | Default behavior |
+| --- | --- | --- |
+| `data-theme` | `light`, `dark` | Required to resolve theme colors; also sets `color-scheme` for native controls |
+| `data-style` | `modern`, `traditional` | Required to resolve radius tokens |
+| `data-accent-color` | `orange`, `mint` | Without an override, the theme uses the built-in indigo accent |
+| `data-gray-color` | `gray`, `mauve`, `slate`, `sage` | Without an override, the theme uses gray |
+
+For example, this scope uses the dark theme with a mint accent and sage neutrals:
+
+```html
+<section
+  data-theme="dark"
+  data-style="traditional"
+  data-accent-color="mint"
+  data-gray-color="sage"
+>
+  <!-- Every Honest UI token in this subtree resolves from this scope. -->
+</section>
+```
+
+Nested scopes work through normal CSS inheritance. A child scope can preview a different theme without changing the rest of the page. Keep all four attributes together when a scope changes more than one dimension so its behavior is obvious in the markup.
+
+## Choose the right theme page
+
+- [Colors](/docs/theme/colors) explains semantic roles, palettes, overlays, and visualization colors.
+- [Tailwind CSS](/docs/theme/tailwind) shows how to use tokens in utilities and register shorter aliases.
+- [Typography](/docs/theme/typography) covers the LoveUI family, body and title scales, weights, line heights, and tracking.
+- [Spacing](/docs/theme/spacing) documents the 17-step spacing scale and how to choose a step.
+- [Radius](/docs/theme/radius) compares the modern and traditional radius scales.
+- [Effects](/docs/theme/effects) covers shadows, focus rings, pressed feedback, motion, and blur.
+
+## Customize without losing meaning
+
+Override a semantic token at the narrowest scope that owns the decision:
+
+```css
+.billing-area {
+  --hui-color-background-accent-emphasis: oklch(0.58 0.18 260);
+  --hui-color-border-accent-emphasis: oklch(0.58 0.18 260);
+}
+```
+
+Keep the token name when the meaning stays the same. Change component classes when the decision belongs to one component. Add a product token when the value represents a new reusable concept that Honest UI does not already name.
+
+After any theme change, test default, hover, active, focus, disabled, and invalid states in both color themes. Check text and non-text contrast, visible keyboard focus, forced colors, reduced motion, and zoomed layouts before shipping.

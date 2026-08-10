@@ -3,7 +3,7 @@ import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
-import { absoluteUrl, cn, SITE_URL } from "@/lib/utils";
+import { absoluteUrl, SITE_URL } from "@/lib/utils";
 import {
   SITE_DESCRIPTION,
   SITE_KEYWORDS,
@@ -12,7 +12,7 @@ import {
 } from "@/globals/constants/site";
 import "./globals.css";
 
-const loveSans = localFont({
+const loveUI = localFont({
   src: [
     {
       path: "../public/fonts/LoveSans-Light.woff",
@@ -65,7 +65,7 @@ const loveSans = localFont({
       style: "italic",
     },
   ],
-  variable: "--font-love-sans",
+  variable: "--font-love-ui",
   display: "swap",
 });
 
@@ -200,17 +200,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      className={`${loveUI.variable} ${jetbrainsMono.variable}`}
       data-scroll-behavior="smooth"
       data-style="modern"
       suppressHydrationWarning
     >
-      <body
-        className={cn(
-          loveSans.variable,
-          jetbrainsMono.variable,
-          "font-sans antialiased",
-        )}
-      >
+      <body className="font-sans antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

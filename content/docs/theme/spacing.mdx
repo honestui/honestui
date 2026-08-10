@@ -1,0 +1,75 @@
+---
+title: Spacing
+description: Use Honest UI's 17-step spacing scale for consistent component sizing, padding, gaps, and page layout.
+---
+
+Honest UI uses one spacing scale for component details and larger layouts. The 17 steps run from 2px to 120px, which keeps common values easy to recognize while leaving enough range for page-level composition.
+
+Spacing tokens are theme-independent. They do not change between light and dark themes or between modern and traditional styles.
+
+## Scale
+
+<TokenTable
+  caption="Honest UI spacing tokens"
+  type="spacing"
+  tokens={[
+    { name: "--hui-space-1", value: "2px", description: "Hairline gaps and very small optical adjustments" },
+    { name: "--hui-space-2", value: "4px", description: "Tight inline gaps and compact control padding" },
+    { name: "--hui-space-3", value: "8px", description: "Icon-to-label gaps and compact component padding" },
+    { name: "--hui-space-4", value: "12px", description: "Small control padding and related-item gaps" },
+    { name: "--hui-space-5", value: "16px", description: "Common component padding and comfortable gaps" },
+    { name: "--hui-space-6", value: "20px", description: "Medium component padding" },
+    { name: "--hui-space-7", value: "24px", description: "Card padding and gaps between related groups" },
+    { name: "--hui-space-8", value: "28px", description: "Large control dimensions and generous component spacing" },
+    { name: "--hui-space-9", value: "32px", description: "Section padding and common control height" },
+    { name: "--hui-space-10", value: "40px", description: "Large control height and compact section gaps" },
+    { name: "--hui-space-11", value: "48px", description: "Spacing between distinct content groups" },
+    { name: "--hui-space-12", value: "56px", description: "Small page-section spacing" },
+    { name: "--hui-space-13", value: "64px", description: "Major content divisions" },
+    { name: "--hui-space-14", value: "72px", description: "Generous page-section spacing" },
+    { name: "--hui-space-15", value: "80px", description: "Large layout separation" },
+    { name: "--hui-space-16", value: "96px", description: "Extra-large page sections" },
+    { name: "--hui-space-17", value: "120px", description: "Maximum spacing in the shared scale" },
+  ]}
+/>
+
+## Choose a step
+
+Start with the relationship between elements, not the number itself:
+
+| Range | Relationship | Typical use |
+| --- | --- | --- |
+| `1–3` | Very close | Icon details, inline content, dense controls |
+| `4–7` | Related | Component padding, form-field parts, card content |
+| `8–11` | Grouped | Component groups, panels, compact sections |
+| `12–17` | Separate | Page sections and major layout divisions |
+
+Repeated relationships should use repeated tokens. For example, if every field pairs a label and description with `--hui-space-2`, keep that relationship stable even when the field appears in a larger layout.
+
+## Tailwind usage
+
+Use a spacing variable anywhere Tailwind accepts an arbitrary length:
+
+```tsx
+<form className="grid gap-[var(--hui-space-7)]">
+  <div className="grid gap-[var(--hui-space-2)]">
+    <label htmlFor="name">Project name</label>
+    <input id="name" />
+  </div>
+
+  <div className="mt-[var(--hui-space-5)] flex flex-wrap gap-[var(--hui-space-3)]">
+    <Button>Save</Button>
+    <Button variant="secondary">Cancel</Button>
+  </div>
+</form>
+```
+
+Tailwind v4 shorthand such as `gap-(--hui-space-7)` is equivalent. Use the explicit `gap-[var(--hui-space-7)]` form when matching the copied Honest UI source.
+
+## Practical guidance
+
+- Use logical properties such as `margin-inline` and `padding-block` when direction or writing mode may change.
+- Do not use spacing alone to communicate grouping. Headings, landmarks, borders, and labels should make the structure clear too.
+- A token can size a control, but interactive targets still need to meet the product's target-size requirements. Add invisible target padding where a compact visual control must remain easy to operate.
+- At narrow widths and high zoom, allow groups to wrap or stack instead of shrinking gaps and text until they become difficult to use.
+- Use an explicit pixel value only when it represents a real exception, such as a one-pixel border—not as a second spacing scale.

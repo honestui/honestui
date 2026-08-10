@@ -22,9 +22,13 @@ A menu has a trigger, popup, items, optional groups, labels, separators, checkbo
 
 Keep menu labels short and action-oriented. Use nested menus sparingly because they require more pointer and keyboard precision.
 
+`MenuPopup` limits itself to Base UI's available viewport height and scrolls vertically when its content is taller. To give a long menu a smaller product-specific limit, pass a `max-height` class that keeps `--available-height` as the upper bound, such as `max-h-[min(18rem,var(--available-height))]`.
+
 ## Accessibility
 
-Menu items should be reachable with keyboard navigation. Use checkbox and radio menu items only when the checked state matters inside the menu.
+Menu items should be reachable with arrow-key navigation, including items outside the initially visible scroll area. Wheel and touch scrolling should not move the page once the menu reaches its edge. Use checkbox and radio menu items only when the checked state matters inside the menu.
+
+If a list becomes difficult to scan even with scrolling, use Autocomplete or Combobox instead. Search and filtering are more useful than forcing people through a very long action menu.
 
 ## Installation
 
@@ -49,7 +53,7 @@ npx honestui@latest add menu
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Import the following variables into your CSS file</Step>
@@ -144,7 +148,7 @@ import {
 
 ## Examples
 
-Examples cover hover opening, checkbox items, radio groups, links, group labels, nesting, close behavior, and opening a dialog.
+Examples cover hover opening, checkbox items, radio groups, links, group labels, nesting, scrolling, close behavior, and opening a dialog.
 
 ### Open on Hover
 
@@ -165,6 +169,10 @@ Examples cover hover opening, checkbox items, radio groups, links, group labels,
 ### With Group Label
 
 <ComponentPreview name="menu-group-labels" />
+
+### Scrollable Menu
+
+<ComponentPreview name="menu-scrollable" />
 
 ### Nested Menu
 

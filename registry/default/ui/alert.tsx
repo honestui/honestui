@@ -102,7 +102,7 @@ function AlertDialogBackdrop({
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-backdrop"
       className={cn(
-        "fixed inset-0 z-50 bg-black/32 backdrop-blur-sm transition-all duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0",
+        "fixed inset-0 z-[var(--hui-z-index-portal)] bg-black/32 backdrop-blur-sm transition-all duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0",
         className
       )}
       {...props}
@@ -117,7 +117,7 @@ function AlertDialogPopup({
   return (
     <AlertDialogPortal>
       <AlertDialogBackdrop />
-      <div className="fixed inset-0 z-50">
+      <div className="fixed inset-0 z-[var(--hui-z-index-portal)]">
         <div className="flex h-[100dvh] flex-col items-center overflow-hidden pt-6 max-sm:before:flex-1 sm:overflow-y-auto sm:p-4 sm:before:basis-[20vh] sm:after:flex-1">
           <AlertDialogPrimitive.Popup
             data-slot="alert-dialog-popup"

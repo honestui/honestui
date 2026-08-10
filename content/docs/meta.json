@@ -1,9 +1,10 @@
 {
   "title": "Overview",
   "pages": [
-    "---Overview---",
+    "---Get Started---",
     "index",
     "get-started",
+    "theme",
     "component-guide",
     "styling",
     "accessibility",

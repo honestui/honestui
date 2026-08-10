@@ -1,0 +1,162 @@
+---
+title: Tailwind CSS
+description: Use Honest UI tokens directly in Tailwind CSS v4 utilities, variants, and optional theme aliases.
+---
+
+Honest UI tokens work directly in Tailwind CSS. The copied components already use this approach: they pass each CSS variable through an arbitrary-value utility, so the value still updates at runtime when `data-theme`, `data-style`, or a palette attribute changes.
+
+You do not need a Tailwind plugin or JavaScript config to use an Honest UI token.
+
+## Use a token directly
+
+Wrap the variable in `var()` inside Tailwind's square-bracket syntax:
+
+```tsx
+export function ProjectCard() {
+  return (
+    <article
+      className="
+        rounded-[var(--hui-radius-3)]
+        border border-[var(--hui-color-border-base-primary)]
+        bg-[var(--hui-color-background-base-secondary)]
+        p-[var(--hui-space-5)]
+        text-[var(--hui-color-foreground-base-primary)]
+        shadow-[var(--hui-shadow-feather)]
+      "
+    >
+      Project settings
+    </article>
+  )
+}
+```
+
+This is the default Honest UI convention because it is explicit, works without extra aliases, and keeps the token name visible beside the property it controls.
+
+Tailwind v4 also supports custom-property shorthand. These two classes are equivalent:
+
+```tsx
+<div className="bg-[var(--hui-color-background-base-primary)]" />
+<div className="bg-(--hui-color-background-base-primary)" />
+```
+
+When the utility namespace is ambiguous, add a CSS data-type hint. For example, `text-*` can mean either color or font size:
+
+```tsx
+<p className="text-(color:--hui-color-foreground-base-secondary)">
+  Supporting copy
+</p>
+
+<p className="text-(length:--hui-font-size-regular)">
+  Regular-size copy
+</p>
+```
+
+The bracket form used in Honest UI source remains valid and is sometimes clearer for arbitrary CSS properties:
+
+```tsx
+<code
+  className="
+    [font-family:var(--hui-font-mono)]
+    [font-size:var(--hui-font-size-mono-small)]
+    [line-height:var(--hui-line-height-mono-small)]
+  "
+/>
+```
+
+See Tailwind's [arbitrary-value documentation](https://tailwindcss.com/docs/adding-custom-styles#using-arbitrary-values) for the framework's complete syntax.
+
+## Use variants normally
+
+Token-backed utilities work with responsive, state, group, data, and motion variants like any other Tailwind utility:
+
+```tsx
+<button
+  className="
+    rounded-[var(--hui-radius-2)]
+    bg-[var(--hui-color-background-accent-emphasis)]
+    px-[var(--hui-space-4)] py-[var(--hui-space-3)]
+    text-[var(--hui-color-foreground-accent-emphasis)]
+    shadow-[var(--hui-shadow-feather)]
+    hover:bg-[var(--hui-color-background-accent-emphasis-hover)]
+    active:scale-[var(--hui-scale-pressed)]
+    focus-visible:[outline:var(--hui-focus-ring)]
+    focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]
+    motion-safe:[transition:var(--hui-transition-interactive)]
+  "
+>
+  Save changes
+</button>
+```
+
+Keep complete class names in source. Do not construct classes such as `` `bg-[var(--hui-color-${role})]` `` at runtime because Tailwind cannot detect a class assembled from fragments. Map product states to complete class strings instead:
+
+```tsx
+const statusClass = {
+  success:
+    "bg-[var(--hui-color-background-success-primary)] text-[var(--hui-color-foreground-success-primary)]",
+  warning:
+    "bg-[var(--hui-color-background-attention-primary)] text-[var(--hui-color-foreground-attention-primary)]",
+  error:
+    "bg-[var(--hui-color-background-danger-primary)] text-[var(--hui-color-foreground-danger-primary)]",
+} as const
+```
+
+## Add shorter Tailwind aliases
+
+If a small group of roles appears throughout your product code, expose those roles to Tailwind v4 with `@theme inline`. The `inline` option is important because these aliases reference Honest UI variables whose values change by scope.
+
+Add the aliases after your Tailwind import and the Honest UI shared styles in the global stylesheet:
+
+```css
+@import "tailwindcss";
+
+@theme inline {
+  --color-hui-surface: var(--hui-color-background-base-primary);
+  --color-hui-surface-subtle: var(--hui-color-background-base-secondary);
+  --color-hui-text: var(--hui-color-foreground-base-primary);
+  --color-hui-text-muted: var(--hui-color-foreground-base-secondary);
+  --color-hui-accent: var(--hui-color-background-accent-emphasis);
+  --color-hui-accent-foreground: var(--hui-color-foreground-accent-emphasis);
+  --color-hui-border: var(--hui-color-border-base-primary);
+
+  --spacing-hui-3: var(--hui-space-3);
+  --spacing-hui-4: var(--hui-space-4);
+  --spacing-hui-5: var(--hui-space-5);
+
+  --radius-hui-control: var(--hui-radius-2);
+  --radius-hui-surface: var(--hui-radius-3);
+  --shadow-hui-surface: var(--hui-shadow-feather);
+  --font-hui-body: var(--hui-font-body);
+}
+```
+
+The aliases create familiar utilities while leaving Honest UI as the source of truth:
+
+```tsx
+<article className="rounded-hui-surface border-hui-border bg-hui-surface p-hui-5 text-hui-text shadow-hui-surface">
+  <p className="text-hui-text-muted">Updated two minutes ago</p>
+</article>
+```
+
+Do not alias all 247 tokens automatically. A second complete naming system makes theme changes harder to review and can hide whether a class represents a foreground, background, border, or raw palette value. Add aliases for stable product roles; use the direct variable syntax for less common or component-specific values.
+
+## Which form to use
+
+| Situation | Recommended form | Example |
+| --- | --- | --- |
+| Honest UI component source | Direct variable utility | `bg-[var(--hui-color-background-base-primary)]` |
+| State or responsive variant | Direct variable with a variant | `hover:bg-[var(--hui-color-background-base-primary-hover)]` |
+| Ambiguous Tailwind namespace | Typed custom-property shorthand | `text-(color:--hui-color-foreground-base-primary)` |
+| Frequently repeated product role | `@theme inline` alias | `bg-hui-surface` |
+| CSS property without a suitable utility | Arbitrary property | `[outline:var(--hui-focus-ring)]` |
+
+## Theme switching still happens in CSS
+
+Tailwind generates the utility, but the browser resolves the token. You do not need `dark:` variants when the token already changes with `data-theme`:
+
+```tsx
+// The same class resolves correctly in both themes.
+<main className="bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)]" />
+```
+
+Use `dark:` only when the layout or property choice itself changes, not when the semantic token already provides the dark value.
