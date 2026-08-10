@@ -37,16 +37,18 @@ function SheetBackdrop({ className, ...props }: SheetPrimitive.Backdrop.Props) {
 function SheetPopup({
   className,
   children,
+  showBackdrop = true,
   showCloseButton = true,
   side = "right",
   ...props
 }: SheetPrimitive.Popup.Props & {
+  showBackdrop?: boolean
   showCloseButton?: boolean
   side?: "top" | "right" | "bottom" | "left"
 }) {
   return (
     <SheetPortal>
-      <SheetBackdrop />
+      {showBackdrop && <SheetBackdrop />}
       <SheetPrimitive.Popup
         data-slot="sheet-popup"
         className={cn(

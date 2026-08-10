@@ -271,6 +271,32 @@ html {
   scroll-behavior: smooth;
 }
 
+html[data-theme-transition="circle-blur"]::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme-transition="circle-blur"]::view-transition-new(root) {
+  animation: theme-circle-blur-reveal 700ms cubic-bezier(0.4, 0, 0.2, 1);
+  mix-blend-mode: normal;
+}
+
+@keyframes theme-circle-blur-reveal {
+  from {
+    clip-path: circle(
+      0 at var(--theme-transition-x) var(--theme-transition-y)
+    );
+    filter: blur(8px);
+  }
+  to {
+    clip-path: circle(
+      var(--theme-transition-radius) at var(--theme-transition-x)
+        var(--theme-transition-y)
+    );
+    filter: blur(0);
+  }
+}
+
 ::selection {
   background-color: var(--selection);
   color: var(--selection-foreground);

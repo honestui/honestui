@@ -1,5 +1,6 @@
 import { DocsTableOfContents } from "@/components/docs/mdx/components/table-of-content";
 import { MDXNavigation } from "@/components/docs/mdx/components/navigation";
+import { DocsThemeCustomizer } from "@/components/docs/layout/docs-theme-customizer";
 import { DocsCopyPage } from "@/components/docs/layout/docs-copy-button";
 import { findNeighbour } from "fumadocs-core/page-tree";
 import { mdxComponents } from "@/components/docs/mdx";
@@ -173,7 +174,16 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
               </div>
             )}
           </div>
-          <div>{raw && <DocsCopyPage mdx={mdx} url={absoluteUrl(page.url)} path={page.url} />}</div>
+          <div className="flex items-center gap-2">
+            {raw && (
+              <DocsCopyPage
+                mdx={mdx}
+                url={absoluteUrl(page.url)}
+                path={page.url}
+              />
+            )}
+            {page.slugs[0] === "components" && <DocsThemeCustomizer />}
+          </div>
         </div>
         <div className="text-primary/80 mt-8 w-full flex-1 text-[14px] *:data-[slot=alert]:first:mt-0">
           <MDX components={mdxComponents} />

@@ -3,7 +3,7 @@ export const SITE_NAME = "Honest UI";
 export const SITE_TITLE = "Honest UI, Source-First React Components";
 
 export const SITE_DESCRIPTION =
-  "Polished React components, blocks, charts, icons, and agent skills you can copy, customize, and own.";
+  "Thoughtful React components, charts, icons, and visual effects you can adapt to your product.";
 
 export const SITE_KEYWORDS: string[] = [
   "honest ui",

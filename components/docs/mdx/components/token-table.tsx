@@ -52,7 +52,7 @@ function TokenSample({ token, type }: { token: TokenDefinition; type: TokenPrevi
     return (
       <span
         aria-hidden="true"
-        className="block h-8 w-14 border border-[var(--hui-color-border-accent-emphasis)] bg-[var(--hui-color-background-accent-primary)]"
+        className="block h-8 w-14 bg-[var(--hui-color-background-accent-emphasis)]"
         style={{ borderRadius: token.value ?? variable }}
       />
     );

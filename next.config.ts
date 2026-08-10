@@ -13,15 +13,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // PostHog's capture endpoints require their trailing slash to be preserved.
   skipTrailingSlashRedirect: true,
-  redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/docs",
-        permanent: false,
-      },
-    ];
-  },
   rewrites() {
     return [
       ...(posthogCloudRegion

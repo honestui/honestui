@@ -123,12 +123,14 @@ await mapWithConcurrency(canonicalUrls, 12, async (canonicalUrl) => {
     failures.push(`${location}: missing navigation landmark`)
   }
 
-  if (!result.text.includes('href="#docs-main-content"')) {
-    failures.push(`${location}: missing skip link to documentation content`)
-  }
+  if (location.startsWith("/docs")) {
+    if (!result.text.includes('href="#docs-main-content"')) {
+      failures.push(`${location}: missing skip link to documentation content`)
+    }
 
-  if (!result.text.includes('id="docs-main-content"')) {
-    failures.push(`${location}: missing documentation main-content target`)
+    if (!result.text.includes('id="docs-main-content"')) {
+      failures.push(`${location}: missing documentation main-content target`)
+    }
   }
 
   for (const anchor of getTags(result.text, "a")) {
