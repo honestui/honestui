@@ -1,6 +1,6 @@
 ---
 title: Frame
-description: A framed container for grouping related information.
+description: Place related content inside a bounded media or interface frame.
 ---
 
 <ComponentPreview name="frame-demo" />
@@ -65,16 +65,38 @@ import {
   FrameHeader,
   FramePanel,
   FrameTitle,
-} from "@/components/ui/frame"
+} from "@/components/ui/frame";
 ```
 
 ```tsx
 <Frame>
   <FrameHeader>
-    <FrameTitle>Title</FrameTitle>
-    <FrameDescription>Description</FrameDescription>
+    <FrameTitle>Preview</FrameTitle>
+    <FrameDescription>Desktop layout at 1440 pixels</FrameDescription>
   </FrameHeader>
-  <FramePanel>Content</FramePanel>
-  <FrameFooter>Footer</FrameFooter>
+  <FramePanel>Preview content</FramePanel>
+  <FrameFooter>Last updated 2 minutes ago</FrameFooter>
 </Frame>
 ```
+
+## Examples
+
+### Device preview
+
+<ComponentPreview name="frame-device-preview" />
+
+### Code output
+
+<ComponentPreview name="frame-code-output" />
+
+### Analytics panel
+
+<ComponentPreview name="frame-analytics-panel" />
+
+## Decision guidance
+
+Frame is a visual container for previews, code output, media, or embedded tools. It does not add landmark, figure, or region semantics. Add a heading, `figure`/`figcaption`, or an accessible region label when the framed content needs one.
+
+## API reference
+
+`Frame` accepts native `div` props plus the component's visual variant. `FramePanel`, `FrameHeader`, `FrameTitle`, `FrameDescription`, and `FrameFooter` accept native `div` props. Choose the semantic elements inside them based on the content.

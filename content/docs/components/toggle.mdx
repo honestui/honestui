@@ -1,6 +1,6 @@
 ---
 title: Toggle
-description: A two-state button that can stand alone or work inside a group.
+description: Turn a pressed state on or off, alone or within a related group.
 
 links:
   doc: https://base-ui.com/react/components/toggle#api-reference
@@ -75,7 +75,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Toggle, ToggleGroup } from "@/components/ui/toggle"
+import { Toggle, ToggleGroup } from "@/components/ui/toggle";
 ```
 
 ```tsx
@@ -98,88 +98,30 @@ import { Toggle, ToggleGroup } from "@/components/ui/toggle"
 
 ## Examples
 
-Our examples cover standalone toggles first, then grouped toggles with shared styles and state.
+The main example compares standalone sizes, pressed and disabled states, and a multiple-selection group. The examples below focus on group behavior that is difficult to understand from a static matrix.
 
-### Outline
-
-<ComponentPreview
-  name="toggle-outline"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### With Icon
-
-<ComponentPreview
-  name="toggle-with-icon"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Small Size
-
-<ComponentPreview
-  name="toggle-sm"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Large Size
-
-<ComponentPreview
-  name="toggle-lg"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Disabled
-
-<ComponentPreview
-  name="toggle-disabled"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Icon Group
-
-<ComponentPreview
-  name="toggle-icon-group"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-## Toggle Group
-
-Toggle Group is included in the same component file. Use it when related toggles should sit together and share the same size, variant, and state model.
-
-The group passes its `variant` and `size` values to the toggles inside it, so the grouped control stays visually consistent.
-
-### Basic Group
+### Single-selection group
 
 <ComponentPreview name="toggle-group-demo" />
 
-### Small Toggles
-
-<ComponentPreview name="toggle-group-sm" />
-
-### Large Toggles
-
-<ComponentPreview name="toggle-group-lg" />
-
-### Outline Toggles
-
-<ComponentPreview name="toggle-group-outline" />
-
-### Outline Toggles With Separators
+### Group with separators
 
 <ComponentPreview name="toggle-group-outline-with-separator" />
 
-### Disabled Group
-
-<ComponentPreview name="toggle-group-disabled" />
-
-### Disabled Item
+### One disabled item
 
 <ComponentPreview name="toggle-group-with-disabled-item" />
 
-### Multiple Selection
+### Multiple selection
 
 <ComponentPreview name="toggle-group-multiple" />
 
-### With Tooltips
+### Icon labels with tooltips
 
 <ComponentPreview name="tooltip-grouped" />
+
+## API reference
+
+`Toggle` forwards Base UI Toggle props and adds `variant="default" | "outline"` plus `size="1" | "2" | "3" | "4" | "sm" | "default" | "lg"`. `ToggleGroup` forwards Base UI Toggle Group props, shares `variant` and `size` with its children, and accepts `multiple` for independent pressed values. `ToggleGroupItem` is an alias of `Toggle`; `ToggleGroupSeparator` renders a visual separator.
+
+See the [Base UI Toggle API](https://base-ui.com/react/components/toggle#api-reference) and [Toggle Group API](https://base-ui.com/react/components/toggle-group#api-reference) for controlled state and keyboard behavior.

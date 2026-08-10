@@ -17,7 +17,7 @@ export default function SelectDemo() {
   return (
     <div className="w-full max-w-64">
       <Select items={items} defaultValue="next">
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectPopup>

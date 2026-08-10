@@ -1,6 +1,6 @@
 ---
 title: Button
-description: A button or a component that looks like a button.
+description: Trigger an action, submit a form, or open another control.
 ---
 
 <ComponentPreview name="button-demo" />
@@ -86,7 +86,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 ```
 
 ```tsx
@@ -98,148 +98,37 @@ import { Button } from "@/components/ui/button"
 You can use the [`render`](https://base-ui.com/react/utils/use-render#migrating-from-radix-ui) prop to make another component look like a button. Here's an example of a link that looks like a button.
 
 ```tsx
-import Link from "next/link"
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export function LinkAsButton() {
-  return <Button render={<Link href="/login" />}>Login</Button>
+  return <Button render={<Link href="/login" />}>Login</Button>;
 }
 ```
 
 ## Examples
 
-Our examples cover variants, sizes, icon layouts, disabled state, link rendering, and loading behavior.
+The main example compares semantic variants, sizes, an icon-only action, disabled state, and link composition in one place. The examples below focus on behavior that needs its own code path.
 
-### Styling Appearances
+### Surface appearances
 
-<ComponentPreview
-  name="button-appearances"
-  className="[&_[data-slot=code]_pre]:h-[300px] [&_[data-slot=preview]>*]:h-[300px]"
-/>
+Use appearance sparingly. It changes visual depth, not the action's meaning or priority.
 
-### Default
+<ComponentPreview name="button-appearances" />
 
-<ComponentPreview
-  name="button-default"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+### Loading state
 
-### Outline
+Keep the button label stable enough that people know which action is pending. Disable duplicate submission while work is in progress, and expose the same state with `aria-disabled` or `disabled` as appropriate.
 
-<ComponentPreview
-  name="button-outline"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+<ComponentPreview name="button-loading" />
 
-### Secondary
+### Icon placement
 
-<ComponentPreview
-  name="button-secondary"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+<ComponentPreview name="button-with-icon" />
 
-### Destructive
+## API reference
 
-<ComponentPreview
-  name="button-destructive"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+`Button` accepts native button props and Base UI's `render` composition prop. Honest UI adds `variant` (`default`, `outline`, `secondary`, `destructive`, `destructive-outline`, `ghost`, or `link`), `size` (`xs`, `sm`, `default`, `lg`, `xl`, `icon`, `icon-sm`, or `icon-lg`), and `appearance` (`flat`, `glossy`, `glow`, or `bevel`).
 
-### Destructive Outline
-
-<ComponentPreview
-  name="button-destructive-outline"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Ghost
-
-<ComponentPreview
-  name="button-ghost"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Link
-
-<ComponentPreview
-  name="button-link"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Extra-small Size
-
-<ComponentPreview
-  name="button-xs"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Small Size
-
-<ComponentPreview
-  name="button-sm"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Large Size
-
-<ComponentPreview
-  name="button-lg"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Extra-large Size
-
-<ComponentPreview
-  name="button-xl"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Disabled
-
-<ComponentPreview
-  name="button-disabled"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Icon
-
-<ComponentPreview
-  name="button-icon"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Icon Small Size
-
-<ComponentPreview
-  name="button-icon-sm"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Icon Large Size
-
-<ComponentPreview
-  name="button-icon-lg"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### With Icon
-
-<ComponentPreview
-  name="button-with-icon"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### With Link
-
-<ComponentPreview
-  name="button-with-link"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Loading
-
-<ComponentPreview
-  name="button-loading"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+The native default is `type="button"`. Set `type="submit"` explicitly inside a form. Use `render` or `asChild` to preserve link semantics when a navigation action needs button styling.

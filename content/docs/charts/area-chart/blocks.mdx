@@ -1,21 +1,31 @@
 ---
-title: Area Blocks
-description: Ready-made area chart layouts built with Honest UI
+title: Area Chart Examples
+description: Complete area chart layouts with realistic structure and sample data.
 image: /og/area-chart.png
 ---
 
-## Marathon Finish Percentiles
+These examples combine chart parts with headings, summaries, legends, and controls. The values are sample data. Open the Code tab to replace the data keys, labels, units, and written summary together.
 
-<ComponentPreview className="mb-4" title="Marathon Finish Percentiles" name="b-latency-echarts-area-chart"/>
+## Marathon finish percentiles
 
-## Endowment Fund Comparison
+Use this structure to compare several percentile bands across an ordered sequence. Replace `time`, `p99`, `p95`, `p75`, and `p50`, then update the visible unit and series labels. Provide a table when readers need individual percentile values without pointer hover.
 
-<ComponentPreview className="mb-4" title="Endowment Fund Comparison" name="b-portfolio-echarts-area-chart"/>
+<ComponentPreview className="mb-4" title="Marathon finish percentiles" name="b-latency-echarts-area-chart"/>
 
-## Tree Planting Goal
+## Endowment fund comparison
 
-<ComponentPreview className="mb-4" title="Tree Planting Goal" name="b-benchmark-echarts-area-chart"/>
+Use this two-series layout when direction and change over the same date range matter. Replace the date and both fund fields, then update the summary values above the plot. Keep gains and losses understandable without color alone.
 
-## Bike Rental Demand
+<ComponentPreview className="mb-4" title="Endowment fund comparison" name="b-portfolio-echarts-area-chart"/>
 
-<ComponentPreview className="mb-4" title="Bike Rental Demand" name="b-audience-echarts-area-chart"/>
+## Tree planting goal
+
+Use this layout to compare an observed value with a target. Replace `date`, `actual`, and `target`, and state the latest difference in text. The solid and dashed strokes reinforce the series distinction without relying only on color.
+
+<ComponentPreview className="mb-4" title="Tree planting goal" name="b-benchmark-echarts-area-chart"/>
+
+## Bike rental demand
+
+Use this single-series layout for a compact trend with a visible total. Replace `month` and `rentals`, then update the heading, unit, and aggregation. Add a summary of the direction or highest period when that conclusion matters.
+
+<ComponentPreview className="mb-4" title="Bike rental demand" name="b-audience-echarts-area-chart"/>

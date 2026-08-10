@@ -26,7 +26,9 @@ export function buildUrlAndHeadersForRegistryItem(
   name: string,
   config?: Config
 ) {
-  let { registry, item } = parseRegistryAndItemFromString(name)
+  const parsedItem = parseRegistryAndItemFromString(name)
+  let { registry } = parsedItem
+  const { item } = parsedItem
 
   // If no registry prefix, check if it's a URL or local path.
   // These should be handled directly, not through a registry.

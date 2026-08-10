@@ -110,7 +110,8 @@ export async function readRegistryWithIncludes(
 
   validateDuplicateItems(result.items, context.itemSourcesByItem)
 
-  const { include, ...registry } = result
+  const registry = { ...result }
+  delete registry.include
   validateRootRegistry(registry, rootFile)
 
   return {
@@ -230,7 +231,11 @@ function rewriteRegistryItemFilePaths(
 function stripRegistryItemFileContent(item: RegistryItem) {
   return {
     ...item,
-    files: item.files?.map(({ content, ...file }) => file),
+    files: item.files?.map((file) => {
+      const fileWithoutContent = { ...file }
+      delete fileWithoutContent.content
+      return fileWithoutContent
+    }),
   }
 }
 

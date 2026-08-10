@@ -11,7 +11,6 @@ import {
 } from "@/src/preset/presets"
 import { getRegistryBaseColors, getRegistryStyles } from "@/src/registry/api"
 import { BUILTIN_REGISTRIES, HONESTUI_URL } from "@/src/registry/constants"
-import { clearRegistryContext } from "@/src/registry/context"
 import { registryConfigSchema } from "@/src/registry/schema"
 import { isUrl } from "@/src/registry/utils"
 import { rawConfigSchema } from "@/src/schema"
@@ -36,7 +35,6 @@ import {
   DEFAULT_ICON_LIBRARY,
   DEFAULT_TAILWIND_CONFIG,
   DEFAULT_TAILWIND_CSS,
-  DEFAULT_UTILS,
   explorer,
   getConfig,
   getWorkspaceConfig,
@@ -575,8 +573,6 @@ export const init = new Command()
       restoreBackupOnExit()
       logger.break()
       handleError(error)
-    } finally {
-      clearRegistryContext()
     }
   })
 
@@ -586,7 +582,6 @@ export async function runInit(
   }
 ) {
   let projectInfo
-  let projectConfig
   let newProjectTemplate: keyof typeof templates | undefined
 
   // Resolve the effective template if --monorepo is set.
@@ -628,7 +623,7 @@ export async function runInit(
     projectInfo = await getProjectInfo(options.cwd)
   }
 
-  projectConfig = await getProjectConfig(options.cwd, projectInfo)
+  const projectConfig = await getProjectConfig(options.cwd, projectInfo)
 
   // Use the template from project creation if available,
   // or fall back to the explicit --template flag.
@@ -940,7 +935,7 @@ async function promptForMinimalConfig(
     typeof opts.registryBaseConfig?.style === "string"
       ? opts.registryBaseConfig.style
       : defaultConfig.style
-  let baseColor =
+  const baseColor =
     typeof opts.registryBaseConfig?.tailwind?.baseColor === "string"
       ? opts.registryBaseConfig.tailwind.baseColor
       : "neutral"

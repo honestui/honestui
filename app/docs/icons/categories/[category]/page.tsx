@@ -1,5 +1,6 @@
 import { AssetCategoryPage } from "@/components/docs/icons/asset-category-page";
 import { ICON_CATEGORIES, getIconCategorySummary } from "@/globals/constants/icon-categories";
+import { getAssetCategory } from "@/lib/icon-library";
 import { absoluteUrl } from "@/lib/utils";
 import type { Metadata } from "next";
 
@@ -16,12 +17,13 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category: slug } = await params;
-  const category = getIconCategorySummary(slug);
-  if (!category) return {};
+  const categorySummary = getIconCategorySummary(slug);
+  const category = getAssetCategory("icons", slug);
+  if (!categorySummary || !category) return {};
 
-  const title = `${category.name} Icons`;
-  const description = `Browse all ${category.count} ${category.name.toLowerCase()} icons and copy their React imports.`;
-  const url = absoluteUrl(`/docs/icons/categories/${category.slug}`);
+  const title = `${categorySummary.name} Icons`;
+  const description = `Browse ${category.count} assets in the ${categorySummary.name} icon collection and copy their React imports.`;
+  const url = absoluteUrl(`/docs/icons/categories/${categorySummary.slug}`);
 
   return {
     title,

@@ -47,7 +47,7 @@ export default function FieldAutocompleteDemo() {
           </AutocompleteList>
         </AutocompletePopup>
       </Autocomplete>
-      <FieldDescription>Select a item.</FieldDescription>
+      <FieldDescription>Choose a fruit from the suggestions.</FieldDescription>
     </Field>
   )
 }

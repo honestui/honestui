@@ -6,13 +6,13 @@ import { ChevronRight, Ellipsis as MoreHorizontal } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 
-const breadcrumbVariants = cva("[font-weight:var(--rs-font-weight-medium)]", {
+const breadcrumbVariants = cva("[font-weight:var(--hui-font-weight-medium)]", {
   variants: {
     size: {
       small:
-        "[font-size:var(--rs-font-size-small)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]",
+        "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
       medium:
-        "[font-size:var(--rs-font-size-regular)] [letter-spacing:var(--rs-letter-spacing-regular)] [line-height:var(--rs-line-height-regular)]",
+        "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
     },
   },
   defaultVariants: {
@@ -40,7 +40,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        "m-0 flex list-none items-center gap-[var(--rs-space-2)] p-0",
+        "m-0 flex list-none items-center gap-[var(--hui-space-2)] p-0",
         className
       )}
       {...props}
@@ -66,7 +66,7 @@ function BreadcrumbLink({
   const defaultProps = {
     "data-slot": "breadcrumb-link",
     className: cn(
-      "flex cursor-pointer items-center gap-[var(--rs-space-2)] whitespace-nowrap text-[var(--rs-color-foreground-base-tertiary)] no-underline outline-none motion-safe:[transition:color_var(--rs-duration-fast)_var(--rs-ease-out)] hover:text-[var(--rs-color-foreground-base-secondary)] focus-visible:rounded-[var(--rs-radius-1)] focus-visible:[outline:var(--rs-focus-ring)] aria-disabled:pointer-events-none aria-disabled:opacity-50",
+      "flex cursor-pointer items-center gap-[var(--hui-space-2)] whitespace-nowrap text-[var(--hui-color-foreground-base-tertiary)] no-underline outline-none motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:text-[var(--hui-color-foreground-base-secondary)] focus-visible:rounded-[var(--hui-radius-1)] focus-visible:[outline:var(--hui-focus-ring)] aria-disabled:pointer-events-none aria-disabled:opacity-50",
       className
     ),
   }
@@ -86,7 +86,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
       aria-disabled="true"
       aria-current="page"
       className={cn(
-        "flex cursor-default items-center whitespace-nowrap text-[var(--rs-color-foreground-base-primary)] [font-weight:var(--rs-font-weight-medium)] hover:text-[var(--rs-color-foreground-base-primary)]",
+        "flex cursor-default items-center whitespace-nowrap text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)] hover:text-[var(--hui-color-foreground-base-primary)]",
         className
       )}
       {...props}
@@ -105,7 +105,7 @@ function BreadcrumbSeparator({
       role="presentation"
       aria-hidden="true"
       className={cn(
-        "flex items-center text-[var(--rs-color-foreground-base-tertiary)] [&>svg]:size-4",
+        "flex items-center text-[var(--hui-color-foreground-base-tertiary)] [&>svg]:size-4",
         className
       )}
       {...props}
@@ -125,7 +125,7 @@ function BreadcrumbEllipsis({
       role="presentation"
       aria-hidden="true"
       className={cn(
-        "flex items-center text-[var(--rs-color-foreground-base-tertiary)]",
+        "flex items-center text-[var(--hui-color-foreground-base-tertiary)]",
         className
       )}
       {...props}
@@ -155,7 +155,7 @@ function BreadcrumbDropdownTrigger({
     "data-slot": "breadcrumb-dropdown-trigger",
     type: "button" as const,
     className: cn(
-      "flex cursor-pointer items-center border-0 bg-transparent p-0 text-[var(--rs-color-foreground-base-secondary)] [font-size:inherit] [font-weight:inherit] outline-none focus-visible:rounded-[var(--rs-radius-1)] focus-visible:[outline:var(--rs-focus-ring)] [&_svg]:h-[var(--rs-space-3)]",
+      "flex cursor-pointer items-center border-0 bg-transparent p-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:inherit] [font-weight:inherit] outline-none focus-visible:rounded-[var(--hui-radius-1)] focus-visible:[outline:var(--hui-focus-ring)] [&_svg]:h-[var(--hui-space-3)]",
       className
     ),
   }
@@ -175,7 +175,7 @@ function BreadcrumbDropdownItem({
   const defaultProps = {
     "data-slot": "breadcrumb-dropdown-item",
     className: cn(
-      "block w-full cursor-pointer border-0 bg-transparent p-[var(--rs-space-3)] text-left text-[var(--rs-color-foreground-base-primary)] no-underline [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] hover:rounded-[var(--rs-radius-2)] hover:bg-[var(--rs-color-background-base-primary-hover)]",
+      "block w-full cursor-pointer border-0 bg-transparent p-[var(--hui-space-3)] text-left text-[var(--hui-color-foreground-base-primary)] no-underline [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] hover:rounded-[var(--hui-radius-2)] hover:bg-[var(--hui-color-background-base-primary-hover)]",
       className
     ),
   }

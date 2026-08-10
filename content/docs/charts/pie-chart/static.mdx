@@ -1,6 +1,6 @@
 ---
 title: Pie Chart
-description: Our pie chart with donut, gradient, and pop-out selection variants.
+description: Show a simple part-to-whole relationship with a small number of categories.
 image: /og/pie-chart.png
 links:
   github: https://github.com/honestui/honestui/blob/main/registry/default/charts/pie-chart.tsx
@@ -20,7 +20,7 @@ Use a pie or donut chart to show a simple part-to-whole relationship with a smal
 
 ## Accessibility
 
-Canvas charts need a nearby text summary or data table when the exact values are important. Label sectors directly when space allows and pair every color with a category name and value.
+Canvas charts need a nearby text summary or data table when exact values or proportions are important. Label sectors directly when space allows and pair every color with a category name and value. Tooltip and direct sector selection are pointer-operated; provide equivalent controls when those interactions are required.
 
 ## Installation
 
@@ -28,7 +28,7 @@ Canvas charts need a nearby text summary or data table when the exact values are
 
 ## Usage
 
-Our pie chart is composable. `<PieChart>` is the container, and every part hangs off it as a compound member, `<PieChart.Legend>`, `<PieChart.Tooltip>`, `<PieChart.Background>`, and one `<PieChart.Pie>`, so a single import gives you the whole chart. The `<PieChart.Pie>` carries its own shape props (`innerRadius`, `paddingAngle`, `cornerRadius`, …) and an `isClickable` flag.
+`<PieChart>` owns the data, theme configuration, and shared state. Add a legend, tooltip, background, and one `<PieChart.Pie>` part as needed. The Pie sets its radius, spacing, corners, labels, and selection behavior.
 
 ```tsx
 import { PieChart, type ChartConfig } from "honestui/charts";
@@ -67,9 +67,7 @@ const chartConfig = {
 </PieChart>
 ```
 
-ECharts renders to a `<canvas>`, so these children never mount as DOM. The root reads their props and compiles them into the ECharts option, same JSX, same presence semantics (omit a part and it won't render), same behavior, just declarative config instead of live DOM nodes.
-
-The `config` is the same contract as every Honest UI chart, each key maps a sector name to a `label` and a per-theme `colors` array. See <Link href="/docs/charts/chart-config">Chart Config</Link> for the full shape. Colors resolve from your CSS variables at runtime, so dark mode works with no extra wiring.
+The root compiles its children into an ECharts option and renders the plot on a canvas. The `config` prop maps each sector key to its label and theme colors. See <Link href="/docs/charts/chart-config">Chart Config</Link> for the complete shape.
 
 <Alert>
   <AlertContent>

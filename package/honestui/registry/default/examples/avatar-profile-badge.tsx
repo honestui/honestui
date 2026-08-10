@@ -20,7 +20,7 @@ export default function AvatarProfileBadge() {
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-semibold">Alex Johnson</span>
           <Badge variant="default" size="sm">
-            Founder
+            Pro
           </Badge>
         </div>
         <span className="text-xs text-muted-foreground">Founder & CEO</span>

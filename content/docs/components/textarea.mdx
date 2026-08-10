@@ -1,11 +1,9 @@
 ---
 title: Textarea
-description: A native textarea element.
+description: Collect text that may span more than one line.
 ---
 
-<ComponentPreview
-  name="textarea-demo"
-/>
+<ComponentPreview name="textarea-demo" />
 
 ## Overview
 
@@ -66,7 +64,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea";
 ```
 
 ```tsx
@@ -75,36 +73,30 @@ import { Textarea } from "@/components/ui/textarea"
 
 ## Examples
 
-Our examples cover sizes, disabled state, labels, and form integration.
+Examples cover sizes, disabled state, labels, and form integration.
 
-For accessible labelling and validation, prefer using the `Field` component to wrap textareas. See the related example: [Textarea field](/ui/docs/components/field#textarea-field).
+For accessible labeling and validation, use `Field` to connect the textarea with its label, description, and error. See the [Field examples](/docs/components/field#examples).
 
 ### Small Size
 
-<ComponentPreview
-  name="textarea-sm"
-/>
+<ComponentPreview name="textarea-sm" />
 
 ### Large Size
 
-<ComponentPreview
-  name="textarea-lg"
-/>
+<ComponentPreview name="textarea-lg" />
 
 ### Disabled
 
-<ComponentPreview
-  name="textarea-disabled"
-/>
+<ComponentPreview name="textarea-disabled" />
 
 ### With Label
 
-<ComponentPreview
-  name="textarea-with-label"
-/>
+<ComponentPreview name="textarea-with-label" />
 
 ### Form Integration
 
-<ComponentPreview
-  name="textarea-form"
-/>
+<ComponentPreview name="textarea-form" />
+
+## API reference
+
+`Textarea` accepts native textarea props plus Honest UI's `size` option. Native attributes such as `name`, `required`, `disabled`, `rows`, `minLength`, and `maxLength` pass through. Use controlled state only when the application needs live value logic; otherwise read the submitted value with `FormData`.

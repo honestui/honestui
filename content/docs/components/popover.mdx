@@ -1,6 +1,6 @@
 ---
 title: Popover
-description: An accessible popup anchored to a button.
+description: Show supporting information or controls in a non-modal popup.
 
 links:
   doc: https://base-ui.com/react/components/popover#api-reference
@@ -74,15 +74,15 @@ import {
   PopoverPopup,
   PopoverTitle,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 ```
 
 ```tsx
 <Popover>
-  <PopoverTrigger>Open Popover</PopoverTrigger>
+  <PopoverTrigger>View keyboard shortcuts</PopoverTrigger>
   <PopoverPopup>
-    <PopoverTitle>Popover Title</PopoverTitle>
-    <PopoverDescription>Popover Description</PopoverDescription>
+    <PopoverTitle>Keyboard shortcuts</PopoverTitle>
+    <PopoverDescription>Press Command and K to open search.</PopoverDescription>
     <PopoverClose>Close</PopoverClose>
   </PopoverPopup>
 </Popover>
@@ -95,3 +95,9 @@ The example shows a popover with an explicit close action.
 ### With Close Button
 
 <ComponentPreview name="popover-with-close" />
+
+## API reference
+
+`Popover`, `PopoverTrigger`, `PopoverPopup`, `PopoverTitle`, `PopoverDescription`, and `PopoverClose` forward their matching Base UI Popover props. `PopoverContent` is an alias of the popup. Use title and description when the popup needs an accessible name or explanatory context.
+
+See the [Base UI Popover API](https://base-ui.com/react/components/popover#api-reference).

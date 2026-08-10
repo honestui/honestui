@@ -1,14 +1,12 @@
 ---
 title: Combobox
-description: An input combined with a list of predefined items to select.
+description: Search and select one or more values from a predefined list.
 
 links:
   doc: https://base-ui.com/react/components/combobox#api-reference
 ---
 
-<ComponentPreview
-  name="combobox-demo"
-/>
+<ComponentPreview name="combobox-demo" />
 
 ## Overview
 
@@ -79,7 +77,7 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxPopup,
-} from "@/components/ui/combobox"
+} from "@/components/ui/combobox";
 ```
 
 ```tsx
@@ -114,7 +112,7 @@ import {
   ComboboxList,
   ComboboxPopup,
   ComboboxValue,
-} from "@/components/ui/combobox"
+} from "@/components/ui/combobox";
 ```
 
 ```tsx
@@ -136,7 +134,7 @@ const items = [
             </ComboboxChip>
           ))}
           <ComboboxInput
-            placeholder={value.length > 0 ? undefined : "Select a Select an item..."}
+            placeholder={value.length > 0 ? undefined : "Select an item…"}
             aria-label="Select an item"
           />
         </>
@@ -164,72 +162,32 @@ The `ComboboxInput` component extends the original Base UI component with a few 
 
 ## Examples
 
-Our examples cover disabled, sized, labeled, grouped, single-selection, multiple-selection, input-in-popup, and form-connected comboboxes.
+The main example establishes single selection. The examples below cover the behaviors that change how choices are found, represented, or submitted; size and disabled state are covered by the `ComboboxInput` API.
 
-### Disabled
+### Automatic highlight
 
-<ComponentPreview
-  name="combobox-disabled"
-/>
+<ComponentPreview name="combobox-autohighlight" />
 
-### Small Size
+### Clearable selection
 
-<ComponentPreview
-  name="combobox-sm"
-/>
+<ComponentPreview name="combobox-with-clear" />
 
-### Large Size
+### Grouped choices
 
-<ComponentPreview
-  name="combobox-lg"
-/>
+<ComponentPreview name="combobox-grouped" />
 
-### With Label
+### Multiple selection with removable chips
 
-<ComponentPreview
-  name="combobox-with-label"
-/>
+<ComponentPreview name="combobox-multiple" />
 
-### Auto Highlight
+### Input inside the popup
 
-Automatically highlight the first matching option.
+<ComponentPreview name="combobox-with-inner-input" />
 
-<ComponentPreview
-  name="combobox-autohighlight"
-/>
+### Single-value form submission
 
-### With Clear Button
+<ComponentPreview name="combobox-form" />
 
-<ComponentPreview
-  name="combobox-with-clear"
-/>
+### Multiple-value form submission
 
-### With Groups
-
-<ComponentPreview
-  name="combobox-grouped"
-/>
-
-### With Multiple Selection
-
-<ComponentPreview
-  name="combobox-multiple"
-/>
-
-### With Input Inside Popup
-
-<ComponentPreview
-  name="combobox-with-inner-input"
-/>
-
-### Form Integration
-
-<ComponentPreview
-  name="combobox-form"
-/>
-
-### Form Integration - Multiple
-
-<ComponentPreview
-  name="combobox-multiple-form"
-/>
+<ComponentPreview name="combobox-multiple-form" />

@@ -1,32 +1,25 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 181 48"
+  viewBox="0 0 700 240"
+  fill="none"
   role="img"
-  aria-labelledby="title description"
+  aria-labelledby="honest-ui-wordmark-title"
 >
-  <title id="title">Honest UI</title>
-  <desc id="description">The Honest UI modular H mark and wordmark.</desc>
-  <g fill="#111111">
-    <rect x="2" y="4.5" width="12.75" height="39" rx="3.75" />
-    <rect x="26.75" y="4.5" width="12.75" height="39" rx="3.75" />
-    <rect x="16.25" y="18" width="9" height="12" rx="2.625" />
+  <title id="honest-ui-wordmark-title">Honest UI</title>
+
+  <g fill="currentColor" transform="translate(0 70) scale(.18)">
+    <path d="M0 0h362v115H112v453H0V0Z" />
+    <path d="M419 0h111v115H419V0Z" />
+    <path d="M419 181h111v388H168V451h251V181Z" />
   </g>
+
   <text
-    x="50"
-    y="31"
-    fill="#111111"
-    font-family="Geist, Arial, sans-serif"
-    font-size="22"
+    x="138"
+    y="157"
+    fill="currentColor"
+    font-family="Geist, Inter, Arial, sans-serif"
+    font-size="108"
     font-weight="600"
-    letter-spacing="-0.55"
-  >Honest</text>
-  <text
-    x="119.5"
-    y="31"
-    fill="#737373"
-    font-family="Geist, Arial, sans-serif"
-    font-size="22"
-    font-weight="500"
-    letter-spacing="-0.55"
-  >UI</text>
+    letter-spacing="-3"
+  >Honest UI</text>
 </svg>

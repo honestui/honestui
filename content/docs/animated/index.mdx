@@ -1,26 +1,38 @@
 ---
 title: Animated Components
-description: Source-first React components with purposeful motion and complete reduced-motion behavior.
+description: Copied React components that use motion to clarify state and spatial change.
 image: /og/og-image.png
 ---
 
-Animated components bring movement to the moments where it improves understanding: state changes, spatial relationships, progress, focus, and direct manipulation. They use the same source-first model as the rest of Honest UI, so you install the code into your project and own every detail.
+Animated components add movement to state changes, spatial relationships, progress, and direct manipulation. The CLI copies their source into your project so you can change the timing, styling, fallback, or remove the effect entirely.
 
-## Why animated components?
+## Use motion for a reason
 
-Good motion explains what changed without slowing people down. These components pair polished interactions with familiar React APIs, keyboard behavior, and fallbacks for people who prefer reduced motion.
+Choose an animated component when movement helps people understand what changed or where an element went. Avoid adding motion only to make a static surface feel busier.
 
-Every component is:
+The collection includes:
 
-- **Purposeful.** Motion communicates state, hierarchy, direction, or completion.
-- **Accessible.** Interactive controls retain native semantics and respect `prefers-reduced-motion`.
-- **Themeable.** Styling uses the same Honest UI color roles and Tailwind utilities as UI Components.
-- **Source-first.** Install the component, tune its timing and appearance, and keep it in your codebase.
+- State and label transitions for compact actions.
+- Layout motion for disclosures and active indicators.
+- Text and number reveals for short, deliberate moments.
+- Pointer-responsive effects for optional visual emphasis.
+- Repeating movement for nonessential ambient content.
 
-## Built for product interfaces
+## Accessibility responsibilities
 
-The collection covers animated actions, text, navigation, disclosures, counters, and pointer-responsive effects. Use the reload control in any preview to replay entrance motion, then switch to Code to inspect the exact example.
+Components document their reduced-motion behavior and preserve native semantics where they own an interactive element. The application is still responsible for meaningful labels, visible focus, keyboard operation, readable status updates, and ensuring that motion is not the only way to understand a change.
+
+Pointer-responsive effects must remain optional. Their content and actions need to work on touch devices, with a keyboard, and when reduced motion is enabled.
+
+## Choose carefully
+
+- Use **Action Swap** when one compact action moves through a small set of named states.
+- Use **Bouncy Accordion** when opening one disclosure should explain a layout change.
+- Use **Number Ticker** for occasional metric changes, not rapid critical updates.
+- Use **Text Shimmer** for a short in-progress label with a separate programmatic busy state.
+- Use **Magnetic** or **Tilt Card** only as progressive visual enhancement.
+- Use **Marquee** only for nonessential content that remains understandable when the loop stops.
 
 ## Get started
 
-Follow [Installation](/docs/animated/installation), then choose a component from the sidebar. Start with subtle defaults and use motion only where it helps people understand the interface.
+Follow [Installation](/docs/animated/installation), then open a component page to review its purpose, reduced-motion behavior, and API before adding it.

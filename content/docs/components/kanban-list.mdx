@@ -1,12 +1,11 @@
 ---
 title: Kanban List
-description: A sortable collection for organizing items in kanban or list views.
+description: Reorder items within and between keyboard- and pointer-operable lists.
 ---
 
 <ComponentPreview
   name="kanban-list-kanban-demo"
   title="kanban-list"
-  align="start"
   containerClassName="-mx-2 sm:-mx-20"
 />
 
@@ -73,7 +72,7 @@ npm install motion
 ## Usage
 
 ```tsx
-import { KanbanList } from "@/components/ui/kanban-list"
+import { KanbanList } from "@/components/ui/kanban-list";
 ```
 
 ```tsx
@@ -92,17 +91,28 @@ Set `view="list"` to stack the stages vertically. The preview keeps a fixed heig
 <ComponentPreview
   name="kanban-list-list-demo"
   title='kanban-list view="list"'
-  align="start"
   containerClassName="-mx-2 sm:-mx-20"
 />
 
 ## API Reference
 
 <ApiTable>
-  <ApiRow name="view" type='"kanban" | "list"' default='"kanban"'>Sets the collection layout.</ApiRow>
-  <ApiRow name="defaultItems" type="KanbanListItem[]">Sets the initial items.</ApiRow>
-  <ApiRow name="onItemsChange" type="(items: KanbanListItem[]) => void">Runs after an item is moved.</ApiRow>
-  <ApiRow name="columns" type="KanbanListStage[]">Limits the stages shown.</ApiRow>
-  <ApiRow name="className" type="string">Adds a class name to the root element.</ApiRow>
-  <ApiRow name="ariaLabel" type="string" default="Kanban list">Sets the accessible name for the collection.</ApiRow>
+  <ApiRow name="view" type='"kanban" | "list"' default='"kanban"'>
+    Sets the collection layout.
+  </ApiRow>
+  <ApiRow name="defaultItems" type="KanbanListItem[]">
+    Sets the initial items.
+  </ApiRow>
+  <ApiRow name="onItemsChange" type="(items: KanbanListItem[]) => void">
+    Runs after an item is moved.
+  </ApiRow>
+  <ApiRow name="columns" type="KanbanListStage[]">
+    Limits the stages shown.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Adds a class name to the root element.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string" default="Kanban list">
+    Sets the accessible name for the collection.
+  </ApiRow>
 </ApiTable>

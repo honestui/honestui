@@ -25,7 +25,7 @@ function Meter({
       data-slot="meter"
       data-variant={variant}
       className={cn(
-        "group/meter flex w-full flex-col gap-[var(--rs-space-3)]",
+        "group/meter flex w-full flex-col gap-[var(--hui-space-3)]",
         variant === "circular" &&
           "relative items-center justify-center",
         className
@@ -35,8 +35,8 @@ function Meter({
       style={(state) =>
         ({
           ...(typeof style === "function" ? style(state) : style),
-          "--rs-meter-percentage": percentage,
-        }) as React.CSSProperties & { "--rs-meter-percentage": number }
+          "--hui-meter-percentage": percentage,
+        }) as React.CSSProperties & { "--hui-meter-percentage": number }
       }
       value={value}
       {...props}
@@ -62,7 +62,7 @@ function MeterLabel({ className, ...props }: MeterPrimitive.Label.Props) {
     <MeterPrimitive.Label
       data-slot="meter-label"
       className={cn(
-        "text-[var(--rs-color-foreground-base-primary)] [font-family:var(--rs-font-body)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-medium)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)]",
+        "text-[var(--hui-color-foreground-base-primary)] [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
         className
       )}
       {...props}
@@ -75,7 +75,7 @@ function MeterTrack({ className, ...props }: MeterPrimitive.Track.Props) {
     <MeterPrimitive.Track
       data-slot="meter-track"
       className={cn(
-        "relative block h-[var(--rs-space-2)] w-full overflow-clip rounded-[1px] bg-[var(--rs-color-background-neutral-secondary)]",
+        "relative block h-[var(--hui-space-2)] w-full overflow-clip rounded-[1px] bg-[var(--hui-color-background-neutral-secondary)]",
         className
       )}
       {...props}
@@ -92,7 +92,7 @@ function MeterIndicator({
     <MeterPrimitive.Indicator
       data-slot="meter-indicator"
       className={cn(
-        "h-full origin-left bg-[var(--rs-color-background-accent-emphasis)] [transform:scaleX(calc(var(--rs-meter-percentage,0)/100))] motion-safe:[transition:transform_var(--rs-duration-moderate)_linear]",
+        "h-full origin-left bg-[var(--hui-color-background-accent-emphasis)] [transform:scaleX(calc(var(--hui-meter-percentage,0)/100))] motion-safe:[transition:transform_var(--hui-duration-moderate)_linear]",
         className
       )}
       style={(state) => ({
@@ -109,7 +109,7 @@ function MeterValue({ className, ...props }: MeterPrimitive.Value.Props) {
     <MeterPrimitive.Value
       data-slot="meter-value"
       className={cn(
-        "text-right text-[var(--rs-color-foreground-base-primary)] tabular-nums [font-family:var(--rs-font-body)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)] group-data-[variant=circular]/meter:absolute group-data-[variant=circular]/meter:top-1/2 group-data-[variant=circular]/meter:left-1/2 group-data-[variant=circular]/meter:-translate-x-1/2 group-data-[variant=circular]/meter:-translate-y-1/2 group-data-[variant=circular]/meter:whitespace-nowrap group-data-[variant=circular]/meter:text-center group-data-[variant=circular]/meter:[font-weight:var(--rs-font-weight-medium)]",
+        "text-right text-[var(--hui-color-foreground-base-primary)] tabular-nums [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)] group-data-[variant=circular]/meter:absolute group-data-[variant=circular]/meter:top-1/2 group-data-[variant=circular]/meter:left-1/2 group-data-[variant=circular]/meter:-translate-x-1/2 group-data-[variant=circular]/meter:-translate-y-1/2 group-data-[variant=circular]/meter:whitespace-nowrap group-data-[variant=circular]/meter:text-center group-data-[variant=circular]/meter:[font-weight:var(--hui-font-weight-medium)]",
         className
       )}
       {...props}
@@ -127,18 +127,18 @@ function MeterCircularTrack({
       data-slot="meter-circular-track"
       viewBox="0 0 72 72"
       className={cn(
-        "aspect-square h-[var(--rs-space-14)] w-[var(--rs-space-14)] -rotate-90 [--rs-meter-circumference:calc(2*3.14159265*var(--rs-meter-radius))] [--rs-meter-radius:calc((var(--rs-space-14)-var(--rs-meter-track-size)*2)/2)] [--rs-meter-track-size:var(--rs-space-2)]",
+        "aspect-square h-[var(--hui-space-14)] w-[var(--hui-space-14)] -rotate-90 [--hui-meter-circumference:calc(2*3.14159265*var(--hui-meter-radius))] [--hui-meter-radius:calc((var(--hui-space-14)-var(--hui-meter-track-size)*2)/2)] [--hui-meter-track-size:var(--hui-space-2)]",
         className
       )}
       {...props}
     >
       <circle
         data-slot="meter-circular-track-circle"
-        className="fill-none stroke-[var(--rs-color-background-neutral-secondary)] [cx:50%] [cy:50%] [r:var(--rs-meter-radius)] [stroke-width:var(--rs-meter-track-size)]"
+        className="fill-none stroke-[var(--hui-color-background-neutral-secondary)] [cx:50%] [cy:50%] [r:var(--hui-meter-radius)] [stroke-width:var(--hui-meter-track-size)]"
       />
       <circle
         data-slot="meter-circular-indicator-circle"
-        className="fill-none stroke-[var(--rs-color-background-accent-emphasis)] [cx:50%] [cy:50%] [r:var(--rs-meter-radius)] [stroke-dasharray:var(--rs-meter-circumference)] [stroke-dashoffset:calc(var(--rs-meter-circumference)*(1-var(--rs-meter-percentage,0)/100))] [stroke-linecap:butt] [stroke-width:var(--rs-meter-track-size)] motion-safe:[transition:stroke-dashoffset_var(--rs-duration-moderate)_linear]"
+        className="fill-none stroke-[var(--hui-color-background-accent-emphasis)] [cx:50%] [cy:50%] [r:var(--hui-meter-radius)] [stroke-dasharray:var(--hui-meter-circumference)] [stroke-dashoffset:calc(var(--hui-meter-circumference)*(1-var(--hui-meter-percentage,0)/100))] [stroke-linecap:butt] [stroke-width:var(--hui-meter-track-size)] motion-safe:[transition:stroke-dashoffset_var(--hui-duration-moderate)_linear]"
       />
     </svg>
   )

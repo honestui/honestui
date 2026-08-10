@@ -1,14 +1,12 @@
 ---
 title: Autocomplete
-description: An input that suggests options as you type.
+description: Help people complete typed input with relevant suggestions.
 
 links:
   doc: https://base-ui.com/react/components/autocomplete#api-reference
 ---
 
-<ComponentPreview
-  name="autocomplete-demo"
-/>
+<ComponentPreview name="autocomplete-demo" />
 
 ## Overview
 
@@ -77,7 +75,7 @@ import {
   AutocompleteItem,
   AutocompleteList,
   AutocompletePopup,
-} from "@/components/ui/autocomplete"
+} from "@/components/ui/autocomplete";
 ```
 
 ```tsx
@@ -111,100 +109,40 @@ The `AutocompleteInput` component extends the original Base UI component with a 
 
 ## Examples
 
-Our examples cover disabled, sized, labeled, grouped, limited, async, and form-connected autocomplete patterns.
+The main example establishes the basic editable-suggestion pattern. The examples below focus on behaviors that change selection, filtering, data loading, or submission; size and disabled state are covered by the `AutocompleteInput` API.
 
-### Disabled
+### Inline completion
 
-Use disabled when the user cannot search or choose yet.
+Inline mode fills the input with the highlighted suggestion while arrow keys move through the list.
 
-<ComponentPreview
-  name="autocomplete-disabled"
-/>
+<ComponentPreview name="autocomplete-inline" />
 
-### Small Size
+### Automatic highlight
 
-Use the small size in compact toolbars, filters, or dense forms.
+Use automatic highlighting only when accepting the first result is usually safe and reversible.
 
-<ComponentPreview
-  name="autocomplete-sm"
-/>
+<ComponentPreview name="autocomplete-autohighlight" />
 
-### Large Size
+### Browse and clear controls
 
-Use the large size when the input is a primary search or selection control.
+The trigger lets people browse without typing; the clear action removes the current text.
 
-<ComponentPreview
-  name="autocomplete-lg"
-/>
+<ComponentPreview name="autocomplete-with-trigger-clear" />
 
-### With Label
+### Grouped suggestions
 
-Use a label whenever the autocomplete appears in a form or settings area.
+<ComponentPreview name="autocomplete-grouped" />
 
-<ComponentPreview
-  name="autocomplete-with-label"
-/>
+### Limited results
 
-### Inline Autocomplete
+<ComponentPreview name="autocomplete-limit" />
 
-Autofill the input with the highlighted item while navigating with arrow keys.
+### Asynchronous suggestions
 
-<ComponentPreview
-  name="autocomplete-inline"
-/>
+Search for `will_error` to inspect the deterministic failure state. Preserve the typed query while loading or after failure.
 
-### Auto Highlight
+<ComponentPreview name="autocomplete-async" />
 
-Automatically highlight the first matching option.
+### Form submission
 
-<ComponentPreview
-  name="autocomplete-autohighlight"
-/>
-
-### With Clear Button
-
-Use a clear button when users often need to reset the value.
-
-<ComponentPreview
-  name="autocomplete-with-clear"
-/>
-
-### With Trigger and Clear Buttons
-
-Use a trigger button when users may want to browse options without typing.
-
-<ComponentPreview
-  name="autocomplete-with-trigger-clear"
-/>
-
-### With Groups
-
-Use groups when suggestions have meaningful categories.
-
-<ComponentPreview
-  name="autocomplete-grouped"
-/>
-
-### With Limit Results
-
-Limit results to keep the popup quick to scan.
-
-<ComponentPreview
-  name="autocomplete-limit"
-/>
-
-### Async Search
-
-Use async search when suggestions come from an API or remote index.
-
-<ComponentPreview
-  name="autocomplete-async"
-/>
-
-### Form Integration
-
-Use form integration when the selected value must be validated and submitted.
-
-<ComponentPreview
-  name="autocomplete-form"
-/>
+<ComponentPreview name="autocomplete-form" />

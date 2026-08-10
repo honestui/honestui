@@ -1,6 +1,6 @@
 ---
 title: Toolbar
-description: A container for grouping a set of buttons and controls.
+description: Group compact controls that act on the same surface or object.
 
 links:
   doc: https://base-ui.com/react/components/toolbar#api-reference
@@ -16,15 +16,15 @@ Toolbars are useful in editors, tables, canvases, filters, and dashboards where 
 
 ## Anatomy
 
-A toolbar can contain buttons, toggles, toggle groups, separators, menus, and other compact controls.
+A toolbar can contain buttons, links, inputs, toggles, groups, separators, menus, and other compact controls. `ToolbarButton`, `ToolbarLink`, and `ToolbarInput` participate in the toolbar's roving keyboard navigation.
 
 ## Usage guidance
 
-Keep the most common actions visible. Move less common actions into a menu when the toolbar becomes crowded.
+Keep the most common actions visible and group related commands. Move less common actions into a menu when the toolbar becomes crowded. Use a horizontal toolbar by default; vertical orientation is appropriate only when the controlled surface and labels make the direction obvious.
 
 ## Accessibility
 
-Controls inside the toolbar still need labels and keyboard support. Keep focus order predictable.
+Give the toolbar an accessible label when the surrounding heading does not name it. Icon-only controls need accessible names, toggles need a persistent pressed state, and separators must not receive focus. Arrow keys move among toolbar controls; Tab should move into and out of the toolbar as one stop.
 
 ## Installation
 
@@ -67,14 +67,16 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Button } from "@/components/ui/button"
-import { Toggle } from "@/components/ui/toggle"
+import { Button } from "@/components/ui/button";
+import { Toggle } from "@/components/ui/toggle";
 import {
   Toolbar,
   ToolbarButton,
   ToolbarGroup,
+  ToolbarInput,
+  ToolbarLink,
   ToolbarSeparator,
-} from "@/components/ui/toolbar"
+} from "@/components/ui/toolbar";
 ```
 
 ```tsx
@@ -84,6 +86,28 @@ import {
     <ToolbarButton render={<Toggle />}>Underline</ToolbarButton>
   </ToolbarGroup>
   <ToolbarSeparator />
-  <ToolbarButton render={<Button />}>Save</ToolbarButton>
+  <ToolbarButton render={<Button />}>Save document</ToolbarButton>
 </Toolbar>
 ```
+
+## Examples
+
+The main example covers buttons, grouped toggles, an input, a link, a select, separators, and tooltips. The examples below show purpose-specific command sets without changing the underlying keyboard model.
+
+### Canvas controls
+
+<ComponentPreview name="toolbar-canvas-controls" />
+
+### Media controls
+
+<ComponentPreview name="toolbar-media-controls" />
+
+### Density controls
+
+<ComponentPreview name="toolbar-density-controls" />
+
+## API reference
+
+All Toolbar parts forward their matching Base UI Toolbar props. Use `orientation="vertical"` on `Toolbar` when needed. `ToolbarGroup` creates a related subset; `ToolbarSeparator` follows the root orientation; and the Button, Link, and Input parts provide the focusable controls.
+
+See the [Base UI Toolbar API](https://base-ui.com/react/components/toolbar#api-reference) for keyboard behavior and root props.

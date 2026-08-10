@@ -4,35 +4,37 @@ import {
   TextAlignEnd as AlignRightIcon,
   DollarSign as DollarSignIcon,
   Percent as PercentIcon,
-} from "honestui/icons"
+} from "honestui/icons";
 
-import { Button } from "@/registry/default/ui/button"
+import { Button } from "@/registry/default/ui/button";
 import {
   Select,
   SelectItem,
   SelectPopup,
   SelectTrigger,
   SelectValue,
-} from "@/registry/default/ui/select"
-import { Toggle, ToggleGroup } from "@/registry/default/ui/toggle"
+} from "@/registry/default/ui/select";
+import { Toggle, ToggleGroup } from "@/registry/default/ui/toggle";
 import {
   Toolbar,
   ToolbarButton,
   ToolbarGroup,
+  ToolbarInput,
+  ToolbarLink,
   ToolbarSeparator,
-} from "@/registry/default/ui/toolbar"
+} from "@/registry/default/ui/toolbar";
 import {
   Tooltip,
   TooltipPopup,
   TooltipProvider,
   TooltipTrigger,
-} from "@/registry/default/ui/tooltip"
+} from "@/registry/default/ui/tooltip";
 
 const items = [
   { label: "Helvetica", value: "helvetica" },
   { label: "Arial", value: "arial" },
   { label: "Times New Roman", value: "times-new-roman" },
-]
+];
 
 export default function ToolbarDemo() {
   return (
@@ -56,9 +58,7 @@ export default function ToolbarDemo() {
             <TooltipTrigger
               render={
                 <ToolbarButton
-                  render={
-                    <Toggle value="center" aria-label="Toggle center" />
-                  }
+                  render={<Toggle value="center" aria-label="Toggle center" />}
                   aria-label="Align center"
                 >
                   <AlignCenterIcon />
@@ -71,9 +71,7 @@ export default function ToolbarDemo() {
             <TooltipTrigger
               render={
                 <ToolbarButton
-                  render={
-                    <Toggle value="right" aria-label="Toggle right" />
-                  }
+                  render={<Toggle value="right" aria-label="Toggle right" />}
                   aria-label="Align right"
                 >
                   <AlignRightIcon />
@@ -83,6 +81,19 @@ export default function ToolbarDemo() {
             <TooltipPopup sideOffset={8}>Align right</TooltipPopup>
           </Tooltip>
         </ToggleGroup>
+        <ToolbarSeparator />
+        <ToolbarInput
+          aria-label="Find in document"
+          className="h-8 min-w-0 rounded-md border border-input bg-transparent px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          placeholder="Find"
+          type="search"
+        />
+        <ToolbarLink
+          className="rounded-md px-2 py-1.5 text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          href="/docs/components/toolbar"
+        >
+          Help
+        </ToolbarLink>
         <ToolbarSeparator />
         <ToolbarGroup>
           <Tooltip>
@@ -96,9 +107,7 @@ export default function ToolbarDemo() {
                 </ToolbarButton>
               }
             />
-            <TooltipPopup sideOffset={8}>
-              Format as currency
-            </TooltipPopup>
+            <TooltipPopup sideOffset={8}>Format as currency</TooltipPopup>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger
@@ -111,9 +120,7 @@ export default function ToolbarDemo() {
                 </ToolbarButton>
               }
             />
-            <TooltipPopup sideOffset={8}>
-              Format as percent
-            </TooltipPopup>
+            <TooltipPopup sideOffset={8}>Format as percent</TooltipPopup>
           </Tooltip>
         </ToolbarGroup>
         <ToolbarSeparator />
@@ -150,5 +157,5 @@ export default function ToolbarDemo() {
         </ToolbarGroup>
       </Toolbar>
     </TooltipProvider>
-  )
+  );
 }

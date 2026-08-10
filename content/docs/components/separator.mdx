@@ -1,6 +1,6 @@
 ---
 title: Separator
-description: A separator element accessible to screen readers.
+description: Divide related sections visually or semantically.
 
 links:
   doc: https://base-ui.com/react/components/separator#api-reference
@@ -67,9 +67,33 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 ```
 
 ```tsx
 <Separator />
 ```
+
+## Examples
+
+### Section label
+
+<ComponentPreview name="separator-section-label" />
+
+### Vertical stack
+
+<ComponentPreview name="separator-vertical-stack" />
+
+### Timeline
+
+<ComponentPreview name="separator-timeline" />
+
+## Decision guidance
+
+Separator marks a visual boundary between related regions. It should reinforce spacing and headings, not repair an unclear hierarchy. Use a border when the boundary belongs to a container edge, and use whitespace alone when the relationship is already obvious.
+
+## API reference
+
+`Separator` forwards Base UI Separator props. Set `orientation="horizontal"` or `"vertical"` to match the visible line. Decorative separators remain outside the accessibility tree; use a heading or landmark when the division needs a semantic name.
+
+See the [Base UI Separator API](https://base-ui.com/react/components/separator#api-reference).

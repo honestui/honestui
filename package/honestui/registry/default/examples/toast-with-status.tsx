@@ -10,50 +10,49 @@ export default function ToastWithStatus() {
         variant="secondary"
         onClick={() => {
           toastManager.add({
-            title: "Success!",
-            description: "Your changes have been saved.",
+            title: "Changes saved",
+            description: "Your notification settings are up to date.",
             type: "success",
           })
         }}
       >
-        Success Toast
+        Show success
       </Button>
       <Button
         variant="secondary"
         onClick={() => {
           toastManager.add({
-            title: "Uh oh! Something went wrong.",
-            description: "There was a problem with your request.",
+            title: "Invitation not sent",
+            description: "Check the email address, then try again.",
             type: "error",
           })
         }}
       >
-        Error Toast
+        Show error
       </Button>
       <Button
         variant="secondary"
         onClick={() => {
           toastManager.add({
-            title: "Heads up!",
-            description:
-              "You can add components to your app using the cli.",
+            title: "Component copied",
+            description: "Review the new source file before committing it.",
             type: "info",
           })
         }}
       >
-        Info Toast
+        Show information
       </Button>
       <Button
         variant="secondary"
         onClick={() => {
           toastManager.add({
-            title: "Warning!",
-            description: "Your session is about to expire.",
+            title: "Session expires in 5 minutes",
+            description: "Save your work to avoid losing unsaved changes.",
             type: "warning",
           })
         }}
       >
-        Warning Toast
+        Show warning
       </Button>
     </div>
   )

@@ -142,6 +142,7 @@ export interface BarChartProps<TData extends Record<string, unknown>> {
   enableMaxValueHighlight?: boolean;
   isLoading?: boolean; 
   loadingBars?: number; 
+  ariaLabel?: string;
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -1136,6 +1137,7 @@ export function BarChart<TData extends Record<string, unknown>>({
   enableMaxValueHighlight = false,
   isLoading = false,
   loadingBars = LOADING_DEFAULT_BARS,
+  ariaLabel,
   chartOptions,
   children,
 }: BarChartProps<TData>) {
@@ -1146,7 +1148,7 @@ export function BarChart<TData extends Record<string, unknown>>({
   const mountRef = useRef<HTMLDivElement>(null);
   const echartsRef = useRef<EChartsInstance | null>(null);
 
-  const live = useRef<LiveState>({
+  const liveRef = useRef<LiveState>({
     resolved: null,
     hasRevealed: false,
     revealEndsAt: 0,
@@ -1175,11 +1177,11 @@ export function BarChart<TData extends Record<string, unknown>>({
     },
     repush: () => {},
     patchStrippedCaps: () => {},
-  }).current;
+  });
 
   const loadingData = useCallback(
-    () => (live.loadingRows ??= getLoadingBarData(loadingBars)),
-    [live, loadingBars],
+    () => (liveRef.current.loadingRows ??= getLoadingBarData(loadingBars)),
+    [loadingBars],
   );
   const shouldReduceMotion = useReducedMotion();
 
@@ -1207,6 +1209,7 @@ export function BarChart<TData extends Record<string, unknown>>({
   const valueSlot = isHorizontal ? xAxisSlot : yAxisSlot;
 
   const seriesKeys = useMemo(() => bars.map((bar) => bar.dataKey), [bars]);
+  const defaultAriaLabel = `Bar chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.`;
 
   const categoryKey = useMemo(() => {
     if (categorySlot.dataKey) return categorySlot.dataKey;
@@ -1247,19 +1250,21 @@ export function BarChart<TData extends Record<string, unknown>>({
 
   const hasStrippedBars = !isLoading && bars.some((bar) => bar.variant === "stripped");
 
-  live.handlers = {
-    onBrushChange: brushSlot.onChange,
-    clickableKeys,
-    brushFormatLabel: brushSlot.formatLabel,
-    seriesKeys,
-    hasStripped: hasStrippedBars,
-    hasBlocks: bars.some((bar) => bar.variant === "blocks"),
-    hasStackGap: (stackType === "stacked" || stackType === "percent") && bars.length > 1,
-    expandableKey: bars.find((bar) => bar.variant === "expandable")?.dataKey ?? null,
-    barCategoryGap,
-    isHorizontal,
-  };
-  live.dataLength = data.length;
+  useEffect(() => {
+    liveRef.current.handlers = {
+      onBrushChange: brushSlot.onChange,
+      clickableKeys,
+      brushFormatLabel: brushSlot.formatLabel,
+      seriesKeys,
+      hasStripped: hasStrippedBars,
+      hasBlocks: bars.some((bar) => bar.variant === "blocks"),
+      hasStackGap: (stackType === "stacked" || stackType === "percent") && bars.length > 1,
+      expandableKey: bars.find((bar) => bar.variant === "expandable")?.dataKey ?? null,
+      barCategoryGap,
+      isHorizontal,
+    };
+    liveRef.current.dataLength = data.length;
+  });
 
   const toggleSelection = useCallback(
     (key: string) => {
@@ -1278,16 +1283,16 @@ export function BarChart<TData extends Record<string, unknown>>({
     const chart = echartsRef.current;
     if (!chart) return;
 
-    const geom = live.brushGeom;
-    const tokens = live.resolved?.tokens;
+    const geom = liveRef.current.brushGeom;
+    const tokens = liveRef.current.resolved?.tokens;
     if (!geom || !tokens) {
-      syncBrushOverlay(chart, live, null);
+      syncBrushOverlay(chart, liveRef.current, null);
       return;
     }
 
-    const range = live.brushRange;
-    const categories = live.categories;
-    const format = live.handlers.brushFormatLabel;
+    const range = liveRef.current.brushRange;
+    const categories = liveRef.current.categories;
+    const format = liveRef.current.handlers.brushFormatLabel;
     const lastIndex = Math.max(categories.length - 1, 0);
     const startIndex = Math.round((range.start / 100) * lastIndex);
     const endIndex = Math.round((range.end / 100) * lastIndex);
@@ -1299,23 +1304,23 @@ export function BarChart<TData extends Record<string, unknown>>({
           }
         : null;
 
-    syncBrushOverlay(chart, live, {
+    syncBrushOverlay(chart, liveRef.current, {
       range,
       geom,
       size: { width: chart.getWidth(), height: chart.getHeight() },
       tokens,
       labels,
-      showLabels: live.brushHover.inside,
-      hover: live.brushHover,
+      showLabels: liveRef.current.brushHover.inside,
+      hover: liveRef.current.brushHover,
     });
-  }, [live]);
+  }, []);
 
   const buildOption = useCallback((): EChartsOption => {
-    const resolved = live.resolved;
+    const resolved = liveRef.current.resolved;
     if (!resolved) return {};
 
     const categories = data.map((row) => String(row[categoryKey]));
-    live.categories = categories;
+    liveRef.current.categories = categories;
 
     const ctx: OptionBuildContext = {
       data,
@@ -1342,15 +1347,15 @@ export function BarChart<TData extends Record<string, unknown>>({
       barCategoryGap,
       resolved,
       categories,
-      brushRange: live.brushRange,
-      valuePxPerUnit: live.valuePxPerUnit,
-      barWidthPx: live.barWidthPx,
-      expand: live.expand,
+      brushRange: liveRef.current.brushRange,
+      valuePxPerUnit: liveRef.current.valuePxPerUnit,
+      barWidthPx: liveRef.current.barWidthPx,
+      expand: liveRef.current.expand,
       maxHighlightIndex,
     };
 
     const { grid, brushBottom } = buildChartLayout(ctx);
-    live.brushGeom = brushEnabled ? { bottom: brushBottom, height: brushHeight } : null;
+    liveRef.current.brushGeom = brushEnabled ? { bottom: brushBottom, height: brushHeight } : null;
 
     const { xAxis, yAxis } = buildMainAxes(ctx);
 
@@ -1368,7 +1373,6 @@ export function BarChart<TData extends Record<string, unknown>>({
       series: [...buildBarSeries(ctx), ...(brush?.miniSeries ?? [])],
     };
   }, [
-    live,
     data,
     config,
     bars,
@@ -1396,6 +1400,7 @@ export function BarChart<TData extends Record<string, unknown>>({
   ]);
 
   useEffect(() => {
+    const live = liveRef.current;
     const mount = mountRef.current;
     const container = containerRef.current;
     if (!mount || !container) return;
@@ -1409,12 +1414,12 @@ export function BarChart<TData extends Record<string, unknown>>({
         return;
       }
       chart.resize();
-      live.repush();
+      liveRef.current.repush();
     });
     resizeObserver.observe(mount);
 
     const themeObserver = new MutationObserver(() => {
-      live.repush();
+      liveRef.current.repush();
     });
     themeObserver.observe(document.documentElement, {
       attributes: true,
@@ -1422,25 +1427,25 @@ export function BarChart<TData extends Record<string, unknown>>({
     });
 
     chart.getZr().on("mousemove", (event: { offsetX: number; offsetY: number }) => {
-      const { expandableKey } = live.handlers;
+      const { expandableKey } = liveRef.current.handlers;
       if (!expandableKey) return;
       const point = [event.offsetX, event.offsetY];
       if (!chart.containPixel({ gridIndex: 0 }, point)) {
-        live.animateExpand(expandableKey, null);
+        liveRef.current.animateExpand(expandableKey, null);
         return;
       }
 
       const converted = chart.convertFromPixel({ gridIndex: 0 }, point);
       const index = Array.isArray(converted) ? converted[0] : converted;
-      live.animateExpand(expandableKey, typeof index === "number" ? Math.round(index) : null);
+      liveRef.current.animateExpand(expandableKey, typeof index === "number" ? Math.round(index) : null);
     });
     chart.getZr().on("globalout", () => {
-      const { expandableKey } = live.handlers;
-      if (expandableKey) live.animateExpand(expandableKey, null);
+      const { expandableKey } = liveRef.current.handlers;
+      if (expandableKey) liveRef.current.animateExpand(expandableKey, null);
     });
 
     chart.on("click", (params) => {
-      const { clickableKeys: clickable, seriesKeys: keys } = live.handlers;
+      const { clickableKeys: clickable, seriesKeys: keys } = liveRef.current.handlers;
       const p = params as { seriesId?: string; seriesIndex?: number };
 
       const id =
@@ -1453,38 +1458,38 @@ export function BarChart<TData extends Record<string, unknown>>({
       const zoom = option.dataZoom?.[0];
       if (!zoom) return;
 
-      live.brushRange = { start: zoom.start ?? 0, end: zoom.end ?? 100 };
+      liveRef.current.brushRange = { start: zoom.start ?? 0, end: zoom.end ?? 100 };
       syncBrushOverlayNow();
 
-      const { onBrushChange: onChange } = live.handlers;
+      const { onBrushChange: onChange } = liveRef.current.handlers;
       if (!onChange) return;
-      const len = live.dataLength;
+      const len = liveRef.current.dataLength;
       const startIndex = Math.round(((zoom.start ?? 0) / 100) * (len - 1));
       const endIndex = Math.round(((zoom.end ?? 100) / 100) * (len - 1));
       onChange({ startIndex, endIndex });
     });
 
     chart.on("finished", () => {
-      const { hasStripped, isHorizontal: horiz } = live.handlers;
-      if (!hasStripped || performance.now() < live.revealEndsAt) return;
+      const { hasStripped, isHorizontal: horiz } = liveRef.current.handlers;
+      if (!hasStripped || performance.now() < liveRef.current.revealEndsAt) return;
       const measured = measureValuePxPerUnit(chart, horiz);
       if (measured == null) return;
-      if (live.valuePxPerUnit != null && Math.abs(measured - live.valuePxPerUnit) < 0.5) return;
-      live.valuePxPerUnit = measured;
-      live.patchStrippedCaps();
+      if (liveRef.current.valuePxPerUnit != null && Math.abs(measured - liveRef.current.valuePxPerUnit) < 0.5) return;
+      liveRef.current.valuePxPerUnit = measured;
+      liveRef.current.patchStrippedCaps();
     });
 
     const zr = chart.getZr();
     const applyHover = (next: { inside: boolean; left: boolean; right: boolean }) => {
-      const prev = live.brushHover;
+      const prev = liveRef.current.brushHover;
       if (prev.inside === next.inside && prev.left === next.left && prev.right === next.right) {
         return;
       }
-      live.brushHover = next;
+      liveRef.current.brushHover = next;
       syncBrushOverlayNow();
     };
     const onZrMove = (event: { offsetX?: number; offsetY?: number }) => {
-      const geom = live.brushGeom;
+      const geom = liveRef.current.brushGeom;
       if (!geom) return;
       const x = event.offsetX ?? -1;
       const y = event.offsetY ?? -1;
@@ -1492,7 +1497,7 @@ export function BarChart<TData extends Record<string, unknown>>({
       const inside = y >= top - 4 && y <= top + geom.height + 4;
       const trackLeft = 8;
       const trackWidth = Math.max(chart.getWidth() - 16, 1);
-      const { start, end } = live.brushRange;
+      const { start, end } = liveRef.current.brushRange;
       const selectionLeft = trackLeft + (trackWidth * start) / 100;
       const selectionRight = trackLeft + (trackWidth * end) / 100;
       applyHover({
@@ -1518,19 +1523,19 @@ export function BarChart<TData extends Record<string, unknown>>({
       live.hasRevealed = false;
     };
 
-  }, []);
+  }, [syncBrushOverlayNow, toggleSelection]);
 
   useEffect(() => {
     const chart = echartsRef.current;
     const container = containerRef.current;
     if (!chart || !container) return;
 
-    live.resolved = resolveColors(container, config, seriesKeys);
+    liveRef.current.resolved = resolveColors(container, config, seriesKeys);
 
     const push = (withEntrance: boolean) => {
 
       const measured = measureValuePxPerUnit(chart, isHorizontal);
-      if (measured != null) live.valuePxPerUnit = measured;
+      if (measured != null) liveRef.current.valuePxPerUnit = measured;
 
       const apply = () => {
         const option = buildOption();
@@ -1547,43 +1552,43 @@ export function BarChart<TData extends Record<string, unknown>>({
       apply();
 
       let needsRebuild = false;
-      if (live.handlers.hasBlocks) {
+      if (liveRef.current.handlers.hasBlocks) {
         const width = measureBarWidthPx(chart, isHorizontal, barCategoryGap);
-        if (width != null && (live.barWidthPx == null || Math.abs(width - live.barWidthPx) > 0.5)) {
-          live.barWidthPx = width;
+        if (width != null && (liveRef.current.barWidthPx == null || Math.abs(width - liveRef.current.barWidthPx) > 0.5)) {
+          liveRef.current.barWidthPx = width;
           needsRebuild = true;
         }
       }
-      if (live.handlers.hasStackGap) {
+      if (liveRef.current.handlers.hasStackGap) {
         const scale = measureValuePxPerUnit(chart, isHorizontal);
-        if (scale != null && (live.valuePxPerUnit == null || live.valuePxPerUnit !== scale)) {
-          live.valuePxPerUnit = scale;
+        if (scale != null && (liveRef.current.valuePxPerUnit == null || liveRef.current.valuePxPerUnit !== scale)) {
+          liveRef.current.valuePxPerUnit = scale;
           needsRebuild = true;
         }
       }
       if (needsRebuild) apply();
 
       const maxStagger = data.length > 1 ? (data.length - 1) * BAR_STAGGER : 0;
-      live.revealEndsAt = withEntrance ? performance.now() + BAR_GROW_DURATION + maxStagger : 0;
+      liveRef.current.revealEndsAt = withEntrance ? performance.now() + BAR_GROW_DURATION + maxStagger : 0;
 
       syncBrushOverlayNow();
     };
 
-    live.animateExpand = (key: string | null, index: number | null) => {
+    liveRef.current.animateExpand = (key: string | null, index: number | null) => {
       const expandKeys = new Set(
         bars.filter((bar) => bar.variant === "expandable").map((bar) => bar.dataKey),
       );
       if (!expandKeys.size) return;
 
       const next = index != null && key != null ? index : null;
-      if (live.expand.hovered === next && (key == null || live.expand.key === key)) return;
-      if (key != null) live.expand.key = key;
-      live.expand.hovered = next;
+      if (liveRef.current.expand.hovered === next && (key == null || liveRef.current.expand.key === key)) return;
+      if (key != null) liveRef.current.expand.key = key;
+      liveRef.current.expand.hovered = next;
 
-      if (next != null && !live.expand.progress.has(next)) {
-        live.expand.progress.set(next, EXPAND_COLLAPSED);
+      if (next != null && !liveRef.current.expand.progress.has(next)) {
+        liveRef.current.expand.progress.set(next, EXPAND_COLLAPSED);
       }
-      if (live.expandRaf) return; 
+      if (liveRef.current.expandRaf) return;
 
       const patchOnce = () => {
         const option = buildOption();
@@ -1606,24 +1611,24 @@ export function BarChart<TData extends Record<string, unknown>>({
 
         const k = 1 - Math.exp(-dt / EXPAND_TAU);
         let moving = false;
-        for (const [i, value] of live.expand.progress) {
-          const target = i === live.expand.hovered ? 1 : EXPAND_COLLAPSED;
+        for (const [i, value] of liveRef.current.expand.progress) {
+          const target = i === liveRef.current.expand.hovered ? 1 : EXPAND_COLLAPSED;
           const eased = value + (target - value) * k;
           if (Math.abs(target - eased) < 0.004) {
-            if (target === EXPAND_COLLAPSED) live.expand.progress.delete(i);
-            else live.expand.progress.set(i, target);
+            if (target === EXPAND_COLLAPSED) liveRef.current.expand.progress.delete(i);
+            else liveRef.current.expand.progress.set(i, target);
           } else {
-            live.expand.progress.set(i, eased);
+            liveRef.current.expand.progress.set(i, eased);
             moving = true;
           }
         }
         patchOnce();
-        live.expandRaf = moving ? requestAnimationFrame(step) : 0;
+        liveRef.current.expandRaf = moving ? requestAnimationFrame(step) : 0;
       };
-      live.expandRaf = requestAnimationFrame(step);
+      liveRef.current.expandRaf = requestAnimationFrame(step);
     };
 
-    live.patchStrippedCaps = () => {
+    liveRef.current.patchStrippedCaps = () => {
       const option = buildOption();
       const series = Array.isArray(option.series)
         ? option.series
@@ -1639,19 +1644,18 @@ export function BarChart<TData extends Record<string, unknown>>({
       if (patch.length) chart.setOption({ series: patch }, { silent: true, lazyUpdate: true });
     };
 
-    if (isLoading) live.hasRevealed = false;
-    const shouldReveal = !live.hasRevealed && !isLoading;
-    if (shouldReveal) live.hasRevealed = true;
+    if (isLoading) liveRef.current.hasRevealed = false;
+    const shouldReveal = !liveRef.current.hasRevealed && !isLoading;
+    if (shouldReveal) liveRef.current.hasRevealed = true;
     const revealEnabled =
       animation && shouldReveal && effectiveAnimation !== "none" && !shouldReduceMotion;
     push(revealEnabled);
 
-    live.repush = () => {
-      live.resolved = resolveColors(container, config, seriesKeys);
+    liveRef.current.repush = () => {
+      liveRef.current.resolved = resolveColors(container, config, seriesKeys);
       push(false);
     };
   }, [
-    live,
     buildOption,
     chartOptions,
     isLoading,
@@ -1687,10 +1691,10 @@ export function BarChart<TData extends Record<string, unknown>>({
     const tick = (now: number) => {
       const phase = ((((now - start) / LOADING_ANIMATION_DURATION) % 1) + 1) % 1;
 
-      if (phase < lastPhase) live.loadingRows = getLoadingBarData(loadingBars);
+      if (phase < lastPhase) liveRef.current.loadingRows = getLoadingBarData(loadingBars);
       lastPhase = phase;
 
-      const foreground = live.resolved?.tokens.foreground ?? GRAY;
+      const foreground = liveRef.current.resolved?.tokens.foreground ?? GRAY;
       const w = chart.getWidth();
       const h = chart.getHeight();
       if (!w || !h) {
@@ -1716,7 +1720,7 @@ export function BarChart<TData extends Record<string, unknown>>({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [live, isLoading, loadingBars, loadingData]);
+  }, [isLoading, loadingBars, loadingData]);
 
   const legendStyle: CSSProperties = {
     position: "absolute",
@@ -1735,10 +1739,15 @@ export function BarChart<TData extends Record<string, unknown>>({
       ref={containerRef}
       data-chart={chartId}
       className={`relative flex flex-col text-xs ${className ?? ""}`}
+      aria-busy={isLoading}
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      <div className="relative min-h-0 w-full flex-1">
+      <div
+        className="relative min-h-0 w-full flex-1"
+        role="img"
+        aria-label={ariaLabel ?? defaultAriaLabel}
+      >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
 
@@ -1760,12 +1769,17 @@ export function BarChart<TData extends Record<string, unknown>>({
       {isLoading && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="text-primary bg-background flex items-center justify-center gap-2 rounded-md border px-2 py-0.5 text-sm"
           >
-            <div className="border-border border-t-primary h-3 w-3 animate-spin rounded-full border" />
+            <div
+              aria-hidden
+              className={`border-border border-t-primary h-3 w-3 rounded-full border ${shouldReduceMotion ? "" : "animate-spin"}`}
+            />
             <span>Loading</span>
           </motion.div>
         </div>

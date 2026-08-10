@@ -153,7 +153,7 @@ export async function migrateIconsFile(
   })
 
   // Find all sourceLibrary imports.
-  let targetedIcons: string[] = []
+  const targetedIcons: string[] = []
   for (const importDeclaration of sourceFile.getImportDeclarations() ?? []) {
     if (
       importDeclaration.getModuleSpecifier()?.getText() !==

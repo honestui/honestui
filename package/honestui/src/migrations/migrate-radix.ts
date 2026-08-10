@@ -258,7 +258,7 @@ export async function migrateRadix(
     } else {
       packageSpinner.succeed("No packages found in source files.")
     }
-  } catch (error) {
+  } catch {
     packageSpinner.fail("Failed to update package.json")
     logger.warn(
       "You may need to manually replace @radix-ui/react-* packages with radix-ui"

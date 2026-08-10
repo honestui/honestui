@@ -3,8 +3,10 @@
 import React, { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
 import './css/grainient.css';
+import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
 
 export interface GrainientProps {
+  paused?: boolean;
   timeSpeed?: number;
   colorBalance?: number;
   warpStrength?: number;
@@ -138,6 +140,7 @@ type GrainientCtx = {
 const ctxMap = new WeakMap<HTMLDivElement, GrainientCtx>();
 
 const Grainient: React.FC<GrainientProps> = ({
+  paused = false,
   timeSpeed = 0.25,
   colorBalance = 0.0,
   warpStrength = 1.0,
@@ -162,6 +165,8 @@ const Grainient: React.FC<GrainientProps> = ({
   color3 = '#B497CF',
   className = ''
 }) => {
+  const shouldReduceMotion = usePrefersReducedMotion();
+  const isPaused = paused || shouldReduceMotion;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Effect 1: build WebGL context once, pause when offscreen / tab hidden
@@ -178,6 +183,7 @@ const Grainient: React.FC<GrainientProps> = ({
 
     const gl = renderer.gl;
     const canvas = gl.canvas as HTMLCanvasElement;
+    canvas.setAttribute('aria-hidden', 'true');
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.style.display = 'block';
@@ -244,7 +250,9 @@ const Grainient: React.FC<GrainientProps> = ({
     };
 
     const tryStart = () => {
-      if (isVisible && isPageVisible && raf === 0) raf = requestAnimationFrame(loop);
+      if (!isPaused && isVisible && isPageVisible && raf === 0) {
+        raf = requestAnimationFrame(loop);
+      }
     };
     const tryStop = () => {
       if (raf !== 0) { cancelAnimationFrame(raf); raf = 0; }
@@ -277,7 +285,7 @@ const Grainient: React.FC<GrainientProps> = ({
       ctxMap.delete(container);
       try { container.removeChild(canvas); } catch { /* ignore */ }
     };
-  }, []); // renderer created once
+  }, [isPaused]);
 
   // Effect 2: sync props to uniforms — zero GPU cost, no teardown
   useEffect(() => {
@@ -317,7 +325,7 @@ const Grainient: React.FC<GrainientProps> = ({
   ]);
 
 
-  return <div ref={containerRef} className={`grainient-container ${className}`.trim()} />;
+  return <div aria-hidden="true" ref={containerRef} className={`grainient-container ${className}`.trim()} />;
 };
 
 export default Grainient;

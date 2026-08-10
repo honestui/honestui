@@ -1,37 +1,47 @@
 ---
 title: Installation
-description: Install Honest UI shaders and import them from the dedicated package entry point.
+metaTitle: Install Honest UI shaders
+description: Install Honest UI shaders and provide sizing, motion, and WebGL fallbacks.
 ---
 
-Honest UI shaders are available from the `honestui/shaders` package entry point. Installing `honestui` includes the shader components and their WebGL runtime dependencies.
+Honest UI shaders are available from the `honestui/shaders` package entry point. They remain part of the `honestui` package dependency rather than being copied by the component CLI.
+
+## Requirements
+
+- Node.js 20.18.1 or later.
+- React 19.
+- Browser rendering with WebGL for the effect.
+- A parent with an explicit height or aspect ratio.
 
 ## Install
 
 <CommandBlock commands={["honestui"]} />
 
-## Import
+## Import the component and styles
 
-Import shader components from the dedicated entry point and load the shared shader styles once in your application root.
+Import shader components from the dedicated entry point and load the shared shader styles once in the application root.
 
 ```tsx
 import { LightRays } from "honestui/shaders"
 import "honestui/shaders.css"
 ```
 
-## Container sizing
+## Size the container and add a fallback
 
-Shader canvases fill their parent. Give the parent an explicit height or aspect ratio so the effect has space to render.
+Shader canvases fill their parent. Give the parent a size and a static background that remains acceptable while the effect loads or when WebGL is unavailable.
 
 ```tsx
-<div className="relative h-80 overflow-hidden rounded-xl bg-black">
+<div className="relative h-80 overflow-hidden rounded-xl bg-slate-950">
   <LightRays className="size-full" />
 </div>
 ```
 
+Keep meaningful content in a separate HTML layer so it remains available without the canvas.
+
 ## Client rendering
 
-Shader components run in the browser and include the `"use client"` directive. In server-rendered frameworks, keep data fetching and essential content outside the shader component.
+Shader components include the `"use client"` directive and run in the browser. In server-rendered frameworks, keep data fetching, headings, controls, and essential status outside the shader component.
 
-## Performance and accessibility
+## Motion and performance
 
-Avoid mounting several full-viewport shaders at once. Use `paused` or `disableAnimation` where available, respect `prefers-reduced-motion` in the parent experience, and keep meaningful content available without WebGL.
+Every shader automatically renders a static frame when the user enables reduced motion. You can also set `paused` to stop animation for an application-specific reason. Avoid mounting several full-viewport shaders at once, test the intended device range, and confirm that the static background still supports the content.

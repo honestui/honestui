@@ -29,8 +29,8 @@ async function searchMovies(
   query: string,
   filter: (item: string, query: string) => boolean
 ): Promise<Movie[]> {
-  await new Promise((resolve) => setTimeout(resolve, Math.random() * 500 + 100))
-  if (Math.random() < 0.01 || query === "will_error") {
+  await new Promise((resolve) => setTimeout(resolve, 350))
+  if (query === "will_error") {
     throw new Error("Network error")
   }
   return top100Movies.filter(
@@ -49,20 +49,16 @@ export default function AutocompleteAsync() {
 
   React.useEffect(() => {
     if (!searchValue) {
-      setSearchResults([])
-      setIsLoading(false)
       return
     }
 
-    setIsLoading(true)
-    setError(null)
     let ignore = false
 
     const timeoutId = setTimeout(async () => {
       try {
         const results = await searchMovies(searchValue, contains)
         if (!ignore) setSearchResults(results)
-      } catch (err) {
+      } catch {
         if (!ignore) {
           setError("Failed to fetch movies. Please try again.")
           setSearchResults([])
@@ -93,7 +89,7 @@ export default function AutocompleteAsync() {
   } else if (searchResults.length === 0 && searchValue) {
     status = (
       <span className="text-sm font-normal text-muted-foreground">
-        Movie or year "{searchValue}" does not exist in the Top
+        Movie or year “{searchValue}” does not exist in the Top
         100 IMDb movies
       </span>
     )
@@ -106,7 +102,12 @@ export default function AutocompleteAsync() {
       <Autocomplete
         items={searchResults}
         value={searchValue}
-        onValueChange={setSearchValue}
+        onValueChange={(value) => {
+          setSearchValue(value)
+          setIsLoading(Boolean(value))
+          setError(null)
+          if (!value) setSearchResults([])
+        }}
         itemToStringValue={(item: unknown) => (item as Movie).title}
         filter={null}
       >
@@ -118,7 +119,7 @@ export default function AutocompleteAsync() {
             </AutocompleteStatus>
             <AutocompleteList>
               {(movie: Movie) => (
-                <AutocompleteItem key={movie.id} value={movie as any}>
+                <AutocompleteItem key={movie.id} value={movie}>
                   <div className="flex w-full flex-col gap-1">
                     <div className="font-medium">{movie.title}</div>
                     <div className="text-xs text-muted-foreground">

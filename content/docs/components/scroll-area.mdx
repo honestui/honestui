@@ -1,14 +1,12 @@
 ---
 title: Scroll Area
-description: A native scroll container with custom scrollbars.
+description: Keep overflowing content scrollable while applying consistent scrollbar styling.
 
 links:
   doc: https://base-ui.com/react/components/scroll-area#api-reference
 ---
 
-<ComponentPreview
-  name="scroll-area-demo"
-/>
+<ComponentPreview name="scroll-area-demo" />
 
 ## Overview
 
@@ -69,7 +67,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui/scroll-area";
 ```
 
 ```tsx
@@ -89,7 +87,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 ## Examples
 
-Our examples cover horizontal scrolling and combined horizontal and vertical scrolling.
+Examples cover horizontal scrolling and combined horizontal and vertical scrolling.
 
 ### Horizontal Scroll
 
@@ -98,3 +96,11 @@ Our examples cover horizontal scrolling and combined horizontal and vertical scr
 ### Both Scrollbars
 
 <ComponentPreview name="scroll-area-both" />
+
+## Decision guidance
+
+Use Scroll Area when overflow must remain inside a bounded region. Prefer normal page scrolling for primary content, and never hide required actions in a region whose boundaries are unclear. Horizontal scrolling is appropriate for wide content such as code or tables when reflow would destroy meaning.
+
+## API reference
+
+`ScrollArea` forwards the Base UI root props and renders the viewport and corner treatment. `ScrollBar` accepts Base UI scrollbar props, including orientation. See the [Base UI Scroll Area API](https://base-ui.com/react/components/scroll-area#api-reference).

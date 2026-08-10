@@ -17,14 +17,14 @@ export default function BreadcrumbCard() {
         <Breadcrumb>
           <BreadcrumbList className="gap-1.5 sm:gap-1.5">
             <BreadcrumbItem>
-              <BreadcrumbLink href="#" className="flex items-center gap-1.5">
+              <BreadcrumbLink href="/docs" className="flex items-center gap-1.5">
                 <HouseIcon className="size-4" aria-hidden="true" />
                 Home
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">Products</BreadcrumbLink>
+              <BreadcrumbLink href="/docs/components/card">Products</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

@@ -39,7 +39,7 @@ function setupMocks() {
 
 describe("defaultScaffold", () => {
   const originalEnv = { ...process.env }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let mockExit: any
 
   beforeEach(() => {

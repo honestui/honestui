@@ -1,7 +1,6 @@
 import path from "path"
 import { getRegistryItems } from "@/src/registry/api"
 import { configWithDefaults } from "@/src/registry/config"
-import { clearRegistryContext } from "@/src/registry/context"
 import { validateRegistryConfigForItems } from "@/src/registry/validator"
 import { rawConfigSchema } from "@/src/schema"
 import { loadEnvFiles } from "@/src/utils/env-loader"
@@ -72,7 +71,5 @@ export const view = new Command()
       process.exit(0)
     } catch (error) {
       handleError(error)
-    } finally {
-      clearRegistryContext()
     }
   })

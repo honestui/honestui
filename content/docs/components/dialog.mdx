@@ -1,6 +1,6 @@
 ---
 title: Dialog
-description: A popup that opens on top of the entire page.
+description: Focus attention on a short task or decision without leaving the current page.
 
 links:
   doc: https://base-ui.com/react/components/dialog#api-reference
@@ -76,18 +76,20 @@ import {
   DialogPopup,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 ```
 
 ```tsx
 <Dialog>
-  <DialogTrigger>Open Dialog</DialogTrigger>
+  <DialogTrigger>Edit profile</DialogTrigger>
   <DialogPopup>
     <DialogHeader>
-      <DialogTitle>Dialog Title</DialogTitle>
-      <DialogDescription>Dialog Description</DialogDescription>
+      <DialogTitle>Edit profile</DialogTitle>
+      <DialogDescription>
+        Update the name shown to other workspace members.
+      </DialogDescription>
     </DialogHeader>
-    <DialogBody>Dialog content</DialogBody>
+    <DialogBody>{/* Profile fields */}</DialogBody>
     <DialogFooter>
       <DialogClose>Close</DialogClose>
     </DialogFooter>
@@ -97,7 +99,7 @@ import {
 
 ## Examples
 
-Our examples cover opening from a menu, nesting, and confirming close actions.
+Examples cover opening from a menu, nesting, and confirming close actions.
 
 ### Open from a Menu
 
@@ -110,3 +112,9 @@ Our examples cover opening from a menu, nesting, and confirming close actions.
 ### Close Confirmation
 
 <ComponentPreview name="dialog-close-confirmation" />
+
+## API reference
+
+All Dialog parts forward their matching Base UI props. `DialogOverlay` aliases `DialogBackdrop`, and `DialogContent` aliases `DialogPopup`. Use the root for controlled or uncontrolled open state, the trigger to open it, the close part for explicit dismissal, and the title and description to provide its accessible name and purpose.
+
+See the [Base UI Dialog API](https://base-ui.com/react/components/dialog#api-reference).

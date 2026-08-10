@@ -31,7 +31,7 @@ import { Grainient } from "honestui/shaders"
 
 ## Accessibility
 
-Use Grainient as decoration and keep readable content in a separate foreground layer. The component pauses while it is offscreen or the document is hidden; gate it behind your reduced-motion preference when continuous movement is not appropriate.
+Use Grainient as decoration and keep readable content in a separate foreground layer. The component pauses while it is offscreen, while the document is hidden, and when the user enables reduced motion. Use `paused` for application-specific control, and provide a static background when WebGL is unavailable.
 
 ## API Reference
 
@@ -39,6 +39,7 @@ Use Grainient as decoration and keep readable content in a separate foreground l
   <ApiRow name="color1" type="string" default='"#FF9FFC"'>First gradient color.</ApiRow>
   <ApiRow name="color2" type="string" default='"#5227FF"'>Second gradient color.</ApiRow>
   <ApiRow name="color3" type="string" default='"#B497CF"'>Third gradient color.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a static frame instead of animating.</ApiRow>
   <ApiRow name="timeSpeed" type="number" default="0.25">Overall animation speed.</ApiRow>
   <ApiRow name="warpStrength" type="number" default="1">Strength of the gradient deformation.</ApiRow>
   <ApiRow name="warpFrequency" type="number" default="5">Frequency of the deformation.</ApiRow>

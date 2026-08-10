@@ -5,7 +5,6 @@ import {
   getImportTargetEmitMode,
   resolveImportEntryMatch,
   resolveLocalPathTarget,
-  type ImportEmitMode,
   type ImportResolutionEntry,
   type ImportResolutionMatch,
 } from "@/src/utils/import-matcher"

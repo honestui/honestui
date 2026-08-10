@@ -1,14 +1,12 @@
 ---
 title: Progress
-description: Displays the status of a task that takes a long time.
+description: Show how much of a task is complete or that work is still in progress.
 
 links:
   doc: https://base-ui.com/react/components/progress#api-reference
 ---
 
-<ComponentPreview
-  name="progress-demo"
-/>
+<ComponentPreview name="progress-demo" />
 
 ## Overview
 
@@ -22,11 +20,11 @@ A progress indicator has a value, maximum, optional label, optional formatted va
 
 ## Behavior
 
-Use determinate progress when you know the percentage. Use a separate loading pattern when the duration is unknown.
+Use determinate progress when you know the percentage. Pass `value={null}` for indeterminate work, and replace it with a number as soon as the application can estimate progress. Do not show a made-up percentage simply to make an operation feel active.
 
 ## Accessibility
 
-Show text when the value matters. Do not communicate progress only through animation or color.
+Name the operation with `ProgressLabel` or `aria-label`. Show text when the value matters. Do not communicate progress only through animation or color, and keep completion feedback visible after the indicator disappears. Honest UI limits indeterminate animation when reduced motion is requested.
 
 ## Installation
 
@@ -73,7 +71,7 @@ import {
   Progress,
   ProgressLabel,
   ProgressValue,
-} from "@/components/ui/progress"
+} from "@/components/ui/progress";
 ```
 
 ```tsx
@@ -84,16 +82,18 @@ Note: If you render children inside `Progress`, you must also include `ProgressT
 
 ## Examples
 
-Our examples cover progress with labels and formatted values.
+The first example is an interactive, determinate task with reset behavior. The next example compares linear, circular, and indeterminate layouts. The final example changes how the value is announced and displayed.
 
 ### With Label and Value
 
-<ComponentPreview
-  name="progress-with-label-value"
-/>
+<ComponentPreview name="progress-with-label-value" />
 
 ### With Formatted Value
 
-<ComponentPreview
-  name="progress-with-formatted-value"
-/>
+<ComponentPreview name="progress-with-formatted-value" />
+
+## API reference
+
+`Progress` accepts Base UI Progress root props plus `variant="linear" | "circular"`. Its defaults are `min={0}` and `max={100}`; pass `null` as the value for indeterminate progress. When it has no children, it renders the matching track automatically. The label, track, indicator, and value parts forward Base UI props; `ProgressCircularTrack` accepts native SVG props.
+
+See the [Base UI Progress API](https://base-ui.com/react/components/progress#api-reference) for value formatting and state details.

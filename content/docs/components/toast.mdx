@@ -1,6 +1,6 @@
 ---
 title: Toast
-description: Generates standard and gooey toast notifications.
+description: Show brief, noncritical feedback after an action or background event.
 
 links:
   doc: https://base-ui.com/react/components/toast#api-reference
@@ -122,14 +122,14 @@ export default function RootLayout({ children }) {
 ## Usage
 
 ```tsx
-import { toastManager } from "@/components/ui/toast"
+import { toastManager } from "@/components/ui/toast";
 ```
 
 ```tsx
 toastManager.add({
   title: "Event has been created",
   description: "Monday, January 3rd at 6:00pm",
-})
+});
 ```
 
 By default, toasts appear in the **bottom-right** corner. You can change this by setting the `position` prop on the `ToastProvider`.
@@ -147,7 +147,7 @@ toastManager.add({
   variant: "gooey",
   title: "Event has been created",
   description: "Monday, January 3rd at 6:00pm",
-})
+});
 ```
 
 You can combine `variant: "gooey"` with status types, actions, position, duration, and promise helpers.
@@ -159,20 +159,16 @@ toastManager.add({
   title: "Saved",
   description: "Your changes are live.",
   position: "top-right",
-})
+});
 ```
 
-## Standard Toast Examples
+## Examples
 
-Our examples cover status, loading, actions, promise state, and varied toast heights.
+Examples cover status, loading, actions, promise state, and varied toast heights.
 
 ### With Status
 
 <ComponentPreview name="toast-with-status" />
-
-### Loading
-
-<ComponentPreview name="toast-loading" />
 
 ### With Action
 
@@ -200,16 +196,12 @@ toastManager.add({
   position: "bottom-center",
   title: "Synced",
   description: "All records are up to date.",
-})
+});
 ```
 
 ## Gooey Toast Examples
 
-Our examples cover the animated toast style, state variants, promise handling, action buttons, and placement.
-
-### Basic Gooey Toast
-
-<ComponentPreview name="gooey-toast-demo" />
+Examples cover the animated toast style, state variants, promise handling, action buttons, and placement.
 
 ### Gooey States
 
@@ -247,7 +239,7 @@ Use no variant for a standard toast:
 toastManager.add({
   title: "Saved",
   description: "Your changes are live.",
-})
+});
 ```
 
 Use `variant: "gooey"` for the animated variation:
@@ -258,27 +250,27 @@ toastManager.add({
   type: "success",
   title: "Saved",
   description: "Your changes are live.",
-})
+});
 ```
 
 ### Gooey Options
 
 ```typescript
 interface GooeyOptions {
-  variant?: "gooey"
-  title?: string
-  description?: ReactNode | string
-  position?: GooeyPosition
-  duration?: number | null
-  icon?: ReactNode | null
-  styles?: GooeyStyles
-  fill?: string
-  roundness?: number
-  autopilot?: boolean | { expand?: number; collapse?: number }
+  variant?: "gooey";
+  title?: string;
+  description?: ReactNode | string;
+  position?: GooeyPosition;
+  duration?: number | null;
+  icon?: ReactNode | null;
+  styles?: GooeyStyles;
+  fill?: string;
+  roundness?: number;
+  autopilot?: boolean | { expand?: number; collapse?: number };
   button?: {
-    title: string
-    onClick: () => void
-  }
+    title: string;
+    onClick: () => void;
+  };
 }
 ```
 
@@ -286,8 +278,14 @@ interface GooeyOptions {
 
 ```typescript
 interface ToastProviderProps {
-  position?: ToastPosition // Standard toast position
-  gooeyPosition?: ToastPosition // Default position for gooey toasts
-  gooeyOptions?: Partial<GooeyOptions>
+  position?: ToastPosition; // Standard toast position
+  gooeyPosition?: ToastPosition; // Default position for gooey toasts
+  gooeyOptions?: Partial<GooeyOptions>;
 }
 ```
+
+## API reference
+
+`ToastProvider` installs the viewport and accepts the documented position. `toastManager` exposes the creation, update, dismissal, promise, and action methods shown in the examples; each toast accepts a status variant and visible content. Keep the provider mounted once near the application root.
+
+Toasts are supplemental feedback. Persist errors or results that users may need after the timeout, and do not use a toast as the only confirmation of a destructive action.

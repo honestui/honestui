@@ -4,13 +4,13 @@ import {
   RegistryForbiddenError,
   RegistryGoneError,
   RegistryNotFoundError,
+  RegistryTimeoutError,
   RegistryUnauthorizedError,
 } from "@/src/registry/errors"
-import { http, HttpResponse } from "msw"
+import { delay, http, HttpResponse } from "msw"
 import { setupServer } from "msw/node"
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest"
 
-import { clearRegistryContext, setRegistryHeaders } from "./context"
 import { clearRegistryCache, fetchRegistry } from "./fetcher"
 
 const server = setupServer(
@@ -254,19 +254,17 @@ describe("fetchRegistry", () => {
       })
     )
 
-    setRegistryHeaders({
-      [`${REGISTRY_URL}/override-test.json`]: {
+    await fetchRegistry(["override-test.json"], {
+      headers: {
         Accept: "application/custom+json",
         "User-Agent": "custom-client/1.0",
       },
+      useCache: false,
     })
-
-    await fetchRegistry(["override-test.json"], { useCache: false })
 
     expect(acceptHeader).toBe("application/custom+json")
     expect(userAgentHeader).toBe("custom-client/1.0")
 
-    clearRegistryContext()
   })
 
   it("should allow lowercase per-registry headers to override the default Accept and User-Agent", async () => {
@@ -286,19 +284,17 @@ describe("fetchRegistry", () => {
       )
     )
 
-    setRegistryHeaders({
-      [`${REGISTRY_URL}/lowercase-override-test.json`]: {
+    await fetchRegistry(["lowercase-override-test.json"], {
+      headers: {
         accept: "application/custom+json",
         "user-agent": "custom-client/1.0",
       },
+      useCache: false,
     })
-
-    await fetchRegistry(["lowercase-override-test.json"], { useCache: false })
 
     expect(acceptHeader).toBe("application/custom+json")
     expect(userAgentHeader).toBe("custom-client/1.0")
 
-    clearRegistryContext()
   })
 
   it("should send specific Accept header for direct external URLs", async () => {
@@ -345,6 +341,65 @@ describe("fetchRegistry", () => {
       useCache: false,
     })
     expect(result).toMatchObject({ name: "content-negotiation" })
+  })
+
+  it("isolates cached responses by request headers", async () => {
+    let requestCount = 0
+    server.use(
+      http.get(`${REGISTRY_URL}/private-cache.json`, ({ request }) => {
+        requestCount += 1
+        return HttpResponse.json({
+          authorization: request.headers.get("authorization"),
+        })
+      })
+    )
+
+    const [first] = await fetchRegistry(["private-cache.json"], {
+      headers: { Authorization: "Bearer first" },
+    })
+    const [second] = await fetchRegistry(["private-cache.json"], {
+      headers: { Authorization: "Bearer second" },
+    })
+    const [anonymous] = await fetchRegistry(["private-cache.json"])
+
+    expect(first).toEqual({ authorization: "Bearer first" })
+    expect(second).toEqual({ authorization: "Bearer second" })
+    expect(anonymous).toEqual({ authorization: null })
+    expect(requestCount).toBe(3)
+  })
+
+  it("evicts rejected requests so a retry can succeed", async () => {
+    let requestCount = 0
+    server.use(
+      http.get(`${REGISTRY_URL}/retry.json`, () => {
+        requestCount += 1
+        if (requestCount === 1) {
+          return HttpResponse.json({ message: "Try again" }, { status: 503 })
+        }
+        return HttpResponse.json({ name: "retry", type: "registry:ui" })
+      })
+    )
+
+    await expect(fetchRegistry(["retry.json"])).rejects.toBeInstanceOf(
+      RegistryFetchError
+    )
+    await expect(fetchRegistry(["retry.json"])).resolves.toEqual([
+      { name: "retry", type: "registry:ui" },
+    ])
+    expect(requestCount).toBe(2)
+  })
+
+  it("aborts registry requests that exceed the timeout", async () => {
+    server.use(
+      http.get(`${REGISTRY_URL}/slow.json`, async () => {
+        await delay(100)
+        return HttpResponse.json({ name: "slow", type: "registry:ui" })
+      })
+    )
+
+    await expect(
+      fetchRegistry(["slow.json"], { timeoutMs: 5, useCache: false })
+    ).rejects.toBeInstanceOf(RegistryTimeoutError)
   })
 })
 

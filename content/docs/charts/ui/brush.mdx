@@ -1,12 +1,14 @@
 ---
 title: Brush
-description: A zoom brush that filters the chart down to a draggable range of the data.
+description: Filter a Cartesian chart to a selected data range.
 image: /og/og-image.png
 ---
 
 ## Usage
 
-Add `<AreaChart.Brush />` as a child of the chart root. Its presence renders the brush footer, a miniature of the **full** dataset with a draggable selection window over it. Narrowing that window filters the main chart to the selected range; the miniature always keeps showing everything, so you never lose your place.
+Add `<AreaChart.Brush />` as a child of the chart root. It renders a miniature of the full dataset with a draggable selection window. Narrowing the window filters the main chart while the miniature keeps the full range visible.
+
+The built-in canvas brush is pointer-operated. If choosing a data range is required, provide equivalent range inputs, date controls, or another keyboard-operable filter outside the chart.
 
 Set `xDataKey` on the root (or `dataKey` on `<XAxis />`) so the handles can label themselves with the category under each edge.
 
@@ -26,10 +28,10 @@ import { AreaChart } from "honestui/charts";
 
 <Alert>
   <AlertContent>
-    Drag either handle to resize the range, or drag the selected region itself to pan without
-    changing its width. Handle labels fade in while the pointer is over the brush. Because the
-    ECharts brush is backed by a native `dataZoom`, the main plot is draggable too, drag the chart
-    itself to slide the visible window, and the brush follows along.
+    Drag either handle to resize the range, or drag the selected region to pan without changing
+    its width. The main plot can also move the visible window because the brush uses ECharts
+    `dataZoom`. These pointer interactions need an equivalent external control when range changes
+    are part of the core task.
   </AlertContent>
 </Alert>
 

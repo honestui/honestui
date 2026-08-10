@@ -1,6 +1,6 @@
 ---
 title: Tabs
-description: A component for toggling between related panels on the same page.
+description: Switch between related panels while keeping the same page context.
 
 links:
   doc: https://base-ui.com/react/components/tabs#api-reference
@@ -61,7 +61,7 @@ npx honestui@latest add tabs
 ## Usage
 
 ```tsx
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 ```
 
 ```tsx
@@ -79,7 +79,7 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs"
 
 ## Examples
 
-Our examples cover default tabs, underline styling, vertical orientation, and vertical underline styling.
+Examples cover default tabs, underline styling, vertical orientation, and vertical underline styling.
 
 ### Underline Variant
 
@@ -87,12 +87,14 @@ Our examples cover default tabs, underline styling, vertical orientation, and ve
 
 ### Vertical Orientation
 
-<ComponentPreview
-  name="tabs-vertical"
-/>
+<ComponentPreview name="tabs-vertical" />
 
 ### Underline with Vertical Orientation
 
-<ComponentPreview
-  name="tabs-underline-vertical"
-/>
+<ComponentPreview name="tabs-underline-vertical" />
+
+## API reference
+
+Tabs exports root, list, tab, and panel parts; Trigger and Content are aliases for Tab and Panel. All parts forward their matching Base UI Tabs props. Put controlled or default value, orientation, and activation behavior on the root, and match every tab value to one panel value.
+
+Use automatic activation only when switching panels is immediate. See the [Base UI Tabs API](https://base-ui.com/react/components/tabs#api-reference).

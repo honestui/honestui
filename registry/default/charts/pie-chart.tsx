@@ -123,6 +123,7 @@ export interface PieChartProps<TData extends Record<string, unknown>> {
   selectedSector?: string | null; 
   onSelectionChange?: (selection: { dataKey: string; value: number } | null) => void; 
   isLoading?: boolean; 
+  ariaLabel?: string;
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -703,6 +704,7 @@ export function PieChart<TData extends Record<string, unknown>>({
   selectedSector: selectedSectorProp,
   onSelectionChange,
   isLoading = false,
+  ariaLabel,
   chartOptions,
   children,
 }: PieChartProps<TData>) {
@@ -713,7 +715,7 @@ export function PieChart<TData extends Record<string, unknown>>({
   const mountRef = useRef<HTMLDivElement>(null);
   const echartsRef = useRef<EChartsInstance | null>(null);
 
-  const live = useRef<LiveState>({
+  const liveRef = useRef<LiveState>({
     resolved: null,
     hasRevealed: false,
     handlers: {
@@ -722,7 +724,7 @@ export function PieChart<TData extends Record<string, unknown>>({
       selectSector: () => {},
     },
     repush: () => {},
-  }).current;
+  });
 
   const shouldReduceMotion = useReducedMotion();
 
@@ -737,6 +739,7 @@ export function PieChart<TData extends Record<string, unknown>>({
     () => data.map((row) => String(row[nameKey as string])),
     [data, nameKey],
   );
+  const defaultAriaLabel = `Pie chart showing ${String(dataKey)} by ${String(nameKey)}.`;
 
   const css = useMemo(() => buildChartCss(chartId, config), [chartId, config]);
 
@@ -755,14 +758,16 @@ export function PieChart<TData extends Record<string, unknown>>({
     [data, dataKey, nameKey, onSelectionChange],
   );
 
-  live.handlers = {
-    isClickable: pie?.isClickable ?? false,
-    selectedSector,
-    selectSector,
-  };
+  useEffect(() => {
+    liveRef.current.handlers = {
+      isClickable: pie?.isClickable ?? false,
+      selectedSector,
+      selectSector,
+    };
+  });
 
   const buildOption = useCallback((): EChartsOption => {
-    const resolved = live.resolved;
+    const resolved = liveRef.current.resolved;
     if (!resolved) return {};
 
     const ctx: OptionBuildContext = {
@@ -786,7 +791,6 @@ export function PieChart<TData extends Record<string, unknown>>({
       series: buildPieSeries(ctx),
     };
   }, [
-    live,
     data,
     config,
     nameKey,
@@ -799,6 +803,7 @@ export function PieChart<TData extends Record<string, unknown>>({
   ]);
 
   useEffect(() => {
+    const live = liveRef.current;
     const mount = mountRef.current;
     const container = containerRef.current;
     if (!mount || !container) return;
@@ -816,7 +821,7 @@ export function PieChart<TData extends Record<string, unknown>>({
     resizeObserver.observe(mount);
 
     const themeObserver = new MutationObserver(() => {
-      live.repush();
+      liveRef.current.repush();
     });
     themeObserver.observe(document.documentElement, {
       attributes: true,
@@ -824,7 +829,7 @@ export function PieChart<TData extends Record<string, unknown>>({
     });
 
     chart.on("click", (params) => {
-      const { isClickable, selectedSector: selected, selectSector: select } = live.handlers;
+      const { isClickable, selectedSector: selected, selectSector: select } = liveRef.current.handlers;
       if (!isClickable) return;
       const p = params as { name?: string; seriesId?: string };
 
@@ -851,7 +856,7 @@ export function PieChart<TData extends Record<string, unknown>>({
     const container = containerRef.current;
     if (!chart || !container) return;
 
-    live.resolved = resolveColors(container, config, sectorKeys);
+    liveRef.current.resolved = resolveColors(container, config, sectorKeys);
 
     const push = (withEntrance: boolean) => {
       const option = buildOption();
@@ -865,18 +870,17 @@ export function PieChart<TData extends Record<string, unknown>>({
       chart.setOption(merged as EChartsOption, { notMerge: true });
     };
 
-    if (isLoading) live.hasRevealed = false;
-    const shouldReveal = !live.hasRevealed && !isLoading;
-    if (shouldReveal) live.hasRevealed = true;
+    if (isLoading) liveRef.current.hasRevealed = false;
+    const shouldReveal = !liveRef.current.hasRevealed && !isLoading;
+    if (shouldReveal) liveRef.current.hasRevealed = true;
     const revealEnabled = animation && shouldReveal && !shouldReduceMotion;
     push(revealEnabled);
 
-    live.repush = () => {
-      live.resolved = resolveColors(container, config, sectorKeys);
+    liveRef.current.repush = () => {
+      liveRef.current.resolved = resolveColors(container, config, sectorKeys);
       push(false);
     };
   }, [
-    live,
     buildOption,
     chartOptions,
     isLoading,
@@ -912,8 +916,8 @@ export function PieChart<TData extends Record<string, unknown>>({
     const tick = (now: number) => {
       const phase = ((((now - start) / LOADING_ANIMATION_DURATION) % 1) + 1) % 1;
 
-      const foreground = live.resolved?.tokens.foreground ?? FALLBACK_COLOR;
-      const background = live.resolved?.tokens.background ?? FALLBACK_COLOR;
+      const foreground = liveRef.current.resolved?.tokens.foreground ?? FALLBACK_COLOR;
+      const background = liveRef.current.resolved?.tokens.background ?? FALLBACK_COLOR;
 
       const border = sectorBorder(paddingAngle, background);
       const sectors = Array.from({ length: LOADING_SECTORS }, (_, i) => {
@@ -938,7 +942,7 @@ export function PieChart<TData extends Record<string, unknown>>({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [live, isLoading, pie]);
+  }, [isLoading, pie]);
 
   const legendStyle: CSSProperties = {
     position: "absolute",
@@ -957,10 +961,15 @@ export function PieChart<TData extends Record<string, unknown>>({
       ref={containerRef}
       data-chart={chartId}
       className={`relative flex flex-col text-xs ${className ?? ""}`}
+      aria-busy={isLoading}
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      <div className="relative min-h-0 w-full flex-1">
+      <div
+        className="relative min-h-0 w-full flex-1"
+        role="img"
+        aria-label={ariaLabel ?? defaultAriaLabel}
+      >
         {backgroundSlot.present && !isLoading && (
           <BackgroundLayer variant={backgroundSlot.variant} />
         )}
@@ -985,12 +994,17 @@ export function PieChart<TData extends Record<string, unknown>>({
       {isLoading && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="text-primary bg-background flex items-center justify-center gap-2 rounded-md border px-2 py-0.5 text-sm"
           >
-            <div className="border-border border-t-primary h-3 w-3 animate-spin rounded-full border" />
+            <div
+              aria-hidden
+              className={`border-border border-t-primary h-3 w-3 rounded-full border ${shouldReduceMotion ? "" : "animate-spin"}`}
+            />
             <span>Loading</span>
           </motion.div>
         </div>

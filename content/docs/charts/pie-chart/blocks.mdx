@@ -1,21 +1,31 @@
 ---
-title: Pie Blocks
-description: Ready-made pie chart layouts built with Honest UI
+title: Pie Chart Examples
+description: Complete pie and donut layouts for simple part-to-whole relationships.
 image: /og/pie-chart.png
 ---
 
-## Coffee Export Destinations
+Use these layouts only when the categories form a meaningful whole and there are few enough sectors to compare. The values are sample data. Open the Code tab and update sector keys, values, labels, totals, and text alternatives together.
 
-<ComponentPreview className="mb-4" title="Coffee Export Destinations" name="b-market-share-echarts-pie-chart"/>
+## Coffee export destinations
 
-## Habitat Recovery Survey
+Use this donut layout for a small set of regional shares. Replace the sector name and value fields, then update the total in the center. Keep the visible category list because sector color alone is not enough.
 
-<ComponentPreview className="mb-4" title="Habitat Recovery Survey" name="b-progress-rings-echarts-pie-chart"/>
+<ComponentPreview className="mb-4" title="Coffee export destinations" name="b-market-share-echarts-pie-chart"/>
 
-## Museum Funding Mix
+## Habitat recovery survey
 
-<ComponentPreview className="mb-4" title="Museum Funding Mix" name="b-revenue-mix-echarts-pie-chart"/>
+Use these rings for a small set of independently labeled percentages, not for sectors that must sum to one whole. Replace each value and caption together. The visible percentage and sentence carry the meaning; the ring is supporting emphasis.
 
-## Soil Health Score
+<ComponentPreview className="mb-4" title="Habitat recovery survey" name="b-progress-rings-echarts-pie-chart"/>
 
-<ComponentPreview className="mb-4" title="Soil Health Score" name="b-reliability-score-echarts-pie-chart"/>
+## Museum funding mix
+
+Use this layout when four or fewer funding categories make up a total. Replace `channel`, `value`, labels, and the center summary. If precise comparison matters, use a bar chart or include a table.
+
+<ComponentPreview className="mb-4" title="Museum funding mix" name="b-revenue-mix-echarts-pie-chart"/>
+
+## Soil health score
+
+Use this gauge-like layout when a score maps to named, ordered bands. Replace the band thresholds, score, sample date, and interpretation together. Keep the score and band name visible so color is not the only signal.
+
+<ComponentPreview className="mb-4" title="Soil health score" name="b-reliability-score-echarts-pie-chart"/>

@@ -9,7 +9,7 @@ function Field({ className, ...props }: FieldPrimitive.Root.Props) {
     <FieldPrimitive.Root
       data-slot="field"
       className={cn(
-        "flex w-full flex-col gap-[var(--rs-space-2)]",
+        "flex w-full flex-col gap-[var(--hui-space-2)]",
         className
       )}
       {...props}
@@ -55,9 +55,9 @@ function FieldControl({
       <FieldPrimitive.Control
         data-slot="field-control"
         className={cn(
-          "box-border h-[var(--rs-space-9)] w-full min-w-0 rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-primary)] px-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] outline-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] [transition:var(--rs-transition-interactive)] placeholder:text-[var(--rs-color-foreground-base-tertiary)] focus:border-[var(--rs-color-border-accent-emphasis)] data-disabled:cursor-not-allowed data-disabled:opacity-40 data-invalid:border-[var(--rs-color-border-danger-emphasis)] data-invalid:focus:border-[var(--rs-color-border-danger-emphasis-hover)]",
-          size === "sm" && "h-[var(--rs-space-8)]",
-          size === "lg" && "h-[var(--rs-space-10)]",
+          "box-border h-[var(--hui-space-9)] w-full min-w-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:var(--hui-transition-interactive)] placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus:border-[var(--hui-color-border-accent-emphasis)] data-disabled:cursor-not-allowed data-disabled:opacity-40 data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)]",
+          size === "sm" && "h-[var(--hui-space-8)]",
+          size === "lg" && "h-[var(--hui-space-10)]",
           props.type === "search" &&
             "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
           props.type === "file" &&
@@ -77,7 +77,7 @@ function FieldDescription({
     <FieldPrimitive.Description
       data-slot="field-description"
       className={cn(
-        "m-0 text-[var(--rs-color-foreground-base-secondary)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)]",
+        "m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
         className
       )}
       {...props}
@@ -90,7 +90,7 @@ function FieldError({ className, ...props }: FieldPrimitive.Error.Props) {
     <FieldPrimitive.Error
       data-slot="field-error"
       className={cn(
-        "m-0 text-[var(--rs-color-foreground-danger-primary)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)] starting:opacity-0",
+        "m-0 text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)] starting:opacity-0",
         className
       )}
       {...props}
@@ -106,7 +106,7 @@ function FieldHelperSlot({
     <div
       data-slot="field-helper-slot"
       className={cn(
-        "grid [&>*]:[grid-area:1/1] [&>[data-slot=field-description][data-invalid]]:invisible [&>[data-slot=field-description][data-invalid]]:opacity-0 motion-safe:[&>*]:[transition:opacity_var(--rs-duration-fast)_var(--rs-ease-out),visibility_var(--rs-duration-fast)_var(--rs-ease-out)]",
+        "grid [&>*]:[grid-area:1/1] [&>[data-slot=field-description][data-invalid]]:invisible [&>[data-slot=field-description][data-invalid]]:opacity-0 motion-safe:[&>*]:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),visibility_var(--hui-duration-fast)_var(--hui-ease-out)]",
         className
       )}
       {...props}

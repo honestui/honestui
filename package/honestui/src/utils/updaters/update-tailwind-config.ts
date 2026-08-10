@@ -14,6 +14,7 @@ import objectToString from "stringify-object"
 import { type Config as TailwindConfig } from "tailwindcss"
 import {
   ArrayLiteralExpression,
+  Node,
   ObjectLiteralExpression,
   Project,
   PropertyAssignment,
@@ -28,6 +29,15 @@ export type UpdaterTailwindConfig = Omit<TailwindConfig, "plugins"> & {
   // We only want string plugins for now.
   plugins?: string[]
 }
+
+type ParsedConfigValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ParsedConfigValue[]
+  | { [key: string]: ParsedConfigValue }
 
 export async function updateTailwindConfig(
   tailwindConfig:
@@ -210,15 +220,15 @@ async function addTailwindConfigTheme(
       arrayMerge: (dst, src) => src,
     })
     const resultString = objectToString(result)
-      .replace(/\'\.\.\.(.*)\'/g, "...$1") // Remove quote around spread element
-      .replace(/\'\"/g, "'") // Replace `\" with "
-      .replace(/\"\'/g, "'") // Replace `\" with "
-      .replace(/\'\[/g, "[") // Replace `[ with [
-      .replace(/\]\'/g, "]") // Replace `] with ]
-      .replace(/\'\\\'/g, "'") // Replace `\' with '
-      .replace(/\\\'/g, "'") // Replace \' with '
-      .replace(/\\\'\'/g, "'")
-      .replace(/\'\'/g, "'")
+      .replace(/'\.\.\.(.*)'/g, "...$1") // Remove quote around spread element
+      .replace(/'"/g, "'") // Replace `\" with "
+      .replace(/"'/g, "'") // Replace `\" with "
+      .replace(/'\[/g, "[") // Replace `[ with [
+      .replace(/\]'/g, "]") // Replace `] with ]
+      .replace(/'\\'/g, "'") // Replace `\' with '
+      .replace(/\\'/g, "'") // Replace \' with '
+      .replace(/\\''/g, "'")
+      .replace(/''/g, "'")
     themeInitializer.replaceWithText(resultString)
   }
 
@@ -413,7 +423,9 @@ export function unsetSpreadElements(arr: ArrayLiteralExpression) {
   }
 }
 
-async function parseObjectLiteral(objectLiteralString: string): Promise<any> {
+async function parseObjectLiteral(
+  objectLiteralString: string
+): Promise<Record<string, ParsedConfigValue>> {
   const sourceFile = await _createSourceFile(
     `const theme = ${objectLiteralString}`,
     null
@@ -433,11 +445,13 @@ async function parseObjectLiteral(objectLiteralString: string): Promise<any> {
   throw new Error("Invalid input: not an object literal")
 }
 
-function parseObjectLiteralExpression(node: ObjectLiteralExpression): any {
-  const result: any = {}
+function parseObjectLiteralExpression(
+  node: ObjectLiteralExpression
+): Record<string, ParsedConfigValue> {
+  const result: Record<string, ParsedConfigValue> = {}
   for (const property of node.getProperties()) {
     if (property.isKind(SyntaxKind.PropertyAssignment)) {
-      const name = property.getName().replace(/\'/g, "")
+      const name = property.getName().replace(/'/g, "")
       if (
         property.getInitializer()?.isKind(SyntaxKind.ObjectLiteralExpression)
       ) {
@@ -458,8 +472,10 @@ function parseObjectLiteralExpression(node: ObjectLiteralExpression): any {
   return result
 }
 
-function parseArrayLiteralExpression(node: ArrayLiteralExpression): any[] {
-  const result: any[] = []
+function parseArrayLiteralExpression(
+  node: ArrayLiteralExpression
+): ParsedConfigValue[] {
+  const result: ParsedConfigValue[] = []
   for (const element of node.getElements()) {
     if (element.isKind(SyntaxKind.ObjectLiteralExpression)) {
       result.push(
@@ -480,31 +496,38 @@ function parseArrayLiteralExpression(node: ArrayLiteralExpression): any[] {
   return result
 }
 
-function parseValue(node: any): any {
-  switch (node.getKind()) {
-    case SyntaxKind.StringLiteral:
-      return node.getText()
-    case SyntaxKind.NumericLiteral:
-      return Number(node.getText())
-    case SyntaxKind.TrueKeyword:
-      return true
-    case SyntaxKind.FalseKeyword:
-      return false
-    case SyntaxKind.NullKeyword:
-      return null
-    case SyntaxKind.ArrayLiteralExpression:
-      return node.getElements().map(parseValue)
-    case SyntaxKind.ObjectLiteralExpression:
-      return parseObjectLiteralExpression(node)
-    default:
-      return node.getText()
+function parseValue(node: Node | undefined): ParsedConfigValue {
+  if (!node) {
+    return undefined
   }
+  if (Node.isStringLiteral(node)) {
+    return node.getText()
+  }
+  if (Node.isNumericLiteral(node)) {
+    return Number(node.getText())
+  }
+  if (node.isKind(SyntaxKind.TrueKeyword)) {
+    return true
+  }
+  if (node.isKind(SyntaxKind.FalseKeyword)) {
+    return false
+  }
+  if (node.isKind(SyntaxKind.NullKeyword)) {
+    return null
+  }
+  if (Node.isArrayLiteralExpression(node)) {
+    return node.getElements().map(parseValue)
+  }
+  if (Node.isObjectLiteralExpression(node)) {
+    return parseObjectLiteralExpression(node)
+  }
+  return node.getText()
 }
 
 export function buildTailwindThemeColorsFromCssVars(
   cssVars: z.infer<typeof registryItemCssVarsSchema>
 ) {
-  const result: Record<string, any> = {}
+  const result: Record<string, string | Record<string, string>> = {}
 
   for (const key of Object.keys(cssVars)) {
     const parts = key.split("-")
@@ -512,8 +535,9 @@ export function buildTailwindThemeColorsFromCssVars(
     const subType = parts.slice(1).join("-")
 
     if (subType === "") {
-      if (typeof result[colorName] === "object") {
-        result[colorName].DEFAULT = `hsl(var(--${key}))`
+      const existingColor = result[colorName]
+      if (typeof existingColor === "object") {
+        existingColor.DEFAULT = `hsl(var(--${key}))`
       } else {
         result[colorName] = `hsl(var(--${key}))`
       }
@@ -521,7 +545,10 @@ export function buildTailwindThemeColorsFromCssVars(
       if (typeof result[colorName] !== "object") {
         result[colorName] = { DEFAULT: `hsl(var(--${colorName}))` }
       }
-      result[colorName][subType] = `hsl(var(--${key}))`
+      const colorGroup = result[colorName]
+      if (typeof colorGroup === "object") {
+        colorGroup[subType] = `hsl(var(--${key}))`
+      }
     }
   }
 

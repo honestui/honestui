@@ -21,13 +21,13 @@ function Separator({
       className={cn(
         "m-0 shrink-0 cursor-default border-0",
         variant === "primary" &&
-          "bg-[var(--rs-color-border-base-primary)]",
+          "bg-[var(--hui-color-border-base-primary)]",
         variant === "secondary" &&
-          "bg-[var(--rs-color-border-base-secondary)]",
+          "bg-[var(--hui-color-border-base-secondary)]",
         variant === "tertiary" &&
-          "bg-[var(--rs-color-border-base-tertiary)]",
+          "bg-[var(--hui-color-border-base-tertiary)]",
         size === "small" &&
-          "data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-[var(--rs-space-6)] data-[orientation=vertical]:h-[var(--rs-space-6)] data-[orientation=vertical]:w-px",
+          "data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-[var(--hui-space-6)] data-[orientation=vertical]:h-[var(--hui-space-6)] data-[orientation=vertical]:w-px",
         size === "half" &&
           "data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-1/2 data-[orientation=vertical]:h-1/2 data-[orientation=vertical]:w-px",
         size === "full" &&

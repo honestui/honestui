@@ -49,17 +49,25 @@ export function isSafeTarget(targetPath: string, cwd: string): boolean {
   const cleanDecoded = cleanPath(decodedPath)
 
   const suspiciousPatterns = [
-    /\.\.[\/\\]/, // ../ or ..\
-    /[\/\\]\.\./, // /.. or \..
+    /\.\.[/\\]/, // ../ or ..\
+    /[/\\]\.\./, // /.. or \..
     /\.\./, // .. anywhere
     /\.\.%/, // URL encoded traversal
-    /\x00/, // null byte
-    /[\x01-\x1f]/, // control characters
   ]
 
   if (
     suspiciousPatterns.some(
       (pattern) => pattern.test(cleanTarget) || pattern.test(cleanDecoded)
+    )
+  ) {
+    return false
+  }
+
+  // Reject null bytes and other ASCII control characters without embedding
+  // them in a regular expression.
+  if (
+    [...cleanTarget, ...cleanDecoded].some(
+      (character) => character.charCodeAt(0) <= 0x1f
     )
   ) {
     return false
@@ -74,7 +82,7 @@ export function isSafeTarget(targetPath: string, cwd: string): boolean {
   }
 
   // Check for Windows drive letters (even on non-Windows systems for safety).
-  const driveLetterRegex = /^[a-zA-Z]:[\/\\]/
+  const driveLetterRegex = /^[a-zA-Z]:[/\\]/
   if (driveLetterRegex.test(decodedPath)) {
     // On Windows, check if it starts with the project root.
     if (process.platform === "win32") {

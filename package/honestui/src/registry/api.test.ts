@@ -415,7 +415,7 @@ describe("getRegistryItem", () => {
 
   it("should include error code in RegistryNotFoundError", async () => {
     server.use(
-      http.get(`${REGISTRY_URL}/styles/new-york-v4/non-existent.json`, () => {
+      http.get(`${REGISTRY_URL}/non-existent.json`, () => {
         return HttpResponse.json({ error: "Not found" }, { status: 404 })
       })
     )
@@ -435,7 +435,7 @@ describe("getRegistryItem", () => {
 
   it("should include error code in RegistryUnauthorizedError", async () => {
     server.use(
-      http.get(`${REGISTRY_URL}/styles/new-york-v4/protected.json`, () => {
+      http.get(`${REGISTRY_URL}/protected.json`, () => {
         return HttpResponse.json({ error: "Unauthorized" }, { status: 401 })
       })
     )
@@ -457,7 +457,7 @@ describe("getRegistryItem", () => {
 
   it("should include error code in RegistryForbiddenError", async () => {
     server.use(
-      http.get(`${REGISTRY_URL}/styles/new-york-v4/forbidden.json`, () => {
+      http.get(`${REGISTRY_URL}/forbidden.json`, () => {
         return HttpResponse.json({ error: "Forbidden" }, { status: 403 })
       })
     )
@@ -479,7 +479,7 @@ describe("getRegistryItem", () => {
 
   it("should include error code in RegistryFetchError for 500 errors", async () => {
     server.use(
-      http.get(`${REGISTRY_URL}/styles/new-york-v4/server-error.json`, () => {
+      http.get(`${REGISTRY_URL}/server-error.json`, () => {
         return HttpResponse.json(
           { error: "Internal Server Error" },
           { status: 500 }
@@ -632,7 +632,7 @@ describe("getRegistryItem", () => {
       details: "Invalid parameters",
     }
     server.use(
-      http.get(`${REGISTRY_URL}/styles/new-york-v4/bad-request.json`, () => {
+      http.get(`${REGISTRY_URL}/bad-request.json`, () => {
         return HttpResponse.json(errorResponse, { status: 400 })
       })
     )
@@ -729,7 +729,7 @@ describe("getRegistry", () => {
       items: [{ name: "secure-component", type: "registry:ui" }],
     }
 
-    let receivedHeaders: Record<string, string> = {}
+    const receivedHeaders: Record<string, string> = {}
     server.use(
       http.get("https://private.com/registry.json", ({ request }) => {
         // Convert headers to a plain object
@@ -965,7 +965,7 @@ describe("getRegistry", () => {
       items: [],
     }
 
-    let receivedHeaders: Record<string, string> = {}
+    const receivedHeaders: Record<string, string> = {}
     server.use(
       http.get("https://headers.com/registry.json", ({ request }) => {
         request.headers.forEach((value, key) => {

@@ -47,7 +47,7 @@ export default function FieldComboboxDemo() {
           </ComboboxList>
         </ComboboxPopup>
       </Combobox>
-      <FieldDescription>Select a item.</FieldDescription>
+      <FieldDescription>Choose one fruit from the list.</FieldDescription>
     </Field>
   )
 }

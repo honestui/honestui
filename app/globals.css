@@ -53,10 +53,10 @@
 
 @utility no-scrollbar {
   -ms-overflow-style: none;
-  scrollbar-width: none;
+  scrollbar-width: none !important;
 
   &::-webkit-scrollbar {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -144,15 +144,15 @@
   --breakpoint-sidebar: 940px;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--rs-font-body);
-  --font-inter: var(--rs-font-inter);
+  --font-sans: var(--hui-font-body);
+  --font-inter: var(--hui-font-inter);
   --font-google-sans: var(--font-google-sans);
-  --font-mono: var(--rs-font-mono);
-  --shadow-xs: var(--rs-shadow-feather);
-  --shadow-sm: var(--rs-shadow-soft);
-  --shadow-md: var(--rs-shadow-lifted);
-  --shadow-lg: var(--rs-shadow-floating);
-  --shadow-xl: var(--rs-shadow-floating);
+  --font-mono: var(--hui-font-mono);
+  --shadow-xs: var(--hui-shadow-feather);
+  --shadow-sm: var(--hui-shadow-soft);
+  --shadow-md: var(--hui-shadow-lifted);
+  --shadow-lg: var(--hui-shadow-floating);
+  --shadow-xl: var(--hui-shadow-floating);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -183,10 +183,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: var(--rs-radius-2);
-  --radius-md: var(--rs-radius-3);
-  --radius-lg: var(--rs-radius-4);
-  --radius-xl: var(--rs-radius-5);
+  --radius-sm: var(--hui-radius-2);
+  --radius-md: var(--hui-radius-3);
+  --radius-lg: var(--hui-radius-4);
+  --radius-xl: var(--hui-radius-5);
   --color-path: var(--path);
 }
 
@@ -198,48 +198,48 @@
    * component registry. Their values come from the Honest UI tokens in
    * /styles, keeping the component API stable while the visual system changes.
    */
-  --radius: var(--rs-radius-4);
-  --background: var(--rs-color-background-base-primary);
-  --foreground: var(--rs-color-foreground-base-primary);
-  --card: var(--rs-color-background-base-primary);
-  --card-foreground: var(--rs-color-foreground-base-primary);
-  --popover: var(--rs-color-background-base-primary);
-  --popover-foreground: var(--rs-color-foreground-base-primary);
-  --primary: var(--rs-color-background-neutral-emphasis);
-  --primary-foreground: var(--rs-color-foreground-base-emphasis);
-  --secondary: var(--rs-color-background-neutral-secondary);
-  --secondary-foreground: var(--rs-color-foreground-base-primary);
-  --muted: var(--rs-color-background-base-secondary);
-  --muted-foreground: var(--rs-color-foreground-base-secondary);
-  --accent: var(--rs-color-background-base-primary-hover);
-  --accent-foreground: var(--rs-color-foreground-base-primary);
-  --destructive: var(--rs-color-background-danger-emphasis);
-  --destructive-foreground: var(--rs-color-foreground-danger-primary);
-  --border: var(--rs-color-border-base-secondary);
-  --input: var(--rs-color-border-base-secondary);
-  --ring: var(--rs-color-border-accent-emphasis);
+  --radius: var(--hui-radius-4);
+  --background: var(--hui-color-background-base-primary);
+  --foreground: var(--hui-color-foreground-base-primary);
+  --card: var(--hui-color-background-base-primary);
+  --card-foreground: var(--hui-color-foreground-base-primary);
+  --popover: var(--hui-color-background-base-primary);
+  --popover-foreground: var(--hui-color-foreground-base-primary);
+  --primary: var(--hui-color-background-neutral-emphasis);
+  --primary-foreground: var(--hui-color-foreground-base-emphasis);
+  --secondary: var(--hui-color-background-neutral-secondary);
+  --secondary-foreground: var(--hui-color-foreground-base-primary);
+  --muted: var(--hui-color-background-base-secondary);
+  --muted-foreground: var(--hui-color-foreground-base-secondary);
+  --accent: var(--hui-color-background-base-primary-hover);
+  --accent-foreground: var(--hui-color-foreground-base-primary);
+  --destructive: var(--hui-color-background-danger-emphasis);
+  --destructive-foreground: var(--hui-color-foreground-danger-primary);
+  --border: var(--hui-color-border-base-secondary);
+  --input: var(--hui-color-border-base-secondary);
+  --ring: var(--hui-color-border-accent-emphasis);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: var(--rs-color-background-base-secondary);
-  --sidebar-foreground: var(--rs-color-foreground-base-primary);
-  --sidebar-primary: var(--rs-color-background-neutral-emphasis);
-  --sidebar-primary-foreground: var(--rs-color-foreground-base-emphasis);
-  --sidebar-accent: var(--rs-color-background-neutral-secondary);
-  --sidebar-accent-foreground: var(--rs-color-foreground-base-primary);
-  --sidebar-border: var(--rs-color-border-base-primary);
-  --sidebar-ring: var(--rs-color-border-accent-emphasis);
-  --surface: var(--rs-color-background-base-secondary);
-  --surface-foreground: var(--rs-color-foreground-base-secondary);
-  --code: var(--rs-color-background-base-secondary);
-  --code-foreground: var(--rs-color-foreground-base-primary);
-  --code-highlight: var(--rs-color-background-neutral-secondary);
-  --code-number: var(--rs-color-foreground-base-tertiary);
-  --selection: var(--rs-color-background-neutral-emphasis);
-  --selection-foreground: var(--rs-color-foreground-base-emphasis);
-  --path: var(--rs-color-border-base-primary);
+  --sidebar: var(--hui-color-background-base-secondary);
+  --sidebar-foreground: var(--hui-color-foreground-base-primary);
+  --sidebar-primary: var(--hui-color-background-neutral-emphasis);
+  --sidebar-primary-foreground: var(--hui-color-foreground-base-emphasis);
+  --sidebar-accent: var(--hui-color-background-neutral-secondary);
+  --sidebar-accent-foreground: var(--hui-color-foreground-base-primary);
+  --sidebar-border: var(--hui-color-border-base-primary);
+  --sidebar-ring: var(--hui-color-border-accent-emphasis);
+  --surface: var(--hui-color-background-base-secondary);
+  --surface-foreground: var(--hui-color-foreground-base-secondary);
+  --code: var(--hui-color-background-base-secondary);
+  --code-foreground: var(--hui-color-foreground-base-primary);
+  --code-highlight: var(--hui-color-background-neutral-secondary);
+  --code-number: var(--hui-color-foreground-base-tertiary);
+  --selection: var(--hui-color-background-neutral-emphasis);
+  --selection-foreground: var(--hui-color-foreground-base-emphasis);
+  --path: var(--hui-color-border-base-primary);
   /* code stuff */
   --color-vesper-type: oklch(0.5645 0.1633 253.27);
   --color-vesper-string: oklch(0.5464 0.1442 147.32);
@@ -294,7 +294,7 @@ html {
 }
 
 code {
-  font-family: var(--rs-font-mono);
+  font-family: var(--hui-font-mono);
 }
 
 /* Shiki multi-theme support - switch between light/dark themes */

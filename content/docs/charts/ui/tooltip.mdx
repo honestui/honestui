@@ -1,32 +1,37 @@
 ---
 title: Tooltip
-description: Tooltips that surface the values under the pointer as you hover a chart.
+metaTitle: Chart tooltip
+description: Show values for the chart point or category under the pointer.
 image: /og/tooltip.png
 ---
 
+Chart tooltips provide supporting detail during pointer exploration. They are not a replacement for a visible summary, labels, or data table when exact values are required to understand the chart.
+
 ## Usage
 
-Add `<AreaChart.Tooltip />` as a child of the chart root. It reads the chart's data and config from context, no props are required to get a working tooltip.
+Add `<AreaChart.Tooltip />` as a child of the chart root. It reads the chart's data and config from the root, so the default tooltip needs no props.
 
 ```tsx
-import { AreaChart } from "honestui/charts";
+import { AreaChart } from "honestui/charts"
 
 <AreaChart data={data} config={chartConfig}>
   <AreaChart.Tooltip variant="frosted-glass" roundness="md" position="fixed" />
-</AreaChart>;
+</AreaChart>
 ```
+
+The canvas tooltip opens from pointer interaction. If the values are required for comprehension or an action, expose them in persistent HTML as well.
 
 ## Variants
 
-Control the tooltip surface with the `variant` prop on the `<Tooltip />` part.
+Use `variant` to change the tooltip surface without changing its content.
 
 ### Default
 
-<ComponentPreview title="variant='default'" name="ex-tooltip-default-echarts-bar-chart" />
+<ComponentPreview title="Default tooltip" name="ex-tooltip-default-echarts-bar-chart" />
 
-### Frosted Glass
+### Frosted glass
 
-<ComponentPreview title="variant='frosted-glass'" name="ex-tooltip-frosted-glass-echarts-bar-chart" />
+<ComponentPreview title="Frosted-glass tooltip" name="ex-tooltip-frosted-glass-echarts-bar-chart" />
 
 ## API Reference
 
@@ -38,12 +43,12 @@ Control the tooltip surface with the `variant` prop on the `<Tooltip />` part.
     Corner radius of the tooltip container.
   </ApiRow>
   <ApiRow name="position" type='"variable" | "fixed"' default='"variable"'>
-    `variable` follows the pointer on both axes; `fixed` pins the tooltip near the top of the chart and tracks the pointer along the X axis only.
+    `variable` follows the pointer on both axes. `fixed` stays near the top and follows the active horizontal category.
   </ApiRow>
   <ApiRow name="cursor" type="boolean" default="true">
-    Shows the axis-pointer line that marks the hovered category.
+    Shows the axis-pointer line for the active category.
   </ApiRow>
   <ApiRow name="defaultIndex" type="number">
-    Data index shown when the chart first renders, before any hover.
+    Data index shown when the chart first renders, before pointer interaction.
   </ApiRow>
 </ApiTable>

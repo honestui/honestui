@@ -6,6 +6,9 @@ const START_HERE_DOCS = new Set([
   "/docs",
   "/docs/get-started",
   "/docs/component-guide",
+  "/docs/styling",
+  "/docs/accessibility",
+  "/docs/contributing",
 ]);
 
 function getMarkdownUrl(pageUrl: string) {
@@ -49,10 +52,11 @@ export function generateLlmsTxt() {
   );
   const icons = pages.filter((page) => page.url.startsWith("/docs/icons"));
   const animated = pages.filter((page) => page.url.startsWith("/docs/animated"));
+  const shaders = pages.filter((page) => page.url.startsWith("/docs/shaders"));
 
   return `# Honest UI Documentation
 
-> Honest UI is an open-source React UI library with source-first components, animated interactions, charts, and icons.
+> Honest UI provides copied React components and package-based charts, icons, logos, vectors, and shaders. The documentation explains what you own, what remains a dependency, and what your application still needs to verify.
 
 ## Start Here
 ${renderLinks(startHere)}
@@ -69,10 +73,12 @@ ${renderLinks(icons)}
 ## Animated Components
 ${renderLinks(animated)}
 
+## Shaders
+${renderLinks(shaders)}
+
 ## Agent Resources
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
 - [Agent skill](${absoluteUrl("/skill.md")})
-- [MCP server](${absoluteUrl("/mcp")})
 `;
 }
 
@@ -96,7 +102,7 @@ ${content}`;
 
   return `# Honest UI Full Documentation
 
-> Full markdown snapshot of the Honest UI documentation generated from the same MDX source as honestui.dev.
+> Full Markdown snapshot generated from the same MDX source as the Honest UI documentation site.
 
 ${sections.join("\n\n---\n\n")}
 `;
@@ -104,8 +110,8 @@ ${sections.join("\n\n---\n\n")}
 
 export function generateSkillMd() {
   return `---
-name: honest-ui-charts
-description: Add and customize Honest UI chart components in React projects.
+name: honest-ui
+description: Add and customize Honest UI components, charts, icons, assets, and shaders in React projects.
 license: MIT
 compatibility: Requires a React or Next.js project with Tailwind CSS.
 metadata:
@@ -114,24 +120,24 @@ metadata:
 
 # Honest UI
 
-Use this skill when a user wants to install, add, customize, or debug Honest UI chart components.
+Use this skill when a user wants to install, add, customize, or debug Honest UI components, charts, icons, assets, animated components, or shaders.
 
 ## Workflow
 
 1. Read \`/llms.txt\` to find the relevant documentation page.
-2. For setup, follow \`/docs/charts/installation.md\`.
-3. For chart usage, read the matching chart page such as \`/docs/charts/bar-chart/static.md\`.
-4. For shared options, read \`/docs/charts/chart-config.md\`, \`/docs/charts/ui/tooltip.md\`, and \`/docs/charts/ui/legend.md\`.
-5. Install the package with \`npm install honestui\` and import charts from \`honestui/charts\`.
+2. Read \`/docs/get-started.md\` before choosing an installation path.
+3. Copy UI and animated component source with the Honest UI CLI.
+4. Install the \`honestui\` package for charts, icons, logos, vectors, or shaders.
+5. Follow the relevant accessibility, styling, fallback, and verification guidance before presenting the work as production-ready.
 
 ## Constraints
 
-- Do not assume Honest UI is a separate charting runtime library.
+- Do not describe every Honest UI feature as copied source. Charts, icons, logos, vectors, and shaders remain package dependencies.
+- Do not describe a component as accessible without verifying its final content, composition, styling, and behavior in the application.
+- Preserve the project's existing React and Tailwind CSS setup unless the user explicitly asks to change it.
 - Treat Apache ECharts as the underlying chart dependency.
-- Chart documentation lives under \`/docs/charts/\`.
-- Import chart components and shared chart types from \`honestui/charts\`.
-- Use \`chartConfig\` for shared labels, colors, and icons; see \`/docs/charts/chart-config.md\`.
-- Preserve the user's existing React and Tailwind CSS setup.
+- Import each package-backed feature from its documented entry point.
+- Keep reduced-motion behavior and non-WebGL fallbacks when using animated components or shaders.
 `;
 }
 
@@ -140,11 +146,11 @@ export function getAgentSkillsIndex() {
     $schema: "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
     skills: [
       {
-        name: "honest-ui-charts",
+        name: "honest-ui",
         type: "skill-md",
         description:
-          "Add and customize Honest UI chart components in React projects.",
-        url: "/.well-known/agent-skills/honest-ui-charts/SKILL.md",
+          "Add and customize Honest UI components, charts, icons, assets, and shaders in React projects.",
+        url: "/.well-known/agent-skills/honest-ui/SKILL.md",
       },
     ],
   };

@@ -1,79 +1,55 @@
 ---
 title: Introduction
-description: A practical introduction to Honest UI and how the docs are organized.
+description: Understand what Honest UI provides, how the code is distributed, and where to begin.
 ---
 
-## What is Honest UI?
+**Good interfaces. Honest code.**
 
-**Honest UI** is an open-source set of React components, examples, and patterns.
+Honest UI gives you thoughtful React components, charts, icons, and visual effects that you can adapt to your product. UI components are copied into your project, while charts, icons, logos, vectors, and shaders remain package dependencies with explicit entry points. You can edit copied component source directly and choose which parts to keep.
 
-The components are built for product interfaces. They cover common controls like buttons, forms, dialogs, menus, tabs, tables, and feedback messages. Each component is designed to be copied into your app, adjusted, and owned by your codebase.
+## Choose what you need
 
-Honest UI is not a black-box component package. You can inspect the source, change the styles, and keep only the pieces you need.
+Honest UI uses two distribution models. Check a feature's installation page before you begin so you know whether its source will be copied or imported from the package.
 
-## What you get
+| Collection | How you add it | Where it lives |
+| --- | --- | --- |
+| UI components | Honest UI CLI | Copied into your project |
+| Animated components | Honest UI CLI | Copied into your project |
+| Charts | `honestui/charts` | Installed package dependency |
+| Icons | `honestui/icons` | Installed package dependency |
+| Logos | `honestui/logos` | Installed package dependency |
+| Vectors | `honestui/vectors` | Installed package dependency |
+| Shaders | `honestui/shaders` | Installed package dependency |
 
-Honest UI includes:
+Copied components can be edited, renamed, or removed like any other project file. Package entry points keep larger collections available through named imports without copying every source file into your application.
 
-- **Components** for common interface needs.
-- **Animated components** for purposeful state, layout, text, and gesture transitions.
-- **Examples** that show realistic states, sizes, variants, and form usage.
-- **Styling tokens** based on CSS variables and Tailwind CSS.
-- **Accessibility structure** from native HTML and Base UI where interaction behavior is needed.
-- **Installation paths** for both the CLI and manual copy-paste setup.
+## What we live by
 
-## Why Honest UI?
+- **Good defaults, without giving up control.** Start with a considered implementation, then change it to fit your product.
+- **Clear code over clever abstractions.** The code should explain its structure and behavior to the people maintaining it.
+- **Useful design over unnecessary decoration.** Components and effects should support a task or communicate meaning.
+- **Accessibility from the start.** Native HTML and accessible primitives provide a foundation; your content and composition still matter.
+- **No lock-in. You own the code.** Copied component source stays in your project, and package features use explicit entry points.
+- **Quality over hype.** The docs state what the code does, where its limits are, and what you still need to verify.
 
-Many UI kits only give you a visual shell. Honest UI gives you the structure, behavior, and examples needed to build real screens faster.
+## Start here
 
-The goal is simple: start with good defaults, then customize without fighting the library.
+Use [Get Started](/docs/get-started) to initialize an existing React project and add your first UI component. Then use the collection that matches your task:
 
-Honest UI works well when you want:
+- [Components](/docs/component-guide) explains how to choose, install, and adapt interface components.
+- [Animated components](/docs/animated) adds motion where it clarifies state, direction, or spatial relationships.
+- [Charts](/docs/charts) provides composable ECharts-based visualizations.
+- [Icons, logos, and vectors](/docs/icons) provides React SVG assets through dedicated package entry points.
+- [Shaders](/docs/shaders) provides progressive-enhancement effects for expressive surfaces.
 
-- Components that are easy to read.
-- Styling that lives in your app.
-- Examples that show the edge cases, not just the happy path.
-- A design system you can grow over time.
+Each component page includes the smallest useful example, installation instructions, component anatomy, accessibility responsibilities, and examples for important states when they apply.
 
-## Explore Honest UI
+## Accessibility is shared work
 
-Start with [Get Started](/docs/get-started) to install the base setup. Then browse [Our Components](/docs/component-guide) or [Animated Components](/docs/animated) to understand how component pages are structured.
+Honest UI provides native elements and interaction primitives where they fit. A component cannot make an entire application accessible by itself. You are still responsible for meaningful labels, logical focus order, useful validation, sufficient contrast, equivalent access to information, and testing the assembled task.
 
-Our component pages include:
+Read [Accessibility](/docs/accessibility) before changing semantics, keyboard behavior, focus management, validation, or motion.
 
-- A live preview.
-- Installation steps.
-- Basic usage.
-- Notes about structure and behavior.
-- Examples for sizes, states, variants, and form integration.
+## Open source
 
-When you copy a component, also check its examples. They often show the small decisions that matter in production, such as disabled states, validation messages, grouped options, or keyboard-friendly composition.
-
-## Design principles
-
-Honest UI follows a few steady rules:
-
-- **Use clear HTML first.** Native elements are preferred when they solve the job.
-- **Compose small parts.** Components expose pieces like header, title, content, trigger, and footer when that makes the UI easier to control.
-- **Keep styles close.** Components use class names and CSS variables so you can tune them in your app.
-- **Respect accessibility.** Interactive components include keyboard and focus behavior where the underlying primitive supports it.
-- **Show real states.** Docs include loading, disabled, destructive, success, error, and empty states where they apply.
-
-## Who should use it?
-
-Honest UI is useful for:
-
-- Product teams building dashboards, SaaS apps, admin tools, and internal tools.
-- Developers who want components they can copy and understand.
-- Teams building a shared design system on top of React and Tailwind CSS.
-- Projects that need accessible interaction patterns without a heavy abstraction layer.
-
-## Open Source and Community
-
-Honest UI is open source under the **MIT license**.
-
-You can read the code, use it in your projects, and contribute improvements.
-
-Read the [Contributing Guide](/docs/contributing) to learn how to file issues, improve docs, or open a pull request.
-
-We welcome focused bug fixes, clearer examples, accessibility improvements, and new components that fit the system.
+Honest UI is available under the MIT license. Read the [Contributing Guide](/docs/contributing) to report a problem, improve the documentation, or propose a focused change.

@@ -79,7 +79,7 @@ export async function createProject(
   // Check if path is writable.
   try {
     await fs.access(options.cwd, fs.constants.W_OK)
-  } catch (error) {
+  } catch {
     logger.break()
     logger.error(`The path ${highlighter.info(options.cwd)} is not writable.`)
     logger.error(

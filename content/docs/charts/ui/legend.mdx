@@ -1,6 +1,6 @@
 ---
 title: Legend
-description: Legends that identify each data series in our charts.
+description: Identify each chart series and optionally control pointer selection.
 image: /og/legend.png
 ---
 
@@ -8,7 +8,7 @@ image: /og/legend.png
 
 Compose the legend as a child of the chart root. Pass `variant` to control the
 indicator style, and `isClickable` to let each entry toggle selection of its
-series.
+series. Canvas legend selection is pointer-operated, so use an external keyboard-operable control if changing the selected series is required.
 
 ```tsx
 import { LineChart } from "honestui/charts";

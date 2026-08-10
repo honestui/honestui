@@ -88,12 +88,12 @@ export async function validateRegistry(options: {
       suggestion:
         "Run the command from the registry root or pass a registry.json file inside --cwd.",
     })
-    return createValidationResult(context, [])
+    return createValidationResult(context)
   }
 
   const rootRegistry = await readRegistryFile(rootFile, context)
   if (!rootRegistry) {
-    return createValidationResult(context, [])
+    return createValidationResult(context)
   }
 
   context.usesInclude = !!rootRegistry.include?.length
@@ -104,7 +104,7 @@ export async function validateRegistry(options: {
   validateDuplicateItems(items, context)
   await validateRegistryItems(items, context)
 
-  return createValidationResult(context, items)
+  return createValidationResult(context)
 }
 
 async function collectRegistryItems(
@@ -641,10 +641,7 @@ function addDiagnostic(
   context.diagnostics.push(diagnostic)
 }
 
-function createValidationResult(
-  context: RegistryValidationContext,
-  items: RegistryItem[]
-) {
+function createValidationResult(context: RegistryValidationContext) {
   return {
     valid: context.diagnostics.length === 0,
     cwd: context.cwd,

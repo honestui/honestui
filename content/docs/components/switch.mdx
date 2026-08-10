@@ -1,6 +1,6 @@
 ---
 title: Switch
-description: A control that indicates whether a setting is on or off.
+description: Turn a setting on or off and show its current state.
 
 links:
   doc: https://base-ui.com/react/components/switch#api-reference
@@ -67,7 +67,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Switch } from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch";
 ```
 
 ```tsx
@@ -76,9 +76,9 @@ import { Switch } from "@/components/ui/switch"
 
 ## Examples
 
-Our examples cover disabled, described, card-style, and form-connected switches.
+Examples cover disabled, described, card-style, and form-connected switches.
 
-For accessible labelling and validation, prefer using the `Field` component to wrap checkboxes. See the related example: [Switch field](/ui/docs/components/field#switch-field).
+For accessible labeling and validation, use `Field` to connect the switch with its label, description, and error. See the [Field examples](/docs/components/field#examples).
 
 ### Disabled
 
@@ -95,3 +95,9 @@ For accessible labelling and validation, prefer using the `Field` component to w
 ### Form Integration
 
 <ComponentPreview name="switch-form" />
+
+## API reference
+
+`Switch` forwards Base UI Switch props and adds Honest UI size and visual-variant styling. Use `checked` with `onCheckedChange` for controlled state or `defaultChecked` for uncontrolled state. The component submits its `name` and `value` only while checked.
+
+The visible label should describe the setting, not the action of clicking it. See the [Base UI Switch API](https://base-ui.com/react/components/switch#api-reference).

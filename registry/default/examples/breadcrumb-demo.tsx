@@ -1,21 +1,24 @@
-import Link from "next/link"
+import Link from "next/link";
+import { House as HomeIcon } from "honestui/icons";
 
 import {
   Breadcrumb,
+  BreadcrumbDropdownItem,
+  BreadcrumbDropdownTrigger,
   BreadcrumbEllipsis,
+  BreadcrumbIcon,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/registry/default/ui/breadcrumb"
-import { Button } from "@/registry/default/ui/button"
+} from "@/registry/default/ui/breadcrumb";
 import {
   Menu,
   MenuItem,
   MenuPopup,
   MenuTrigger,
-} from "@/registry/default/ui/menu"
+} from "@/registry/default/ui/menu";
 
 export default function BreadcrumbDemo() {
   return (
@@ -23,6 +26,9 @@ export default function BreadcrumbDemo() {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink render={<Link href="/" />}>
+            <BreadcrumbIcon>
+              <HomeIcon aria-hidden="true" />
+            </BreadcrumbIcon>
             Home
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -31,22 +37,34 @@ export default function BreadcrumbDemo() {
           <Menu>
             <MenuTrigger
               render={
-                <Button size="icon-sm" variant="ghost" className="-m-1.5" />
+                <BreadcrumbDropdownTrigger aria-label="Show hidden breadcrumb levels" />
               }
             >
               <BreadcrumbEllipsis />
             </MenuTrigger>
             <MenuPopup align="start">
-              <MenuItem render={<Link href="/docs" />}>Docs</MenuItem>
-              <MenuItem render={<Link href="/particles" />}>
-                Particles
+              <MenuItem
+                render={
+                  <BreadcrumbDropdownItem render={<Link href="/docs" />} />
+                }
+              >
+                Docs
+              </MenuItem>
+              <MenuItem
+                render={
+                  <BreadcrumbDropdownItem
+                    render={<Link href="/docs/get-started" />}
+                  />
+                }
+              >
+                Get started
               </MenuItem>
             </MenuPopup>
           </Menu>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink render={<Link href="/docs/components" />}>
+          <BreadcrumbLink render={<Link href="/docs/components/button" />}>
             Components
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -56,5 +74,5 @@ export default function BreadcrumbDemo() {
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }

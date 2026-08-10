@@ -38,7 +38,7 @@ function CliBlock({ commands }: CliBlockProps) {
         });
       }}
     >
-      <div className="group mt-2 flex flex-col rounded-[8px] bg-[var(--rs-color-background-neutral-primary)] p-1">
+      <div className="group mt-2 flex flex-col rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1">
         <div className="flex flex-row items-center justify-between pr-1 pl-2">
           <TabsList
             variant="underline"
@@ -83,7 +83,7 @@ function CliBlock({ commands }: CliBlockProps) {
             code={`${packageCommands[packageManager]} ${commandArguments}`}
           />
         </div>
-        <div className="no-scrollbar bg-background text-muted-foreground overflow-x-auto rounded-[5px] border-[0.5px] border-[var(--rs-color-border-base-primary)] p-3 text-[13px]">
+        <div className="no-scrollbar bg-background text-muted-foreground overflow-x-auto rounded-[5px] border-[0.5px] border-[var(--hui-color-border-base-primary)] p-3 text-[13px]">
           {Object.keys(packageCommands).map((manager) => (
             <TabsPanel className="font-mono whitespace-nowrap" key={manager} value={manager}>
               {packageCommands[packageManager]} {commandArguments}

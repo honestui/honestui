@@ -10,6 +10,12 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
   return (
     <ToastProvider>
       <SidebarProvider>
+        <a
+          href="#docs-main-content"
+          className="sr-only z-[100] rounded-md bg-background px-4 py-2 text-sm font-medium text-foreground shadow-md outline-none focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          Skip to documentation content
+        </a>
         <DocsSidebar />
         <div className={cn("bg-sidebar w-full", "p-0 pl-0 sm:py-2 sm:pr-2")}>
           <DecorativeBorder />
@@ -19,7 +25,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
               "sm:rounded-tl-md sm:rounded-br-xl sm:rounded-bl-md", // bottom-right is XL to match mac-os browser radius (fk winodws :p)
             )}
           >
-            <SidebarInset>
+            <SidebarInset id="docs-main-content" tabIndex={-1}>
               <DocsHeader />
               <>{children}</>
             </SidebarInset>

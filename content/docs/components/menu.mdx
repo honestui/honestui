@@ -1,6 +1,6 @@
 ---
 title: Menu
-description: A list of actions in a dropdown, enhanced with keyboard navigation.
+description: Present a compact list of actions with keyboard navigation.
 
 links:
   doc: https://base-ui.com/react/components/menu#api-reference
@@ -97,7 +97,7 @@ import {
   MenuSubPopup,
   MenuSubTrigger,
   MenuTrigger,
-} from "@/components/ui/menu"
+} from "@/components/ui/menu";
 ```
 
 ```tsx
@@ -144,7 +144,7 @@ import {
 
 ## Examples
 
-Our examples cover hover opening, checkbox items, radio groups, links, group labels, nesting, close behavior, and opening a dialog.
+Examples cover hover opening, checkbox items, radio groups, links, group labels, nesting, close behavior, and opening a dialog.
 
 ### Open on Hover
 
@@ -177,3 +177,9 @@ Our examples cover hover opening, checkbox items, radio groups, links, group lab
 ### Open a Dialog
 
 <ComponentPreview name="dialog-from-menu" />
+
+## API reference
+
+Menu exports root, trigger, portal, backdrop, popup, arrow, item, group, group label, separator, checkbox item, radio group, radio item, and submenu parts. Each forwards its matching Base UI Menu props; link composition uses the `render` prop on an item.
+
+Use the root's controlled props only when another part of the application must own open state. See the [Base UI Menu API](https://base-ui.com/react/components/menu#api-reference) for focus, submenu, checkbox, and radio behavior.

@@ -1,4 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 import { promises as fs } from "fs"
 import { tmpdir } from "os"
 import path from "path"
@@ -15,18 +14,29 @@ import {
   vi,
 } from "vitest"
 
-import { createRegistryServer } from "../../../tests/src/utils/registry"
-import { setRegistryHeaders } from "./context"
+import { createRegistryServer } from "../../tests/src/utils/registry"
+import { buildUrlAndHeadersForRegistryItem } from "./builder"
 import {
-  resolveRegistryItemsFromRegistries,
+  resolveRegistryItemsFromRegistries as resolveRegistryItemUrls,
   resolveRegistryTree,
 } from "./resolver"
 
-vi.mock("./context", () => ({
-  setRegistryHeaders: vi.fn(),
-  clearRegistryContext: vi.fn(),
-  getRegistryHeadersFromContext: vi.fn(() => ({})),
-}))
+const setRegistryHeaders = vi.fn()
+
+function resolveRegistryItemsFromRegistries(items: string[], config: any) {
+  const urls = resolveRegistryItemUrls(items, config)
+  const headers: Record<string, Record<string, string>> = {}
+
+  for (const item of items) {
+    const resolved = buildUrlAndHeadersForRegistryItem(item, config)
+    if (resolved && Object.keys(resolved.headers).length > 0) {
+      headers[resolved.url] = resolved.headers
+    }
+  }
+
+  setRegistryHeaders(headers)
+  return urls
+}
 
 vi.mock("@/src/utils/handle-error", () => ({
   handleError: vi.fn((error) => {

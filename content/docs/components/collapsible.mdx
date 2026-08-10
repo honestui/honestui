@@ -1,6 +1,6 @@
 ---
 title: Collapsible
-description: A collapsible panel controlled by a button.
+description: Let people show or hide one optional section of content.
 
 links:
   doc: https://base-ui.com/react/components/collapsible#api-reference
@@ -71,14 +71,34 @@ import {
   Collapsible,
   CollapsiblePanel,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 ```
 
 ```tsx
 <Collapsible>
-  <CollapsibleTrigger>Can I access the file in the cloud?</CollapsibleTrigger>
+  <CollapsibleTrigger>Show command options</CollapsibleTrigger>
   <CollapsiblePanel>
-    Yes, you can access the file in the cloud.
+    Add `--dry-run` to preview changes without writing files.
   </CollapsiblePanel>
 </Collapsible>
 ```
+
+## Examples
+
+### Command help
+
+Reveal optional command details without interrupting the main instructions.
+
+<ComponentPreview name="collapsible-command-help" />
+
+### Release notes
+
+Let readers expand a longer set of secondary details.
+
+<ComponentPreview name="collapsible-release-notes" />
+
+## API reference
+
+`Collapsible`, `CollapsibleTrigger`, and `CollapsiblePanel` forward their matching Base UI Collapsible props. `CollapsibleContent` is an alias of the panel. Use `open` and `onOpenChange` for controlled state or `defaultOpen` for uncontrolled state.
+
+The trigger owns disclosure behavior and keyboard handling; do not add a second click handler to the panel. See the [Base UI Collapsible API](https://base-ui.com/react/components/collapsible#api-reference).

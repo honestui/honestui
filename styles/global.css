@@ -5,5 +5,5 @@
    Use the <ScrollArea> component where auto-hide / hover-grow polish matters. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--rs-color-overlay-base-a5) transparent;
+  scrollbar-color: var(--hui-color-overlay-base-a5) transparent;
 }

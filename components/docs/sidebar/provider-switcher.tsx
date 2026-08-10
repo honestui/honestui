@@ -183,19 +183,19 @@ export function ProviderSwitcher() {
                   <DropdownMenuItem
                     key={area.id}
                     onClick={() => selectArea(area)}
-                    className="gap-2 p-2 focus:bg-[var(--rs-color-background-base-primary-hover)]! focus:text-[var(--rs-color-foreground-base-primary)]!"
+                    className="gap-2 p-2 focus:bg-[var(--hui-color-background-base-primary-hover)]! focus:text-[var(--hui-color-foreground-base-primary)]!"
                   >
                     <ProductAreaIcon area={area} className="size-6!" />
                     <div className="ml-0.5 grid min-w-0 flex-1 leading-tight">
-                      <span className="truncate text-sm group-focus/dropdown-menu-item:text-[var(--rs-color-foreground-base-primary)]!">
+                      <span className="truncate text-sm group-focus/dropdown-menu-item:text-[var(--hui-color-foreground-base-primary)]!">
                         {area.name}
                       </span>
-                      <span className="text-muted-foreground truncate text-[11px] group-focus/dropdown-menu-item:text-[var(--rs-color-foreground-base-secondary)]!">
+                      <span className="text-muted-foreground truncate text-[11px] group-focus/dropdown-menu-item:text-[var(--hui-color-foreground-base-secondary)]!">
                         {area.tagline}
                       </span>
                     </div>
                     {isActive && (
-                      <CheckIcon className="size-3.5 group-focus/dropdown-menu-item:text-[var(--rs-color-foreground-base-primary)]!" />
+                      <CheckIcon className="size-3.5 group-focus/dropdown-menu-item:text-[var(--hui-color-foreground-base-primary)]!" />
                     )}
                   </DropdownMenuItem>
                 );

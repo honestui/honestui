@@ -1,6 +1,6 @@
 ---
 title: Empty
-description: A container for displaying empty state information.
+description: Explain why a section is empty and help people take the next useful action.
 ---
 
 <ComponentPreview name="empty-demo" />
@@ -65,7 +65,7 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty"
+} from "@/components/ui/empty";
 ```
 
 ```tsx
@@ -74,11 +74,11 @@ import {
     <EmptyMedia variant="icon">
       <Icon />
     </EmptyMedia>
-    <EmptyTitle>No data</EmptyTitle>
-    <EmptyDescription>No data found</EmptyDescription>
+    <EmptyTitle>No projects yet</EmptyTitle>
+    <EmptyDescription>Create a project to organize your work.</EmptyDescription>
   </EmptyHeader>
   <EmptyContent>
-    <Button>Add data</Button>
+    <Button>Create project</Button>
   </EmptyContent>
 </Empty>
 ```
@@ -149,7 +149,7 @@ Use the `EmptyTitle` component to display the title of the empty state.
 | `className` | `string` |         |
 
 ```tsx
-<EmptyTitle>No data</EmptyTitle>
+<EmptyTitle>No projects yet</EmptyTitle>
 ```
 
 ### EmptyDescription
@@ -174,6 +174,22 @@ Use the `EmptyContent` component to display the content of the empty state such 
 
 ```tsx
 <EmptyContent>
-  <Button>Add Project</Button>
+  <Button>Create project</Button>
 </EmptyContent>
 ```
+
+## Examples
+
+Match the message and recovery action to the reason the content is empty.
+
+### No matching results
+
+<ComponentPreview name="empty-filtered-results" />
+
+### Empty inbox
+
+<ComponentPreview name="empty-inbox-zero" />
+
+### Empty upload queue
+
+<ComponentPreview name="empty-upload-queue" />

@@ -27,7 +27,7 @@ function NumberField({
       <NumberFieldPrimitive.Root
         id={fieldId}
         className={cn(
-          "flex flex-col items-start gap-[var(--rs-space-2)]",
+          "flex flex-col items-start gap-[var(--hui-space-2)]",
           className
         )}
         data-slot="number-field"
@@ -61,7 +61,7 @@ function NumberFieldDecrement({
   return (
     <NumberFieldPrimitive.Decrement
       className={cn(
-        "relative flex size-[var(--rs-space-7)] shrink-0 cursor-pointer items-center justify-center rounded-s-[var(--rs-radius-1)] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-secondary)] p-0 text-[var(--rs-color-foreground-base-primary)] [transition:var(--rs-transition-interactive)] hover:bg-[var(--rs-color-background-base-primary-hover)] focus-visible:[outline:var(--rs-focus-ring)] focus-visible:outline-offset-[var(--rs-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--rs-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex size-[var(--hui-space-7)] shrink-0 cursor-pointer items-center justify-center rounded-s-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-secondary)] p-0 text-[var(--hui-color-foreground-base-primary)] [transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       data-slot="number-field-decrement"
@@ -79,7 +79,7 @@ function NumberFieldIncrement({
   return (
     <NumberFieldPrimitive.Increment
       className={cn(
-        "relative flex size-[var(--rs-space-7)] shrink-0 cursor-pointer items-center justify-center rounded-e-[var(--rs-radius-1)] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-secondary)] p-0 text-[var(--rs-color-foreground-base-primary)] [transition:var(--rs-transition-interactive)] hover:bg-[var(--rs-color-background-base-primary-hover)] focus-visible:[outline:var(--rs-focus-ring)] focus-visible:outline-offset-[var(--rs-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--rs-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex size-[var(--hui-space-7)] shrink-0 cursor-pointer items-center justify-center rounded-e-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-secondary)] p-0 text-[var(--hui-color-foreground-base-primary)] [transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       data-slot="number-field-increment"
@@ -97,7 +97,7 @@ function NumberFieldInput({
   return (
     <NumberFieldPrimitive.Input
       className={cn(
-        "h-[var(--rs-space-7)] min-w-0 flex-[1_0_0] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-primary)] px-[var(--rs-space-2)] text-center text-[var(--rs-color-foreground-base-primary)] tabular-nums outline-none [font-family:var(--rs-font-body)] [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] [transition:var(--rs-transition-interactive)] focus:border-[var(--rs-color-border-accent-emphasis)] focus:bg-[var(--rs-color-background-base-primary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-invalid:border-[var(--rs-color-border-danger-emphasis)] data-invalid:focus:border-[var(--rs-color-border-danger-emphasis-hover)]",
+        "h-[var(--hui-space-7)] min-w-0 flex-[1_0_0] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-2)] text-center text-[var(--hui-color-foreground-base-primary)] tabular-nums outline-none [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:var(--hui-transition-interactive)] focus:border-[var(--hui-color-border-accent-emphasis)] focus:bg-[var(--hui-color-background-base-primary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)]",
         className
       )}
       data-slot="number-field-input"
@@ -130,7 +130,7 @@ function NumberFieldScrubArea({
       <Label htmlFor={context.fieldId} className="cursor-ew-resize">
         {label}
       </Label>
-      <NumberFieldPrimitive.ScrubAreaCursor className="drop-shadow-[0_1px_1px_var(--rs-color-overlay-black-a7)] filter">
+      <NumberFieldPrimitive.ScrubAreaCursor className="drop-shadow-[0_1px_1px_var(--hui-color-overlay-black-a7)] filter">
         <CursorGrowIcon />
       </NumberFieldPrimitive.ScrubAreaCursor>
     </NumberFieldPrimitive.ScrubArea>

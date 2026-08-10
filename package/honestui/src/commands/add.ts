@@ -8,7 +8,6 @@ import {
 } from "@/src/preset/presets"
 import { getRegistryItems, getHonestUIRegistryIndex } from "@/src/registry/api"
 import { DEPRECATED_COMPONENTS } from "@/src/registry/constants"
-import { clearRegistryContext } from "@/src/registry/context"
 import { registryItemTypeSchema } from "@/src/registry/schema"
 import { isUniversalRegistryItem } from "@/src/registry/utils"
 import { getTemplateForFramework } from "@/src/templates/index"
@@ -94,19 +93,17 @@ export const add = new Command()
       }
 
       let itemType: z.infer<typeof registryItemTypeSchema> | undefined
-      let shouldInstallStyleIndex = true
       if (components.length > 0) {
         const [registryItem] = await getRegistryItems([components[0]], {
           config: initialConfig,
         })
         itemType = registryItem?.type
-        shouldInstallStyleIndex =
-          itemType !== "registry:theme" &&
-          itemType !== "registry:style" &&
-          itemType !== "registry:base"
-
         if (isUniversalRegistryItem(registryItem) && !isDryRun) {
           await addComponents(components, initialConfig, options)
+          await ensureRegistriesInConfig(components, initialConfig, {
+            silent: options.silent,
+            writeFile: true,
+          })
           return
         }
         if (
@@ -154,7 +151,11 @@ export const add = new Command()
         }
       }
 
-      let { errors, config } = await preFlightAdd(options)
+      const preflight = await preFlightAdd(options)
+      const errors = preflight.errors
+      let config = preflight.config
+
+      assertDryRunCanProceed(Boolean(isDryRun), errors)
 
       // No components.json file. Prompt the user to run init.
       let initHasRun = false
@@ -269,7 +270,7 @@ export const add = new Command()
         config,
         {
           silent: options.silent || hasNewRegistries,
-          writeFile: !isDryRun,
+          writeFile: false,
         }
       )
       config = updatedConfig
@@ -307,13 +308,37 @@ export const add = new Command()
       if (shouldUpdateAppIndex) {
         await updateAppIndex(options.components[0], config)
       }
+
+      await ensureRegistriesInConfig(options.components, config, {
+        silent: options.silent || hasNewRegistries,
+        writeFile: true,
+      })
     } catch (error) {
       logger.break()
       handleError(error)
-    } finally {
-      clearRegistryContext()
     }
   })
+
+export function assertDryRunCanProceed(
+  isDryRun: boolean,
+  errors: Record<string, boolean>
+) {
+  if (!isDryRun) {
+    return
+  }
+
+  if (errors[ERRORS.MISSING_DIR_OR_EMPTY_PROJECT]) {
+    throw new Error(
+      "A dry run needs an existing project. Create the project, then run this command again."
+    )
+  }
+
+  if (errors[ERRORS.MISSING_CONFIG]) {
+    throw new Error(
+      "A dry run needs an existing components.json file. Run honestui init, then run this command again."
+    )
+  }
+}
 
 async function promptForRegistryComponents(
   options: z.infer<typeof addOptionsSchema>

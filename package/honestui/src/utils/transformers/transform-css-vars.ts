@@ -1,6 +1,6 @@
 import { registryBaseColorSchema } from "@/src/schema"
 import { Transformer } from "@/src/utils/transformers"
-import { ScriptKind, SyntaxKind } from "ts-morph"
+import { SyntaxKind } from "ts-morph"
 import { z } from "zod"
 
 export const transformCssVars: Transformer = async ({
@@ -162,7 +162,7 @@ export function applyColorMapping(
   const classNames = input.split(" ")
   const lightMode = new Set<string>()
   const darkMode = new Set<string>()
-  for (let className of classNames) {
+  for (const className of classNames) {
     const [variant, value, modifier] = splitClassName(className)
     const prefix = PREFIXES.find((prefix) => value?.startsWith(prefix))
     if (!prefix) {

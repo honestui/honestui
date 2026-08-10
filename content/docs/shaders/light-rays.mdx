@@ -31,13 +31,14 @@ import { LightRays } from "honestui/shaders"
 
 ## Accessibility
 
-Light Rays ignores pointer events and should stay decorative. Keep the foreground readable without the rays, and disable `followMouse` when pointer response would be distracting.
+Light Rays ignores pointer events and should stay decorative. Keep the foreground readable without the rays. The component renders a static frame when the user enables reduced motion; use `paused` for application-specific control. Provide a static background when WebGL is unavailable.
 
 ## API Reference
 
 <ApiTable>
   <ApiRow name="raysOrigin" type='"top-center" | "top-left" | "top-right" | "right" | "left" | "bottom-center" | "bottom-right" | "bottom-left"' default='"top-center"'>Edge or corner that emits the rays.</ApiRow>
   <ApiRow name="raysColor" type="string" default='"#ffffff"'>Hex color of the light.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a static frame without pointer tracking or pulsing.</ApiRow>
   <ApiRow name="raysSpeed" type="number" default="1">Animation speed.</ApiRow>
   <ApiRow name="lightSpread" type="number" default="1">Angular width of the ray field.</ApiRow>
   <ApiRow name="rayLength" type="number" default="2">Maximum ray reach.</ApiRow>

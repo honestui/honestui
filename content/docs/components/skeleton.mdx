@@ -1,6 +1,6 @@
 ---
 title: Skeleton
-description: A loading state skeleton for your components.
+description: Reserve layout space while content is loading.
 ---
 
 <ComponentPreview name="skeleton-demo" />
@@ -58,7 +58,7 @@ npx honestui@latest add skeleton
 ## Usage
 
 ```tsx
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 ```
 
 ```tsx
@@ -67,8 +67,16 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 ## Examples
 
-Our examples cover a composed loading layout and a standalone skeleton primitive.
+Examples cover a composed loading layout and a standalone skeleton primitive.
 
 ### Skeleton Only
 
 <ComponentPreview name="skeleton-only" />
+
+## Decision guidance
+
+Match skeleton shapes to the stable layout, but do not reproduce every line of the final content. Keep the loading region's size steady to avoid layout shift. For fast operations, delay the visual skeleton briefly so it does not flash; for long operations, add plain language that says what is loading.
+
+## API reference
+
+`Skeleton` accepts native `div` props and has no accessible name by default. Mark decorative shapes with `aria-hidden="true"`, put `aria-busy="true"` on a containing region when you can track the shared loading state, and provide a status message when loading is not otherwise clear. Replace the skeleton with real content rather than placing content inside it.

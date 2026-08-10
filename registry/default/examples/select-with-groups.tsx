@@ -30,7 +30,7 @@ export default function SelectWithGroups() {
   return (
     <div className="w-full max-w-64">
       <Select items={[...placeholder, ...frontend, ...backend]}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue />
         </SelectTrigger>
         <SelectPopup>

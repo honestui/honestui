@@ -9,7 +9,7 @@ function Fieldset({ className, ...props }: FieldsetPrimitive.Root.Props) {
     <FieldsetPrimitive.Root
       data-slot="fieldset"
       className={cn(
-        "m-0 flex flex-col gap-[var(--rs-space-4)] border-0 p-0",
+        "m-0 flex flex-col gap-[var(--hui-space-4)] border-0 p-0",
         className
       )}
       {...props}
@@ -24,7 +24,7 @@ function FieldsetLegend({
     <FieldsetPrimitive.Legend
       data-slot="fieldset-legend"
       className={cn(
-        "mb-[var(--rs-space-2)] p-0 text-[var(--rs-color-foreground-base-primary)] [font-size:var(--rs-font-size-base)] [font-weight:var(--rs-font-weight-semibold)] [letter-spacing:var(--rs-letter-spacing-base)] [line-height:var(--rs-line-height-base)]",
+        "mb-[var(--hui-space-2)] p-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-base)] [font-weight:var(--hui-font-weight-semibold)] [letter-spacing:var(--hui-letter-spacing-base)] [line-height:var(--hui-line-height-base)]",
         className
       )}
       {...props}

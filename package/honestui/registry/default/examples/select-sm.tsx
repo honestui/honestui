@@ -17,7 +17,7 @@ export default function SelectSm() {
   return (
     <div className="w-full max-w-64">
       <Select items={items}>
-        <SelectTrigger size="sm">
+        <SelectTrigger className="w-full" size="sm">
           <SelectValue />
         </SelectTrigger>
         <SelectPopup>

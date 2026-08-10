@@ -1,6 +1,6 @@
 ---
 title: Preview Card
-description: A popup that appears when a link is hovered, showing a preview for sighted users.
+description: Preview a linked destination on hover or focus without changing the link's behavior.
 
 links:
   doc: https://base-ui.com/react/components/preview-card#api-reference
@@ -67,17 +67,43 @@ npm install @base-ui/react
 ## Usage
 
 ```tsx
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   PreviewCard,
   PreviewCardPopup,
   PreviewCardTrigger,
-} from "@/components/ui/preview-card"
+} from "@/components/ui/preview-card";
 ```
 
 ```tsx
 <PreviewCard>
-  <PreviewCardTrigger>Open Preview Card</PreviewCardTrigger>
-  <PreviewCardPopup>Preview Card Content</PreviewCardPopup>
+  <PreviewCardTrigger>View project details</PreviewCardTrigger>
+  <PreviewCardPopup>
+    Project status, owner, and recent activity
+  </PreviewCardPopup>
 </PreviewCard>
 ```
+
+## Examples
+
+### Repository preview
+
+<ComponentPreview name="preview-card-repository" />
+
+### Profile preview
+
+<ComponentPreview name="preview-card-profile" />
+
+### Product preview
+
+<ComponentPreview name="preview-card-product" />
+
+## Decision guidance
+
+Use Preview Card for optional supporting context that appears after intentional hover or keyboard focus. The trigger should still work without the preview, and important facts or actions must remain available on the destination page. Use Popover when people must interact with the floating content.
+
+## API reference
+
+Preview Card parts forward their matching Base UI Preview Card props. The `HoverCard` names are aliases for compatibility. Use the viewport when coordinating popup size and the arrow only when it helps connect the popup to its trigger.
+
+See the [Base UI Preview Card API](https://base-ui.com/react/components/preview-card#api-reference).

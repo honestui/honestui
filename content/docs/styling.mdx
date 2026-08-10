@@ -1,168 +1,83 @@
 ---
 title: Styling
-description: How Honest UI uses CSS variables, Tailwind CSS, and state colors.
+description: Customize Honest UI's semantic CSS tokens, themes, and copied component classes.
 ---
 
-## Overview
+Honest UI separates visual decisions into CSS tokens and component classes. Tokens keep shared decisions consistent; copied component files give you local control when one component needs to change.
 
-Honest UI uses CSS variables for colors and Tailwind CSS for component classes.
+## Install the shared styles
 
-CSS variables make the components easier to theme because the same token can be reused across buttons, alerts, badges, forms, popovers, and dark mode.
-
-You can use the default palette, replace values with your own brand colors, or add more tokens for your app.
-
-## How styling works
-
-The default components use semantic variables instead of hard-coded colors.
-
-For example:
-
-- `--background` controls the app background.
-- `--foreground` controls default text.
-- `--card` and `--card-foreground` control card surfaces.
-- `--border` controls borders.
-- `--ring` controls focus rings.
-- `--success`, `--warning`, `--info`, and `--destructive` control state UI.
-
-This keeps the component code readable. A button can use `bg-primary` instead of a fixed color value.
-
-## Installation
-
-<CodeTabs>
-
-<TabsList>
-  <TabsTab value="cli">CLI</TabsTab>
-  <TabsTab value="manual">Manual</TabsTab>
-</TabsList>
-
-<TabsPanel value="cli">
+The `init` command installs the shared style setup and records the stylesheet path in `components.json`:
 
 ```bash
-npx honestui@latest add colors-zinc
+npx honestui@latest init
 ```
 
-This adds the default color variables.
+Run initialization once before adding UI components. If the project is already initialized, inspect `components.json` instead of replacing it.
 
-</TabsPanel>
+## How the token system works
 
-<TabsPanel value="manual">
+Every Honest UI token starts with `--hui-`; `hui` stands for Honest UI. Tokens are organized from low-level values to semantic roles:
 
-<Steps>
+| Layer | Examples | Use it for |
+| --- | --- | --- |
+| Primitive colors | `--hui-neutral-9`, `--hui-accent-10` | Building or replacing a palette |
+| Semantic colors | `--hui-color-background-base-primary`, `--hui-color-foreground-danger-primary` | Styling components by purpose |
+| Spacing | `--hui-space-3`, `--hui-space-6` | Gaps, padding, and layout rhythm |
+| Radius | `--hui-radius-2`, `--hui-radius-full` | Corners and pill shapes |
+| Typography | `--hui-font-body`, `--hui-font-size-regular` | Type families, sizes, and weights |
+| Effects | `--hui-shadow-floating`, `--hui-focus-ring` | Elevation and focus visibility |
 
-<Step>
-  Copy these variables into your global stylesheet (for example `app/globals.css`):
-</Step>
+Components should normally use semantic tokens rather than primitive palette values. For example, a destructive action uses a danger role so the component remains meaningful when the palette changes.
 
-```css title="app/globals.css"
-@theme inline {
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-info: var(--info);
-  --color-info-foreground: var(--info-foreground);
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
-}
+## Light and dark themes
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.21 0.006 285.885);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.006 285.885);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.006 285.885);
-  --primary: oklch(0.274 0.006 286.033);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0 0 0 / 4%);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0 0 0 / 4%);
-  --muted-foreground: oklch(0.442 0.017 285.786);
-  --accent: oklch(0 0 0 / 4%);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.637 0.237 25.331);
-  --destructive-foreground: oklch(0.505 0.213 27.518);
-  --info: oklch(0.623 0.214 259.815);
-  --info-foreground: oklch(0.488 0.243 264.376);
-  --success: oklch(0.696 0.17 162.48);
-  --success-foreground: oklch(0.508 0.118 165.612);
-  --warning: oklch(0.769 0.188 70.08);
-  --warning-foreground: oklch(0.555 0.163 48.998);
-  --border: oklch(0 0 0 / 10%);
-  --input: oklch(0 0 0 / 10%);
-  --ring: oklch(0.705 0.015 286.067);
-}
+Theme values are scoped with `data-theme`:
 
-.dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.967 0.001 286.375);
-  --card: color-mix(
-    in srgb,
-    oklch(0.21 0.006 285.885) 80%,
-    oklch(0.141 0.005 285.823)
-  );
-  --card-foreground: oklch(0.967 0.001 286.375);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.967 0.001 286.375);
-  --primary: oklch(0.967 0.001 286.375);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(1 0 0 / 8%);
-  --secondary-foreground: oklch(0.967 0.001 286.375);
-  --muted: oklch(1 0 0 / 8%);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(1 0 0 / 8%);
-  --accent-foreground: oklch(0.967 0.001 286.375);
-  --destructive: oklch(0.637 0.237 25.331);
-  --destructive-foreground: oklch(0.704 0.191 22.216);
-  --info: oklch(0.623 0.214 259.815);
-  --info-foreground: oklch(0.707 0.165 254.624);
-  --success: oklch(0.696 0.17 162.48);
-  --success-foreground: oklch(0.765 0.177 163.223);
-  --warning: oklch(0.769 0.188 70.08);
-  --warning-foreground: oklch(0.828 0.189 84.429);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.552 0.016 285.938);
-}
+```html
+<html data-theme="light">
 ```
 
-</Steps>
+Switch the value to `dark` for the dark theme. If you use a theme library, configure it to write the same `data-theme` values.
 
-</TabsPanel>
+The primitive gray and accent scales resolve differently for each theme, while semantic roles keep their names. A component can therefore continue using `--hui-color-background-base-primary` without knowing which theme is active.
 
-</CodeTabs>
+## Change the palette
 
-## Extended Color Variables
+Set theme and palette attributes on a shared ancestor:
 
-Honest UI adds extra variables for state-based UI such as alerts, badges, validation, and status messages:
+```html
+<html
+  data-theme="light"
+  data-gray-color="gray"
+  data-accent-color="orange"
+>
+```
 
-- `--destructive-foreground`: Foreground color for destructive actions
-- `--info`: Information state color
-- `--info-foreground`: Foreground color for information states
-- `--success`: Success state color
-- `--success-foreground`: Foreground color for success states
-- `--warning`: Warning state color
-- `--warning-foreground`: Foreground color for warning states
+Change primitive palette values when you are adapting the entire system. Change semantic values when your product needs a different meaning for a role.
 
-If you install with CLI, these are added automatically.
+Keep semantic token names stable when possible. Changing a token's value updates every component that uses that role; renaming it requires updating each reference.
 
-## Customizing the theme
+## Customize one component
 
-To customize Honest UI, change the values in `:root` and `.dark`.
+Copied UI components are normal source files. Edit their class names when a change belongs to one component:
 
-Keep the token names stable when possible. Components expect those names, and changing only the values lets every component update together.
+```tsx
+<Button className="min-w-32">Save profile</Button>
+```
 
-When changing colors, check:
+Add or adjust a variant when the same option must be reused. Do not create a new shared token for a single isolated value unless it represents a product-wide decision.
 
-- Text contrast on light and dark backgrounds.
-- Focus ring visibility.
-- Disabled state visibility.
-- Alert and badge readability.
-- Destructive action clarity.
+## Check every state
 
-## Adding component-specific styles
+After changing tokens or classes, verify:
 
-For one-off changes, update the class names in the copied component file.
+- Default, hover, active, focus, disabled, and invalid states.
+- Light and dark themes.
+- Text and non-text contrast.
+- Focus visibility in keyboard use.
+- Meaning without color alone.
+- Content at 200% and 400% zoom or equivalent reflow.
+- Forced-colors behavior where the component supports system colors.
 
-For reusable changes, add or adjust variants in the component. This is useful for buttons, badges, cards, alerts, and other components that need a small set of approved styles.
-
-Avoid hiding important state with only color. Pair color with text, icons, or labels when the state matters.
+Use text, icons, labels, or patterns alongside color when a state must be understood. A new palette should not turn warning, success, or destructive states into color-only distinctions.

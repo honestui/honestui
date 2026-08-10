@@ -315,18 +315,18 @@ function SelectRoot(props: SelectRootProps) {
 SelectRoot.displayName = "Select"
 
 const selectTriggerVariants = cva(
-  "flex items-center justify-between rounded-[var(--rs-radius-2)] bg-[var(--rs-color-background-base-primary)] text-[var(--rs-color-foreground-base-primary)] outline-none select-none [font-size:var(--rs-font-size-small)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] motion-safe:[transition:var(--rs-transition-interactive)] not-data-disabled:hover:cursor-pointer not-data-disabled:hover:bg-[var(--rs-color-background-base-primary-hover)] not-data-disabled:active:bg-[var(--rs-color-background-neutral-secondary)] focus:not-focus-visible:outline-none focus-visible:[outline:var(--rs-focus-ring)] data-disabled:pointer-events-none data-disabled:opacity-50 disabled:pointer-events-none disabled:opacity-50 data-[multiselectable=true]:py-[var(--rs-space-2)]",
+  "flex items-center justify-between rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] outline-none select-none [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] motion-safe:[transition:var(--hui-transition-interactive)] not-data-disabled:hover:cursor-pointer not-data-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] focus:not-focus-visible:outline-none focus-visible:[outline:var(--hui-focus-ring)] data-disabled:pointer-events-none data-disabled:opacity-50 disabled:pointer-events-none disabled:opacity-50 data-[multiselectable=true]:py-[var(--hui-space-2)]",
   {
     variants: {
       size: {
         small:
-          "min-h-[var(--rs-space-7)] overflow-hidden p-[var(--rs-space-2)]",
+          "min-h-[var(--hui-space-7)] overflow-hidden p-[var(--hui-space-2)]",
         medium:
-          "min-h-[var(--rs-space-9)] overflow-hidden p-[var(--rs-space-3)]",
+          "min-h-[var(--hui-space-9)] overflow-hidden p-[var(--hui-space-3)]",
       },
       variant: {
         outline:
-          "border-[0.5px] border-[var(--rs-color-border-base-tertiary)]",
+          "border-[0.5px] border-[var(--hui-color-border-base-tertiary)]",
         text: "border-0",
       },
     },
@@ -377,10 +377,10 @@ function SelectTrigger({
     >
       <span
         className={cn(
-          "flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap [font-style:normal] [font-weight:var(--rs-font-weight-medium)]",
+          "flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap [font-style:normal] [font-weight:var(--hui-font-weight-medium)]",
           resolvedSize === "small"
-            ? "gap-[var(--rs-space-1)] [font-size:var(--rs-font-size-mini)] [letter-spacing:var(--rs-letter-spacing-mini)] [line-height:var(--rs-line-height-mini)]"
-            : "gap-[var(--rs-space-2)] [font-size:var(--rs-font-size-small)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]"
+            ? "gap-[var(--hui-space-1)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
+            : "gap-[var(--hui-space-2)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
         )}
         data-slot="select-trigger-content"
       >
@@ -389,10 +389,10 @@ function SelectTrigger({
       <ChevronDownIcon
         aria-hidden="true"
         className={cn(
-          "shrink-0 text-[var(--rs-color-foreground-base-secondary)]",
+          "shrink-0 text-[var(--hui-color-foreground-base-secondary)]",
           resolvedSize === "small"
-            ? "ms-[var(--rs-space-2)] size-[var(--rs-space-4)]"
-            : "ms-[var(--rs-space-3)] size-[var(--rs-space-5)]"
+            ? "ms-[var(--hui-space-2)] size-[var(--hui-space-4)]"
+            : "ms-[var(--hui-space-3)] size-[var(--hui-space-5)]"
         )}
         data-slot="select-trigger-icon"
       />
@@ -449,7 +449,7 @@ function SelectValue({
         data-placeholder=""
         data-slot="select-value"
         className={cn(
-          "text-[var(--rs-color-foreground-base-tertiary)]",
+          "text-[var(--hui-color-foreground-base-tertiary)]",
           className
         )}
         {...props}
@@ -482,12 +482,12 @@ function SelectValue({
   return (
     <span data-slot="select-value" className={className} {...props}>
       <span
-        className="flex h-full max-w-full flex-1 items-center gap-[var(--rs-space-3)] overflow-hidden text-ellipsis whitespace-nowrap in-data-[size=small]:gap-[var(--rs-space-2)]"
+        className="flex h-full max-w-full flex-1 items-center gap-[var(--hui-space-3)] overflow-hidden text-ellipsis whitespace-nowrap in-data-[size=small]:gap-[var(--hui-space-2)]"
         data-slot="select-value-content"
       >
         {typeof item?.children === "string" && item.leadingIcon && (
           <span
-            className="flex shrink-0 items-center justify-center [&_svg]:size-[var(--rs-space-5)] in-data-[size=small]:[&_svg]:size-[var(--rs-space-4)]"
+            className="flex shrink-0 items-center justify-center [&_svg]:size-[var(--hui-space-5)] in-data-[size=small]:[&_svg]:size-[var(--hui-space-4)]"
             data-slot="select-value-icon"
           >
             {item.leadingIcon}
@@ -552,17 +552,17 @@ function SelectMultipleValue({ data = [] }: { data: ItemType[] }) {
   return (
     <span
       ref={containerRef}
-      className="flex h-full max-w-full flex-1 items-center gap-[var(--rs-space-2)] overflow-hidden whitespace-nowrap"
+      className="flex h-full max-w-full flex-1 items-center gap-[var(--hui-space-2)] overflow-hidden whitespace-nowrap"
       data-slot="select-value"
     >
       {data.slice(0, visibleCount).map((item) => (
         <span
           key={item.value}
-          className="inline-flex min-w-0 shrink-0 items-center gap-[var(--rs-space-1)] rounded-[var(--rs-radius-1)] bg-[var(--rs-color-background-neutral-secondary)] px-[var(--rs-space-2)] py-[var(--rs-space-1)] [font-size:var(--rs-font-size-mini)] [line-height:var(--rs-line-height-mini)]"
+          className="inline-flex min-w-0 shrink-0 items-center gap-[var(--hui-space-1)] rounded-[var(--hui-radius-1)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-2)] py-[var(--hui-space-1)] [font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]"
           data-slot="select-value-chip"
         >
           {item.leadingIcon && (
-            <span className="flex size-[var(--rs-space-4)] items-center justify-center [&_svg]:size-full">
+            <span className="flex size-[var(--hui-space-4)] items-center justify-center [&_svg]:size-full">
               {item.leadingIcon}
             </span>
           )}
@@ -571,7 +571,7 @@ function SelectMultipleValue({ data = [] }: { data: ItemType[] }) {
       ))}
       {data.length > visibleCount && (
         <span
-          className="shrink-0 text-[var(--rs-color-foreground-base-primary)] [font-size:var(--rs-font-size-small)]"
+          className="shrink-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)]"
           data-slot="select-value-overflow"
         >
           +{data.length - visibleCount}
@@ -601,7 +601,7 @@ function SelectContent({
 }: SelectContentProps) {
   const { autocomplete, multiple } = useSelectContext()
   const contentClassName = cn(
-    "relative box-border max-h-[320px] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] shadow-[var(--rs-shadow-soft)] [--apsara-select-padding:var(--rs-space-2)] [font-size:var(--rs-font-size-small)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] [transition:opacity_var(--rs-duration-fast)_var(--rs-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--rs-duration-fast)_var(--rs-ease-out),transform_var(--rs-duration-fast)_var(--rs-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
+    "relative box-border max-h-[320px] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] [--apsara-select-padding:var(--hui-space-2)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
     className
   )
 
@@ -612,7 +612,7 @@ function SelectContent({
           sideOffset={sideOffset}
           side={side}
           align={align}
-          className="z-[var(--rs-z-index-portal)]"
+          className="z-[var(--hui-z-index-portal)]"
           data-slot="select-positioner"
         >
           <ComboboxPrimitive.Popup
@@ -623,7 +623,7 @@ function SelectContent({
           >
             <ComboboxPrimitive.Input
               placeholder={searchPlaceholder}
-              className="sticky top-0 z-2 w-full rounded-t-[var(--rs-radius-2)] border-0 border-b-[0.5px] border-b-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] px-[var(--rs-space-4)] py-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] outline-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]"
+              className="sticky top-0 z-2 w-full rounded-t-[var(--hui-radius-2)] border-0 border-b-[0.5px] border-b-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
               size={12}
               data-slot="select-search"
             />
@@ -646,7 +646,7 @@ function SelectContent({
         side={side}
         align={align}
         alignItemWithTrigger={alignItemWithTrigger}
-        className="z-[var(--rs-z-index-portal)]"
+        className="z-[var(--hui-z-index-portal)]"
         data-slot="select-positioner"
       >
         <SelectPrimitive.Popup
@@ -729,7 +729,7 @@ function SelectItem({
       <>
         {leadingIcon && (
           <span
-            className="flex shrink-0 items-center justify-center [&_svg]:size-[var(--rs-space-5)]"
+            className="flex shrink-0 items-center justify-center [&_svg]:size-[var(--hui-space-5)]"
             data-slot="select-item-icon"
           >
             {leadingIcon}
@@ -742,7 +742,7 @@ function SelectItem({
     )
 
   const itemClassName = cn(
-    "relative flex items-center gap-[var(--rs-space-3)] rounded-[var(--rs-radius-2)] p-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:bg-[var(--rs-color-background-base-primary-hover)] data-[hidden=true]:hidden",
+    "relative flex items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-[hidden=true]:hidden",
     className
   )
   const renderItem = (
@@ -830,7 +830,7 @@ function SelectLabel({ className, ...props }: SelectLabelProps) {
   return (
     <LabelPrimitive
       className={cn(
-        "px-[var(--rs-space-3)] py-[var(--rs-space-2)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-medium)]",
+        "px-[var(--hui-space-3)] py-[var(--hui-space-2)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)]",
         className
       )}
       data-slot="select-label"
@@ -855,7 +855,7 @@ function SelectSeparator({ className, ...props }: SelectSeparatorProps) {
   return (
     <SeparatorPrimitive
       className={cn(
-        "my-[var(--rs-space-2)] h-px bg-[var(--rs-color-border-base-primary)] [margin-inline:calc(var(--rs-space-3)*-1)]",
+        "my-[var(--hui-space-2)] h-px bg-[var(--hui-color-border-base-primary)] [margin-inline:calc(var(--hui-space-3)*-1)]",
         className
       )}
       data-slot="select-separator"

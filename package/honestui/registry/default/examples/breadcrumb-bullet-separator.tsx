@@ -18,13 +18,13 @@ export default function BreadcrumbBulletSeparator() {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="#">Home</BreadcrumbLink>
+          <BreadcrumbLink href="/docs">Home</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator className="flex items-center">
           <BulletSeparator />
         </BreadcrumbSeparator>
         <BreadcrumbItem>
-          <BreadcrumbLink href="#">Components</BreadcrumbLink>
+          <BreadcrumbLink href="/docs/components/button">Components</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator className="flex items-center">
           <BulletSeparator />

@@ -57,10 +57,10 @@ export const mdxComponents: MDXComponents = {
   ),
   pre: ({ className, children, ...props }: React.ComponentProps<"pre">) => {
     return (
-      <div className="group relative mt-4 rounded-[8px] bg-[var(--rs-color-background-neutral-primary)] p-1">
+      <div className="group relative mt-4 rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1">
         <pre
           className={cn(
-            "no-scrollbar bg-background min-w-0 overflow-x-auto rounded-sm border-[0.5px] border-[var(--rs-color-border-base-primary)] py-3.5 text-[.8125rem] outline-none has-data-highlighted-line:px-0 has-data-line-numbers:px-0 has-data-[slot=tabs]:p-0 [&>code]:px-0!",
+            "no-scrollbar bg-background min-w-0 overflow-x-auto rounded-sm border-[0.5px] border-[var(--hui-color-border-base-primary)] py-3.5 text-[.8125rem] outline-none has-data-highlighted-line:px-0 has-data-line-numbers:px-0 has-data-[slot=tabs]:p-0 [&>code]:px-0!",
             className,
           )}
           {...props}

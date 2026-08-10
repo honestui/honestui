@@ -1,6 +1,7 @@
 ---
 title: Tooltip
-description: A popup that appears when an element is hovered or focused, showing a hint for sighted users.
+metaTitle: Tooltip component
+description: Show a brief, nonessential hint when a control receives hover or keyboard focus.
 
 links:
   doc: https://base-ui.com/react/components/tooltip#api-reference
@@ -72,7 +73,7 @@ import {
   TooltipPopup,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 ```
 
 ```tsx
@@ -112,3 +113,9 @@ The example shows grouped tooltips for related controls.
 ### Grouped Tooltips
 
 <ComponentPreview name="tooltip-grouped" />
+
+## API reference
+
+`TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipArrow`, and `TooltipPopup` forward their matching Base UI Tooltip props. `TooltipContent` is an alias of the popup. Configure shared delay behavior on the provider and placement on the popup.
+
+The trigger must have its own accessible name; tooltip text does not repair an unlabeled button. See the [Base UI Tooltip API](https://base-ui.com/react/components/tooltip#api-reference).

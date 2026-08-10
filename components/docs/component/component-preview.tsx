@@ -10,6 +10,7 @@ interface ComponentPreviewProps extends Omit<React.ComponentProps<"div">, "ref">
   hideCode?: boolean;
   title?: string;
   containerClassName?: string;
+  previewClassName?: string;
   playground?: boolean;
 }
 

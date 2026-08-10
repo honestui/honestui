@@ -1,13 +1,19 @@
 ---
-title: Line Blocks
-description: Ready-made line chart layouts built with Honest UI
+title: Line Chart Examples
+description: Complete line chart layouts for trends, forecasts, and comparison.
 image: /og/line-chart.png
 ---
 
-## Renewable Energy Output
+These examples show a chart inside a complete reporting surface. The values are sample data. Open the Code tab and update data keys, units, summaries, and nonvisual access together.
 
-<ComponentPreview className="mb-4" title="Renewable Energy Output" name="b-payouts-echarts-line-chart"/>
+## Renewable energy output
 
-## Bread Proofing Schedule
+Use this pattern to distinguish observed and forecast values across time. Replace `month`, `generated`, and `forecast`, then state where the forecast begins. A stroke change or visible label should distinguish forecast data without color alone.
 
-<ComponentPreview className="mb-4" title="Bread Proofing Schedule" name="b-shipments-echarts-line-chart"/>
+<ComponentPreview className="mb-4" title="Renewable energy output" name="b-payouts-echarts-line-chart"/>
+
+## Bread proofing schedule
+
+Use this comparison when two runs share the same ordered intervals. Replace `slot`, `previous`, and `current`, then update the unit and written comparison. Provide a table when readers must inspect each interval.
+
+<ComponentPreview className="mb-4" title="Bread proofing schedule" name="b-shipments-echarts-line-chart"/>

@@ -1,30 +1,50 @@
 ---
-title: Our Charts
-description: Open-source, composable chart components designed for polished product interfaces.
+title: Charts
+description: Choose and compose Honest UI charts for product data.
 image: /og/og-image.png
 ---
 
-Our charts bring Honest UI's source-first approach to data visualization. Each chart is open source, composable, and designed to be copied into your app and adapted to your product.
+Honest UI charts are React components built on <Link href="https://echarts.apache.org/" _blank={true}>Apache ECharts</Link>. Install them from `honestui/charts`, then compose the axes, series, legend, tooltip, and controls your visualization needs.
 
-They pair a React API with <Link href="https://echarts.apache.org/" _blank={true}>Apache ECharts</Link> rendering and fit naturally into modern React applications.
+Charts are package imports rather than CLI-copied UI components. You can inspect their source in the Honest UI repository and use ECharts options when the component API does not expose a setting directly.
 
-## Why our charts?
+## Choose a chart
 
-Chart libraries are powerful, but their defaults rarely feel at home in a polished product. Our charts provide the structure, visual details, and interaction patterns needed to make data feel like part of your interface.
+| Chart | Use it to | Use something else when |
+| --- | --- | --- |
+| Area | Show change over time when magnitude or contribution to a total matters | A filled area would make close comparisons harder |
+| Bar | Compare values across categories | The primary question is change over a continuous sequence |
+| Line | Show trends and rate of change across an ordered dimension | The data is unordered or category comparison matters more |
+| Pie or donut | Show a simple part-to-whole relationship with a few categories | Values are close, there are many categories, or precision matters |
+| Scatter | Find relationships, clusters, and outliers across numeric measures | One axis is categorical |
+| Heatmap | Find patterns across two categorical dimensions | Readers need frequent point-by-point comparison |
 
-Every chart is:
+## How composition works
 
-- **Composable.** Add only the axes, legend, tooltip, series, and controls you need.
-- **Themeable.** Keep labels and colors in one shared config, with light and dark theme support.
-- **Interactive.** Use built-in hover, selection, zoom, and reveal behavior.
-- **Source-first.** Copy the code, adjust it, and own it in your codebase.
+The chart root owns the data, theme configuration, loading state, and selection. Add only the parts you need. For example:
 
-## Built for scale
+```tsx
+<BarChart data={data} config={chartConfig}>
+  <BarChart.Grid />
+  <BarChart.XAxis dataKey="month" />
+  <BarChart.Legend />
+  <BarChart.Tooltip />
+  <BarChart.Bar dataKey="completed" />
+</BarChart>
+```
 
-Apache ECharts renders our charts to canvas, which keeps dense datasets and frequent updates smooth without filling the DOM with thousands of nodes.
+The child components describe ECharts configuration; they do not render separate DOM elements. Omitting a child removes that chart part. Use [Chart Config](/docs/charts/chart-config) to connect data keys to visible labels, colors, and optional icons.
 
-That makes our charts a strong fit for product dashboards, long time series, live data, and interfaces that need to stay responsive while data changes.
+## Canvas and performance
+
+ECharts renders the plot to canvas, avoiding one DOM element for every bar, point, or cell. That can reduce DOM size for dense visualizations, but performance still depends on the dataset, enabled interactions, animation, device, and surrounding application. Test representative data on the devices your product supports.
+
+## Accessibility responsibilities
+
+A canvas can have an accessible name, but that name does not expose every plotted value or relationship. Provide a nearby summary or data table when people need to understand exact values, trends, outliers, or selections.
+
+Tooltips, brushes, and direct mark selection are pointer-operated unless your application supplies an equivalent control. Do not place required information or the only path to an action inside a canvas interaction.
 
 ## Get started
 
-Follow [Installation](/docs/charts/installation), choose a chart from the Components section, and use [Chart Config](/docs/charts/chart-config) to define shared labels, colors, and icons.
+Follow [Installation](/docs/charts/installation), define labels and colors in [Chart Config](/docs/charts/chart-config), and choose a chart based on the question the data must answer.

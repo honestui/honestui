@@ -51,7 +51,12 @@
     "build:package": "npm --prefix package/honestui run build",
     "pack:package": "npm --prefix package/honestui pack",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint .",
+    "lint:strict": "eslint .",
+    "verify:docs": "node scripts/verify-docs.mjs && node scripts/verify-component-docs.mjs",
+    "verify:component-docs": "node scripts/verify-component-docs.mjs",
+    "verify:tokens": "node scripts/verify-token-prefix.mjs",
+    "verify:production-docs": "node scripts/verify-production-docs.mjs",
     "registry:animated": "node scripts/generate-animated-index.mjs",
     "registry:charts": "node scripts/generate-chart-index.mjs",
     "registry:shaders": "node scripts/generate-shader-index.mjs",
@@ -78,9 +83,8 @@
     "honestui": "^0.0.2",
     "love-ui": "^1.2.24",
     "lucide-react": "^1.27.0",
-    "mdx": "^0.3.1",
     "motion": "^12.42.2",
-    "next": "16.2.12",
+    "next": "^16.3.0",
     "next-themes": "^0.4.6",
     "ogl": "^1.0.11",
     "posthog-js": "^1.410.6",
@@ -96,6 +100,9 @@
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/culori": "^4.0.1",
@@ -103,7 +110,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.12",
+    "eslint-config-next": "^16.3.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tailwindcss": "^4",

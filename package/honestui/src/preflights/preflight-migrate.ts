@@ -1,5 +1,4 @@
 import path from "path"
-import { addOptionsSchema } from "@/src/commands/add"
 import { migrateOptionsSchema } from "@/src/commands/migrate"
 import { HONESTUI_URL } from "@/src/registry/constants"
 import * as ERRORS from "@/src/utils/errors"
@@ -43,7 +42,7 @@ export async function preFlightMigrate(
       errors,
       config: config!,
     }
-  } catch (error) {
+  } catch {
     logger.break()
     logger.error(
       `An invalid ${highlighter.info(

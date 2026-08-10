@@ -1,6 +1,6 @@
 ---
 title: Avatar
-description: An image element with a fallback for representing the user.
+description: Represent a person, team, account, or organization with an image and fallback.
 
 links:
   doc: https://base-ui.com/react/components/avatar#api-reference
@@ -68,7 +68,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 ```
 
 ```tsx
@@ -80,7 +80,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 ## Examples
 
-Our examples cover image fallback, size, radius, and grouped avatar patterns.
+The examples cover fallback behavior, visual variants, a real group using `AvatarGroupCount`, and status badges paired with text. Do not infer a person's status from color alone.
 
 ### Fallback Only
 
@@ -109,3 +109,13 @@ Our examples cover image fallback, size, radius, and grouped avatar patterns.
   name="avatar-group"
   className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
 />
+
+### Status badge with a text equivalent
+
+<ComponentPreview name="avatar-status" />
+
+## API reference
+
+`Avatar` adds `variant` (`soft` or `solid`), `color`, `size` (`1` through `13`), `shape` (`rounded` or `full`), and `disabled` to the Base UI root props. `AvatarImage` and `AvatarFallback` forward Base UI avatar props. `AvatarBadge`, `AvatarGroup`, and `AvatarGroupCount` accept native element props and provide layout only.
+
+See the [Base UI Avatar API](https://base-ui.com/react/components/avatar#api-reference) for image loading and fallback props.

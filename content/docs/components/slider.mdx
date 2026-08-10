@@ -1,14 +1,12 @@
 ---
 title: Slider
-description: An input where the user selects a value from within a given range.
+description: Choose one value or a range along a bounded scale.
 
 links:
   doc: https://base-ui.com/react/components/slider#api-reference
 ---
 
-<ComponentPreview
-  name="slider-demo"
-/>
+<ComponentPreview name="slider-demo" />
 
 ## Overview
 
@@ -69,7 +67,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Slider, SliderValue } from "@/components/ui/slider"
+import { Slider, SliderValue } from "@/components/ui/slider";
 ```
 
 ```tsx
@@ -80,19 +78,15 @@ import { Slider, SliderValue } from "@/components/ui/slider"
 
 Our examples cover labeled values, range selection, vertical orientation, and form integration.
 
-For accessible labelling and validation, prefer using the `Field` component to wrap checkboxes. See the related example: [Slider field](/ui/docs/components/field#slider-field).
+For accessible labeling and validation, use `Field` to connect the slider with its label, value, description, and error. See the [Field examples](/docs/components/field#examples).
 
 ### With Label and Value
 
-<ComponentPreview
-  name="slider-with-label-value"
-/>
+<ComponentPreview name="slider-with-label-value" />
 
 ### Range Slider
 
-<ComponentPreview
-  name="slider-range"
-/>
+<ComponentPreview name="slider-range" />
 
 ### Vertical
 
@@ -100,6 +94,10 @@ For accessible labelling and validation, prefer using the `Field` component to w
 
 ### Form Integration
 
-<ComponentPreview
-  name="slider-form"
-/>
+<ComponentPreview name="slider-form" />
+
+## API reference
+
+`Slider` forwards Base UI Slider root props and renders the track, indicator, and thumbs from the current value. `SliderValue` forwards Base UI value props for formatted output. Put minimum, maximum, step, orientation, controlled value, and disabled state on the root.
+
+Provide a visible label and text value when precision matters. See the [Base UI Slider API](https://base-ui.com/react/components/slider#api-reference).

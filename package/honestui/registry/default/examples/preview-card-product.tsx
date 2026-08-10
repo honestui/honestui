@@ -8,7 +8,7 @@ export default function PreviewCardProduct() {
       <PreviewCardTrigger render={<Button variant="secondary" />}>View plan</PreviewCardTrigger>
       <PreviewCardPopup>
         <div className="grid gap-2">
-          <Badge className="w-fit">Team</Badge>
+          <Badge className="w-fit">Pro</Badge>
           <div className="font-medium">Automation plan</div>
           <p className="text-sm text-muted-foreground">Unlimited workflows with 30-day history.</p>
         </div>

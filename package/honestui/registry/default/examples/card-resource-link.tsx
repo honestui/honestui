@@ -1,6 +1,6 @@
-import { BookOpen as BookOpenIcon, Link as LinkIcon } from "honestui/icons"
+import { BookOpen as BookOpenIcon, Link as LinkIcon } from "honestui/icons";
 
-import { Card, CardContent } from "@/registry/default/ui/card"
+import { Card, CardContent } from "@/registry/default/ui/card";
 
 const item = {
   label: "Documentation",
@@ -8,7 +8,7 @@ const item = {
     "Find guides, API references, and examples to integrate with our platform.",
   link: "View docs",
   icon: <BookOpenIcon aria-hidden="true" />,
-}
+};
 
 export default function CardResourceLink() {
   return (
@@ -26,15 +26,16 @@ export default function CardResourceLink() {
           <p className="text-sm leading-relaxed text-muted-foreground">
             {item.description}
           </p>
-          <a
-            href="#"
+          <Link
+            href="/docs/components/card"
             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
           >
             <LinkIcon aria-hidden="true" className="size-2.5 shrink-0" />
             {item.link}
-          </a>
+          </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
+import Link from "next/link";

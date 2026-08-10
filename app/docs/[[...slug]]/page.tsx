@@ -22,13 +22,13 @@ export async function generateMetadata(props: {
 
   if (!page) return {};
 
-  const { title, description, image } = page.data;
+  const { title, metaTitle, description, image } = page.data;
 
   const url = absoluteUrl(page.url);
   const ogImage = absoluteUrl(image ?? "/og/og-image.png");
 
   return {
-    title,
+    title: metaTitle ?? title,
     description,
     alternates: {
       canonical: url,
@@ -39,7 +39,7 @@ export async function generateMetadata(props: {
     openGraph: {
       type: "article",
       url,
-      title,
+      title: metaTitle ?? title,
       description,
       siteName: "Honest UI",
       images: [
@@ -53,7 +53,7 @@ export async function generateMetadata(props: {
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: metaTitle ?? title,
       description,
       images: [ogImage],
     },
@@ -82,6 +82,8 @@ function buildDocsJsonLd(page: DocsPage) {
     crumbs.push({ name: "Icons", url: absoluteUrl("/docs/icons") });
   } else if (section === "animated" && page.url !== "/docs/animated") {
     crumbs.push({ name: "Animated", url: absoluteUrl("/docs/animated") });
+  } else if (section === "shaders" && page.url !== "/docs/shaders") {
+    crumbs.push({ name: "Shaders", url: absoluteUrl("/docs/shaders") });
   }
   if (page.url !== "/docs") {
     crumbs.push({ name: title, url });
@@ -152,13 +154,6 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
             <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight xl:text-4xl">
               {doc.title}
             </h1>
-            <blockquote className="sr-only">
-              <h2>Documentation Index</h2>
-              <p>
-                Fetch the complete documentation index at: <a href="/llms.txt">/llms.txt</a>.
-                Use this file to discover all available pages before exploring further.
-              </p>
-            </blockquote>
             {doc.description && (
               <p className="text-muted-foreground text-[15px]">{doc.description}</p>
             )}

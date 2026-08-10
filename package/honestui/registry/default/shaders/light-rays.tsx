@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Renderer, Program, Triangle, Mesh } from 'ogl';
 import './css/light-rays.css';
+import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
 
 export type RaysOrigin =
   | 'top-center'
@@ -15,6 +16,7 @@ export type RaysOrigin =
   | 'bottom-left';
 
 export interface LightRaysProps {
+  paused?: boolean;
   raysOrigin?: RaysOrigin;
   raysColor?: string;
   raysSpeed?: number;
@@ -85,6 +87,7 @@ interface Uniforms {
 }
 
 const LightRays: React.FC<LightRaysProps> = ({
+  paused = false,
   raysOrigin = 'top-center',
   raysColor = DEFAULT_COLOR,
   raysSpeed = 1,
@@ -99,6 +102,8 @@ const LightRays: React.FC<LightRaysProps> = ({
   distortion = 0.0,
   className = ''
 }) => {
+  const shouldReduceMotion = usePrefersReducedMotion();
+  const isPaused = paused || shouldReduceMotion;
   const containerRef = useRef<HTMLDivElement>(null);
   const uniformsRef = useRef<Uniforms | null>(null);
   const rendererRef = useRef<Renderer | null>(null);
@@ -121,7 +126,8 @@ const LightRays: React.FC<LightRaysProps> = ({
     followMouse,
     mouseInfluence,
     noiseAmount,
-    distortion
+    distortion,
+    paused: isPaused
   });
   useEffect(() => {
     livePropsRef.current = {
@@ -136,7 +142,8 @@ const LightRays: React.FC<LightRaysProps> = ({
       followMouse,
       mouseInfluence,
       noiseAmount,
-      distortion
+      distortion,
+      paused: isPaused
     };
   }, [
     raysOrigin,
@@ -150,7 +157,8 @@ const LightRays: React.FC<LightRaysProps> = ({
     followMouse,
     mouseInfluence,
     noiseAmount,
-    distortion
+    distortion,
+    isPaused
   ]);
 
   useEffect(() => {
@@ -197,6 +205,7 @@ const LightRays: React.FC<LightRaysProps> = ({
       rendererRef.current = renderer;
 
       const gl = renderer.gl;
+      gl.canvas.setAttribute('aria-hidden', 'true');
       gl.canvas.style.width = '100%';
       gl.canvas.style.height = '100%';
 
@@ -361,10 +370,12 @@ void main() {
           return;
         }
 
-        uniforms.iTime.value = t * 0.001;
-
         const current = livePropsRef.current;
-        if (current.followMouse && current.mouseInfluence > 0.0) {
+        if (!current.paused) {
+          uniforms.iTime.value = t * 0.001;
+        }
+
+        if (!current.paused && current.followMouse && current.mouseInfluence > 0.0) {
           const smoothing = 0.92;
 
           smoothMouseRef.current.x = smoothMouseRef.current.x * smoothing + mouseRef.current.x * (1 - smoothing);
@@ -375,7 +386,7 @@ void main() {
 
         try {
           renderer.render({ scene: mesh });
-          animationIdRef.current = requestAnimationFrame(loop);
+          animationIdRef.current = current.paused ? null : requestAnimationFrame(loop);
         } catch (error) {
           console.warn('WebGL rendering error:', error);
           return;
@@ -424,7 +435,7 @@ void main() {
         cleanupFunctionRef.current = null;
       }
     };
-  }, [isVisible]);
+  }, [isVisible, isPaused]);
 
   useEffect(() => {
     if (!uniformsRef.current || !containerRef.current || !rendererRef.current) return;
@@ -433,10 +444,10 @@ void main() {
     const renderer = rendererRef.current;
 
     u.raysColor.value = hexToRgb(raysColor);
-    u.raysSpeed.value = raysSpeed;
+    u.raysSpeed.value = isPaused ? 0 : raysSpeed;
     u.lightSpread.value = lightSpread;
     u.rayLength.value = rayLength;
-    u.pulsating.value = pulsating ? 1.0 : 0.0;
+    u.pulsating.value = !isPaused && pulsating ? 1.0 : 0.0;
     u.fadeDistance.value = fadeDistance;
     u.saturation.value = saturation;
     u.mouseInfluence.value = mouseInfluence;
@@ -459,7 +470,8 @@ void main() {
     saturation,
     mouseInfluence,
     noiseAmount,
-    distortion
+    distortion,
+    isPaused
   ]);
 
   useEffect(() => {
@@ -471,13 +483,13 @@ void main() {
       mouseRef.current = { x, y };
     };
 
-    if (followMouse) {
+    if (followMouse && !isPaused) {
       window.addEventListener('mousemove', handleMouseMove);
       return () => window.removeEventListener('mousemove', handleMouseMove);
     }
-  }, [followMouse]);
+  }, [followMouse, isPaused]);
 
-  return <div ref={containerRef} className={`light-rays-container ${className}`.trim()} />;
+  return <div aria-hidden="true" ref={containerRef} className={`light-rays-container ${className}`.trim()} />;
 };
 
 export default LightRays;

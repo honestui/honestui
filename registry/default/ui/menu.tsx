@@ -15,7 +15,7 @@ function MenuTrigger({ className, ...props }: MenuPrimitive.Trigger.Props) {
     <MenuPrimitive.Trigger
       data-slot="menu-trigger"
       className={cn(
-        "data-pressed:bg-[var(--rs-color-background-base-primary-hover)]",
+        "data-pressed:bg-[var(--hui-color-background-base-primary-hover)]",
         className
       )}
       {...props}
@@ -38,7 +38,7 @@ function MenuPopup({
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
         data-slot="menu-positioner"
-        className="z-[var(--rs-z-index-portal)]"
+        className="z-[var(--hui-z-index-portal)]"
         sideOffset={sideOffset}
         align={align}
         alignOffset={alignOffset}
@@ -46,7 +46,7 @@ function MenuPopup({
         <MenuPrimitive.Popup
           data-slot="menu-popup"
           className={cn(
-            "box-border max-h-(--available-height) min-w-(--anchor-width) origin-(--transform-origin) overflow-hidden rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] p-[var(--rs-space-2)] text-[var(--rs-color-foreground-base-primary)] shadow-[var(--rs-shadow-soft)] outline-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] [transition:opacity_var(--rs-duration-fast)_var(--rs-ease-out)] focus:outline-none focus-visible:outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--rs-duration-fast)_var(--rs-ease-out),transform_var(--rs-duration-fast)_var(--rs-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
+            "box-border max-h-(--available-height) min-w-(--anchor-width) origin-(--transform-origin) overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] focus:outline-none focus-visible:outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
             className
           )}
           {...props}
@@ -75,7 +75,7 @@ function MenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "relative flex items-center gap-[var(--rs-space-3)] p-[var(--rs-space-3)] outline-none select-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--rs-radius-2)] data-highlighted:bg-[var(--rs-color-background-base-primary-hover)] data-inset:ps-8 data-[variant=destructive]:text-[var(--rs-color-foreground-danger-primary)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--rs-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
+        "relative flex items-center gap-[var(--hui-space-3)] p-[var(--hui-space-3)] outline-none select-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--hui-radius-2)] data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-inset:ps-8 data-[variant=destructive]:text-[var(--hui-color-foreground-danger-primary)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--hui-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -93,7 +93,7 @@ function MenuCheckboxItem({
     <MenuPrimitive.CheckboxItem
       data-slot="menu-checkbox-item"
       className={cn(
-        "relative grid grid-cols-[1rem_1fr] items-center gap-[var(--rs-space-3)] p-[var(--rs-space-3)] outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--rs-radius-2)] data-highlighted:bg-[var(--rs-color-background-base-primary-hover)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--rs-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
+        "relative grid grid-cols-[1rem_1fr] items-center gap-[var(--hui-space-3)] p-[var(--hui-space-3)] outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--hui-radius-2)] data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--hui-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       checked={checked}
@@ -120,7 +120,7 @@ function MenuRadioItem({
     <MenuPrimitive.RadioItem
       data-slot="menu-radio-item"
       className={cn(
-        "relative grid grid-cols-[1rem_1fr] items-center gap-[var(--rs-space-3)] p-[var(--rs-space-3)] outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--rs-radius-2)] data-highlighted:bg-[var(--rs-color-background-base-primary-hover)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--rs-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
+        "relative grid grid-cols-[1rem_1fr] items-center gap-[var(--hui-space-3)] p-[var(--hui-space-3)] outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--hui-radius-2)] data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--hui-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -145,7 +145,7 @@ function MenuGroupLabel({
       data-slot="menu-label"
       data-inset={inset}
       className={cn(
-        "px-[var(--rs-space-3)] py-[var(--rs-space-2)] [font-size:var(--rs-font-size-mini)] [font-weight:var(--rs-font-weight-medium)] data-inset:ps-8",
+        "px-[var(--hui-space-3)] py-[var(--hui-space-2)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] data-inset:ps-8",
         className
       )}
       {...props}
@@ -158,7 +158,7 @@ function MenuSeparator({ className, ...props }: MenuPrimitive.Separator.Props) {
     <MenuPrimitive.Separator
       data-slot="menu-separator"
       className={cn(
-        "my-[var(--rs-space-2)] h-px bg-[var(--rs-color-border-base-primary)] [margin-inline:calc(var(--rs-space-3)*-1)]",
+        "my-[var(--hui-space-2)] h-px bg-[var(--hui-color-border-base-primary)] [margin-inline:calc(var(--hui-space-3)*-1)]",
         className
       )}
       {...props}
@@ -171,7 +171,7 @@ function MenuShortcut({ className, ...props }: React.ComponentProps<"span">) {
     <span
       data-slot="menu-shortcut"
       className={cn(
-        "ms-auto flex items-center text-[var(--rs-color-foreground-base-secondary)] [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]",
+        "ms-auto flex items-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}
@@ -196,7 +196,7 @@ function MenuSubTrigger({
       data-slot="menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "relative flex items-center gap-[var(--rs-space-3)] p-[var(--rs-space-3)] outline-none [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--rs-radius-2)] data-highlighted:bg-[var(--rs-color-background-base-primary-hover)] data-popup-open:cursor-pointer data-popup-open:rounded-[var(--rs-radius-2)] data-popup-open:bg-[var(--rs-color-background-base-primary-hover)] data-inset:ps-8 [&_svg]:pointer-events-none [&_svg]:text-[var(--rs-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
+        "relative flex items-center gap-[var(--hui-space-3)] p-[var(--hui-space-3)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--hui-radius-2)] data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-popup-open:cursor-pointer data-popup-open:rounded-[var(--hui-radius-2)] data-popup-open:bg-[var(--hui-color-background-base-primary-hover)] data-inset:ps-8 [&_svg]:pointer-events-none [&_svg]:text-[var(--hui-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

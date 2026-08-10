@@ -188,7 +188,7 @@ export function DocsCopyPage({ mdx, url, path }: { mdx: string; url: string; pat
       variant="secondary"
       size="sm"
       aria-label="Open dropdown menu"
-      className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-none border-0 border-l-[0.5px] border-[var(--rs-color-border-base-primary)] bg-transparent p-0! hover:bg-[var(--rs-color-background-base-primary-hover)] focus-visible:ring-0!"
+      className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-none border-0 border-l-[0.5px] border-[var(--hui-color-border-base-primary)] bg-transparent p-0! hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:ring-0!"
     >
       <CaretDown />
     </Button>
@@ -196,13 +196,13 @@ export function DocsCopyPage({ mdx, url, path }: { mdx: string; url: string; pat
 
   return (
     <Popover>
-      <div className="group/buttons relative flex overflow-hidden rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] select-none *:data-[slot=button]:focus-visible:relative *:data-[slot=button]:focus-visible:z-10">
+      <div className="group/buttons relative flex overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] select-none *:data-[slot=button]:focus-visible:relative *:data-[slot=button]:focus-visible:z-10">
         <PopoverAnchor />
         <Button
           aria-label="Copy page"
           variant="secondary"
           size="sm"
-          className="text-muted-foreground hover:text-foreground h-8 rounded-none border-0 bg-transparent px-2! text-xs duration-0 hover:bg-[var(--rs-color-background-base-primary-hover)]"
+          className="text-muted-foreground hover:text-foreground h-8 rounded-none border-0 bg-transparent px-2! text-xs duration-0 hover:bg-[var(--hui-color-background-base-primary-hover)]"
           onClick={() => {
             copy(mdx);
             capturePageAction("copy_page");

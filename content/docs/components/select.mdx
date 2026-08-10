@@ -1,14 +1,12 @@
 ---
 title: Select
-description: A common form component for choosing a predefined value in a dropdown menu.
+description: Choose one value from a known list in a compact popup.
 
 links:
   doc: https://base-ui.com/react/components/select#api-reference
 ---
 
-<ComponentPreview
-  name="select-demo"
-/>
+<ComponentPreview name="select-demo" />
 
 ## Overview
 
@@ -75,7 +73,7 @@ import {
   SelectPopup,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 ```
 
 ```tsx
@@ -102,48 +100,40 @@ const items = [
 
 ## Examples
 
-Our examples cover sizes, disabled state, alignment, groups, multiple selection, and form integration.
+Examples cover sizes, disabled state, alignment, groups, multiple selection, and form integration.
 
-For accessible labelling and validation, prefer using the `Field` component to wrap selects. See the related example: [Select field](/ui/docs/components/field#select-field).
+For accessible labeling and validation, use `Field` to connect the Select with its label, description, and error. See the [Field examples](/docs/components/field#examples).
 
 ### Small Size
 
-<ComponentPreview
-  name="select-sm"
-/>
+<ComponentPreview name="select-sm" />
 
 ### Large Size
 
-<ComponentPreview
-  name="select-lg"
-/>
+<ComponentPreview name="select-lg" />
 
 ### Disabled
 
-<ComponentPreview
-  name="select-disabled"
-/>
+<ComponentPreview name="select-disabled" />
 
 ### Without Item Alignment
 
-<ComponentPreview
-  name="select-without-alignment"
-/>
+<ComponentPreview name="select-without-alignment" />
 
 ### With Groups
 
-<ComponentPreview
-  name="select-with-groups"
-/>
+<ComponentPreview name="select-with-groups" />
 
 ### Multiple Selection
 
-<ComponentPreview
-  name="select-multiple"
-/>
+<ComponentPreview name="select-multiple" />
 
 ### Form Integration
 
-<ComponentPreview
-  name="select-form"
-/>
+<ComponentPreview name="select-form" />
+
+## API reference
+
+Select exports root, trigger, value, content, popup, item, group, group label, and separator parts. Each forwards its matching Base UI Select props; Honest UI adds size and alignment options documented in the examples. Put the item collection and controlled or default value on the root.
+
+Use `multiple` only when users can review and remove every selected value. See the [Base UI Select API](https://base-ui.com/react/components/select#api-reference).

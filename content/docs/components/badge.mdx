@@ -1,9 +1,6 @@
 ---
 title: Badge
-description: A badge or a component that looks like a badge.
-
-links:
-  doc: https://base-ui.com/react/components/badge#api-reference
+description: Show a compact status, count, category, or piece of metadata.
 ---
 
 <ComponentPreview name="badge-demo" />
@@ -101,7 +98,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 ```
 
 ```tsx
@@ -113,92 +110,29 @@ import { Badge } from "@/components/ui/badge"
 You can use the [`render`](https://base-ui.com/react/utils/use-render#migrating-from-radix-ui) prop to make another component look like a badge. Here's an example of a link that looks like a badge.
 
 ```tsx
-import Link from "next/link"
+import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 
 export function LinkAsBadge() {
-  return <Badge render={<Link href="/pricing" />}>New</Badge>
+  return <Badge render={<Link href="/pricing" />}>New</Badge>;
 }
 ```
 
 ## Examples
 
-Our examples cover visual variants, sizes, icon support, and link rendering.
+The main example compares all status variants, sizes, icon use, and a link rendered with badge styling. Choose the label first, then use the least emphatic variant that still communicates the state.
 
-### Outline
+### Badge inside a release status
 
-<ComponentPreview
-  name="badge-outline"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+<ComponentPreview name="badge-with-icon" />
 
-### Secondary
+### Link composition
 
-<ComponentPreview
-  name="badge-secondary"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+<ComponentPreview name="badge-with-link" />
 
-### Destructive
+## API reference
 
-<ComponentPreview
-  name="badge-destructive"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+`Badge` accepts native span props and Base UI's `render` composition prop. Honest UI adds `variant` (`default`, `destructive`, `outline`, `secondary`, `info`, `success`, `warning`, `error`, `neutral`, `accent`, `danger`, or `gradient`) and `size` (`sm`, `default`, or `lg`; the aliases `micro`, `small`, and `regular` are also supported).
 
-### Info
-
-<ComponentPreview
-  name="badge-info"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Success
-
-<ComponentPreview
-  name="badge-success"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Warning
-
-<ComponentPreview
-  name="badge-warning"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Error
-
-<ComponentPreview
-  name="badge-error"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Small
-
-<ComponentPreview
-  name="badge-sm"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### Large
-
-<ComponentPreview
-  name="badge-lg"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### With Icon
-
-<ComponentPreview
-  name="badge-with-icon"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
-
-### With Link
-
-<ComponentPreview
-  name="badge-with-link"
-  className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
-/>
+Badge is non-interactive by default. When composing it as a link or button, supply a clear accessible name and keep the target at least 44 by 44 CSS pixels for coarse pointers.

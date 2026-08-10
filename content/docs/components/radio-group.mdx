@@ -1,9 +1,9 @@
 ---
 title: Radio Group
-description: A set of checkable buttons where no more than one of the buttons can be checked at a time.
+description: Let people choose one option from a visible set of mutually exclusive choices.
 
 links:
-  doc: https://base-ui.com/react/components/radio-group#api-reference
+  doc: https://base-ui.com/react/components/radio#api-reference
 ---
 
 <ComponentPreview name="radio-group-demo" />
@@ -67,8 +67,8 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Label } from "@/components/ui/label"
-import { Radio, RadioGroup } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label";
+import { Radio, RadioGroup } from "@/components/ui/radio-group";
 ```
 
 ```tsx
@@ -87,9 +87,9 @@ import { Radio, RadioGroup } from "@/components/ui/radio-group"
 
 ## Examples
 
-Our examples cover disabled, described, card-style, and form-connected radio groups.
+Examples cover disabled, described, card-style, and form-connected radio groups.
 
-For accessible labelling and validation, prefer using the `Field` component to wrap radio buttons. See the related example: [Radio Group field](/ui/docs/components/field#radio-group-field).
+For group labeling and validation, use `Field` and `Fieldset` to connect the question and error to the radio group. See the [Field examples](/docs/components/field#examples).
 
 ### Disabled
 
@@ -106,3 +106,9 @@ For accessible labelling and validation, prefer using the `Field` component to w
 ### Form Integration
 
 <ComponentPreview name="radio-group-form" />
+
+## API reference
+
+`RadioGroup` and `Radio` forward their matching Base UI Radio props; `RadioGroupItem` is an alias of `Radio`. Put the shared `name`, controlled or default value, orientation, and disabled state on the group. Give the group a legend or accessible label, and label every radio.
+
+See the [Base UI Radio API](https://base-ui.com/react/components/radio#api-reference).

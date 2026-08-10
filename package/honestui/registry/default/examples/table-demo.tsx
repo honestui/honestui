@@ -1,4 +1,4 @@
-import { Badge } from "@/registry/default/ui/badge"
+import { Badge } from "@/registry/default/ui/badge";
 import {
   Table,
   TableBody,
@@ -8,26 +8,34 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/registry/default/ui/table"
+  TableSectionHeader,
+} from "@/registry/default/ui/table";
 
 export default function TableDemo() {
   return (
-    <div className="w-full max-w-4xl">
+    <div className="w-full min-w-0 max-w-4xl">
       <Table>
         <TableCaption>A list of current projects.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Project</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Team</TableHead>
-            <TableHead className="text-right">Budget</TableHead>
+            <TableHead scope="col">Project</TableHead>
+            <TableHead scope="col">Status</TableHead>
+            <TableHead scope="col">Team</TableHead>
+            <TableHead className="text-right" scope="col">
+              Budget
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
+          <TableSectionHeader>
+            <TableHead colSpan={4} scope="colgroup">
+              Active projects
+            </TableHead>
+          </TableSectionHeader>
           <TableRow>
-            <TableCell className="font-medium">
+            <TableHead className="font-medium text-foreground" scope="row">
               Website Redesign
-            </TableCell>
+            </TableHead>
             <TableCell>
               <Badge variant="outline">
                 <span
@@ -41,7 +49,9 @@ export default function TableDemo() {
             <TableCell className="text-right">$12,500</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className="font-medium">Mobile App</TableCell>
+            <TableHead className="font-medium text-foreground" scope="row">
+              Mobile App
+            </TableHead>
             <TableCell>
               <Badge variant="outline">
                 <span
@@ -55,7 +65,9 @@ export default function TableDemo() {
             <TableCell className="text-right">$8,750</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className="font-medium">API Integration</TableCell>
+            <TableHead className="font-medium text-foreground" scope="row">
+              API Integration
+            </TableHead>
             <TableCell>
               <Badge variant="outline">
                 <span
@@ -68,10 +80,15 @@ export default function TableDemo() {
             <TableCell>Backend Team</TableCell>
             <TableCell className="text-right">$5,200</TableCell>
           </TableRow>
+          <TableSectionHeader>
+            <TableHead colSpan={4} scope="colgroup">
+              Completed projects
+            </TableHead>
+          </TableSectionHeader>
           <TableRow>
-            <TableCell className="font-medium">
+            <TableHead className="font-medium text-foreground" scope="row">
               Database Migration
-            </TableCell>
+            </TableHead>
             <TableCell>
               <Badge variant="outline">
                 <span
@@ -85,7 +102,9 @@ export default function TableDemo() {
             <TableCell className="text-right">$3,800</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className="font-medium">User Dashboard</TableCell>
+            <TableHead className="font-medium text-foreground" scope="row">
+              User Dashboard
+            </TableHead>
             <TableCell>
               <Badge variant="outline">
                 <span
@@ -99,7 +118,9 @@ export default function TableDemo() {
             <TableCell className="text-right">$7,200</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className="font-medium">Security Audit</TableCell>
+            <TableHead className="font-medium text-foreground" scope="row">
+              Security Audit
+            </TableHead>
             <TableCell>
               <Badge variant="outline">
                 <span
@@ -121,5 +142,5 @@ export default function TableDemo() {
         </TableFooter>
       </Table>
     </div>
-  )
+  );
 }

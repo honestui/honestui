@@ -17,7 +17,7 @@ export default function SelectLg() {
   return (
     <div className="w-full max-w-64">
       <Select items={items}>
-        <SelectTrigger size="lg">
+        <SelectTrigger className="w-full" size="lg">
           <SelectValue />
         </SelectTrigger>
         <SelectPopup>

@@ -1,0 +1,105 @@
+---
+title: Input Group
+description: Add visible context or actions around an input without separating them from the control.
+---
+
+<ComponentPreview name="input-group-search" />
+
+## Overview
+
+Input Group places an input or textarea inside one shared border with supporting text, icons, or buttons. It is useful when the surrounding content changes how people interpret or operate the value, such as a fixed URL prefix, a search icon, or a clear button.
+
+The group is visual structure, not a replacement for a field. Give the control a visible label and use [Field](/docs/components/field) when you also need a description, validation message, required indicator, or shared disabled state.
+
+## Anatomy
+
+`InputGroup` is the outer container. Add one `InputGroupInput` or `InputGroupTextarea`, then place `InputGroupAddon` before or after it. An addon can contain `InputGroupText` for non-interactive context or `InputGroupButton` for an action.
+
+Inline addons sit at the start or end of a single-line input. Block addons sit above or below the control and let a textarea or input grow to its natural height.
+
+## Behavior
+
+Clicking a non-interactive addon focuses the input. Clicking a button preserves the button action. The border reflects focus, invalid, and disabled states from the control, so put `aria-invalid` and `disabled` on the input or textarea itself.
+
+Prefix and suffix text is not submitted with the input value. If the server needs the complete value, combine the visible context with the submitted value in your application logic.
+
+## Accessibility
+
+Keep a visible label outside the group. Decorative icons need `aria-hidden="true"`; icon-only buttons need an `aria-label` that names the action. Do not put required instructions or error messages only inside an addon, because addons are not automatically associated descriptions.
+
+Use native input types and attributes where possible. Keep the control usable at 200% zoom, and avoid adding so many inline actions that the text entry area becomes too narrow.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add input-group
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy the Input Group component into your project.</Step>
+
+<ComponentSource name="input-group" title="components/ui/input-group.tsx" />
+
+<Step>
+  Make sure the local Button, Input, Textarea, and utility imports match your
+  project.
+</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
+```
+
+```tsx
+<InputGroup>
+  <InputGroupAddon>
+    <InputGroupText>https://</InputGroupText>
+  </InputGroupAddon>
+  <InputGroupInput aria-label="Website address" name="website" />
+</InputGroup>
+```
+
+## Examples
+
+These examples focus on the relationships that are unique to Input Group: an action beside a control, contextual text that is not part of the value, and a block addon below a textarea.
+
+### Prefix and suffix
+
+<ComponentPreview name="input-group-url" />
+
+### Textarea with a block addon
+
+<ComponentPreview name="input-group-textarea" />
+
+## API reference
+
+- `InputGroup` accepts native `div` props and renders the shared container.
+- `InputGroupAddon` accepts native `div` props and `align`: `inline-start`, `inline-end`, `block-start`, or `block-end`.
+- `InputGroupButton` accepts Button props and the sizes `xs`, `sm`, `icon-xs`, or `icon-sm`. Its default `type` is `button`.
+- `InputGroupText` accepts native `span` props.
+- `InputGroupInput` and `InputGroupTextarea` accept their matching native control props.

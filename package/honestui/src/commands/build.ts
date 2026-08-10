@@ -6,6 +6,7 @@ import {
   createRegistryItem,
   readRegistryWithIncludes,
 } from "@/src/registry/loader"
+import { resolveRegistryOutputPath } from "@/src/registry/output-path"
 import { handleError } from "@/src/utils/handle-error"
 import { logger } from "@/src/utils/logger"
 import { spinner } from "@/src/utils/spinner"
@@ -70,9 +71,9 @@ export const build = new Command()
 
         // Write the registry item to the output directory.
         await fs.writeFile(
-          path.resolve(
+          resolveRegistryOutputPath(
             resolvePaths.outputDir,
-            `${registryItemForBuild.name}.json`
+            registryItemForBuild.name
           ),
           JSON.stringify(registryItemForBuild, null, 2)
         )

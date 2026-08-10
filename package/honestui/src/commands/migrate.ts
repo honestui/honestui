@@ -78,7 +78,7 @@ export const migrate = new Command()
         )
       }
 
-      let { errors, config } = await preFlightMigrate(options)
+      const { errors, config } = await preFlightMigrate(options)
 
       if (
         errors[ERRORS.MISSING_DIR_OR_EMPTY_PROJECT] ||

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 530 569">
   <style>
     .mark { fill: #111111; }
     @media (prefers-color-scheme: dark) {
@@ -6,8 +6,8 @@
     }
   </style>
   <g class="mark">
-    <rect x="7" y="6" width="17" height="52" rx="5" />
-    <rect x="40" y="6" width="17" height="52" rx="5" />
-    <rect x="26" y="24" width="12" height="16" rx="3.5" />
+    <path d="M0 0h362v115H112v453H0V0Z" />
+    <path d="M419 0h111v115H419V0Z" />
+    <path d="M419 181h111v388H168V451h251V181Z" />
   </g>
 </svg>

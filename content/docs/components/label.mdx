@@ -1,11 +1,9 @@
 ---
 title: Label
-description: Renders an accessible label associated with controls.
+description: Give a form control a visible name and a larger activation target.
 ---
 
-<ComponentPreview
-  name="input-with-label"
-/>
+<ComponentPreview name="input-with-label" />
 
 ## Overview
 
@@ -60,7 +58,7 @@ npx honestui@latest add label
 ## Usage
 
 ```tsx
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui/label";
 ```
 
 ```tsx
@@ -71,8 +69,16 @@ import { Label } from "@/components/ui/label"
 
 The example shows Label connected to a checkbox.
 
-For accessible labelling and validation, prefer using the `FieldLabel` component. See some [related examples](/ui/docs/components/field).
+For labels, descriptions, and validation that belong together, use `FieldLabel` inside `Field`. See the [Field examples](/docs/components/field).
 
 ### With Checkbox
 
 <ComponentPreview name="checkbox-demo" />
+
+## Decision guidance
+
+Use Label for a native control when you are not using Field. A visible label should name the value people need to enter, not repeat its type or placeholder. Put optional or required guidance next to the label only when it is consistent across the form.
+
+## API reference
+
+`Label` forwards Base UI Label props, including its `render` composition support. Associate it with a control by nesting the control or by matching `htmlFor` to the control's `id`. See the [Base UI Field Label API](https://base-ui.com/react/components/field#label).

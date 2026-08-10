@@ -80,8 +80,11 @@ export async function ensureRegistriesInConfig(
   }
 
   if (options.writeFile) {
-    const { resolvedPaths, ...configWithoutResolvedPaths } =
-      newConfigWithRegistries
+    const configWithoutResolvedPaths = Object.fromEntries(
+      Object.entries(newConfigWithRegistries).filter(
+        ([key]) => key !== "resolvedPaths"
+      )
+    )
     const configSpinner = spinner("Updating components.json.", {
       silent: options.silent,
     }).start()

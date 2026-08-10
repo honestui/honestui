@@ -139,6 +139,7 @@ export interface AreaChartProps<TData extends Record<string, unknown>> {
   onSelectionChange?: (key: string | null) => void; 
   isLoading?: boolean; 
   loadingPoints?: number; 
+  ariaLabel?: string;
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -1289,6 +1290,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
   onSelectionChange,
   isLoading = false,
   loadingPoints = LOADING_DEFAULT_POINTS,
+  ariaLabel,
   chartOptions,
   children,
 }: AreaChartProps<TData>) {
@@ -1299,7 +1301,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
   const mountRef = useRef<HTMLDivElement>(null);
   const echartsRef = useRef<EChartsInstance | null>(null);
 
-  const live = useRef<LiveState>({
+  const liveRef = useRef<LiveState>({
     resolved: null,
     hoveredKey: null,
     hasRevealed: false,
@@ -1327,11 +1329,11 @@ export function AreaChart<TData extends Record<string, unknown>>({
       enableHoverReveal,
     },
     repush: () => {},
-  }).current;
+  });
 
   const loadingData = useCallback(
-    () => (live.loadingRows ??= getLoadingData(loadingPoints)),
-    [live, loadingPoints],
+    () => (liveRef.current.loadingRows ??= getLoadingData(loadingPoints)),
+    [loadingPoints],
   );
   const shouldReduceMotion = useReducedMotion();
 
@@ -1356,6 +1358,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
   const brushHeight = brushSlot.height ?? 56;
 
   const seriesKeys = useMemo(() => areas.map((area) => area.dataKey), [areas]);
+  const defaultAriaLabel = `Area chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.`;
 
   const xCategoryKey = useMemo(() => {
     if (xAxisSlot.dataKey) return xAxisSlot.dataKey;
@@ -1382,51 +1385,53 @@ export function AreaChart<TData extends Record<string, unknown>>({
     [areas],
   );
 
-  live.handlers = {
-    onBrushChange: brushSlot.onChange,
-    onSelectionChange,
-    clickableKeys,
-    selectedDataKey,
-    brushFormatLabel: brushSlot.formatLabel,
-    seriesKeys,
-    enableHoverHighlight,
-    enableHoverReveal,
-  };
-  live.dataLength = data.length;
+  useEffect(() => {
+    liveRef.current.handlers = {
+      onBrushChange: brushSlot.onChange,
+      onSelectionChange,
+      clickableKeys,
+      selectedDataKey,
+      brushFormatLabel: brushSlot.formatLabel,
+      seriesKeys,
+      enableHoverHighlight,
+      enableHoverReveal,
+    };
+    liveRef.current.dataLength = data.length;
+  });
 
   const toggleSelection = useCallback(
     (key: string) => {
-      const next = live.handlers.selectedDataKey === key ? null : key;
+      const next = liveRef.current.handlers.selectedDataKey === key ? null : key;
 
-      if (next !== null && live.hoveredKey !== null) {
-        const previous = live.hoveredKey;
-        live.hoveredKey = null;
+      if (next !== null && liveRef.current.hoveredKey !== null) {
+        const previous = liveRef.current.hoveredKey;
+        liveRef.current.hoveredKey = null;
         setHoveredDataKey(null);
         echartsRef.current?.dispatchAction({
           type: "downplay",
-          seriesIndex: live.handlers.seriesKeys.indexOf(previous),
+          seriesIndex: liveRef.current.handlers.seriesKeys.indexOf(previous),
         });
       }
       setSelectedDataKey(next);
-      live.handlers.onSelectionChange?.(next);
+      liveRef.current.handlers.onSelectionChange?.(next);
     },
-    [live],
+    [],
   );
 
   const syncBrushOverlayNow = useCallback(() => {
     const chart = echartsRef.current;
     if (!chart) return;
 
-    const geom = live.brushGeom;
-    const tokens = live.resolved?.tokens;
+    const geom = liveRef.current.brushGeom;
+    const tokens = liveRef.current.resolved?.tokens;
     if (!geom || !tokens) {
-      syncBrushOverlay(chart, live, null);
+      syncBrushOverlay(chart, liveRef.current, null);
       return;
     }
 
-    const range = live.brushRange;
-    const categories = live.categories;
-    const format = live.handlers.brushFormatLabel;
+    const range = liveRef.current.brushRange;
+    const categories = liveRef.current.categories;
+    const format = liveRef.current.handlers.brushFormatLabel;
     const lastIndex = Math.max(categories.length - 1, 0);
     const startIndex = Math.round((range.start / 100) * lastIndex);
     const endIndex = Math.round((range.end / 100) * lastIndex);
@@ -1438,23 +1443,23 @@ export function AreaChart<TData extends Record<string, unknown>>({
           }
         : null;
 
-    syncBrushOverlay(chart, live, {
+    syncBrushOverlay(chart, liveRef.current, {
       range,
       geom,
       size: { width: chart.getWidth(), height: chart.getHeight() },
       tokens,
       labels,
-      showLabels: live.brushHover.inside,
-      hover: live.brushHover,
+      showLabels: liveRef.current.brushHover.inside,
+      hover: liveRef.current.brushHover,
     });
-  }, [live]);
+  }, []);
 
   const buildOption = useCallback((): EChartsOption => {
-    const resolved = live.resolved;
+    const resolved = liveRef.current.resolved;
     if (!resolved) return {};
 
     const categories = data.map((row) => String(row[xCategoryKey]));
-    live.categories = categories;
+    liveRef.current.categories = categories;
 
     const revealSink: Record<string, unknown[]> = {};
 
@@ -1479,22 +1484,22 @@ export function AreaChart<TData extends Record<string, unknown>>({
       brushHeight,
       enableHoverHighlight,
       enableHoverReveal,
-      revealIndex: live.revealIndex,
+      revealIndex: liveRef.current.revealIndex,
       resolved,
       rendererSize: {
         width: echartsRef.current?.getWidth() ?? mountRef.current?.clientWidth ?? 0,
         height: echartsRef.current?.getHeight() ?? mountRef.current?.clientHeight ?? 0,
       },
       categories,
-      brushRange: live.brushRange,
-      getHoveredKey: () => live.hoveredKey,
+      brushRange: liveRef.current.brushRange,
+      getHoveredKey: () => liveRef.current.hoveredKey,
       revealSink,
     };
 
-    live.plottedTops = computePlottedTops(ctx);
+    liveRef.current.plottedTops = computePlottedTops(ctx);
 
     const { grid, brushBottom } = buildChartLayout(ctx);
-    live.brushGeom = showBrush ? { bottom: brushBottom, height: brushHeight } : null;
+    liveRef.current.brushGeom = showBrush ? { bottom: brushBottom, height: brushHeight } : null;
 
     const { xAxis, yAxis } = buildMainAxes(ctx);
 
@@ -1504,9 +1509,9 @@ export function AreaChart<TData extends Record<string, unknown>>({
 
     const series = [...buildAreaSeries(ctx), ...(brush?.miniSeries ?? [])];
 
-    if (enableHoverReveal) live.revealValues = revealSink;
+    if (enableHoverReveal) liveRef.current.revealValues = revealSink;
 
-    live.seriesKeyByIndex = series.map((s) => {
+    liveRef.current.seriesKeyByIndex = series.map((s) => {
       const id = String(s.id ?? "");
       return id && !id.startsWith("__") ? id : undefined;
     });
@@ -1520,7 +1525,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
       if (enableHoverReveal) ids.push(`${REVEAL_PREFIX}${area.dataKey}`);
       if (ids.length) companionIdsByKey.set(area.dataKey, ids);
     }
-    live.companionIdsByKey = companionIdsByKey;
+    liveRef.current.companionIdsByKey = companionIdsByKey;
 
     return {
       animation: false,
@@ -1532,7 +1537,6 @@ export function AreaChart<TData extends Record<string, unknown>>({
       series,
     };
   }, [
-    live,
     data,
     config,
     areas,
@@ -1557,6 +1561,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
   ]);
 
   useEffect(() => {
+    const live = liveRef.current;
     const mount = mountRef.current;
     const container = containerRef.current;
     if (!mount || !container) return;
@@ -1571,12 +1576,12 @@ export function AreaChart<TData extends Record<string, unknown>>({
       }
       chart.resize();
 
-      live.repush();
+      liveRef.current.repush();
     });
     resizeObserver.observe(mount);
 
     const themeObserver = new MutationObserver(() => {
-      live.repush();
+      liveRef.current.repush();
     });
     themeObserver.observe(document.documentElement, {
       attributes: true,
@@ -1584,7 +1589,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
     });
 
     chart.on("click", (params) => {
-      const { clickableKeys: clickable, seriesKeys: keys } = live.handlers;
+      const { clickableKeys: clickable, seriesKeys: keys } = liveRef.current.handlers;
       const p = params as {
         seriesId?: string;
         seriesIndex?: number;
@@ -1593,12 +1598,12 @@ export function AreaChart<TData extends Record<string, unknown>>({
 
       let id =
         p.seriesId ??
-        (typeof p.seriesIndex === "number" ? live.seriesKeyByIndex[p.seriesIndex] : undefined);
+        (typeof p.seriesIndex === "number" ? liveRef.current.seriesKeyByIndex[p.seriesIndex] : undefined);
 
       if (typeof p.event?.offsetX === "number" && typeof p.event?.offsetY === "number") {
         const resolved = resolveAreaAtPixel(
           chart,
-          live.plottedTops,
+          liveRef.current.plottedTops,
           keys,
           p.event.offsetX,
           p.event.offsetY,
@@ -1609,25 +1614,25 @@ export function AreaChart<TData extends Record<string, unknown>>({
     });
 
     const applyHoverKey = (key: string | null) => {
-      if (live.hoveredKey === key) return;
-      const previous = live.hoveredKey;
-      live.hoveredKey = key;
+      if (liveRef.current.hoveredKey === key) return;
+      const previous = liveRef.current.hoveredKey;
+      liveRef.current.hoveredKey = key;
       setHoveredDataKey(key);
 
       if (previous) {
         chart.dispatchAction({ type: "downplay", seriesId: previous });
-        for (const id of live.companionIdsByKey.get(previous) ?? [])
+        for (const id of liveRef.current.companionIdsByKey.get(previous) ?? [])
           chart.dispatchAction({ type: "downplay", seriesId: id });
       }
       if (key) {
         chart.dispatchAction({ type: "highlight", seriesId: key });
-        for (const id of live.companionIdsByKey.get(key) ?? [])
+        for (const id of liveRef.current.companionIdsByKey.get(key) ?? [])
           chart.dispatchAction({ type: "highlight", seriesId: id });
       }
     };
 
     const pushReveal = (idx: number | null) => {
-      const keys = live.handlers.seriesKeys;
+      const keys = liveRef.current.handlers.seriesKeys;
       const on = idx !== null;
       chart.setOption(
         {
@@ -1635,15 +1640,15 @@ export function AreaChart<TData extends Record<string, unknown>>({
             {
               id: key,
               data: on
-                ? sliceToNull(live.revealValues[key] ?? [], idx)
-                : (live.revealValues[key] ?? []),
+                ? sliceToNull(liveRef.current.revealValues[key] ?? [], idx)
+                : (liveRef.current.revealValues[key] ?? []),
             },
             {
               id: `${REVEAL_PREFIX}${key}`,
 
               data: on
-                ? sliceFrom(live.revealValues[key] ?? [], idx)
-                : (live.revealValues[key] ?? []),
+                ? sliceFrom(liveRef.current.revealValues[key] ?? [], idx)
+                : (liveRef.current.revealValues[key] ?? []),
               lineStyle: { opacity: on ? 0.3 : 0 },
             },
           ]),
@@ -1661,7 +1666,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
       }
     };
     const applyReveal = (event: { offsetX?: number; offsetY?: number }) => {
-      const len = live.dataLength;
+      const len = liveRef.current.dataLength;
       if (len < 1) return;
       const x = event.offsetX ?? -1;
       const y = event.offsetY ?? -1;
@@ -1671,56 +1676,56 @@ export function AreaChart<TData extends Record<string, unknown>>({
       }
       const raw = chart.convertFromPixel({ gridIndex: 0 }, [x, y])[0];
       const idx = Math.max(0, Math.min(len - 1, Math.round(raw)));
-      if (idx === live.revealIndex) return;
-      live.revealIndex = idx;
+      if (idx === liveRef.current.revealIndex) return;
+      liveRef.current.revealIndex = idx;
       pushReveal(idx);
     };
     const clearReveal = () => {
-      if (live.revealIndex === null) return;
-      live.revealIndex = null;
+      if (liveRef.current.revealIndex === null) return;
+      liveRef.current.revealIndex = null;
       pushReveal(null);
     };
 
     const zrHover = chart.getZr();
     const onZrHoverMove = (event: { offsetX?: number; offsetY?: number }) => {
 
-      if (live.handlers.enableHoverReveal) {
+      if (liveRef.current.handlers.enableHoverReveal) {
         applyReveal(event);
         return;
       }
-      if (!live.handlers.enableHoverHighlight) return;
+      if (!liveRef.current.handlers.enableHoverHighlight) return;
 
-      if (live.handlers.selectedDataKey !== null) return;
+      if (liveRef.current.handlers.selectedDataKey !== null) return;
       applyHoverKey(
         resolveAreaAtPixel(
           chart,
-          live.plottedTops,
-          live.handlers.seriesKeys,
+          liveRef.current.plottedTops,
+          liveRef.current.handlers.seriesKeys,
           event.offsetX ?? -1,
           event.offsetY ?? -1,
         ),
       );
     };
     const onZrHoverOut = () => {
-      if (live.handlers.enableHoverReveal) clearReveal();
-      else if (live.handlers.enableHoverHighlight) applyHoverKey(null);
+      if (liveRef.current.handlers.enableHoverReveal) clearReveal();
+      else if (liveRef.current.handlers.enableHoverHighlight) applyHoverKey(null);
     };
     zrHover.on("mousemove", onZrHoverMove);
     zrHover.on("globalout", onZrHoverOut);
 
     chart.on("mouseover", (params) => {
-      const { enableHoverHighlight: hoverOn, enableHoverReveal: revealOn } = live.handlers;
+      const { enableHoverHighlight: hoverOn, enableHoverReveal: revealOn } = liveRef.current.handlers;
       if (!hoverOn || revealOn) return;
 
-      if (live.handlers.selectedDataKey !== null) return;
+      if (liveRef.current.handlers.selectedDataKey !== null) return;
       const p = params as { seriesIndex?: number; componentType?: string };
       if (p.componentType !== "series" || typeof p.seriesIndex !== "number") return;
-      const key = live.seriesKeyByIndex[p.seriesIndex];
+      const key = liveRef.current.seriesKeyByIndex[p.seriesIndex];
       if (!key || key.startsWith("__")) return;
-      if (key !== live.hoveredKey) {
+      if (key !== liveRef.current.hoveredKey) {
         chart.dispatchAction({ type: "downplay", seriesIndex: p.seriesIndex });
-        if (live.hoveredKey) {
-          chart.dispatchAction({ type: "highlight", seriesId: live.hoveredKey });
+        if (liveRef.current.hoveredKey) {
+          chart.dispatchAction({ type: "highlight", seriesId: liveRef.current.hoveredKey });
         }
       }
     });
@@ -1730,12 +1735,12 @@ export function AreaChart<TData extends Record<string, unknown>>({
       const zoom = option.dataZoom?.[0];
       if (!zoom) return;
 
-      live.brushRange = { start: zoom.start ?? 0, end: zoom.end ?? 100 };
+      liveRef.current.brushRange = { start: zoom.start ?? 0, end: zoom.end ?? 100 };
       syncBrushOverlayNow();
 
-      const { onBrushChange: onChange } = live.handlers;
+      const { onBrushChange: onChange } = liveRef.current.handlers;
       if (!onChange) return;
-      const len = live.dataLength;
+      const len = liveRef.current.dataLength;
       const startIndex = Math.round(((zoom.start ?? 0) / 100) * (len - 1));
       const endIndex = Math.round(((zoom.end ?? 100) / 100) * (len - 1));
       onChange({ startIndex, endIndex });
@@ -1743,15 +1748,15 @@ export function AreaChart<TData extends Record<string, unknown>>({
 
     const zr = chart.getZr();
     const applyHover = (next: { inside: boolean; left: boolean; right: boolean }) => {
-      const prev = live.brushHover;
+      const prev = liveRef.current.brushHover;
       if (prev.inside === next.inside && prev.left === next.left && prev.right === next.right) {
         return;
       }
-      live.brushHover = next;
+      liveRef.current.brushHover = next;
       syncBrushOverlayNow();
     };
     const onZrMove = (event: { offsetX?: number; offsetY?: number }) => {
-      const geom = live.brushGeom;
+      const geom = liveRef.current.brushGeom;
       if (!geom) return;
       const x = event.offsetX ?? -1;
       const y = event.offsetY ?? -1;
@@ -1759,7 +1764,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
       const inside = y >= top - 4 && y <= top + geom.height + 4;
       const trackLeft = 8;
       const trackWidth = Math.max(chart.getWidth() - 16, 1);
-      const { start, end } = live.brushRange;
+      const { start, end } = liveRef.current.brushRange;
       const selectionLeft = trackLeft + (trackWidth * start) / 100;
       const selectionRight = trackLeft + (trackWidth * end) / 100;
       applyHover({
@@ -1787,14 +1792,14 @@ export function AreaChart<TData extends Record<string, unknown>>({
       live.hasRevealed = false;
     };
 
-  }, []);
+  }, [syncBrushOverlayNow, toggleSelection]);
 
   useEffect(() => {
     const chart = echartsRef.current;
     const container = containerRef.current;
     if (!chart || !container) return;
 
-    live.resolved = resolveColors(container, config, seriesKeys);
+    liveRef.current.resolved = resolveColors(container, config, seriesKeys);
 
     const push = (withEntrance: boolean) => {
       const option = buildOption();
@@ -1810,20 +1815,19 @@ export function AreaChart<TData extends Record<string, unknown>>({
       syncBrushOverlayNow();
     };
 
-    if (isLoading) live.hasRevealed = false;
-    const shouldReveal = !live.hasRevealed && !isLoading;
-    if (shouldReveal) live.hasRevealed = true;
+    if (isLoading) liveRef.current.hasRevealed = false;
+    const shouldReveal = !liveRef.current.hasRevealed && !isLoading;
+    if (shouldReveal) liveRef.current.hasRevealed = true;
     const revealEnabled =
       animation && shouldReveal && effectiveAnimation !== "none" && !shouldReduceMotion;
-    if (revealEnabled) live.revealEndsAt = performance.now() + REVEAL_DURATION;
+    if (revealEnabled) liveRef.current.revealEndsAt = performance.now() + REVEAL_DURATION;
     push(revealEnabled);
 
-    live.repush = () => {
-      live.resolved = resolveColors(container, config, seriesKeys);
+    liveRef.current.repush = () => {
+      liveRef.current.resolved = resolveColors(container, config, seriesKeys);
       push(false);
     };
   }, [
-    live,
     buildOption,
     chartOptions,
     isLoading,
@@ -1858,7 +1862,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
       raf = requestAnimationFrame(tick);
     };
 
-    const delay = Math.max(0, live.revealEndsAt - performance.now());
+    const delay = Math.max(0, liveRef.current.revealEndsAt - performance.now());
     if (delay > 0) delayTimer = setTimeout(begin, delay + 50);
     else begin();
 
@@ -1866,7 +1870,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
       if (delayTimer !== undefined) clearTimeout(delayTimer);
       cancelAnimationFrame(raf);
     };
-  }, [live, areas, hasSelection, isLoading]);
+  }, [areas, hasSelection, isLoading]);
 
   useEffect(() => {
     const chart = echartsRef.current;
@@ -1878,10 +1882,10 @@ export function AreaChart<TData extends Record<string, unknown>>({
     const tick = (now: number) => {
       const phase = ((((now - start) / LOADING_ANIMATION_DURATION) % 1) + 1) % 1;
 
-      if (phase < lastPhase) live.loadingRows = getLoadingData(loadingPoints);
+      if (phase < lastPhase) liveRef.current.loadingRows = getLoadingData(loadingPoints);
       lastPhase = phase;
 
-      const foreground = live.resolved?.tokens.foreground ?? "rgba(120, 120, 120, 1)";
+      const foreground = liveRef.current.resolved?.tokens.foreground ?? "rgba(120, 120, 120, 1)";
 
       const w = chart.getWidth();
       const h = chart.getHeight();
@@ -1918,7 +1922,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [live, isLoading, loadingPoints, loadingData]);
+  }, [isLoading, loadingPoints, loadingData]);
 
   const legendStyle: CSSProperties = {
     position: "absolute",
@@ -1937,10 +1941,15 @@ export function AreaChart<TData extends Record<string, unknown>>({
       ref={containerRef}
       data-chart={chartId}
       className={`relative flex flex-col text-xs ${className ?? ""}`}
+      aria-busy={isLoading}
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      <div className="relative min-h-0 w-full flex-1">
+      <div
+        className="relative min-h-0 w-full flex-1"
+        role="img"
+        aria-label={ariaLabel ?? defaultAriaLabel}
+      >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
 
@@ -1962,12 +1971,17 @@ export function AreaChart<TData extends Record<string, unknown>>({
       {isLoading && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="text-primary bg-background flex items-center justify-center gap-2 rounded-md border px-2 py-0.5 text-sm"
           >
-            <div className="border-border border-t-primary h-3 w-3 animate-spin rounded-full border" />
+            <div
+              aria-hidden
+              className={`border-border border-t-primary h-3 w-3 rounded-full border ${shouldReduceMotion ? "" : "animate-spin"}`}
+            />
             <span>Loading</span>
           </motion.div>
         </div>

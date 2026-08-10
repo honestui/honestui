@@ -51,7 +51,7 @@ export function ComponentPreviewTabs({
         <Tabs defaultValue="preview" className="relative w-full">
           <div
             className={cn(
-              "flex flex-col rounded-[8px] bg-[var(--rs-color-background-neutral-primary)] p-1",
+              "flex flex-col rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1",
               containerClassName,
             )}
           >
@@ -92,31 +92,28 @@ export function ComponentPreviewTabs({
               </div>
             </div>
 
-            <div className="bg-background overflow-hidden rounded-[5px] border-[0.5px] border-[var(--rs-color-border-base-primary)]">
+            <div className="bg-background overflow-hidden rounded-[5px] border-[0.5px] border-[var(--hui-color-border-base-primary)]">
               <TabsPanel keepMounted={playground} value="preview">
                 <div
                   className={cn(
                     playground
                       ? "w-full"
-                      : "flex h-64 w-full justify-center overflow-y-auto data-[align=center]:items-center data-[align=end]:items-end data-[align=start]:items-start sm:h-90",
+                      : "no-scrollbar h-80 w-full overflow-auto sm:h-90",
                     previewClassName,
                   )}
                   data-align={align}
                 >
                   <div
                     className={cn(
-                      "preview no-scrollbar flex w-full justify-center [&>svg]:select-none",
+                      "preview w-full [&>svg]:select-none",
                       !playground && "h-full",
-                      !playground && align === "center" && "items-center",
-                      !playground && align === "start" && "items-start",
-                      !playground && align === "end" && "items-end",
                     )}
                     data-slot="preview"
                   >
                     <LazyMount
                       className={cn(
-                        "flex w-full justify-center",
-                        !playground && "h-full",
+                        "grid size-full justify-items-center",
+                        !playground && "p-4 sm:p-6",
                         !playground && align === "center" && "items-center",
                         !playground && align === "start" && "items-start",
                         !playground && align === "end" && "items-end",
@@ -124,7 +121,7 @@ export function ComponentPreviewTabs({
                       fallback={
                         <div
                           className={cn(
-                            "flex w-full items-center justify-center",
+                            "flex min-h-full w-full items-center justify-center",
                             playground ? "h-64 sm:h-90" : "h-full",
                           )}
                         />

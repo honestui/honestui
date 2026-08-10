@@ -1,5 +1,6 @@
 ---
 title: Accessibility
+metaTitle: Icon and asset accessibility
 description: Use Honest UI icons, logos, and vectors without hiding meaning from assistive technology.
 ---
 
@@ -49,7 +50,7 @@ import { Trash2 } from "honestui/icons";
 </button>
 ```
 
-Labels should describe the action and, when useful, its target. Icon-only buttons and links also need a visible focus indicator and a touch target of at least `44 × 44` pixels.
+Labels should describe the action and, when useful, its target. Icon-only buttons and links also need a visible focus indicator. Make the target at least `24 × 24` CSS pixels or satisfy a defined WCAG 2.2 exception; aim for `44 × 44` CSS pixels for important or touch-heavy controls.
 
 ## Meaningful status icons
 
@@ -89,7 +90,7 @@ Complex illustrations may need a longer description in surrounding content rathe
 
 ## Color and contrast
 
-Icons that carry meaning should meet a contrast ratio of at least `3:1` against adjacent colors. Check default, hover, focus, active, and disabled states in both light and dark themes.
+Icons that carry meaning should meet a contrast ratio of at least `3:1` against adjacent colors when WCAG non-text contrast applies. Check default, hover, focus, and active states in both light and dark themes. Disabled controls are exempt from that criterion, but their unavailable state and nearby explanation should still be understandable.
 
 Logos and vectors can contain fixed colors. Test them against every intended background, and do not alter a brand mark in a way that makes it unrecognizable. Decorative artwork can use quieter colors, but it should not reduce the readability of nearby content.
 

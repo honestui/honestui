@@ -1,13 +1,19 @@
 ---
 title: Installation
-description: Add animated Honest UI components to your React project.
+metaTitle: Install animated components
+description: Copy an animated component into your project and verify its fallback behavior.
 ---
 
-Animated components are installed into your project with the Honest UI CLI. The CLI copies the component and its supporting motion utilities, then adds external dependencies such as Motion when required.
+Animated components use the same CLI as Honest UI components. The CLI copies the selected source and supporting utilities into your project, then installs dependencies such as Motion when required.
 
-## Prerequisites
+## Requirements
 
-Set up Honest UI first if your project does not already have a `components.json` file.
+- Node.js 20.18.1 or later.
+- React 19.
+- Tailwind CSS v4.
+- An initialized Honest UI project.
+
+If the project does not have `components.json`, initialize it first:
 
 ```bash
 npx honestui@latest init
@@ -21,18 +27,29 @@ Pass the component name to the CLI:
 npx honestui@latest add text-reveal
 ```
 
-The installed source lives under `components/animated` and can be changed directly. Components that need shared easing or hover-capability helpers also install those files into your configured `lib` or `hooks` aliases.
+The default animated-component alias writes source under `components/animated`. Supporting easing functions or input-capability helpers use the `lib` or `hooks` aliases in `components.json`.
 
-## Motion dependency
+Review the reported files and dependencies before committing. You can edit the installed source directly.
 
-Most components use Motion for React. The CLI adds it automatically when a selected component needs it. For a manual installation:
+## Dependencies
+
+Most animated components use Motion for React. The CLI installs it when the selected registry item requires it. For manual installation:
 
 ```bash
 npm install motion
 ```
 
-Icon-bearing components also install `lucide-react` when required.
+Components that render icons may also require the icon dependency listed in their manual installation instructions.
 
-## Reduced motion
+## Verify the result
 
-No additional setup is required. Components built with Motion read the operating system's reduced-motion preference and remove or simplify non-essential movement. If you add custom effects, preserve that behavior in your changes.
+After adding a component:
+
+1. Render its smallest usage example.
+2. Confirm the content is understandable before, during, and after the transition.
+3. Test the interaction with a keyboard when it is interactive.
+4. Enable reduced motion in the operating system and confirm the documented fallback.
+5. Test touch behavior for pointer-responsive components.
+6. Confirm that disabling animation does not remove content, status, or an action.
+
+If you change an effect, preserve or improve the fallback described on that component's page.

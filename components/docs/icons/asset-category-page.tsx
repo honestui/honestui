@@ -5,6 +5,7 @@ import {
 import { CommandBlock } from "@/components/docs/mdx/components/command-block";
 import type { AssetCollection } from "@/globals/constants/icon-categories";
 import { getAssetCategory } from "@/lib/icon-library";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 const collectionLabels: Record<AssetCollection, string> = {
@@ -46,7 +47,7 @@ export function AssetCategoryPage({
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-12 pb-32">
+    <div className="mx-auto w-full max-w-6xl px-4 py-12 pb-32">
       <div>
         <p className="text-muted-foreground mb-2 text-sm font-medium">
           {collectionLabels[collection]}
@@ -55,16 +56,17 @@ export function AssetCategoryPage({
           {category.name} {collectionLabels[collection]}
         </h1>
         <p className="text-muted-foreground mt-1 text-[15px]">
-          Browse every {category.name.toLowerCase()} {collection.slice(0, -1)}, then copy its React
-          import or usage code.
+          Browse {items.length.toLocaleString()} assets in the {category.name} collection. Select
+          one to copy its import or React usage.
         </p>
       </div>
 
       <section className="mt-10 max-w-2xl">
-        <h2 className="text-lg font-medium">Installation</h2>
+        <h2 className="text-lg font-medium">Install once</h2>
         <p className="text-muted-foreground mt-1 text-sm">
-          Install the package once, then import any {collection.slice(0, -1)} by name from{" "}
-          <code>{importPath}</code>.
+          Install `honestui`, then import any {collection.slice(0, -1)} by name from{" "}
+          <code>{importPath}</code>. See the <Link href="/docs/icons/installation">installation guide</Link>{" "}
+          for requirements and entry points.
         </p>
         <CommandBlock commands={["honestui"]} />
       </section>
@@ -75,6 +77,6 @@ export function AssetCategoryPage({
         collection={collection}
         importPath={importPath}
       />
-    </main>
+    </div>
   );
 }

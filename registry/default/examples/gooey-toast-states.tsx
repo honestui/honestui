@@ -12,8 +12,8 @@ export default function GooeyToastStates() {
           toastManager.add({
             variant: "gooey",
             type: "success",
-            title: "Success!",
-            description: "Your changes have been saved.",
+            title: "Profile saved",
+            description: "Your updated name is now visible to workspace members.",
           })
         }}
       >
@@ -25,8 +25,8 @@ export default function GooeyToastStates() {
           toastManager.add({
             variant: "gooey",
             type: "error",
-            title: "Error",
-            description: "Something went wrong. Please try again.",
+            title: "Upload failed",
+            description: "The file is larger than 10 MB. Choose a smaller file and try again.",
           })
         }}
       >
@@ -38,8 +38,8 @@ export default function GooeyToastStates() {
           toastManager.add({
             variant: "gooey",
             type: "warning",
-            title: "Warning",
-            description: "This action cannot be undone.",
+            title: "Storage nearly full",
+            description: "2 GB remains in this workspace.",
           })
         }}
       >
@@ -51,8 +51,8 @@ export default function GooeyToastStates() {
           toastManager.add({
             variant: "gooey",
             type: "info",
-            title: "Did you know?",
-            description: "You can customize toast animations.",
+            title: "Keyboard shortcut available",
+            description: "Press Command and K to open search.",
           })
         }}
       >
@@ -64,8 +64,8 @@ export default function GooeyToastStates() {
           toastManager.add({
             variant: "gooey",
             type: "action",
-            title: "Action Required",
-            description: "Please review your settings.",
+            title: "Review sign-in methods",
+            description: "A new sign-in method was added to this account.",
           })
         }}
       >

@@ -1,6 +1,6 @@
 ---
 title: Group
-description: A component for visually grouping a series of controls.
+description: Join related controls into one visually connected set.
 ---
 
 <ComponentPreview name="group-demo" />
@@ -64,8 +64,8 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Button } from "@/components/ui/button"
-import { Group, GroupItem, GroupSeparator } from "@/components/ui/group"
+import { Button } from "@/components/ui/button";
+import { Group, GroupItem, GroupSeparator } from "@/components/ui/group";
 ```
 
 ```tsx
@@ -83,3 +83,11 @@ The example shows an input attached to an action.
 ### With Input
 
 <ComponentPreview name="group-with-input" />
+
+## Decision guidance
+
+Group joins related controls into one visual unit. It does not create a form label, selection model, or keyboard behavior. Use Toolbar for a command set, Fieldset for one form question, and Input Group when context belongs inside a control's border.
+
+## API reference
+
+`Group` accepts native `div` props and layout options exposed by the component. `GroupItem` accepts native element props for a child region, and `GroupSeparator` renders the visual boundary. Interactive children keep their own semantics and focus behavior.

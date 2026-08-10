@@ -10,6 +10,7 @@ export const RegistryErrorCode = {
   UNAUTHORIZED: "UNAUTHORIZED",
   FORBIDDEN: "FORBIDDEN",
   FETCH_ERROR: "FETCH_ERROR",
+  TIMEOUT: "TIMEOUT",
 
   // Configuration errors
   NOT_CONFIGURED: "NOT_CONFIGURED",
@@ -187,6 +188,21 @@ export class RegistryFetchError extends RegistryError {
       suggestion,
     })
     this.name = "RegistryFetchError"
+  }
+}
+
+export class RegistryTimeoutError extends RegistryError {
+  constructor(
+    public readonly url: string,
+    public readonly timeoutMs: number
+  ) {
+    super(`Registry request timed out after ${timeoutMs}ms: ${url}`, {
+      code: RegistryErrorCode.TIMEOUT,
+      context: { timeoutMs, url },
+      suggestion:
+        "Check the registry URL and network connection, then try again.",
+    })
+    this.name = "RegistryTimeoutError"
   }
 }
 

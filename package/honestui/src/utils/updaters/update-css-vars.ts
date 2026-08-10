@@ -48,7 +48,7 @@ export async function updateCssVars(
     }
   ).start()
   const raw = await fs.readFile(cssFilepath, "utf8")
-  let output = await transformCssVars(raw, cssVars ?? {}, config, {
+  const output = await transformCssVars(raw, cssVars ?? {}, config, {
     cleanupDefaultNextStyles: options.cleanupDefaultNextStyles,
     tailwindVersion: options.tailwindVersion,
     tailwindConfig: options.tailwindConfig,
@@ -286,7 +286,11 @@ function addOrUpdateVars(
         node.type === "decl" && node.prop === prop
     )
 
-    existingDecl ? existingDecl.replaceWith(newDecl) : ruleNode?.append(newDecl)
+    if (existingDecl) {
+      existingDecl.replaceWith(newDecl)
+    } else {
+      ruleNode?.append(newDecl)
+    }
   })
 }
 
@@ -548,54 +552,6 @@ function addCustomVariant({ params }: { params: string }) {
         }
 
         root.insertBefore(variantNode, postcss.comment({ text: "---break---" }))
-      }
-    },
-  }
-}
-
-function addCustomImport({ params }: { params: string }) {
-  return {
-    postcssPlugin: "add-custom-import",
-    Once(root: Root) {
-      const importNodes = root.nodes.filter(
-        (node): node is AtRule =>
-          node.type === "atrule" && node.name === "import"
-      )
-
-      // Find custom variant node (to ensure we insert before it).
-      const customVariantNode = root.nodes.find(
-        (node): node is AtRule =>
-          node.type === "atrule" && node.name === "custom-variant"
-      )
-
-      // Check if our specific import already exists.
-      const hasImport = importNodes.some(
-        (node) => node.params.replace(/["']/g, "") === params
-      )
-
-      if (!hasImport) {
-        const importNode = postcss.atRule({
-          name: "import",
-          params: `"${params}"`,
-          raws: { semicolon: true, before: "\n" },
-        })
-
-        if (importNodes.length > 0) {
-          // If there are existing imports, add after the last import.
-          const lastImport = importNodes[importNodes.length - 1]
-          root.insertAfter(lastImport, importNode)
-        } else if (customVariantNode) {
-          // If no imports but has custom-variant, insert before it.
-          root.insertBefore(customVariantNode, importNode)
-          root.insertBefore(
-            customVariantNode,
-            postcss.comment({ text: "---break---" })
-          )
-        } else {
-          // If no imports and no custom-variant, insert at the start.
-          root.prepend(importNode)
-          root.insertAfter(importNode, postcss.comment({ text: "---break---" }))
-        }
       }
     },
   }

@@ -1,26 +1,29 @@
 ---
 title: Shaders
-description: WebGL-powered React effects for expressive backgrounds, imagery, and atmospheric product moments.
+description: Add optional WebGL backgrounds and media effects through a dedicated package entry point.
 image: /og/og-image.png
 ---
 
-Shaders bring GPU-rendered depth and motion to the places where a flat surface is not enough. Each effect is available from the dedicated `honestui/shaders` package entry point, with focused React controls for color, movement, distortion, and pointer response.
+Honest UI shaders render animated or pointer-responsive effects with WebGL. Import them from `honestui/shaders` and treat them as progressive enhancement around normal HTML content.
 
-## Why shaders?
+## Choose an effect
 
-Use shaders to create a strong visual signal without shipping video or a large sequence of images. Honest UI shaders are:
+- **Gradient Blinds** divides a multicolor gradient into directional bands with optional pointer lighting and distortion.
+- **Grainient** blends three colors into an organic field with controllable warp, tone, and grain.
+- **Light Rays** creates a directional wash that can originate from an edge or corner.
 
-- **Dedicated.** Import every effect from `honestui/shaders` without mixing shaders into the UI component API.
-- **Responsive.** Every effect tracks its container instead of assuming a fixed viewport.
-- **Composable.** Place content above the effect or use it as a self-contained media surface.
-- **Resource-aware.** Effects clean up their WebGL resources and pause work when the implementation supports it.
+Use one effect to support a specific product or brand moment. A CSS color, gradient, image, or no effect at all should remain an acceptable fallback.
 
-## Choose the right effect
+## Keep essential content outside WebGL
 
-Use Gradient Blinds, Grainient, or Light Rays for atmospheric backgrounds. Each one works from sensible defaults and can be customized without supplying external assets.
+Render headings, instructions, controls, and status in normal HTML above or beside the shader. The effect must not be the only source of text, state, contrast, or an action.
 
-Treat every shader as progressive enhancement. Keep essential text and actions in normal HTML, maintain readable contrast, and provide a static or motion-reduced presentation when the effect is not available.
+Test foreground contrast across the full animation rather than at one frame. Provide a static presentation for reduced motion and when WebGL is unavailable.
+
+## Account for rendering cost
+
+Each shader creates a canvas and a render loop while animation is active. Avoid mounting several large shaders on one view, pause effects that are not visible, and measure representative devices before using a full-viewport effect.
 
 ## Get started
 
-Follow [Installation](/docs/shaders/installation), then choose an effect from the sidebar. Every component page includes a live preview, CLI command, usage example, and API reference.
+Follow [Installation](/docs/shaders/installation), then choose an effect and review its motion-control props before using it with content.

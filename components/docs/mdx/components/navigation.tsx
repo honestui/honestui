@@ -15,11 +15,11 @@ export const MDXNavigation = ({ type, title, url, description }: MDXNavigationPr
     <Link href={url}>
       <div
         className={cn(
-          "group text-muted-foreground flex cursor-pointer rounded-md bg-[var(--rs-color-background-neutral-primary)] p-[2px]",
+          "group text-muted-foreground flex cursor-pointer rounded-md bg-[var(--hui-color-background-neutral-primary)] p-[2px]",
           type === "previous" ? "flex-row-reverse" : "flex-row",
         )}
       >
-        <div className="bg-background flex flex-1 flex-col gap-0.5 rounded-md border-[0.5px] border-[var(--rs-color-border-base-primary)] p-3 duration-200 group-hover:border-[var(--rs-color-border-base-secondary)]">
+        <div className="bg-background flex flex-1 flex-col gap-0.5 rounded-md border-[0.5px] border-[var(--hui-color-border-base-primary)] p-3 duration-200 group-hover:border-[var(--hui-color-border-base-secondary)]">
           <span className="group-hover:text-primary line-clamp-1 text-[13px] capitalize duration-200">
             {title}
           </span>

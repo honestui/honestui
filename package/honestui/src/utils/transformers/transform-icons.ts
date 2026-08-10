@@ -13,7 +13,7 @@ export const transformIcons: Transformer = async ({ sourceFile, config }) => {
 
   const targetLibrary = iconLibrary as IconLibraryName
   const libraryConfig = iconLibraries[targetLibrary]
-  let transformedIcons: string[] = []
+  const transformedIcons: string[] = []
 
   for (const element of sourceFile.getDescendantsOfKind(
     SyntaxKind.JsxSelfClosingElement

@@ -5,7 +5,7 @@ import { source } from "@/lib/source"
 const showcaseItems = [
   {
     name: "Components",
-    description: "Copy accessible React components into your own codebase.",
+    description: "Copy React component source into your project and adapt it to your interface.",
     url: "/docs/component-guide",
   },
   {
@@ -20,7 +20,7 @@ const showcaseItems = [
   },
   {
     name: "Animated",
-    description: "Add purposeful, reduced-motion-aware interactions to product interfaces.",
+    description: "Copy motion components, then verify reduced-motion and static fallback behavior.",
     url: "/docs/animated",
   },
 ]

@@ -1,6 +1,6 @@
 ---
 title: Bar Chart
-description: Our composable bar chart with polished fills, layouts, and interactions.
+description: Compare values across categories with grouped, stacked, or horizontal bars.
 image: /og/bar-chart.png
 links:
   github: https://github.com/honestui/honestui/blob/main/registry/default/charts/bar-chart.tsx
@@ -20,7 +20,7 @@ Use a bar chart to compare values across categories. Choose a horizontal layout 
 
 ## Accessibility
 
-Canvas charts need a nearby text summary or data table when the exact values are important. Give every series a clear label, preserve sufficient contrast, and use patterns or labels when color alone would be ambiguous.
+Canvas charts need a nearby text summary or data table when exact values or comparisons are important. Give every series a clear label and use patterns or visible labels when color alone would be ambiguous. Tooltip, brush, and direct bar selection are pointer-operated; provide equivalent controls when those interactions are required.
 
 ## Installation
 
@@ -28,7 +28,7 @@ Canvas charts need a nearby text summary or data table when the exact values are
 
 ## Usage
 
-Our bar chart is composable. `<BarChart>` is the container, and every part hangs off it as a compound member, `<BarChart.Grid>`, `<BarChart.XAxis>`, `<BarChart.YAxis>`, `<BarChart.Legend>`, `<BarChart.Tooltip>`, and one or more `<BarChart.Bar>`, so a single import gives you the whole chart. Each `<Bar>` carries its own `variant`, `radius`, `glowing`, `bufferBar`, and `isClickable`, so one chart can mix fill styles and make only some series interactive.
+`<BarChart>` owns the data, theme configuration, layout, and shared state. Add axes, a grid, legend, tooltip, brush, and one or more `<BarChart.Bar>` parts as needed. Each Bar sets its own fill, radius, buffer treatment, and selection behavior.
 
 ```tsx
 import { BarChart, type ChartConfig } from "honestui/charts";
@@ -45,9 +45,7 @@ import { BarChart, type ChartConfig } from "honestui/charts";
 </BarChart>
 ```
 
-ECharts renders to a `<canvas>`, so these children never mount as DOM. The root reads their props and compiles them into the ECharts option object, same JSX, same presence semantics (omit a part and it doesn't render), but the children are declarative config, not live DOM nodes.
-
-The `config` is the same contract as every Honest UI chart, each key maps a data key to a `label` and a per-theme `colors` array. See <Link href="/docs/charts/chart-config">Chart Config</Link> for the full shape. Colors resolve from CSS variables at runtime, so dark mode just works.
+The root compiles its children into an ECharts option and renders the plot on a canvas. The `config` prop maps each series data key to its label and theme colors. See <Link href="/docs/charts/chart-config">Chart Config</Link> for the complete shape.
 
 <Alert>
   <AlertContent>

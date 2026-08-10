@@ -242,13 +242,13 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
     <Toast.Portal data-slot="toast-portal">
       <Toast.Viewport
         className={cn(
-          "fixed z-[var(--rs-z-index-toast)] w-[360px] max-w-[calc(100vw-var(--rs-space-10))] outline-none [--gap:var(--rs-space-4)]",
-          "data-[position=top-left]:top-[var(--rs-space-7)] data-[position=top-left]:left-[var(--rs-space-7)]",
-          "data-[position=top-center]:top-[var(--rs-space-7)] data-[position=top-center]:left-1/2 data-[position=top-center]:-translate-x-1/2",
-          "data-[position=top-right]:top-[var(--rs-space-7)] data-[position=top-right]:right-[var(--rs-space-7)]",
-          "data-[position=bottom-left]:bottom-[var(--rs-space-7)] data-[position=bottom-left]:left-[var(--rs-space-7)]",
-          "data-[position=bottom-center]:bottom-[var(--rs-space-7)] data-[position=bottom-center]:left-1/2 data-[position=bottom-center]:-translate-x-1/2",
-          "data-[position=bottom-right]:right-[var(--rs-space-7)] data-[position=bottom-right]:bottom-[var(--rs-space-7)]"
+          "fixed z-[var(--hui-z-index-toast)] w-[360px] max-w-[calc(100vw-var(--hui-space-10))] outline-none [--gap:var(--hui-space-4)]",
+          "data-[position=top-left]:top-[var(--hui-space-7)] data-[position=top-left]:left-[var(--hui-space-7)]",
+          "data-[position=top-center]:top-[var(--hui-space-7)] data-[position=top-center]:left-1/2 data-[position=top-center]:-translate-x-1/2",
+          "data-[position=top-right]:top-[var(--hui-space-7)] data-[position=top-right]:right-[var(--hui-space-7)]",
+          "data-[position=bottom-left]:bottom-[var(--hui-space-7)] data-[position=bottom-left]:left-[var(--hui-space-7)]",
+          "data-[position=bottom-center]:bottom-[var(--hui-space-7)] data-[position=bottom-center]:left-1/2 data-[position=bottom-center]:-translate-x-1/2",
+          "data-[position=bottom-right]:right-[var(--hui-space-7)] data-[position=bottom-right]:bottom-[var(--hui-space-7)]"
         )}
         data-slot="toast-viewport"
         data-position={position}
@@ -271,23 +271,23 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
                     : ["right", isTop ? "up" : "down"]
               }
               className={cn(
-                "absolute box-border h-[var(--height)] w-full cursor-default overflow-clip rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] bg-[var(--rs-color-background-base-primary)] bg-clip-padding p-[var(--rs-space-3)] text-[var(--rs-color-foreground-base-primary)] shadow-[var(--rs-shadow-lifted)] select-none [--height:var(--toast-frontmost-height,var(--toast-height))] [--peek:var(--rs-space-4)] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))] [transition:opacity_var(--rs-duration-slow)_var(--rs-ease-out)] z-[calc(var(--rs-z-index-toast)-var(--toast-index))] motion-safe:[transition:transform_var(--rs-duration-slow)_var(--rs-ease-out),opacity_var(--rs-duration-slow)_var(--rs-ease-out),height_var(--rs-duration-fast)_var(--rs-ease-out)] data-swiping:[transition:none]!",
+                "absolute box-border h-[var(--height)] w-full cursor-default overflow-clip rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] bg-clip-padding p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-lifted)] select-none [--height:var(--toast-frontmost-height,var(--toast-height))] [--peek:var(--hui-space-4)] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))] [transition:opacity_var(--hui-duration-slow)_var(--hui-ease-out)] z-[calc(var(--hui-z-index-toast)-var(--toast-index))] motion-safe:[transition:transform_var(--hui-duration-slow)_var(--hui-ease-out),opacity_var(--hui-duration-slow)_var(--hui-ease-out),height_var(--hui-duration-fast)_var(--hui-ease-out)] data-swiping:[transition:none]!",
                 "data-[position*=right]:right-0 data-[position*=right]:left-auto data-[position*=left]:right-auto data-[position*=left]:left-0 data-[position*=center]:right-0 data-[position*=center]:left-0",
                 "data-[position*=bottom]:top-auto data-[position*=bottom]:bottom-0 data-[position*=bottom]:origin-bottom data-[position*=bottom]:[--offset-y:calc(var(--toast-offset-y)*-1+(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] data-[position*=bottom]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]",
                 "data-[position*=top]:top-0 data-[position*=top]:bottom-auto data-[position*=top]:origin-top data-[position*=top]:[--offset-y:calc(var(--toast-offset-y)+(var(--toast-index)*var(--gap))+var(--toast-swipe-movement-y))] data-[position*=top]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)+(var(--toast-index)*var(--peek))+(var(--shrink)*var(--height))))_scale(var(--scale))]",
                 "after:absolute after:left-0 after:w-full after:content-[''] data-[position*=bottom]:after:bottom-full data-[position*=bottom]:after:h-[calc(var(--gap)+1px)] data-[position*=top]:after:top-full data-[position*=top]:after:h-[calc(var(--gap)+1px)]",
                 "data-expanded:h-[var(--toast-height)] data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--offset-y))]",
                 "data-starting-style:opacity-0 data-limited:opacity-0 data-ending-style:opacity-0",
-                "data-[position*=bottom]:data-starting-style:[transform:translateY(calc(100%+var(--rs-space-7)))] data-[position*=top]:data-starting-style:[transform:translateY(calc(-100%-var(--rs-space-7)))]",
-                "data-[position*=bottom]:data-ending-style:not-data-swipe-direction:[transform:translateY(calc(100%+var(--rs-space-7)))] data-[position*=top]:data-ending-style:not-data-swipe-direction:[transform:translateY(calc(-100%-var(--rs-space-7)))]",
+                "data-[position*=bottom]:data-starting-style:[transform:translateY(calc(100%+var(--hui-space-7)))] data-[position*=top]:data-starting-style:[transform:translateY(calc(-100%-var(--hui-space-7)))]",
+                "data-[position*=bottom]:data-ending-style:not-data-swipe-direction:[transform:translateY(calc(100%+var(--hui-space-7)))] data-[position*=top]:data-ending-style:not-data-swipe-direction:[transform:translateY(calc(-100%-var(--hui-space-7)))]",
                 "data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))] data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))]",
                 "data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))]"
               )}
             >
-              <Toast.Content className="flex items-start gap-[var(--rs-space-3)] overflow-hidden [transition:opacity_var(--rs-duration-moderate)_var(--rs-ease-out)] data-behind:pointer-events-none data-behind:opacity-0 data-expanded:pointer-events-auto data-expanded:opacity-100">
+              <Toast.Content className="flex items-start gap-[var(--hui-space-3)] overflow-hidden [transition:opacity_var(--hui-duration-moderate)_var(--hui-ease-out)] data-behind:pointer-events-none data-behind:opacity-0 data-expanded:pointer-events-auto data-expanded:opacity-100">
                 {Icon && (
                   <div
-                    className="inline-flex min-h-[var(--rs-space-7)] w-[var(--rs-space-5)] shrink-0 items-center justify-center text-[var(--rs-color-foreground-base-secondary)] in-data-[type=error]:text-[var(--rs-color-foreground-danger-primary)] in-data-[type=info]:text-[var(--rs-color-foreground-accent-primary)] in-data-[type=success]:text-[var(--rs-color-foreground-success-primary)] in-data-[type=warning]:text-[var(--rs-color-foreground-attention-primary)] [&>svg]:size-[var(--rs-space-5)] [&>svg]:shrink-0 in-data-[type=loading]:[&>svg]:animate-spin"
+                    className="inline-flex min-h-[var(--hui-space-7)] w-[var(--hui-space-5)] shrink-0 items-center justify-center text-[var(--hui-color-foreground-base-secondary)] in-data-[type=error]:text-[var(--hui-color-foreground-danger-primary)] in-data-[type=info]:text-[var(--hui-color-foreground-accent-primary)] in-data-[type=success]:text-[var(--hui-color-foreground-success-primary)] in-data-[type=warning]:text-[var(--hui-color-foreground-attention-primary)] [&>svg]:size-[var(--hui-space-5)] [&>svg]:shrink-0 in-data-[type=loading]:[&>svg]:animate-spin"
                     data-slot="toast-icon"
                   >
                     <Icon />
@@ -295,13 +295,13 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
                 )}
 
                 <div className="min-w-0 flex-1" data-slot="toast-main">
-                  <div className="flex min-h-[var(--rs-space-7)] items-center justify-between gap-[var(--rs-space-3)]">
+                  <div className="flex min-h-[var(--hui-space-7)] items-center justify-between gap-[var(--hui-space-3)]">
                     <Toast.Title
-                      className="m-0 min-w-0 flex-1 text-[var(--rs-color-foreground-base-primary)] [font-size:var(--rs-font-size-regular)]! [font-weight:var(--rs-font-weight-medium)] [letter-spacing:var(--rs-letter-spacing-regular)] [line-height:var(--rs-line-height-regular)]! [text-wrap:wrap]!"
+                      className="m-0 min-w-0 flex-1 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-regular)]! [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]! [text-wrap:wrap]!"
                       data-slot="toast-title"
                     />
                     <div
-                      className="flex shrink-0 items-center gap-[var(--rs-space-1)]"
+                      className="flex shrink-0 items-center gap-[var(--hui-space-1)]"
                       data-slot="toast-actions"
                     >
                       {toast.actionProps && (
@@ -328,7 +328,7 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
                     </div>
                   </div>
                   <Toast.Description
-                    className="m-0 text-[var(--rs-color-foreground-base-primary)] [font-size:var(--rs-font-size-small)] [font-weight:var(--rs-font-weight-regular)] [letter-spacing:var(--rs-letter-spacing-small)] [line-height:var(--rs-line-height-small)]"
+                    className="m-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
                     data-slot="toast-description"
                   />
                 </div>

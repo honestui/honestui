@@ -11,7 +11,7 @@ declare module "@babel/core" {
     ast: unknown,
     code: string,
     options?: Record<string, unknown>
-  ): { code?: string | null; ast?: any } | null
+  ): { code?: string | null; ast?: unknown } | null
 }
 
 declare module "stringify-object" {

@@ -130,7 +130,16 @@ export const registryItemCssVarsSchema = z.object({
 })
 
 // Recursive type for CSS properties that supports empty objects at any level.
-const cssValueSchema: z.ZodType<any> = z.lazy(() =>
+export interface RegistryCssProperties {
+  [key: string]: RegistryCssValue
+}
+
+export type RegistryCssValue =
+  | string
+  | Array<string | Record<string, string>>
+  | RegistryCssProperties
+
+const cssValueSchema: z.ZodType<RegistryCssValue> = z.lazy(() =>
   z.union([
     z.string(),
     z.array(z.union([z.string(), z.record(z.string(), z.string())])),
@@ -138,7 +147,12 @@ const cssValueSchema: z.ZodType<any> = z.lazy(() =>
   ])
 )
 
-export const registryItemCssSchema = z.record(z.string(), cssValueSchema)
+const cssPropertiesSchema: z.ZodType<RegistryCssProperties> = z.record(
+  z.string(),
+  cssValueSchema
+)
+
+export const registryItemCssSchema = z.record(z.string(), cssPropertiesSchema)
 
 export const registryItemEnvVarsSchema = z.record(z.string(), z.string())
 
@@ -158,7 +172,13 @@ export const registryItemFontSchema = z.object({
 export const registryItemCommonSchema = z.object({
   $schema: z.string().optional(),
   extends: z.string().optional(),
-  name: z.string(),
+  name: z
+    .string()
+    .min(1)
+    .regex(
+      /^[A-Za-z0-9][A-Za-z0-9._-]*$/,
+      "Registry item names may only contain letters, numbers, dots, underscores, and hyphens."
+    ),
   title: z.string().optional(),
   author: z.string().min(2).optional(),
   description: z.string().optional(),

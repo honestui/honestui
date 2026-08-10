@@ -5,6 +5,7 @@ import {
   type AssetCollection,
 } from "@/globals/constants/icon-categories";
 import { absoluteUrl } from "@/lib/utils";
+import { getAssetCategory } from "@/lib/icon-library";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -31,12 +32,13 @@ export async function generateMetadata({
   const { collection, category: slug } = await params;
   if (!isSupportedCollection(collection)) return {};
 
-  const category = getAssetCategorySummary(collection, slug);
-  if (!category) return {};
+  const categorySummary = getAssetCategorySummary(collection, slug);
+  const category = getAssetCategory(collection, slug);
+  if (!categorySummary || !category) return {};
 
-  const title = `${category.name} ${collection === "logos" ? "Logos" : "Vectors"}`;
-  const description = `Browse all ${category.count} ${category.name.toLowerCase()} ${collection} and copy their React imports.`;
-  const url = absoluteUrl(`/docs/icons/${collection}/categories/${category.slug}`);
+  const title = `${categorySummary.name} ${collection === "logos" ? "Logos" : "Vectors"}`;
+  const description = `Browse ${category.count} assets in the ${categorySummary.name} ${collection} collection and copy their React imports.`;
+  const url = absoluteUrl(`/docs/icons/${collection}/categories/${categorySummary.slug}`);
 
   return {
     title,

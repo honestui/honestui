@@ -1,30 +1,29 @@
 ---
 title: Form
-description: A form wrapper component that simplifies validation and submission.
-
-links:
-  doc: https://base-ui.com/react/components/form#api-reference
+description: Apply consistent structure to a native HTML form without hiding submission or validation logic.
 ---
 
 <ComponentPreview name="form-demo" />
 
 ## Overview
 
-Use Form to handle form submission, validation, and shared form state.
+Form is a thin wrapper around the native HTML `form` element.
 
-Form is useful when multiple fields need to be submitted together or validated together. It works well with Field and the form examples across the docs.
+Use it to keep Honest UI form markup consistent while your application continues to own submission, validation, pending state, server errors, and success feedback. Nothing is registered or submitted behind an abstraction.
 
 ## Anatomy
 
-A form includes the form root, fields, controls, validation messages, and submit actions. Each field should have a label and a clear error message when validation fails.
+A form contains one native form root, its fields, and the actions that submit or reset it. Combine `Form` with `Field` and `Fieldset` when controls need labels, descriptions, grouped questions, or validation messages.
 
 ## Behavior
 
-Keep submission state clear. Disable or show loading on the submit action while a request is running. Show errors near the fields that need attention.
+`Form` accepts the same props as a native `<form>`, including `action`, `method`, `onSubmit`, and `noValidate`. It does not collect values into an object or distribute server errors. Read values with `FormData`, a server action, or the form library your project already uses.
+
+Keep entered values in place after an error. Show pending state on the submit action, associate field errors with their controls, and place a visible status message where users can confirm the result.
 
 ## Accessibility
 
-Use labels, descriptions, and errors consistently. Make sure keyboard users can reach every field and submit or cancel the form.
+Use a submit button with `type="submit"`; Honest UI buttons otherwise default to `type="button"`. Give every control a visible label, describe validation requirements before submission, and move focus only when users need to correct a specific problem. Announce asynchronous status without replacing the persistent visible message.
 
 ## Installation
 
@@ -46,11 +45,7 @@ npx honestui@latest add form
 
 <Steps>
 
-<Step>Install the following dependencies:</Step>
-
-```bash
-npm install @base-ui-components/react zod
-```
+<Step>No additional package dependency is required for Form.</Step>
 
 <Step>Copy and paste the following code into your project.</Step>
 
@@ -72,14 +67,17 @@ import {
   FieldControl,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field"
-import { Form } from "@/components/ui/form"
+} from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 ```
 
 ```tsx
 <Form
   onSubmit={(e) => {
-    /* handle submit */
+    e.preventDefault();
+    const values = new FormData(e.currentTarget);
+    saveEmail(values.get("email"));
   }}
 >
   <Field>
@@ -87,13 +85,18 @@ import { Form } from "@/components/ui/form"
     <FieldControl name="email" type="email" required />
     <FieldError>Please enter a valid email.</FieldError>
   </Field>
+  <Button type="submit">Save email address</Button>
 </Form>
 ```
 
 ## Examples
 
-Our examples cover basic form structure and schema validation with Zod.
+The first example shows native submission with visible, in-page feedback. Zod remains an optional application dependency in the second example; Form does not require or configure it.
 
 ### Using with Zod
 
 <ComponentPreview name="form-zod" />
+
+## API reference
+
+`Form` accepts `React.ComponentProps<"form">` and forwards every prop to the native element. It adds no custom props or submission behavior.

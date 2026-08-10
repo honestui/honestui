@@ -329,7 +329,7 @@ function ColorPickerRoot({
       <div
         data-slot="color-picker"
         className={cn(
-          "flex w-full flex-col gap-[var(--rs-space-4)]",
+          "flex w-full flex-col gap-[var(--hui-space-4)]",
           className
         )}
         {...props}
@@ -514,7 +514,7 @@ function OklchColorArea({
       aria-valuetext={valueText}
       data-slot="color-picker-area"
       className={cn(
-        "relative aspect-square w-full touch-none overflow-hidden rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] select-none focus-visible:[outline:var(--rs-focus-ring)] focus-visible:outline-offset-[var(--rs-focus-ring-offset-inset)]",
+        "relative aspect-square w-full touch-none overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] select-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
         className
       )}
       onPointerDown={handlePointerDown}
@@ -538,7 +538,7 @@ function OklchColorArea({
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 block size-[var(--rs-space-4)] rounded-full border-[3px] border-[var(--rs-color-foreground-base-emphasis)] shadow-[var(--rs-shadow-soft)]"
+        className="pointer-events-none absolute top-0 left-0 block size-[var(--hui-space-4)] rounded-full border-[3px] border-[var(--hui-color-foreground-base-emphasis)] shadow-[var(--hui-shadow-soft)]"
         style={{
           backgroundColor: formatOklch({
             l: lightness,
@@ -676,7 +676,7 @@ function HslColorArea({
       aria-valuetext={valueText}
       data-slot="color-picker-area"
       className={cn(
-        "relative aspect-square w-full touch-none overflow-hidden rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-primary)] select-none focus-visible:[outline:var(--rs-focus-ring)] focus-visible:outline-offset-[var(--rs-focus-ring-offset-inset)]",
+        "relative aspect-square w-full touch-none overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] select-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
         className
       )}
       style={{
@@ -699,7 +699,7 @@ function HslColorArea({
     >
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute block size-[var(--rs-space-4)] rounded-full border-[3px] border-[var(--rs-color-foreground-base-emphasis)] shadow-[var(--rs-shadow-soft)]"
+        className="pointer-events-none absolute block size-[var(--hui-space-4)] rounded-full border-[3px] border-[var(--hui-color-foreground-base-emphasis)] shadow-[var(--hui-shadow-soft)]"
         style={{
           backgroundColor: `hsl(${round(hsl.h, 4)} ${round(hsl.s, 4)}% ${round(hsl.l, 4)}%)`,
           left: `${round(x * 100, 4)}%`,
@@ -716,11 +716,11 @@ const sliderRootClassName =
   "relative flex w-full touch-none items-center select-none data-disabled:opacity-50"
 const sliderControlClassName = "flex w-full items-center"
 const sliderTrackClassName =
-  "relative h-[var(--rs-space-4)] w-full grow overflow-hidden rounded-[var(--rs-radius-3)] border-[0.5px] border-[var(--rs-color-border-base-primary)]"
+  "relative h-[var(--hui-space-4)] w-full grow overflow-hidden rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)]"
 const sliderIndicatorClassName =
-  "absolute h-full rounded-[var(--rs-radius-full)] bg-transparent"
+  "absolute h-full rounded-[var(--hui-radius-full)] bg-transparent"
 const sliderThumbClassName =
-  "absolute block size-[var(--rs-space-4)] rounded-full border-[3px] border-[var(--rs-color-foreground-base-emphasis)] shadow-[var(--rs-shadow-soft)] outline-none focus-visible:[outline:var(--rs-focus-ring)] focus-visible:outline-offset-[var(--rs-focus-ring-offset-accent)]"
+  "absolute block size-[var(--hui-space-4)] rounded-full border-[3px] border-[var(--hui-color-foreground-base-emphasis)] shadow-[var(--hui-shadow-soft)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]"
 
 type ColorPickerHueProps = Omit<
   SliderPrimitive.Root.Props,
@@ -825,11 +825,11 @@ function ColorPickerAlpha({ className, ...props }: ColorPickerAlphaProps) {
         <SliderPrimitive.Track
           className={cn(
             sliderTrackClassName,
-            "bg-[var(--rs-color-background-base-primary)]"
+            "bg-[var(--hui-color-background-base-primary)]"
           )}
           style={{
             backgroundImage:
-              "linear-gradient(45deg, var(--rs-color-border-base-primary) 25%, transparent 25%), linear-gradient(-45deg, var(--rs-color-border-base-primary) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--rs-color-border-base-primary) 75%), linear-gradient(-45deg, transparent 75%, var(--rs-color-border-base-primary) 75%)",
+              "linear-gradient(45deg, var(--hui-color-border-base-primary) 25%, transparent 25%), linear-gradient(-45deg, var(--hui-color-border-base-primary) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--hui-color-border-base-primary) 75%), linear-gradient(-45deg, transparent 75%, var(--hui-color-border-base-primary) 75%)",
             backgroundPosition: "0 0, 0 6px, 6px -6px, -6px 0",
             backgroundSize: "12px 12px",
           }}
@@ -837,7 +837,7 @@ function ColorPickerAlpha({ className, ...props }: ColorPickerAlphaProps) {
         >
           <span
             aria-hidden="true"
-            className="absolute inset-0 rounded-[var(--rs-radius-3)]"
+            className="absolute inset-0 rounded-[var(--hui-radius-3)]"
             style={{
               backgroundImage: `linear-gradient(90deg, transparent, ${formatOklch(
                 { l: lightness, c: chroma, h: hue }
@@ -917,7 +917,7 @@ function ColorPickerInput({
         value={value}
         readOnly
         className={cn(
-          copyable && "[&_[data-slot=input]]:pr-[var(--rs-space-9)]",
+          copyable && "[&_[data-slot=input]]:pr-[var(--hui-space-9)]",
           className
         )}
         data-slot="color-picker-input"
@@ -928,7 +928,7 @@ function ColorPickerInput({
           aria-label={copied ? "Color copied" : "Copy color"}
           title={copied ? "Copied" : "Copy color"}
           onClick={copyValue}
-          className="absolute top-1/2 right-[var(--rs-space-2)] inline-flex size-[var(--rs-space-6)] -translate-y-1/2 cursor-pointer items-center justify-center rounded-[var(--rs-radius-1)] border-0 bg-transparent text-[var(--rs-color-foreground-base-secondary)] outline-none hover:bg-[var(--rs-color-background-base-primary-hover)] hover:text-[var(--rs-color-foreground-base-primary)] focus-visible:[outline:var(--rs-focus-ring)]"
+          className="absolute top-1/2 right-[var(--hui-space-2)] inline-flex size-[var(--hui-space-6)] -translate-y-1/2 cursor-pointer items-center justify-center rounded-[var(--hui-radius-1)] border-0 bg-transparent text-[var(--hui-color-foreground-base-secondary)] outline-none hover:bg-[var(--hui-color-background-base-primary-hover)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)]"
           data-slot="color-picker-copy"
         >
           {copied ? (
@@ -971,7 +971,7 @@ function ColorPickerMode({
     >
       <Select.Trigger
         {...props}
-        className={cn("min-w-[var(--rs-space-15)] shrink-0", className)}
+        className={cn("min-w-[var(--hui-space-15)] shrink-0", className)}
         data-slot="color-picker-mode"
       >
         <Select.Value>{mode.toUpperCase()}</Select.Value>

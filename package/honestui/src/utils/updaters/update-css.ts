@@ -1,6 +1,7 @@
 import { promises as fs } from "fs"
 import path from "path"
 import {
+  RegistryCssValue,
   registryItemCssSchema,
   registryItemCssVarsSchema,
   registryItemTailwindSchema,
@@ -399,9 +400,11 @@ function updateCssPlugin(css: z.infer<typeof registryItemCssSchema>) {
                       raws: { semicolon: true, before: "\n    " },
                     })
 
-                    existingDecl
-                      ? existingDecl.replaceWith(decl)
-                      : utilityAtRule.append(decl)
+                    if (existingDecl) {
+                      existingDecl.replaceWith(decl)
+                    } else {
+                      utilityAtRule.append(decl)
+                    }
                   } else if (
                     prop.startsWith("@") &&
                     typeof value === "object" &&
@@ -454,7 +457,7 @@ function processAtRule(
   root: Root | AtRule,
   name: string,
   params: string,
-  properties: any
+  properties: RegistryCssValue
 ) {
   // Find or create the at-rule
   let atRule = root.nodes?.find(
@@ -522,7 +525,11 @@ function processAtRule(
   }
 }
 
-function processRule(parent: Root | AtRule, selector: string, properties: any) {
+function processRule(
+  parent: Root | AtRule,
+  selector: string,
+  properties: RegistryCssValue
+) {
   let rule = parent.nodes?.find(
     (node): node is Rule => node.type === "rule" && node.selector === selector
   ) as Rule | undefined
@@ -593,7 +600,11 @@ function processRule(parent: Root | AtRule, selector: string, properties: any) {
             node.type === "decl" && node.prop === prop
         )
 
-        existingDecl ? existingDecl.replaceWith(decl) : rule.append(decl)
+        if (existingDecl) {
+          existingDecl.replaceWith(decl)
+        } else {
+          rule.append(decl)
+        }
       } else if (typeof value === "object") {
         // Nested selector (including & selectors).
         const nestedSelector = prop.startsWith("&")

@@ -22,7 +22,7 @@ export default function BreadcrumbButtons() {
         <BreadcrumbItem>
           <BreadcrumbLink
             render={<Button variant="ghost" size="sm" />}
-            href="#"
+            href="/docs"
           >
             <HouseIcon />
             Home
@@ -35,7 +35,7 @@ export default function BreadcrumbButtons() {
 
         <BreadcrumbItem>
           <BreadcrumbLink
-            href="#"
+            href="/docs/components/button"
             render={<Button variant="ghost" size="sm" />}
           >
             <LayoutGridIcon />

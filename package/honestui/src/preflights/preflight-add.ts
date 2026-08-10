@@ -54,7 +54,7 @@ export async function preFlightAdd(options: z.infer<typeof addOptionsSchema>) {
       errors,
       config: config!,
     }
-  } catch (error) {
+  } catch {
     logger.break()
     logger.error(
       `An invalid ${highlighter.info(

@@ -1,6 +1,5 @@
 import path from "path"
 import { configWithDefaults } from "@/src/registry/config"
-import { clearRegistryContext } from "@/src/registry/context"
 import { searchRegistries } from "@/src/registry/search"
 import { validateRegistryConfigForItems } from "@/src/registry/validator"
 import { rawConfigSchema } from "@/src/schema"
@@ -113,7 +112,5 @@ export const search = new Command()
       process.exit(0)
     } catch (error) {
       handleError(error)
-    } finally {
-      clearRegistryContext()
     }
   })

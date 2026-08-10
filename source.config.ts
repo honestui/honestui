@@ -8,6 +8,7 @@ export const docs = defineDocs({
     schema: pageSchema.extend({
       image: z.string().optional(),
       links: z.record(z.string(), z.string()).optional(),
+      metaTitle: z.string().optional(),
     }),
   },
 });

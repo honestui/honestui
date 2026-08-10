@@ -1,6 +1,5 @@
 import { buildUrlAndHeadersForRegistryItem } from "@/src/registry/builder"
 import { configWithDefaults } from "@/src/registry/config"
-import { clearRegistryContext } from "@/src/registry/context"
 import { extractEnvVars } from "@/src/registry/env"
 import { RegistryMissingEnvironmentVariablesError } from "@/src/registry/errors"
 import { registryConfigItemSchema } from "@/src/schema"
@@ -52,7 +51,4 @@ export function validateRegistryConfigForItems(
   for (const item of items) {
     buildUrlAndHeadersForRegistryItem(item, configWithDefaults(config))
   }
-
-  // Clear the registry context after validation.
-  clearRegistryContext()
 }

@@ -1,22 +1,24 @@
 ---
-title: Our Components
-description: Explore our source-first React components and choose the right one for your interface.
+title: Components
+description: Choose, install, and adapt Honest UI components for product interfaces.
 ---
 
-Our component pages follow the same structure so you can quickly understand, install, and adapt each component.
+Component pages follow a shared structure so you can decide whether a component fits, install it, and adapt it without guessing which behavior must remain intact.
 
 Each page explains what the component is for, how to install it, how to import it, and which examples show the important states.
 
 ## Page structure
 
-Our component pages include:
+Component pages include:
 
-- **Preview:** a live example of the default component.
-- **Installation:** CLI and manual setup.
-- **Usage:** the smallest useful code example.
-- **Anatomy:** the component parts and how they work together.
+- **What it does:** the task the component supports.
+- **When to use it:** where it fits and which component to use instead when it does not.
+- **Anatomy:** the parts and how they work together.
+- **Behavior and states:** controlled values, loading, errors, disabled states, and forms when they apply.
+- **Accessibility:** behavior supplied by the component and responsibilities that remain in your application.
+- **Installation:** the CLI command and manual source.
+- **Usage:** the smallest useful example.
 - **Examples:** variants, sizes, states, form usage, and composition patterns.
-- **Accessibility notes:** keyboard, labels, focus, and screen-reader expectations.
 
 If a component is built on Base UI, the page may link to the Base UI API reference for lower-level behavior and props.
 
@@ -25,7 +27,7 @@ If a component is built on Base UI, the page may link to the Base UI API referen
 Use the component that matches the user's task:
 
 - Use **Button** for actions.
-- Use **Link-style Button** only when the action is navigation.
+- Use a **link** for navigation. Use Button's link rendering only when you need Button styling on a real link destination.
 - Use **Checkbox** for independent yes/no choices.
 - Use **Radio Group** when only one option can be selected.
 - Use **Select** when the user chooses from a known list.
@@ -33,7 +35,7 @@ Use the component that matches the user's task:
 - Use **Dialog** for focused work that interrupts the page.
 - Use **Sheet** for side panels, details, and secondary workflows.
 - Use **Toast** for short feedback that does not need a response.
-- Use **Alert Dialog** when the user must make a decision before continuing.
+- Use a **Dialog with an explicit confirmation action** when the user must make a consequential decision before continuing.
 
 ## Copying examples
 
@@ -42,10 +44,10 @@ Examples are not only visual demos. They show recommended structure.
 When you copy an example:
 
 1. Keep the accessibility parts, such as labels, descriptions, and triggers.
-2. Replace placeholder text with real product copy.
+2. Replace sample text with copy that names the real task and outcome.
 3. Keep disabled, loading, and error states if the workflow can reach those states.
 4. Update imports to match your project.
-5. Test with keyboard navigation.
+5. Test the complete example with keyboard navigation and the assistive technologies your product supports.
 
 ## Building larger screens
 
@@ -62,7 +64,7 @@ Start with the smallest component that solves the interaction. Add more structur
 
 ## Customizing components
 
-Honest UI components are meant to be edited.
+Copied Honest UI components are meant to be edited.
 
 Common customizations include:
 

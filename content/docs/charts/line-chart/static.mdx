@@ -1,6 +1,6 @@
 ---
 title: Line Chart
-description: Our composable line chart with polished strokes, markers, and interactions.
+description: Show trends and rates of change across an ordered dimension.
 image: /og/line-chart.png
 links:
   github: https://github.com/honestui/honestui/blob/main/registry/default/charts/line-chart.tsx
@@ -20,7 +20,7 @@ Use a line chart to show trends, movement, and rate of change across an ordered 
 
 ## Accessibility
 
-Canvas charts need a nearby text summary or data table when the exact values are important. Use distinguishable stroke styles and clear series labels so meaning does not depend on color alone.
+Canvas charts need a nearby text summary or data table when exact values or trends are important. Use distinguishable stroke styles and clear series labels so meaning does not depend on color alone. Tooltip, brush, and direct line selection are pointer-operated; provide equivalent controls when those interactions are required.
 
 ## Installation
 
@@ -28,7 +28,7 @@ Canvas charts need a nearby text summary or data table when the exact values are
 
 ## Usage
 
-Our line chart is composable. `<LineChart>` is the container, and every part hangs off it as a compound member, `<LineChart.Grid>`, `<LineChart.XAxis>`, `<LineChart.YAxis>`, `<LineChart.Legend>`, `<LineChart.Tooltip>`, and one or more `<LineChart.Line>`, so a single import gives you the whole chart. Each `<Line>` carries its own `strokeVariant`, `curveType`, `glowing`, `enableBufferLine`, and `isClickable`, so one chart can mix stroke styles and make only some series interactive.
+`<LineChart>` owns the data, theme configuration, and shared state. Add axes, a grid, legend, tooltip, brush, and one or more `<LineChart.Line>` parts as needed. Each Line sets its own stroke, curve, markers, buffer treatment, and selection behavior.
 
 ```tsx
 import { LineChart, type ChartConfig } from "honestui/charts";
@@ -51,9 +51,7 @@ import { LineChart, type ChartConfig } from "honestui/charts";
 </LineChart>
 ```
 
-ECharts renders to a `<canvas>`, so these children never mount as DOM. The root reads their props and compiles them into the ECharts option object. Same JSX, same presence semantics (omit a part and it doesn't render), same behavior, the children are declarative config, not live DOM nodes.
-
-The `config` is the same contract as every Honest UI chart, each key maps a data key to a `label` and a per-theme `colors` array. See <Link href="/docs/charts/chart-config">Chart Config</Link> for the full shape. Colors resolve from your CSS variables at runtime, so dark mode just works.
+The root compiles its children into an ECharts option and renders the plot on a canvas. The `config` prop maps each series data key to its label and theme colors. See <Link href="/docs/charts/chart-config">Chart Config</Link> for the complete shape.
 
 <Alert>
   <AlertContent>

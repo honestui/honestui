@@ -23,7 +23,7 @@ export default function FieldRadioDemo() {
           <Radio value="free" /> Free
         </FieldLabel>
         <FieldLabel>
-          <Radio value="team" /> Team
+          <Radio value="pro" /> Pro
         </FieldLabel>
         <FieldLabel>
           <Radio value="enterprise" /> Enterprise

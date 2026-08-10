@@ -39,8 +39,8 @@ export default function ComboboxMultiple() {
                   </ComboboxChip>
                 ))}
                 <ComboboxInput
-                  placeholder={value.length > 0 ? undefined : "Select a item..."}
-                  aria-label="Select a item"
+                  placeholder={value.length > 0 ? undefined : "Select an item…"}
+                  aria-label="Select an item"
                 />
               </>
             )}

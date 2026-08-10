@@ -228,22 +228,11 @@ export function Toaster({
 	options,
 }: GooeyToasterProps) {
 	const [toasts, setToasts] = useState<GooeyItem[]>(store.toasts);
-	const [activeId, setActiveId] = useState<string>();
+	const [hoveredId, setHoveredId] = useState<string>();
 
 	const hoverRef = useRef(false);
 	const timersRef = useRef(new Map<string, number>());
 	const listRef = useRef(toasts);
-	const latestRef = useRef<string | undefined>(undefined);
-	const handlersCache = useRef(
-		new Map<
-			string,
-			{
-				enter: MouseEventHandler<HTMLButtonElement>;
-				leave: MouseEventHandler<HTMLButtonElement>;
-				dismiss: () => void;
-			}
-		>(),
-	);
 
 	useEffect(() => {
 		store.position = position;
@@ -286,26 +275,16 @@ export function Toaster({
 		listRef.current = toasts;
 
 		const toastKeys = new Set(toasts.map(timeoutKey));
-		const toastIds = new Set(toasts.map((t) => t.id));
 		for (const [key, timer] of timersRef.current) {
 			if (!toastKeys.has(key)) {
 				clearTimeout(timer);
 				timersRef.current.delete(key);
 			}
 		}
-		for (const id of handlersCache.current.keys()) {
-			if (!toastIds.has(id)) handlersCache.current.delete(id);
-		}
-
 		schedule(toasts);
 	}, [toasts, schedule]);
 
-	const handleMouseEnterRef =
-		useRef<MouseEventHandler<HTMLButtonElement>>(null);
-	const handleMouseLeaveRef =
-		useRef<MouseEventHandler<HTMLButtonElement>>(null);
-
-	handleMouseEnterRef.current = useCallback<
+	const handleMouseEnter = useCallback<
 		MouseEventHandler<HTMLButtonElement>
 	>(() => {
 		if (hoverRef.current) return;
@@ -313,7 +292,7 @@ export function Toaster({
 		clearAllTimers();
 	}, [clearAllTimers]);
 
-	handleMouseLeaveRef.current = useCallback<
+	const handleMouseLeave = useCallback<
 		MouseEventHandler<HTMLButtonElement>
 	>(() => {
 		if (!hoverRef.current) return;
@@ -328,32 +307,22 @@ export function Toaster({
 		return undefined;
 	}, [toasts]);
 
-	useEffect(() => {
-		latestRef.current = latest;
-		setActiveId(latest);
-	}, [latest]);
+	const activeId = hoveredId ?? latest;
 
-	const getHandlers = useCallback((toastId: string) => {
-		let cached = handlersCache.current.get(toastId);
-		if (cached) return cached;
-
-		cached = {
+	const getHandlers = useCallback(
+		(toastId: string) => ({
 			enter: ((e) => {
-				setActiveId((prev) => (prev === toastId ? prev : toastId));
-				handleMouseEnterRef.current?.(e);
+				setHoveredId(toastId);
+				handleMouseEnter(e);
 			}) as MouseEventHandler<HTMLButtonElement>,
 			leave: ((e) => {
-				setActiveId((prev) =>
-					prev === latestRef.current ? prev : latestRef.current,
-				);
-				handleMouseLeaveRef.current?.(e);
+				setHoveredId(undefined);
+				handleMouseLeave(e);
 			}) as MouseEventHandler<HTMLButtonElement>,
 			dismiss: () => dismissToast(toastId),
-		};
-
-		handlersCache.current.set(toastId, cached);
-		return cached;
-	}, []);
+		}),
+		[handleMouseEnter, handleMouseLeave],
+	);
 
 	const getViewportStyle = useCallback(
 		(pos: GooeyPosition): CSSProperties | undefined => {

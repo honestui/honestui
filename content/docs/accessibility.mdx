@@ -1,74 +1,90 @@
 ---
 title: Accessibility
-description: How Honest UI components support keyboard, screen-reader, and form accessibility.
+metaTitle: Accessibility foundations
+description: Understand Honest UI's accessibility foundation and the checks your application still needs.
 ---
 
-Accessibility is part of the component structure, not a final polish step.
-
-Honest UI uses native HTML whenever possible. For complex interactions such as dialogs, menus, popovers, comboboxes, and tabs, Honest UI uses accessible primitives so keyboard navigation, focus handling, and ARIA state can be handled consistently.
+Accessibility starts with the component structure and continues through your content, composition, styling, and testing. Honest UI provides a foundation; it does not make an assembled application conformant by itself.
 
 ## What Honest UI provides
 
-Honest UI components are designed to support:
+Honest UI prefers native HTML for familiar controls. Complex interactions such as dialogs, menus, popovers, comboboxes, and tabs use primitives that provide roles, state, focus management, and documented keyboard behavior.
 
-- Keyboard navigation.
-- Visible focus states.
-- Labels and descriptions for form controls.
-- Screen-reader-friendly structure.
+Depending on the component, that foundation can include:
+
+- Native roles and states.
+- Keyboard operation and focus management.
+- Visible focus styles.
+- Connections among form controls, labels, descriptions, and errors.
 - Disabled and invalid states.
-- Dialog and popup focus management.
-- Semantic HTML for common content.
+- Reduced-motion handling for documented animated components.
 
-Some components still require correct app-level usage. For example, an input needs a useful label, a destructive button needs clear copy, and a toast should not contain critical information that disappears before the user can act.
+Read the component's Accessibility section because responsibilities differ. An Input needs a useful label, an icon-only Button needs an accessible name, and a chart needs an equivalent way to understand important values.
 
-## Labels and descriptions
+## Give controls useful names
 
-Every form control should have a label.
+Every form control needs an accessible name. Use a persistent visible label for fields that people must identify, understand, or revisit. [Field](/docs/components/field) connects a label, description, validation message, and control with consistent spacing.
 
-Use [Field](/docs/components/field) when you need a label, description, validation message, and consistent spacing around a control.
+Write labels for the information or decision:
 
-Good labels are short and specific:
+- `Email address`, not `Email` when the expected value could be unclear.
+- `Project visibility`, not `Visibility` when several settings use that word.
+- `Receive product updates`, not `Updates` for a preference switch.
 
-- Use `Email address` instead of `Email`.
-- Use `Project visibility` instead of `Visibility`.
-- Use `Receive product updates` instead of `Updates`.
+Descriptions should explain a constraint or consequence rather than repeat the label. Place essential requirements before submission instead of teaching them only through an error.
 
-Descriptions should explain constraints, not repeat the label.
+## Preserve documented keyboard behavior
 
-## Keyboard behavior
+Test each interaction without a mouse. Do not apply one keyboard pattern to every control: native buttons, checkboxes, tabs, menus, sliders, and comboboxes have different expected keys.
 
-Interactive components should be usable without a mouse.
+Check that:
 
-Check these basics when you customize a component:
+- `Tab` and `Shift+Tab` move through interactive elements in a logical order.
+- Buttons and links respond to their native activation keys.
+- Composite controls support the arrow-key behavior documented by their primitive.
+- `Escape` closes dismissible dialogs and popups when supported.
+- Focus moves into modal content when it opens and returns to a logical place when it closes.
+- Every pointer-only action has an equivalent keyboard path.
 
-- `Tab` reaches the control in a logical order.
-- `Enter` and `Space` activate buttons, checkboxes, switches, and toggles.
-- Arrow keys move through menus, radio groups, tabs, sliders, and list-based controls when expected.
-- `Escape` closes dialogs, menus, popovers, and sheets when the primitive supports it.
-- Focus returns to the trigger after a popup closes.
+## Keep focus visible
 
-## Focus styles
+Do not remove focus styles. Focus must remain visible against the component and adjacent colors, including in dark themes and forced-colors modes.
 
-Do not remove focus styles.
+Check that sticky headers, dialogs, and other overlays do not hide the focused element. Avoid moving focus unless the interaction requires it and the destination is predictable.
 
-If you change the visual design, keep a clear focus ring or focus outline with enough contrast. Focus should be visible on buttons, links, inputs, menu items, tab triggers, and any custom interactive element.
+## Explain unavailable and loading actions
 
-## Disabled and loading states
+Use a disabled state only when the control cannot be used. If the reason is not obvious, explain it nearby. A disabled control cannot normally reveal its own tooltip or receive keyboard focus, so required instructions must remain available elsewhere.
 
-Use disabled states only when the user cannot interact with the control.
+For an action in progress, preserve the layout, communicate the busy state, and prevent accidental duplicate work when necessary. Do not announce success until the requested work has completed.
 
-If the action is temporarily unavailable, explain why nearby. If the action is waiting for a request to finish, prefer a loading state that keeps the layout stable.
+## Write errors that support recovery
 
-## Validation
+Connect validation messages to their controls and identify the specific correction:
 
-Validation messages should be plain and specific.
-
-Use [Field](/docs/components/field) and [Form](/docs/components/form) to keep labels, descriptions, errors, and submission behavior connected.
-
-Write errors like:
-
-- `Enter a valid email address.`
+- `Enter an email address in the format name@example.com.`
 - `Choose at least one role.`
-- `Password must be at least 12 characters.`
+- `Enter 12 or more characters.`
 
-Avoid vague errors like `Invalid`, `Required`, or `Something went wrong` when the fix is known.
+Avoid `Invalid`, `Required`, and `Something went wrong` when the cause or recovery step is known. Preserve entered values after an error whenever it is safe to do so.
+
+## Do not rely on one sensory cue
+
+Do not communicate meaning through color, position, shape, sound, motion, hover, or drag alone. Pair important states with visible text and expose the same meaning to assistive technology.
+
+Pointer targets should be at least 24 by 24 CSS pixels unless a WCAG 2.2 spacing or other defined exception applies. Prefer larger targets, including 44 by 44 CSS pixels, for important controls and touch-heavy interfaces.
+
+## Test the complete task
+
+Automated checks catch only some problems. For each changed task, verify:
+
+1. Semantic structure and accessible names.
+2. Complete keyboard operation and visible focus.
+3. The task with a supported screen-reader and browser combination.
+4. Text enlargement and reflow at 200% and 400% zoom where applicable.
+5. Light, dark, and forced-colors presentations.
+6. Reduced-motion behavior.
+7. Labels, errors, loading, empty, disabled, and success states.
+8. Touch target size and operation without precise pointer movement.
+
+Document which environments you tested. Do not claim WCAG conformance from a component primitive or automated scan alone.

@@ -20,7 +20,7 @@ export default function AvatarLoading() {
   return (
     <div className="relative">
       <Avatar>
-        <AvatarImage src="https://github.com/loveconnor.png" alt="@honestui" />
+        <AvatarImage src="https://github.com/loveconnor.png" alt="@honest-ui" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       {loading && (

@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { Button } from "@/registry/default/ui/button"
+import { Button } from "@/registry/default/ui/button";
 import {
   Combobox,
   ComboboxEmpty,
@@ -10,9 +10,9 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxPopup,
-} from "@/registry/default/ui/combobox"
-import { Field, FieldError, FieldLabel } from "@/registry/default/ui/field"
-import { Form } from "@/registry/default/ui/form"
+} from "@/registry/default/ui/combobox";
+import { Field, FieldError, FieldLabel } from "@/registry/default/ui/field";
+import { Form } from "@/registry/default/ui/form";
 
 const items = [
   { value: "apple", label: "Apple" },
@@ -25,27 +25,24 @@ const items = [
   { value: "kiwi", label: "Kiwi" },
   { value: "peach", label: "Peach" },
   { value: "pear", label: "Pear" },
-]
+];
 
 export default function ComboboxForm() {
-  const [loading, setLoading] = React.useState(false)
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const selectedItem = formData.get("item")
+  const [status, setStatus] = React.useState("");
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const selectedItem = formData.get("item");
     const itemValue =
-      items.find((item) => item.label === selectedItem)?.value || selectedItem
-    setLoading(true)
-    await new Promise((r) => setTimeout(r, 800))
-    setLoading(false)
-    alert(`Favorite item: ${itemValue || ""}`)
-  }
+      items.find((item) => item.label === selectedItem)?.value || selectedItem;
+    setStatus(`Submitted favorite: ${itemValue || "the selected item"}.`);
+  };
 
   return (
     <Form onSubmit={onSubmit} className="grid w-full max-w-64 gap-4">
       <Field>
         <FieldLabel>Favorite item</FieldLabel>
-        <Combobox items={items} name="item" disabled={loading} required>
+        <Combobox items={items} name="item" required>
           <ComboboxInput placeholder="Select an item..." />
           <ComboboxPopup>
             <ComboboxEmpty>No results found.</ComboboxEmpty>
@@ -58,11 +55,12 @@ export default function ComboboxForm() {
             </ComboboxList>
           </ComboboxPopup>
         </Combobox>
-        <FieldError>Please select a item.</FieldError>
+        <FieldError>Select an item.</FieldError>
       </Field>
-      <Button type="submit" disabled={loading}>
-        Submit
-      </Button>
+      <Button type="submit">Save favorite</Button>
+      <p className="text-sm text-muted-foreground" role="status">
+        {status}
+      </p>
     </Form>
-  )
+  );
 }

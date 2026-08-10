@@ -63,6 +63,10 @@ vi.mock("@/src/utils/get-config", async () => {
 })
 
 vi.mock("@/src/utils/get-project-info", () => ({
+  getProjectInfo: vi.fn().mockResolvedValue({
+    framework: { name: "next-app" },
+    isSrcDir: false,
+  }),
   getProjectTailwindVersionFromConfig: mockGetProjectTailwindVersionFromConfig,
 }))
 
@@ -84,6 +88,7 @@ vi.mock("@/src/utils/updaters/update-fonts", () => ({
 }))
 
 vi.mock("@/src/utils/updaters/update-files", () => ({
+  getPlannedFilePaths: vi.fn().mockReturnValue([]),
   updateFiles: mockUpdateFiles,
 }))
 

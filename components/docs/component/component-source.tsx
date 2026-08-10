@@ -2,44 +2,22 @@ import { CodeCollapsibleWrapper } from "@/components/docs/component/code-collaps
 import { CodeBlock } from "@/components/docs/mdx/components/code";
 import { getRegistryItem } from "@/lib/registry";
 import type { ComponentProps } from "react";
-import fs from "node:fs/promises";
 import { cn } from "@/lib/utils";
-import path from "node:path";
 
 export async function ComponentSource({
   name,
-  src,
   title,
   language,
   collapsible = true,
   className,
 }: ComponentProps<"div"> & {
-  name?: string;
-  src?: string;
+  name: string;
   title?: string;
   language?: string;
   collapsible?: boolean;
 }) {
-  if (!name && !src) {
-    return null;
-  }
-
-  let code: string | undefined;
-
-  if (name) {
-    const item = await getRegistryItem(name);
-    code = item?.files?.[0]?.content;
-  }
-
-  if (src) {
-    try {
-      const file = await fs.readFile(path.join(process.cwd(), src), "utf-8");
-      code = file;
-    } catch {
-      console.error(`[ComponentSource] Failed to read source file: ${src}`);
-      return null;
-    }
-  }
+  const item = await getRegistryItem(name);
+  const code = item?.files?.[0]?.content;
 
   if (!code) {
     return null;

@@ -41,20 +41,20 @@ export function LegendIndicator({
 
   switch (variant) {
     case "square":
-      return <div className="h-2 w-2 shrink-0" style={fill} />;
+      return <div aria-hidden className="h-2 w-2 shrink-0" style={fill} />;
     case "circle":
-      return <div className="h-2 w-2 shrink-0 rounded-full" style={fill} />;
+      return <div aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={fill} />;
     case "circle-outline":
-      return <div className="h-2.5 w-2.5 shrink-0 rounded-full p-[1.5px]" style={outline} />;
+      return <div aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full p-[1.5px]" style={outline} />;
     case "vertical-bar":
-      return <div className="h-3 w-1 shrink-0 rounded-[2px]" style={fill} />;
+      return <div aria-hidden className="h-3 w-1 shrink-0 rounded-[2px]" style={fill} />;
     case "horizontal-bar":
-      return <div className="h-1 w-3 shrink-0 rounded-[2px]" style={fill} />;
+      return <div aria-hidden className="h-1 w-3 shrink-0 rounded-[2px]" style={fill} />;
     case "rounded-square-outline":
-      return <div className="h-2.5 w-2.5 shrink-0 rounded-[3px] p-[1.5px]" style={outline} />;
+      return <div aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-[3px] p-[1.5px]" style={outline} />;
     case "rounded-square":
     default:
-      return <div className="h-2 w-2 shrink-0 rounded-[2px]" style={fill} />;
+      return <div aria-hidden className="h-2 w-2 shrink-0 rounded-[2px]" style={fill} />;
   }
 }
 
@@ -86,26 +86,42 @@ export function LegendOverlay({
     align === "left" ? "justify-start" : align === "center" ? "justify-center" : "justify-end";
 
   return (
-    <div style={style} className={`flex items-center gap-4 select-none ${legendJustify}`}>
+    <div
+      aria-label="Chart legend"
+      role="group"
+      style={style}
+      className={`flex items-center gap-4 select-none ${legendJustify}`}
+    >
       {seriesKeys.map((key) => {
         const item = config[key];
         const colorsCount = item ? getColorsCount(item) : 1;
         const isSelected =
           (selectedKey === null || selectedKey === key) &&
           (hoveredKey === null || hoveredKey === key);
-        return (
-
-          <div
-            key={key}
-            className={`flex items-center gap-1.5 transition-opacity ${
-              !isSelected ? "opacity-30" : ""
-            } ${isClickable ? "cursor-pointer" : ""}`}
-            onClick={() => {
-              if (isClickable) onToggle(key);
-            }}
-          >
+        const content = (
+          <>
             <LegendIndicator variant={variant} dataKey={key} colorsCount={colorsCount} />
             {item?.label}
+          </>
+        );
+
+        const className = `flex min-h-6 items-center gap-1.5 transition-opacity ${
+          !isSelected ? "opacity-30" : ""
+        }`;
+
+        return isClickable ? (
+          <button
+            key={key}
+            type="button"
+            aria-pressed={selectedKey === null || selectedKey === key}
+            className={`${className} cursor-pointer rounded-sm border-0 bg-transparent p-0 text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current`}
+            onClick={() => onToggle(key)}
+          >
+            {content}
+          </button>
+        ) : (
+          <div key={key} className={className}>
+            {content}
           </div>
         );
       })}

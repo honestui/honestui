@@ -7,10 +7,6 @@ import {
   REGISTRY_URL,
 } from "@/src/registry/constants"
 import {
-  clearRegistryContext,
-  setRegistryHeaders,
-} from "@/src/registry/context"
-import {
   ConfigParseError,
   RegistriesIndexParseError,
   RegistryInvalidNamespaceError,
@@ -73,13 +69,10 @@ export async function getRegistry(
     throw new RegistryNotFoundError(registryName)
   }
 
-  if (urlAndHeaders.headers && Object.keys(urlAndHeaders.headers).length > 0) {
-    setRegistryHeaders({
-      [urlAndHeaders.url]: urlAndHeaders.headers,
-    })
-  }
-
-  const [result] = await fetchRegistry([urlAndHeaders.url], { useCache })
+  const [result] = await fetchRegistry([urlAndHeaders.url], {
+    headers: urlAndHeaders.headers,
+    useCache,
+  })
 
   return parseRegistryCatalog(registryName, result)
 }
@@ -125,8 +118,6 @@ export async function getRegistryItems(
 ) {
   const { config, useCache = false } = options || {}
 
-  clearRegistryContext()
-
   return fetchRegistryItems(items, configWithDefaults(config), { useCache })
 }
 
@@ -139,7 +130,6 @@ export async function resolveRegistryItems(
 ) {
   const { config, useCache = false } = options || {}
 
-  clearRegistryContext()
   return resolveRegistryTree(items, configWithDefaults(config), { useCache })
 }
 

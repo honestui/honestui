@@ -10,7 +10,6 @@ import {
   resolveRegistryBaseConfig,
 } from "@/src/preset/presets"
 import { HONESTUI_URL } from "@/src/registry/constants"
-import { clearRegistryContext } from "@/src/registry/context"
 import { registryConfigSchema } from "@/src/registry/schema"
 import { isUrl } from "@/src/registry/utils"
 import { getTemplateForFramework } from "@/src/templates/index"
@@ -274,8 +273,6 @@ export const apply = new Command()
 
       logger.break()
       handleError(error)
-    } finally {
-      clearRegistryContext()
     }
   })
 

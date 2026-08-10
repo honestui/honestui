@@ -1,12 +1,12 @@
 ---
 title: Alert
-description: A callout for information and a blocking dialog for decisions.
+description: Present important page-level information or require a decision before work continues.
 
 links:
   doc: https://base-ui.com/react/components/alert-dialog#api-reference
 ---
 
-<ComponentPreview name="alert-demo" />
+<ComponentPreview name="alert-demo" previewClassName="h-96 sm:h-96" />
 
 ## Overview
 
@@ -124,7 +124,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   AlertTitle,
-} from "@/components/ui/alert"
+} from "@/components/ui/alert";
 ```
 
 ```tsx
@@ -159,43 +159,53 @@ import {
 
 ## Examples
 
-Our examples cover alerts with icons, actions, and common state variants.
+Each example places the alert inside the task that produces it, including the
+action, result, and recovery path where they matter.
 
 ### With Icon
 
-Use an icon to make the alert easier to scan, especially in dense forms or settings pages.
+Generate a new set of recovery codes and see how the alert explains the
+consequence before and after the action.
 
-<ComponentPreview name="alert-with-icon" />
+<ComponentPreview name="alert-with-icon" previewClassName="h-96 sm:h-96" />
 
 ### With Icon and Action Buttons
 
-Use actions when the alert can be resolved or explored from the same place.
+Turn on two-step verification, defer it, or return to the setup from the same
+account-security workflow.
 
-<ComponentPreview name="alert-with-icon-action" />
+<ComponentPreview
+  name="alert-with-icon-action"
+  previewClassName="h-96 sm:h-96"
+/>
 
 ### Info Alert
 
-Use info for neutral context or guidance.
+Give neutral guidance at the point where it changes how someone completes a
+form.
 
-<ComponentPreview name="alert-info" />
+<ComponentPreview name="alert-info" previewClassName="h-96 sm:h-96" />
 
 ### Success Alert
 
-Use success when an action completed and the result should remain visible.
+Confirm a saved profile change while keeping the edited field and next state in
+view.
 
-<ComponentPreview name="alert-success" />
+<ComponentPreview name="alert-success" previewClassName="h-96 sm:h-96" />
 
 ### Warning Alert
 
-Use warning when the user can continue but should understand a risk.
+Warn about an expiring payment method and show what changes after it is
+replaced.
 
-<ComponentPreview name="alert-warning" />
+<ComponentPreview name="alert-warning" previewClassName="h-96 sm:h-96" />
 
 ### Error Alert
 
-Use error when something failed and the user needs to correct it.
+Preserve the failed value, explain the valid format, and let the user recover in
+place.
 
-<ComponentPreview name="alert-error" />
+<ComponentPreview name="alert-error" previewClassName="h-96 sm:h-96" />
 
 ## Alert Dialog
 
@@ -203,12 +213,19 @@ Alert Dialog is included in the same component file. Use it only when the user m
 
 ### Basic Alert Dialog
 
-Use this pattern before a destructive or high-impact action.
+Show the destructive action in its settings context, require confirmation, then
+make the completed state visible.
 
-<ComponentPreview name="alert-dialog-demo" />
+<ComponentPreview name="alert-dialog-demo" previewClassName="h-96 sm:h-96" />
 
 ### Close Confirmation
 
 Use this pattern when closing would discard work, interrupt a process, or hide important state.
 
 <ComponentPreview name="dialog-close-confirmation" />
+
+## API reference
+
+The inline `Alert` accepts native `div` props plus its documented visual variants; its title, description, and action parts accept native element props. The modal alert parts forward the matching Base UI Alert Dialog props. `AlertDialogOverlay` and `AlertDialogContent` are aliases for the backdrop and popup.
+
+Use the inline family for information that does not block work. Use Alert Dialog only when the user must make an explicit consequential choice before continuing. See the [Base UI Alert Dialog API](https://base-ui.com/react/components/alert-dialog#api-reference).

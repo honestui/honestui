@@ -1,49 +1,57 @@
 # Honest UI
 
-Accessible React components, shaders, charts, icons, logos, and vectors.
+**Good interfaces. Honest code.**
 
-[Documentation](https://honestui.com/docs) ·
-[Report a bug](https://github.com/honestui/honestui/issues/new?template=bug_report.yml) ·
-[Request a feature](https://github.com/honestui/honestui/issues/new?template=feature_request.yml)
+Honest UI gives you thoughtful components, charts, icons, and visual effects that you can adapt to your product. Interface components are copied into your project so the code stays visible and editable. Larger visual collections use explicit package entry points.
 
-Honest UI gives you polished building blocks that you can inspect, customize,
-and own. Use the package entry points directly or copy components from the
-registry into your application.
+[Documentation](https://honestui.com/docs) · [Report a bug](https://github.com/honestui/honestui/issues/new?template=bug_report.yml) · [Request a feature](https://github.com/honestui/honestui/issues/new?template=feature_request.yml)
 
-## Install
+## Add an interface component
+
+From an existing React project:
+
+```bash
+npx honestui@latest init
+npx honestui@latest add button
+```
+
+The CLI copies the selected source into your project. You can edit, rename, or remove it like any other application code.
+
+## Use a package collection
 
 ```bash
 npm install honestui
 ```
 
-## Use
-
 ```tsx
-import { Button } from "honestui";
-import { BarChart, type ChartConfig } from "honestui/charts";
-import { Search } from "honestui/icons";
-import { Vercel } from "honestui/logos";
-import { LightRays } from "honestui/shaders";
-import { Abstract1Shapes } from "honestui/vectors";
+import { BarChart, type ChartConfig } from "honestui/charts"
+import "honestui/charts.css"
+
+import { Search } from "honestui/icons"
+import { Vercel } from "honestui/logos"
+import { Abstract1Shapes } from "honestui/vectors"
+
+import { LightRays } from "honestui/shaders"
+import "honestui/shaders.css"
 ```
 
-Load the corresponding package styles for Gooey Toast and shader effects:
+The package provides these ES module entry points with TypeScript declarations:
 
-```tsx
-import "honestui/styles.css";
-import "honestui/shaders.css";
-```
+- `honestui` for the registry API and CLI runtime
+- `honestui/charts` and `honestui/charts.css`
+- `honestui/icons`
+- `honestui/logos`
+- `honestui/vectors`
+- `honestui/shaders` and `honestui/shaders.css`
 
-The six JavaScript entry points are:
+## What we live by
 
-- `honestui` for UI components
-- `honestui/charts` for chart components, helpers, and types
-- `honestui/icons` for the complete icon catalog and metadata
-- `honestui/logos` for the complete logo catalog and metadata
-- `honestui/shaders` for GPU-rendered visual effects and their prop types
-- `honestui/vectors` for decorative shapes, illustrations, patterns, and metadata
-
-Both ES modules and CommonJS are published with TypeScript declarations.
+- Good defaults, without giving up control.
+- Clear code over clever abstractions.
+- Useful design over unnecessary decoration.
+- Accessibility from the start.
+- No lock-in. You own the code.
+- Quality over hype.
 
 ## Development
 
@@ -54,21 +62,12 @@ npm install
 npm run dev
 ```
 
-Build and validate the projects with:
+Verify the package release surface with:
 
 ```bash
-npm run build
-npm run build:package
-npm --prefix package/honestui run typecheck
+npm --prefix package/honestui run verify:release
 ```
 
-`npm pack` and `npm publish` automatically run the package build through the
-`prepack` script.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Please
-follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report vulnerabilities
-according to the [Security Policy](SECURITY.md).
-
-## License
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Report vulnerabilities through the [Security Policy](SECURITY.md).
 
 Honest UI is available under the [MIT License](LICENSE).

@@ -1,5 +1,3 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
-
 import { REGISTRY_URL } from "@/src/registry/constants"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 

@@ -142,7 +142,7 @@ function AlertDialogHeader({
     <div
       data-slot="alert-dialog-header"
       className={cn(
-        "flex flex-col gap-2 border-b-0 p-[var(--rs-space-7)] text-center [&:has(+_[data-slot=alert-dialog-body])]:pb-[var(--rs-space-5)] sm:text-left",
+        "flex flex-col gap-2 border-b-0 p-[var(--hui-space-7)] text-center [&:has(+_[data-slot=alert-dialog-body])]:pb-[var(--hui-space-5)] sm:text-left",
         className
       )}
       {...props}
@@ -158,7 +158,7 @@ function AlertDialogBody({
     <div
       data-slot="alert-dialog-body"
       className={cn(
-        "px-[var(--rs-space-7)] pb-[var(--rs-space-5)] first:p-[var(--rs-space-7)]",
+        "px-[var(--hui-space-7)] pb-[var(--hui-space-5)] first:p-[var(--hui-space-7)]",
         className
       )}
       {...props}
@@ -174,7 +174,7 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-2 border-t-0 px-[var(--rs-space-7)] pb-[var(--rs-space-7)] sm:flex-row sm:justify-end",
+        "flex flex-col-reverse gap-2 border-t-0 px-[var(--hui-space-7)] pb-[var(--hui-space-7)] sm:flex-row sm:justify-end",
         className
       )}
       {...props}

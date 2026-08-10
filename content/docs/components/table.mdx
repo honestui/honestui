@@ -1,12 +1,9 @@
 ---
 title: Table
-description: A simple table component for displaying tabular data.
-
-links:
-  doc: https://base-ui.com/react/components/table#api-reference
+description: Present data whose rows and columns have meaningful relationships.
 ---
 
-<ComponentPreview name="table-demo" />
+<ComponentPreview name="table-demo" previewClassName="h-[28rem] sm:h-[28rem]" />
 
 ## Overview
 
@@ -16,15 +13,15 @@ Tables are useful for invoices, users, orders, logs, permissions, metrics, and a
 
 ## Anatomy
 
-A table has a caption or surrounding heading, header rows, body rows, cells, and optional footer. Headers should describe the data in each column.
+A table has a caption or surrounding heading, header rows, body rows, cells, and an optional footer. `TableSectionHeader` can divide a long body into named row groups without abandoning table semantics.
 
 ## Usage guidance
 
-Use tables for comparison. Use cards or lists when each item has varied content and users do not need column alignment.
+Use tables for comparison. Use cards or lists when each item has varied content and users do not need column alignment. Keep numeric columns aligned, format values consistently, and let the built-in container scroll horizontally instead of compressing content beyond recognition.
 
 ## Accessibility
 
-Use table headers correctly so screen readers can understand row and column relationships. Keep action buttons inside rows clearly labeled.
+Add a concise caption or associate the table with a visible heading. Set `scope="col"` on column headers and `scope="row"` on row headers; use `scope="colgroup"` for a section header. Keep row actions clearly labeled, and do not make an entire row clickable unless the same destination is exposed as a real link.
 
 ## Installation
 
@@ -70,7 +67,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+  TableSectionHeader,
+} from "@/components/ui/table";
 ```
 
 ```tsx
@@ -93,8 +91,15 @@ import {
 
 ## Examples
 
-Our examples cover a basic table and a framed table surface.
+The main example includes a caption, column and row headers, section headers, status text, numeric alignment, and a footer. The framed example shows how to place the same semantic table inside a bordered surface.
 
 ### Framed Table
 
-<ComponentPreview name="table-framed" />
+<ComponentPreview
+  name="table-framed"
+  previewClassName="h-[28rem] sm:h-[28rem]"
+/>
+
+## API reference
+
+All Table parts accept props for their matching native HTML elements. `TableRow` adds `interactive?: boolean` for hover and active styling; it does not add click behavior. `Table` wraps the native table in a horizontally scrollable container. `TableSectionHeader` renders a `tr`, so place one or more `TableHead` cells inside it.

@@ -1,25 +1,22 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { Button } from "@/registry/default/ui/button"
-import { Checkbox } from "@/registry/default/ui/checkbox"
-import { CheckboxGroup } from "@/registry/default/ui/checkbox"
-import { Field, FieldLabel } from "@/registry/default/ui/field"
-import { Fieldset, FieldsetLegend } from "@/registry/default/ui/fieldset"
-import { Form } from "@/registry/default/ui/form"
+import { Button } from "@/registry/default/ui/button";
+import { Checkbox } from "@/registry/default/ui/checkbox";
+import { CheckboxGroup } from "@/registry/default/ui/checkbox";
+import { Field, FieldLabel } from "@/registry/default/ui/field";
+import { Fieldset, FieldsetLegend } from "@/registry/default/ui/fieldset";
+import { Form } from "@/registry/default/ui/form";
 
 export default function CheckboxGroupFormDemo() {
-  const [loading, setLoading] = React.useState(false)
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    setLoading(true)
-    await new Promise((r) => setTimeout(r, 800))
-    setLoading(false)
-    const frameworks = formData.getAll("frameworks") as string[]
-    alert(`Selected: ${frameworks.join(", ") || "none"}`)
-  }
+  const [status, setStatus] = React.useState("");
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const frameworks = formData.getAll("frameworks") as string[];
+    setStatus(`Submitted: ${frameworks.join(", ") || "no frameworks"}.`);
+  };
 
   return (
     <Form onSubmit={onSubmit} className="grid max-w-[160px] gap-4">
@@ -31,7 +28,7 @@ export default function CheckboxGroupFormDemo() {
         <FieldsetLegend className="text-sm font-medium">
           Frameworks
         </FieldsetLegend>
-        <CheckboxGroup defaultValue={["next"]} disabled={loading}>
+        <CheckboxGroup defaultValue={["next"]}>
           <FieldLabel>
             <Checkbox value="next" />
             Next.js
@@ -46,9 +43,10 @@ export default function CheckboxGroupFormDemo() {
           </FieldLabel>
         </CheckboxGroup>
       </Field>
-      <Button type="submit" disabled={loading}>
-        Submit
-      </Button>
+      <Button type="submit">Save frameworks</Button>
+      <p className="text-sm text-muted-foreground" role="status">
+        {status}
+      </p>
     </Form>
-  )
+  );
 }

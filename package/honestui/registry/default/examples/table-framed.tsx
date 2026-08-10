@@ -12,7 +12,7 @@ import {
 
 export default function TableFramed() {
   return (
-    <Frame className="w-full max-w-4xl">
+    <Frame className="w-full min-w-0 max-w-4xl">
       <FramePanel>
         <Table>
           <TableHeader>

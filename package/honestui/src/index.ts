@@ -7,7 +7,6 @@ import { apply } from "./commands/apply"
 import { build } from "./commands/build"
 import { diff } from "./commands/diff"
 import { docs } from "./commands/docs"
-import { eject } from "./commands/eject"
 import { info } from "./commands/info"
 import { init } from "./commands/init"
 import { migrate } from "./commands/migrate"
@@ -18,9 +17,6 @@ import { view } from "./commands/view"
 import { Command } from "commander"
 
 import packageJson from "../package.json"
-
-process.on("SIGINT", () => process.exit(0))
-process.on("SIGTERM", () => process.exit(0))
 
 async function main() {
   const program = new Command()
@@ -41,7 +37,6 @@ async function main() {
     .addCommand(view)
     .addCommand(search)
     .addCommand(migrate)
-    .addCommand(eject)
     .addCommand(info)
     .addCommand(build)
     .addCommand(preset)

@@ -1,76 +1,101 @@
 ---
 title: Get Started
-description: Install Honest UI, add your first component, and understand the setup.
+description: Set up Honest UI, add a component, and verify the files in your project.
 ---
 
-This guide shows the fastest path to using Honest UI in a React project.
+Set up Honest UI, add a Button, and confirm that its source is part of your project. The CLI creates the shared configuration, copies component files, and installs the dependencies they need.
 
-Honest UI components are meant to live in your app. The CLI copies component code, installs required dependencies, and leaves you with files you can edit.
+## Before you start
 
-## Project checklist
+Run this guide from the root of an existing project with:
 
-Before adding components, make sure your project has:
-
-- React.
+- Node.js 20.18.1 or later.
+- React 19.
 - Tailwind CSS v4.
 - A global stylesheet, such as `app/globals.css`.
-- A component import alias, such as `@/components/ui`.
 
-If your app does not use the same import alias, you can still use Honest UI. Update the import paths after copying a component.
+The CLI detects supported project structures and asks where shared styles and copied files should go. You can use aliases such as `@/components` and `@/lib`, but the exact aliases are your choice.
 
-## Install the base setup
+## 1. Initialize Honest UI
 
-Run the CLI from your project root:
+Run:
 
 ```bash
-npx honestui@latest add base
+npx honestui@latest init
 ```
 
-This installs the shared setup that most components expect. It may add CSS variables, utility helpers, and dependencies used by Honest UI components.
+The CLI creates `components.json`, records your aliases and stylesheet path, and installs the base styles and dependencies used by copied components. Review the prompts before accepting them because they determine where later components are written.
 
-After installation, check the changed files before committing. The generated files are normal project files, so you can edit them.
+If `components.json` already exists, the CLI asks before replacing it. Review the current file and commit or save your work before choosing to overwrite it.
 
-## Add a component
+## 2. Add your first component
 
-Add components one at a time:
+Add Button after initialization:
 
 ```bash
 npx honestui@latest add button
 ```
 
-Replace `button` with the component name from the docs. For example, use `dialog`, `select`, `tabs`, or `toast`.
+The CLI shows the files and packages it plans to add. To inspect the change without writing files, run:
 
-Every Honest UI component page includes the exact CLI command to install it.
+```bash
+npx honestui@latest add button --dry-run
+```
+
+With the common `@/components/ui` alias, the copied source is available from `@/components/ui/button`. Your configured path may differ.
+
+## 3. Render the component
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+export function SaveProfileButton() {
+  return <Button>Save profile</Button>
+}
+```
+
+Start your application and confirm that:
+
+- The button renders with the base styles.
+- The focus indicator is visible when you reach it with `Tab`.
+- The copied component file is present at the path configured in `components.json`.
+
+You can now edit the component source and its variants as normal project code.
+
+## Add more UI components
+
+Every component page includes its CLI name. For example:
+
+```bash
+npx honestui@latest add dialog
+npx honestui@latest add select
+npx honestui@latest add tabs
+```
+
+Start with [Field](/docs/components/field) and the specific controls you need for forms. Use [Dialog](/docs/components/dialog) for focused work, [Table](/docs/components/table) for tabular data, and [Toast](/docs/components/toast) for brief, noncritical feedback.
 
 ## Install manually
 
-Manual setup is useful when you want to review every line before it enters your project.
+Use manual installation when you want to review and place every file yourself:
 
-1. Open a component page in the docs.
-2. Copy the code from the **Code** tab.
-3. Paste it into your project.
-4. Install any listed dependencies.
-5. Copy any required CSS variables.
-6. Update import paths to match your app.
+1. Open the component page.
+2. Select the manual installation tab.
+3. Copy the component source and any supporting files.
+4. Install the listed dependencies.
+5. Confirm that the shared Honest UI styles are available.
+6. Update imports to match your aliases.
+7. Test the rendered component and its keyboard behavior.
 
-Use [Styling](/docs/styling) when a component relies on shared colors or state tokens.
+Copy the complete component structure. Removing labels, descriptions, focus handling, or primitive parts can change its behavior and accessibility.
 
-## Choose your first components
+## Package-based collections
 
-For a basic product screen, start with:
+The component CLI is not the installation path for every Honest UI collection. Charts, icons, logos, vectors, and shaders are installed from the `honestui` package and imported through dedicated entry points.
 
-- [Button](/docs/components/button) for actions.
-- [Input](/docs/components/input) and [Field](/docs/components/field) for forms.
-- [Dialog](/docs/components/dialog) for focused tasks.
-- [Table](/docs/components/table) for structured data.
-- [Toast](/docs/components/toast) for short feedback.
+| Collection | Next step |
+| --- | --- |
+| Charts | [Install charts](/docs/charts/installation) |
+| Icons, logos, and vectors | [Install visual assets](/docs/icons/installation) |
+| Shaders | [Install shaders](/docs/shaders/installation) |
 
-For a complete form, combine [Form](/docs/components/form), [Field](/docs/components/field), and the specific controls you need.
-
-## After setup
-
-Browse [Our Components](/docs/component-guide) to understand how the component pages are organized.
-
-Read [Accessibility](/docs/accessibility) before changing keyboard behavior, focus styles, labels, or validation messages.
-
-If you want to contribute back to Honest UI, read the [Contributing Guide](/docs/contributing).
+Read [Styling](/docs/styling) before changing shared tokens, and read [Accessibility](/docs/accessibility) before changing component semantics or interaction behavior.

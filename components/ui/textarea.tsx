@@ -15,12 +15,12 @@ function Textarea({
     <textarea
       data-slot="textarea"
       className={cn(
-        "m-0 box-border h-auto w-full appearance-none overflow-auto rounded-[var(--rs-radius-2)] border-[0.5px] border-[var(--rs-color-border-base-tertiary)] bg-[var(--rs-color-background-base-primary)] text-[var(--rs-color-foreground-base-primary)] outline-none [font-size:var(--rs-font-size-small)] [line-height:var(--rs-line-height-small)] placeholder:text-[var(--rs-color-foreground-base-tertiary)] placeholder:[font-size:var(--rs-font-size-small)] placeholder:[font-weight:var(--rs-font-weight-regular)] placeholder:[line-height:var(--rs-line-height-small)] read-only:bg-[var(--rs-color-background-base-secondary)] disabled:cursor-not-allowed disabled:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-invalid:border-[var(--rs-color-border-danger-emphasis)] aria-invalid:border-[var(--rs-color-border-danger-emphasis)] [&:focus:not(:disabled)]:border-[var(--rs-color-border-accent-emphasis)] [&:focus:not(:disabled)]:bg-[var(--rs-color-background-base-primary)] data-invalid:focus:border-[var(--rs-color-border-danger-emphasis-hover)] aria-invalid:focus:border-[var(--rs-color-border-danger-emphasis-hover)] motion-safe:[transition:var(--rs-transition-interactive)]",
+        "m-0 box-border h-auto w-full appearance-none overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] placeholder:text-[var(--hui-color-foreground-base-tertiary)] placeholder:[font-size:var(--hui-font-size-small)] placeholder:[font-weight:var(--hui-font-weight-regular)] placeholder:[line-height:var(--hui-line-height-small)] read-only:bg-[var(--hui-color-background-base-secondary)] disabled:cursor-not-allowed disabled:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-invalid:border-[var(--hui-color-border-danger-emphasis)] aria-invalid:border-[var(--hui-color-border-danger-emphasis)] [&:focus:not(:disabled)]:border-[var(--hui-color-border-accent-emphasis)] [&:focus:not(:disabled)]:bg-[var(--hui-color-background-base-primary)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)] aria-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)] motion-safe:[transition:var(--hui-transition-interactive)]",
         (size === "large" || size === "lg" || size === "default") &&
-          "p-[var(--rs-space-3)]",
-        (size === "small" || size === "sm") && "p-[var(--rs-space-2)]",
+          "p-[var(--hui-space-3)]",
+        (size === "small" || size === "sm") && "p-[var(--hui-space-2)]",
         variant === "borderless" &&
-          "border-transparent [&:focus:not(:disabled)]:border-transparent! [&:focus-visible:not(:disabled)]:shadow-[var(--rs-focus-ring-shadow)]",
+          "border-transparent [&:focus:not(:disabled)]:border-transparent! [&:focus-visible:not(:disabled)]:shadow-[var(--hui-focus-ring-shadow)]",
         className
       )}
       {...props}

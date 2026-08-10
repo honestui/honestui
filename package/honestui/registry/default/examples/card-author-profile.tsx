@@ -1,6 +1,10 @@
-import { Badge } from "@/registry/default/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/registry/default/ui/avatar"
-import { Card, CardContent } from "@/registry/default/ui/card"
+import { Badge } from "@/registry/default/ui/badge";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/registry/default/ui/avatar";
+import { Card, CardContent } from "@/registry/default/ui/card";
 
 function CustomBadge() {
   return (
@@ -14,7 +18,7 @@ function CustomBadge() {
         d="M10.635 6.6498L6.95249 10.2498C6.90055 10.3024 6.83864 10.3441 6.77038 10.3724C6.70212 10.4007 6.62889 10.4152 6.55499 10.4148C6.48062 10.4138 6.40719 10.398 6.33896 10.3684C6.27073 10.3388 6.20905 10.2959 6.15749 10.2423L4.37999 8.4423C4.32532 8.39026 4.28169 8.32775 4.25169 8.25849C4.22169 8.18923 4.20593 8.11464 4.20536 8.03916C4.20479 7.96369 4.21941 7.88887 4.24836 7.81916C4.27731 7.74946 4.31999 7.68629 4.37387 7.63342C4.42774 7.58056 4.4917 7.53908 4.56194 7.51145C4.63218 7.48382 4.70726 7.47061 4.78271 7.4726C4.85816 7.4746 4.93244 7.49176 5.00112 7.52306C5.0698 7.55436 5.13148 7.59917 5.18249 7.6548L6.56249 9.0573L9.84749 5.8473C9.95296 5.74197 10.0959 5.6828 10.245 5.6828C10.394 5.6828 10.537 5.74197 10.6425 5.8473C10.6953 5.90016 10.737 5.963 10.7653 6.03216C10.7935 6.10132 10.8077 6.17542 10.807 6.25013C10.8063 6.32483 10.7908 6.39865 10.7612 6.46728C10.7317 6.5359 10.6888 6.59795 10.635 6.6498Z"
       />
     </svg>
-  )
+  );
 }
 
 export default function CardAuthorProfile() {
@@ -43,9 +47,12 @@ export default function CardAuthorProfile() {
               </span>
             </div>
             <div className="flex-1 space-y-px">
-              <a href="#" className="font-medium text-white">
+              <Link
+                href="/docs/components/avatar"
+                className="font-medium text-white"
+              >
                 Nick Johnson
-              </a>
+              </Link>
               <div className="text-white/80">nick@example.com</div>
             </div>
             <Badge variant="success">New</Badge>
@@ -55,12 +62,13 @@ export default function CardAuthorProfile() {
               Author Profile
             </h3>
             <p className="text-white">
-              Profile card showcasing the author's avatar, name, and estimated
+              Profile card showcasing the author’s avatar, name, and estimated
               reading time for each post.
             </p>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
+import Link from "next/link";

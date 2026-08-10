@@ -310,5 +310,7 @@ async function defaultPostInit({ projectPath }: { projectPath: string }) {
     await execa("git", ["commit", "-m", "feat: initial commit"], {
       cwd: projectPath,
     })
-  } catch {}
+  } catch {
+    // Git initialization is optional; the generated project remains usable.
+  }
 }

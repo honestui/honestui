@@ -9,8 +9,6 @@ const packageRoot = path.resolve(__dirname, "..");
 const repoRoot = path.resolve(packageRoot, "..", "..");
 const sourceRegistryRoot = path.join(repoRoot, "registry");
 const targetRegistryRoot = path.join(packageRoot, "registry");
-const sourceSkillsRoot = path.join(repoRoot, "public", "honestui-skills");
-const targetSkillsRoot = path.join(packageRoot, "skills", "honestui-skills");
 
 await access(sourceRegistryRoot, constants.R_OK);
 
@@ -67,29 +65,6 @@ if (expectedRegistryFiles.size !== targetFiles.length) {
 }
 
 console.log(`Copied ${sourceFiles.length} registry files into ${path.relative(repoRoot, targetRegistryRoot)}`);
-
-await access(sourceSkillsRoot, constants.R_OK);
-await rm(targetSkillsRoot, { recursive: true, force: true });
-await mkdir(path.dirname(targetSkillsRoot), { recursive: true });
-await cp(sourceSkillsRoot, targetSkillsRoot, {
-  recursive: true,
-  force: true,
-  filter(source) {
-    const name = path.basename(source);
-    return name !== ".git" && name !== ".DS_Store";
-  }
-});
-
-const sourceSkillFiles = await collectFiles(sourceSkillsRoot, { ignoredNames: new Set([".git", ".DS_Store"]) });
-const targetSkillFiles = await collectFiles(targetSkillsRoot);
-
-if (sourceSkillFiles.length !== targetSkillFiles.length) {
-  throw new Error(
-    `Skills copy mismatch: expected ${sourceSkillFiles.length} files, copied ${targetSkillFiles.length}`
-  );
-}
-
-console.log(`Copied ${sourceSkillFiles.length} skill files into ${path.relative(repoRoot, targetSkillsRoot)}`);
 
 async function collectFiles(root, options = {}, baseRoot = root) {
   const files = [];

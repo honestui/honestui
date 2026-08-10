@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
 import './css/blinds.css';
+import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
 
 export interface GradientBlindsProps {
   className?: string;
@@ -59,6 +60,8 @@ const GradientBlinds: React.FC<GradientBlindsProps> = ({
   shineDirection = 'left',
   mixBlendMode = 'lighten'
 }) => {
+  const shouldReduceMotion = usePrefersReducedMotion();
+  const isPaused = paused || shouldReduceMotion;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const programRef = useRef<Program | null>(null);
@@ -70,7 +73,7 @@ const GradientBlinds: React.FC<GradientBlindsProps> = ({
   const firstResizeRef = useRef<boolean>(true);
   const livePropsRef = useRef({
     dpr,
-    paused,
+    paused: isPaused,
     gradientColors,
     angle,
     noise,
@@ -87,7 +90,7 @@ const GradientBlinds: React.FC<GradientBlindsProps> = ({
   useEffect(() => {
     livePropsRef.current = {
       dpr,
-      paused,
+      paused: isPaused,
       gradientColors,
       angle,
       noise,
@@ -103,7 +106,7 @@ const GradientBlinds: React.FC<GradientBlindsProps> = ({
     };
   }, [
     dpr,
-    paused,
+    isPaused,
     gradientColors,
     angle,
     noise,
@@ -131,6 +134,7 @@ const GradientBlinds: React.FC<GradientBlindsProps> = ({
     rendererRef.current = renderer;
     const gl = renderer.gl;
     const canvas = gl.canvas as HTMLCanvasElement;
+    canvas.setAttribute('aria-hidden', 'true');
 
     canvas.style.width = '100%';
     canvas.style.height = '100%';
@@ -346,6 +350,7 @@ void main() {
     };
 
     resize();
+    renderer.render({ scene: mesh });
     const ro = new ResizeObserver(resize);
     ro.observe(container);
 
@@ -463,6 +468,7 @@ void main() {
 
   return (
     <div
+      aria-hidden="true"
       ref={containerRef}
       className={`gradient-blinds-container ${className}`}
       style={{

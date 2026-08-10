@@ -17,7 +17,7 @@ export default function SelectDisabled() {
   return (
     <div className="w-full max-w-64">
       <Select items={items}>
-        <SelectTrigger disabled>
+        <SelectTrigger className="w-full" disabled>
           <SelectValue />
         </SelectTrigger>
         <SelectPopup>

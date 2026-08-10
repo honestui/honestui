@@ -1,7 +1,7 @@
 import * as fs from "fs/promises"
 import * as path from "path"
 import { preFlightRegistryBuild } from "@/src/preflights/preflight-registry"
-import { HONESTUI_URL } from "@/src/registry/constants"
+import { resolveRegistryOutputPath } from "@/src/registry/output-path"
 import { recursivelyResolveFileImports } from "@/src/registry/utils"
 import { configSchema, registryItemSchema, registrySchema } from "@/src/schema"
 import * as ERRORS from "@/src/utils/errors"
@@ -150,7 +150,7 @@ async function buildRegistry(opts: z.infer<typeof buildOptionsSchema>) {
 
       // Write the registry item to the output directory.
       await fs.writeFile(
-        path.resolve(resolvePaths.outputDir, `${result.data.name}.json`),
+        resolveRegistryOutputPath(resolvePaths.outputDir, result.data.name),
         JSON.stringify(result.data, null, 2)
       )
     }

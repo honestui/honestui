@@ -79,7 +79,7 @@ function searchItems<
     type?: string
     description?: string
     addCommandArgument?: string
-    [key: string]: any
+    [key: string]: unknown
   } = SearchableItem,
 >(
   items: T[],

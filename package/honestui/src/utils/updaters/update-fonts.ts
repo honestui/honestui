@@ -1,6 +1,10 @@
 import { existsSync, promises as fs } from "fs"
 import path from "path"
-import { RegistryFontItem, registryResolvedItemsTreeSchema } from "@/src/schema"
+import {
+  RegistryCssProperties,
+  RegistryFontItem,
+  registryResolvedItemsTreeSchema,
+} from "@/src/schema"
 import { Config } from "@/src/utils/get-config"
 import { getProjectInfo, ProjectInfo } from "@/src/utils/get-project-info"
 import { spinner } from "@/src/utils/spinner"
@@ -80,21 +84,26 @@ export async function massageTreeForFonts(
 
     tree.css ??= {}
     tree.css["@layer base"] ??= {}
+    const baseLayer = tree.css["@layer base"]
 
     for (const [selector, classes] of Array.from(groups.entries())) {
       const fontClasses = classes.join(" ")
-      tree.css["@layer base"][selector] ??= {}
+      const existingSelectorRules = baseLayer[selector]
+      const selectorRules: RegistryCssProperties =
+        typeof existingSelectorRules === "object" &&
+        !Array.isArray(existingSelectorRules)
+          ? existingSelectorRules
+          : {}
+      baseLayer[selector] = selectorRules
       // Find existing @apply key and merge, or create new.
-      const existingApplyKey = Object.keys(
-        tree.css["@layer base"][selector]
-      ).find((key) => key.startsWith("@apply "))
+      const existingApplyKey = Object.keys(selectorRules).find((key) =>
+        key.startsWith("@apply ")
+      )
       if (existingApplyKey) {
-        delete tree.css["@layer base"][selector][existingApplyKey]
-        tree.css["@layer base"][selector][
-          `${existingApplyKey} ${fontClasses}`
-        ] = {}
+        delete selectorRules[existingApplyKey]
+        selectorRules[`${existingApplyKey} ${fontClasses}`] = {}
       } else {
-        tree.css["@layer base"][selector][`@apply ${fontClasses}`] = {}
+        selectorRules[`@apply ${fontClasses}`] = {}
       }
     }
   }

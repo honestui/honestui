@@ -1,10 +1,17 @@
 ---
 title: Installation
-description: Add Honest UI charts to your project.
+metaTitle: Install Honest UI charts
+description: Install Honest UI charts and render a verified first chart.
 image: /og/og-image.png
 ---
 
-Honest UI charts are available from the `honestui/charts` package entry point. Installing `honestui` includes the chart components and their runtime dependencies.
+Honest UI charts are available from the `honestui/charts` package entry point. Unlike CLI-installed UI components, charts remain an `honestui` package dependency.
+
+## Requirements
+
+- Node.js 20.18.1 or later.
+- React 19.
+- A container with an explicit height or aspect ratio.
 
 ## Install
 
@@ -15,9 +22,40 @@ Honest UI charts are available from the `honestui/charts` package entry point. I
 Import chart roots, shared types, and chart-specific data types from the same entry point.
 
 ```tsx
-import { BarChart, type ChartConfig } from "honestui/charts";
+import { BarChart, type ChartConfig } from "honestui/charts"
+import "honestui/charts.css"
 ```
+
+Load `honestui/charts.css` once in your application root. It contains only the utilities used by the chart package, so chart layout, loading states, tooltips, and keyboard-operable legends do not depend on your Tailwind content paths.
+
+## Render a chart
+
+```tsx
+const data = [
+  { month: "Jan", completed: 18 },
+  { month: "Feb", completed: 24 },
+]
+
+const chartConfig = {
+  completed: {
+    label: "Completed tasks",
+    colors: { light: ["#2563eb"], dark: ["#60a5fa"] },
+  },
+} satisfies ChartConfig
+
+export function CompletedTasksChart() {
+  return (
+    <BarChart data={data} config={chartConfig} className="h-72">
+      <BarChart.XAxis dataKey="month" />
+      <BarChart.Tooltip />
+      <BarChart.Bar dataKey="completed" />
+    </BarChart>
+  )
+}
+```
+
+Confirm that the chart has a visible height and that each `dataKey` exists in both the data rows and `chartConfig`. Add a visible summary or table if readers need the plotted values without pointer interaction.
 
 ## Next steps
 
-Choose a visualization from the Components section, then use [Chart Config](/docs/charts/chart-config) to define shared labels, colors, and icons.
+Choose a chart based on the comparison you need to show, then use [Chart Config](/docs/charts/chart-config) to define shared labels, colors, and icons.

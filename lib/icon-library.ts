@@ -43,5 +43,12 @@ export function getAssetCategory(collection: AssetCollection, slug: string) {
   const icons = catalogs[collection][category.sourceKey];
   if (!icons) return null;
 
-  return { ...category, icons };
+  const count = Object.keys(icons).length;
+  if (count !== category.count) {
+    throw new Error(
+      `Asset count mismatch for ${collection}/${category.slug}: expected ${category.count}, received ${count}. Update globals/constants/icon-categories.ts.`,
+    );
+  }
+
+  return { ...category, count, icons };
 }

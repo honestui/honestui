@@ -1,6 +1,6 @@
 ---
 title: Pagination
-description: A pagination with page navigation, next and previous links.
+description: Move through a collection that is split into numbered pages.
 ---
 
 <ComponentPreview name="pagination-demo" />
@@ -66,24 +66,50 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
 ```
 
 ```tsx
 <Pagination>
   <PaginationContent>
     <PaginationItem>
-      <PaginationPrevious href="#" />
+      <PaginationPrevious href="?page=1" />
     </PaginationItem>
     <PaginationItem>
-      <PaginationLink href="#">1</PaginationLink>
+      <PaginationLink href="?page=1" isActive>
+        1
+      </PaginationLink>
     </PaginationItem>
     <PaginationItem>
       <PaginationEllipsis />
     </PaginationItem>
     <PaginationItem>
-      <PaginationNext href="#" />
+      <PaginationNext href="?page=2" />
     </PaginationItem>
   </PaginationContent>
 </Pagination>
 ```
+
+## Examples
+
+### Results with page position
+
+State which results are visible so people can understand their position in the collection.
+
+<ComponentPreview name="pagination-results" />
+
+### Compact controls
+
+<ComponentPreview name="pagination-compact" />
+
+### Previous and next only
+
+<ComponentPreview name="pagination-mini" />
+
+## Decision guidance
+
+Pagination does not own the current page or routing. Build every item from the real result count, keep the current page visibly and programmatically marked, and use URLs that can be opened, copied, and revisited. Disable or omit Previous and Next only at the real boundaries.
+
+## API reference
+
+Pagination parts accept props for their matching native navigation, list, item, link, and span elements. `PaginationLink` adds active-page styling, while Previous and Next provide labeled link patterns. Supply real `href` values and `aria-current="page"` on the active link.

@@ -525,7 +525,7 @@ function computeUnifiedDiff(
   const newLines = newStr.split("\n")
 
   for (const hunk of patch.hunks) {
-    const { entries, newLineIndex: _ } = processHunk(hunk, newLines)
+    const { entries } = processHunk(hunk, newLines)
 
     // Skip hunks that have no real changes after formatting suppression.
     if (!entries.some((e) => e.kind !== "context")) {

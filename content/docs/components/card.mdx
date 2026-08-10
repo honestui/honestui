@@ -1,6 +1,6 @@
 ---
 title: Card
-description: A content container for grouping related information.
+description: Group related information and actions in a distinct surface.
 ---
 
 <ComponentPreview name="card-demo" />
@@ -13,15 +13,15 @@ Cards work well for dashboards, settings groups, pricing items, summaries, and r
 
 ## Anatomy
 
-A card usually has a container, header, title, description, content, footer, and actions. Not every card needs every part. Keep the structure simple and make the most important information easy to scan first.
+A card usually has a container, header, title, description, panel, footer, and optional action. `CardAction` shares the header grid with the title and description. Not every card needs every part; omit empty regions instead of preserving a template shape.
 
 ## Usage guidance
 
-Use cards for repeated items or self-contained content groups. For broad page sections, prefer normal page layout instead of turning every section into a card.
+Use cards for repeated items or self-contained content groups. For broad page sections, prefer normal page layout instead of turning every section into a card. The four visual variants change emphasis, not meaning, so choose one hierarchy and use it consistently.
 
 ## Accessibility
 
-Use real headings when the card introduces a section. If the whole card is clickable, make the interactive target clear and preserve keyboard access.
+Use real headings when the card introduces a section; `CardTitle` is a `div`, so compose or wrap it with the appropriate heading level. Avoid nested interactive targets. If the whole card leads somewhere, use one real link with a clear label instead of a click handler on the container.
 
 ## Installation
 
@@ -60,21 +60,44 @@ npx honestui@latest add card
 ```tsx
 import {
   Card,
+  CardAction,
   CardDescription,
   CardFooter,
   CardHeader,
   CardPanel,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 ```
 
 ```tsx
 <Card>
   <CardHeader>
-    <CardTitle>Title</CardTitle>
-    <CardDescription>Description</CardDescription>
+    <CardTitle>Storage</CardTitle>
+    <CardDescription>8.4 GB of 20 GB used</CardDescription>
   </CardHeader>
-  <CardPanel>Content</CardPanel>
-  <CardFooter>Footer</CardFooter>
+  <CardPanel>Review the files using the most space.</CardPanel>
+  <CardFooter>Manage storage</CardFooter>
 </Card>
 ```
+
+## Examples
+
+Use the example closest to your content structure, then remove any regions you do not need.
+
+The main example includes `CardAction`, a form panel, a footer, and visible submission feedback. The examples below show content-driven structures rather than additional decorative variants.
+
+### Metric summary
+
+<ComponentPreview name="card-metric-summary" />
+
+### Team member
+
+<ComponentPreview name="card-team-member" />
+
+### Resource link
+
+<ComponentPreview name="card-resource-link" />
+
+## API reference
+
+`Card` accepts native `div` props and a `variant` of `default`, `soft`, `mixed`, or `outline`. `CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardPanel`, and `CardFooter` accept native `div` props. `CardContent` is an alias of `CardPanel` for compatibility.

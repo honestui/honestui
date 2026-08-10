@@ -3,8 +3,6 @@ title: Contributing Guide
 description: How to make focused, useful contributions to Honest UI.
 ---
 
-Thank you for helping improve Honest UI.
-
 The best contributions are focused, easy to review, and clear about the user problem they solve.
 
 ## What you can contribute
@@ -19,7 +17,7 @@ You can help by:
 
 ## Before you start
 
-Open an issue or discussion for large changes. Small fixes, docs edits, and example improvements can usually go straight to a pull request.
+Open an issue before starting a large change so maintainers can confirm the problem and scope. Small fixes, documentation edits, and example improvements can usually go straight to a pull request.
 
 Good first changes include:
 
@@ -34,13 +32,13 @@ Good first changes include:
 1. Fork the repo and clone it.
 2. Create a new branch.
 3. Make a small, focused change.
-4. Run formatting and build checks.
+4. Run the checks that apply to the changed files.
 5. Open a pull request with a clear description.
 
 ## Commands to run before you open a PR
 
 ```bash
-npx eslint path/to/changed-file.tsx
+npm run lint -- path/to/changed-file.tsx
 npm run build
 npm run build:package
 npm --prefix package/honestui run typecheck
@@ -58,7 +56,7 @@ Please include:
 - Any breaking changes.
 - The checks you ran.
 
-Small pull requests are easier to review and merge quickly.
+Keep unrelated changes in separate pull requests so each change can be reviewed and verified on its own.
 
 ## Component contribution checklist
 

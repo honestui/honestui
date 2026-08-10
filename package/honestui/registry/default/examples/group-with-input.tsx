@@ -8,7 +8,7 @@ export default function GroupWithInput() {
   return (
     <Group>
       <GroupItem
-        render={<Input type="text" defaultValue="https://honestui.com" />}
+        render={<Input type="text" defaultValue="https://honestui.dev" />}
       />
       <GroupSeparator />
       <GroupItem

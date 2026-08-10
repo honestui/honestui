@@ -288,11 +288,6 @@ function extractCnClasses(str: string) {
   return Array.from(matches, (match) => match[0])
 }
 
-function extractCnClass(str: string) {
-  const classes = extractCnClasses(str)
-  return classes[0] ?? null
-}
-
 function removeCnClasses(str: string) {
   return str
     .replace(/\bcn-[\w-]+\b/g, (match) => {

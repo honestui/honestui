@@ -1,6 +1,6 @@
 ---
 title: Breadcrumb
-description: Displays the path to the current resource using a hierarchy of links.
+description: Show the current page's position and provide links to its parent levels.
 ---
 
 <ComponentPreview name="breadcrumb-demo" />
@@ -13,15 +13,15 @@ Breadcrumbs work best for nested products, documentation, settings, folders, and
 
 ## Anatomy
 
-A breadcrumb has a list, items, links, separators, and a current page item. Earlier items are usually links. The current item usually is not a link.
+A breadcrumb has a list, items, links, separators, and a current page item. Earlier items are usually links. The current item is plain text with `aria-current="page"`. `BreadcrumbIcon` aligns an icon with a label, while dropdown parts let a Menu hold levels that do not fit.
 
 ## Usage guidance
 
-Keep labels short. Start with the highest useful parent, not always the site root. Use custom separators only when they still read clearly between items.
+Keep labels short and preserve the real hierarchy. Start with the highest useful parent, not automatically the site root. On narrow screens, collapse middle levels into a menu instead of truncating the current page. Use custom separators only when they still read clearly between items.
 
 ## Accessibility
 
-Wrap breadcrumbs in navigation with a clear label. Mark the current page so assistive technology can distinguish it from links.
+`Breadcrumb` renders a navigation landmark labeled “breadcrumb.” Mark the current page so assistive technology can distinguish it from links. Give an icon-only dropdown trigger an accessible name, keep separators hidden from assistive technology, and make every hidden level available by keyboard.
 
 ## Installation
 
@@ -66,7 +66,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+} from "@/components/ui/breadcrumb";
 ```
 
 ```tsx
@@ -92,8 +92,16 @@ import {
 
 ## Examples
 
-The example shows how to change the separator while keeping the same hierarchy.
+The main example includes an icon, a responsive overflow menu, links, separators, and the current page. The example below changes the separator while keeping the same semantic structure.
 
 ### With custom separator
 
 <ComponentPreview name="breadcrumb-custom-separator" />
+
+### Compact size
+
+<ComponentPreview name="breadcrumb-workspace-path" />
+
+## API reference
+
+`Breadcrumb` accepts native `nav` props and a `size` of `small` or `medium`. The list, item, page, separator, ellipsis, and icon parts accept their matching native element props. `BreadcrumbLink`, `BreadcrumbDropdownTrigger`, and `BreadcrumbDropdownItem` also accept Base UI `render` props so they can compose with your router and menu components.

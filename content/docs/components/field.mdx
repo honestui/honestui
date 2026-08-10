@@ -1,14 +1,12 @@
 ---
 title: Field
-description: A component that provides labelling and validation for form controls.
+description: Connect a form control with its label, instructions, and validation message.
 
 links:
   doc: https://base-ui.com/react/components/field#api-reference
 ---
 
-<ComponentPreview
-  name="field-demo"
-/>
+<ComponentPreview name="field-demo" />
 
 ## Overview
 
@@ -18,15 +16,15 @@ Field keeps form layout consistent and helps connect supporting text to the cont
 
 ## Anatomy
 
-A field usually includes a label, control, description, and error message. The control can be an input, textarea, select, checkbox, radio group, slider, switch, combobox, or custom form element.
+A field usually includes a label, control, description, and error message. `FieldHelperSlot` lets description and error occupy the same layout space, `FieldGroup` stacks related fields, and `FieldSeparator` divides a long form without creating a new semantic group. The control can be an input, textarea, select, checkbox, radio group, slider, switch, combobox, or custom form element.
 
 ## Behavior
 
-Use required, disabled, invalid, and validity states to match the real form state. Keep validation messages close to the control they explain.
+Use required, disabled, invalid, and validity states to match the real form state. Validate on submission or after a field has been edited; avoid showing an error before a person has had a chance to act. Keep entered values after failure and write each message as a specific recovery instruction.
 
 ## Accessibility
 
-Field is most useful when it connects labels, descriptions, and errors in a way screen readers can understand. Use clear labels and specific error messages.
+Field connects labels, descriptions, and errors through Base UI. Keep a visible label even when the control has a placeholder. Do not rely on an asterisk alone for required fields, and do not remove the description from the accessibility tree while it still contains instructions needed to fix an error.
 
 ## Installation
 
@@ -56,10 +54,7 @@ npm install @base-ui-components/react
 
 <Step>Copy and paste the following code into your project.</Step>
 
-<ComponentSource
-  name="field"
-  title="components/ui/field.tsx"
-/>
+<ComponentSource name="field" title="components/ui/field.tsx" />
 
 <Step>Update the import paths to match your project setup.</Step>
 
@@ -77,10 +72,12 @@ import {
   FieldControl,
   FieldDescription,
   FieldError,
+  FieldGroup,
   FieldHelperSlot,
   FieldLabel,
   FieldValidity,
-} from "@/components/ui/field"
+  FieldSeparator,
+} from "@/components/ui/field";
 ```
 
 ```tsx
@@ -101,94 +98,36 @@ import {
 
 ## Examples
 
-Our examples cover Field with required, disabled, error, validity, and many different form controls.
+The main example demonstrates `FieldGroup`, `FieldSeparator`, and `FieldHelperSlot`. These examples cover the Field states and relationships that are independent of a specific control. For composition with Autocomplete, Checkbox, Combobox, Number Field, Radio Group, Select, Slider, Switch, or Textarea, use that control's page.
 
-### Required Field
+### Required field
 
-<ComponentPreview
-  name="field-required"
-/>
+<ComponentPreview name="field-required" />
 
-### Disabled Field
+### Disabled field
 
-<ComponentPreview
-  name="field-disabled"
-/>
+<ComponentPreview name="field-disabled" />
 
-### With Error
+### Native validation error
 
-Enter an invalid email address and press enter to see the error.
+The example starts with an incomplete address. Choose **Validate email** to run native form validation and show the associated error.
 
-<ComponentPreview
-  name="field-error"
-/>
+<ComponentPreview name="field-error" />
 
-### With Validity
+### Custom validity output
 
-<ComponentPreview
-  name="field-validity"
-/>
+<ComponentPreview name="field-validity" />
 
-### Autocomplete Field
+### Password instructions
 
-<ComponentPreview
-  name="field-autocomplete"
-/>
+<ComponentPreview name="field-password" />
 
-### Combobox Field
+### Complete form
 
-<ComponentPreview
-  name="field-combobox"
-/>
+<ComponentPreview name="field-complete-form" />
 
-### Combobox Multiple Field
+## API reference
 
-<ComponentPreview
-  name="field-combobox-multiple"
-/>
+`Field`, `FieldLabel`, `FieldDescription`, `FieldError`, and `FieldValidity` forward their matching Base UI Field props. `FieldControl` adds `size="sm" | "default" | "lg" | number` and accepts Base UI's `render` prop for a custom control. `FieldHelperSlot`, `FieldGroup`, and `FieldSeparator` accept native `div` props.
 
-### Textarea Field
-
-<ComponentPreview
-  name="field-textarea"
-/>
-
-### Select Field
-
-<ComponentPreview
-  name="field-select"
-/>
-
-### Checkbox Field
-
-<ComponentPreview name="field-checkbox" />
-
-### Checkbox Group Field
-
-<ComponentPreview name="field-checkbox-group" />
-
-### Radio Group Field
-
-<ComponentPreview name="field-radio" />
-
-### Switch Field
-
-<ComponentPreview name="field-switch" />
-
-### Slider Field
-
-<ComponentPreview
-  name="field-slider"
-/>
-
-### Number Field
-
-<ComponentPreview
-  name="field-number-field"
-/>
-
-### Complete Form Example
-
-<ComponentPreview
-  name="field-complete-form"
-/>
+See the [Base UI Field API](https://base-ui.com/react/components/field#api-reference) for validation state, control composition, and render props.

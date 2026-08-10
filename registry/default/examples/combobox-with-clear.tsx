@@ -27,8 +27,8 @@ export default function ComboboxWithClear() {
     <div className="w-full max-w-64">
       <Combobox items={items}>
         <ComboboxInput
-          placeholder="Select a item…"
-          aria-label="Select a item"
+          placeholder="Select an item…"
+          aria-label="Select an item"
           showClear
         />
         <ComboboxPopup>

@@ -1,15 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { UserRoundPlus as UserRoundPlusIcon, UsersRound as UsersRoundIcon } from "honestui/icons"
+import { useEffect, useState } from "react";
+import {
+  UserRoundPlus as UserRoundPlusIcon,
+  UsersRound as UsersRoundIcon,
+} from "honestui/icons";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/registry/default/ui/avatar"
-import { Button } from "@/registry/default/ui/button"
-import { Skeleton } from "@/registry/default/ui/skeleton"
+} from "@/registry/default/ui/avatar";
+import { Button } from "@/registry/default/ui/button";
+import { Skeleton } from "@/registry/default/ui/skeleton";
 
 const users = [
   {
@@ -39,21 +42,21 @@ const users = [
     fallback: "AR",
     delay: 3400,
   },
-]
+];
 
 function UserCard({ delay, user }: { delay: number; user: (typeof users)[0] }) {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsLoaded(true)
-    }, delay)
+      setIsLoaded(true);
+    }, delay);
 
-    return () => clearTimeout(timer)
-  }, [delay])
+    return () => clearTimeout(timer);
+  }, [delay]);
 
   if (!isLoaded) {
-    return <UserCardSkeleton />
+    return <UserCardSkeleton name={user.name} />;
   }
 
   return (
@@ -67,7 +70,7 @@ function UserCard({ delay, user }: { delay: number; user: (typeof users)[0] }) {
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="truncate">{user.role}</span>
           <div className="flex min-w-0 items-center gap-1">
-            <UsersRoundIcon className="size-3 shrink-0" />
+            <UsersRoundIcon aria-hidden="true" className="size-3 shrink-0" />
             <span className="truncate">
               {user.followers}
               <span className="max-sm:hidden"> followers</span>
@@ -76,27 +79,30 @@ function UserCard({ delay, user }: { delay: number; user: (typeof users)[0] }) {
         </div>
       </div>
       <Button size="xs">
-        <UserRoundPlusIcon />
+        <UserRoundPlusIcon aria-hidden="true" />
         Follow
       </Button>
     </>
-  )
+  );
 }
 
-function UserCardSkeleton() {
+function UserCardSkeleton({ name }: { name: string }) {
   return (
     <>
-      <Skeleton className="size-10 rounded-full" />
+      <span className="sr-only" role="status">
+        Loading {name}
+      </span>
+      <Skeleton aria-hidden="true" className="size-10 rounded-full" />
       <div className="flex flex-1 flex-col">
-        <Skeleton className="my-0.5 h-4 max-w-54" />
+        <Skeleton aria-hidden="true" className="my-0.5 h-4 max-w-54" />
         <div className="flex max-w-54 items-center gap-1">
-          <Skeleton className="my-0.5 h-4 w-1/2" />
-          <Skeleton className="my-0.5 h-4 w-1/2" />
+          <Skeleton aria-hidden="true" className="my-0.5 h-4 w-1/2" />
+          <Skeleton aria-hidden="true" className="my-0.5 h-4 w-1/2" />
         </div>
       </div>
-      <Skeleton className="h-6 w-17" />
+      <Skeleton aria-hidden="true" className="h-6 w-17" />
     </>
-  )
+  );
 }
 
 export default function SkeletonDemo() {
@@ -108,5 +114,5 @@ export default function SkeletonDemo() {
         </div>
       ))}
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 import { type Transformer } from "@/src/utils/transformers"
 import { transformFromAstSync } from "@babel/core"
 import { parse, ParserOptions } from "@babel/parser"
-// @ts-ignore
+// @ts-expect-error -- recast's TypeScript declarations omit this parser export.
 import transformTypescript from "@babel/plugin-transform-typescript"
 import * as recast from "recast"
 
@@ -91,5 +91,5 @@ export const transformJsx: Transformer<string> = async ({
     throw new Error("Failed to transform JSX")
   }
 
-  return recast.print(result.ast).code
+  return recast.print(result.ast as recast.types.ASTNode).code
 }

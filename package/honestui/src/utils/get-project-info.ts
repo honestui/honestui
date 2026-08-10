@@ -1,7 +1,6 @@
 import { promises as fsPromises } from "fs"
 import path from "path"
 import { getHonestUIRegistryIndex } from "@/src/registry/api"
-import { HONESTUI_URL } from "@/src/registry/constants"
 import { rawConfigSchema } from "@/src/schema"
 import { Framework, FRAMEWORKS } from "@/src/utils/frameworks"
 import { Config, getConfig, resolveConfigPaths } from "@/src/utils/get-config"
@@ -259,21 +258,16 @@ export async function getTailwindCssFile(cwd: string, configCssFile?: string) {
     }
   }
 
-  const [files, tailwindVersion] = await Promise.all([
-    fg.glob(["**/*.css", "**/*.scss"], {
-      cwd,
-      deep: 5,
-      ignore: PROJECT_SHARED_IGNORE,
-    }),
-    getTailwindVersion(cwd),
-  ])
+  const files = await fg.glob(["**/*.css", "**/*.scss"], {
+    cwd,
+    deep: 5,
+    ignore: PROJECT_SHARED_IGNORE,
+  })
 
   if (!files.length) {
     return null
   }
 
-  const needle =
-    tailwindVersion === "v4" ? `@import "tailwindcss"` : "@tailwind base"
   for (const file of files) {
     const contents = await fs.readFile(path.resolve(cwd, file), "utf8")
     if (

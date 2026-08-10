@@ -45,7 +45,7 @@ export default function SelectMultiple() {
   return (
     <div className="w-full max-w-64">
       <Select multiple defaultValue={["javascript", "typescript"]}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue>{renderValue}</SelectValue>
         </SelectTrigger>
         <SelectPopup alignItemWithTrigger={false}>

@@ -1,17 +1,25 @@
 ---
-title: Bar Blocks
-description: Ready-made bar chart layouts built with Honest UI
+title: Bar Chart Examples
+description: Complete bar chart layouts for category comparison and ranked values.
 image: /og/bar-chart-blocks.png
 ---
 
-## Clinic Appointments
+These examples include the context around the plot, not only the chart component. The values are sample data. Open the Code tab and update data keys, labels, units, summaries, and accessible alternatives together.
 
-<ComponentPreview className="mb-4" title="Clinic Appointments" name="b-peak-echarts-bar-chart"/>
+## Clinic appointments
 
-## Metro Departures
+Use stacked bars when the total and each category's contribution both matter. Replace `week`, `booked`, and `walkIns`, then recalculate the busiest-period summary. Provide a table if readers need each weekly count.
 
-<ComponentPreview className="mb-4" title="Metro Departures" name="b-grid-echarts-bar-chart"/>
+<ComponentPreview className="mb-4" title="Clinic appointments" name="b-peak-echarts-bar-chart"/>
 
-## Archive Digitization
+## Metro departures
 
-<ComponentPreview className="mb-4" title="Archive Digitization" name="b-monospace-echarts-bar-chart"/>
+Use this dense single-series layout for evenly spaced categories such as hours. Replace `hour` and `departures`, then update the total, peak, and unit labels. Test narrow screens because dense axis labels can become hard to read.
+
+<ComponentPreview className="mb-4" title="Metro departures" name="b-grid-echarts-bar-chart"/>
+
+## Archive digitization
+
+Use this layout for one measured value across a short ordered sequence. Replace `month` and `scans`, then update the operational summary and unit. Make the highest or selected value available in text when it drives a decision.
+
+<ComponentPreview className="mb-4" title="Archive digitization" name="b-monospace-echarts-bar-chart"/>

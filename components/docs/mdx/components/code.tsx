@@ -31,7 +31,7 @@ export async function CodeBlock({
     return (
       <div
         className={cn(
-          "rounded-[10px] bg-[var(--rs-color-background-neutral-primary)] p-1",
+          "rounded-[10px] bg-[var(--hui-color-background-neutral-primary)] p-1",
           wrapperClassName,
         )}
       >
@@ -49,7 +49,7 @@ export async function CodeBlock({
         <figure data-rehype-pretty-code-figure="">
           <div
             className={cn(
-              "bg-background rounded-md border-[0.5px] border-[var(--rs-color-border-base-primary)]",
+              "bg-background rounded-md border-[0.5px] border-[var(--hui-color-border-base-primary)]",
               className,
             )}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}

@@ -1,6 +1,6 @@
 ---
 title: Checkbox
-description: A control for checked state, with optional grouped selection.
+description: Let people turn independent options on or off or select several related choices.
 
 links:
   doc: https://base-ui.com/react/components/checkbox#api-reference
@@ -75,7 +75,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Checkbox, CheckboxGroup } from "@/components/ui/checkbox"
+import { Checkbox, CheckboxGroup } from "@/components/ui/checkbox";
 ```
 
 ```tsx
@@ -101,9 +101,9 @@ import { Checkbox, CheckboxGroup } from "@/components/ui/checkbox"
 
 ## Examples
 
-Our examples cover disabled, described, card-style, and form-connected checkboxes.
+Examples cover disabled, described, card-style, and form-connected checkboxes.
 
-For accessible labelling and validation, prefer using the `Field` component to wrap checkboxes. See the related example: [Checkbox field](/ui/docs/components/field#checkbox-field).
+For accessible labeling and validation, use `Field` to connect a checkbox with its label, description, and error. See the [Field examples](/docs/components/field#examples).
 
 ### Disabled
 
@@ -119,7 +119,7 @@ For accessible labelling and validation, prefer using the `Field` component to w
 
 ### Form Integration
 
-Field provides accessible labelling and validation primitives for form controls. Use it with `Form` to submit values.
+Field provides accessible labeling and validation structure for form controls. Use it with `Form` to submit values.
 
 <ComponentPreview name="checkbox-form" />
 
@@ -127,7 +127,7 @@ Field provides accessible labelling and validation primitives for form controls.
 
 Checkbox Group is included in the same component file. Use it when several checkboxes answer the same question or share one submitted value.
 
-For accessible group labelling and validation, prefer wrapping checkbox groups with `Field` and `Fieldset`. See the related example: [Checkbox group field](/ui/docs/components/field#checkbox-group-field).
+For group labeling and validation, use `Field` and `Fieldset` to connect the shared question and error to the checkbox group. See the [Field examples](/docs/components/field#examples).
 
 ### Basic Group
 
@@ -148,3 +148,9 @@ For accessible group labelling and validation, prefer wrapping checkbox groups w
 ### Group Form Integration
 
 <ComponentPreview name="checkbox-group-form" />
+
+## API reference
+
+`Checkbox` and `CheckboxGroup` forward their matching Base UI props and add Honest UI size and visual-variant styling. Use `checked` with `onCheckedChange` for controlled state or `defaultChecked` for uncontrolled state; an individual checkbox can also represent the indeterminate value.
+
+See the [Base UI Checkbox API](https://base-ui.com/react/components/checkbox#api-reference) and [Checkbox Group API](https://base-ui.com/react/components/checkbox-group#api-reference).

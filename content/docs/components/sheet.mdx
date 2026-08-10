@@ -1,6 +1,6 @@
 ---
 title: Sheet
-description: A flyout that opens from the side of the screen, based on the dialog component.
+description: Open a side panel for details, settings, or a secondary workflow.
 
 links:
   doc: https://base-ui.com/react/components/dialog#api-reference
@@ -74,7 +74,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
 ```
 
 ```tsx
@@ -99,3 +99,9 @@ The example shows sheet placement from different screen edges.
 ### Side sheets
 
 <ComponentPreview name="sheet-position" />
+
+## API reference
+
+Sheet exports root, trigger, portal, close, backdrop, popup, header, footer, title, and description parts. They forward their matching Dialog-style Base UI props; Overlay and Content are aliases for Backdrop and Popup. The popup adds the documented side or position option.
+
+Treat Sheet as a modal dialog: provide a title, restore focus on close, and keep essential actions reachable at zoom. See the [Base UI Dialog API](https://base-ui.com/react/components/dialog#api-reference).

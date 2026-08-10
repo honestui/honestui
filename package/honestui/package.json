@@ -1,6 +1,6 @@
 {
   "name": "honestui",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Build and manage Honest UI component libraries.",
   "license": "MIT",
   "homepage": "https://honestui.com",
@@ -22,6 +22,7 @@
       "types": "./dist/charts.d.ts",
       "default": "./dist/charts.js"
     },
+    "./charts.css": "./dist/charts.css",
     "./icons": {
       "types": "./dist/icons.d.ts",
       "default": "./dist/icons.js"
@@ -45,7 +46,8 @@
     "honestui": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "sideEffects": [
     "**/*.css"
@@ -57,10 +59,16 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup && node scripts/mark-client-entries.mjs",
+    "build": "tsup && node scripts/mark-client-entries.mjs && node scripts/build-chart-styles.mjs",
+    "sync:registry": "node scripts/copy-registry.mjs",
+    "verify:registry": "node scripts/verify-registry.mjs",
+    "lint": "eslint src registry/default/charts registry/default/ui/charts registry/default/shaders",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "verify:exports": "node scripts/verify-package-exports.mjs",
-    "prepack": "npm run build && npm run verify:exports"
+    "verify:artifact": "node scripts/verify-package-artifact.mjs",
+    "verify:release": "npm run verify:registry && npm run lint && npm run typecheck && npm test && npm run build && npm run verify:exports && npm run verify:artifact && npm audit",
+    "prepack": "npm run verify:release"
   },
   "dependencies": {
     "@antfu/ni": "^25.0.0",
@@ -99,14 +107,24 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/babel__core": "^7.20.5",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.0.0",
     "@types/prompts": "^2.4.9",
     "@types/stringify-object": "^4.0.5",
+    "eslint": "^9.39.5",
+    "msw": "^2.11.6",
+    "tailwindcss": "^4.3.3",
     "tsup": "^8.5.0",
     "type-fest": "^4.41.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^3.2.4"
   }
 }

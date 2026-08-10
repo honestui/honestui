@@ -6,6 +6,7 @@ import {
   configSchema,
   registryItemFileSchema,
   registryItemSchema,
+  registryResolvedItemsTreeSchema,
   workspaceConfigSchema,
 } from "@/src/schema"
 import { getSupportedFontMarkers } from "@/src/utils/font-markers"
@@ -16,20 +17,23 @@ import {
   type Config,
 } from "@/src/utils/get-config"
 import { getProjectTailwindVersionFromConfig } from "@/src/utils/get-project-info"
+import { getProjectInfo } from "@/src/utils/get-project-info"
 import { handleError } from "@/src/utils/handle-error"
 import { isSafeTarget } from "@/src/utils/is-safe-target"
 import { logger } from "@/src/utils/logger"
 import { spinner } from "@/src/utils/spinner"
+import { ProjectMutationJournal } from "@/src/utils/project-mutation-journal"
 import { updateCss } from "@/src/utils/updaters/update-css"
 import { updateDependencies } from "@/src/utils/updaters/update-dependencies"
 import { updateEnvVars } from "@/src/utils/updaters/update-env-vars"
-import { updateFiles } from "@/src/utils/updaters/update-files"
+import { getPlannedFilePaths, updateFiles } from "@/src/utils/updaters/update-files"
 import {
   massageTreeForFonts,
   updateFonts,
 } from "@/src/utils/updaters/update-fonts"
 import { updateTailwindConfig } from "@/src/utils/updaters/update-tailwind-config"
 import { z } from "zod"
+import fg from "fast-glob"
 
 export async function addComponents(
   components: string[],
@@ -113,53 +117,206 @@ async function addProjectComponents(
 
   const supportedFontMarkers = getSupportedFontMarkers([tree])
 
-  await updateDependencies(tree.dependencies, tree.devDependencies, config, {
-    silent: options.silent,
-  })
+  const journal = await ProjectMutationJournal.create()
 
-  await updateTailwindConfig(tree.tailwind?.config, config, {
-    silent: options.silent,
-    tailwindVersion,
-  })
+  try {
+    await journal.capture(
+      await getProjectMutationPaths(tree, config, { path: options.path })
+    )
 
-  await updateEnvVars(tree.envVars, config, {
-    silent: options.silent,
-  })
-
-  if (!options.skipFonts) {
-    await updateFonts(tree.fonts, config, {
+    await updateDependencies(tree.dependencies, tree.devDependencies, config, {
       silent: options.silent,
     })
+
+    await updateTailwindConfig(tree.tailwind?.config, config, {
+      silent: options.silent,
+      tailwindVersion,
+    })
+
+    await updateEnvVars(tree.envVars, config, {
+      silent: options.silent,
+    })
+
+    if (!options.skipFonts) {
+      await updateFonts(tree.fonts, config, {
+        silent: options.silent,
+      })
+    }
+
+    await updateFiles(tree.files, config, {
+      overwrite: options.overwrite,
+      silent: options.silent,
+      path: options.path,
+      supportedFontMarkers,
+    })
+
+    // Write CSS last so the file watcher triggers a rebuild
+    // after all component files and dependencies are in place.
+    const overwriteCssVars = tree.cssVars
+      ? (options.overwriteCssVars ??
+        (await shouldOverwriteCssVars(components, config)))
+      : undefined
+    await updateCss(tree.css, config, {
+      silent: options.silent,
+      cssVars: tree.cssVars,
+      cleanupDefaultNextStyles: options.isNewProject,
+      overwriteCssVars,
+      tailwindVersion,
+      tailwindConfig: tree.tailwind?.config,
+    })
+  } catch (error) {
+    try {
+      await journal.rollback()
+    } catch (rollbackError) {
+      throw new AggregateError(
+        [error, rollbackError],
+        "The component install failed, and Honest UI could not fully restore the changed files."
+      )
+    }
+    throw error
+  } finally {
+    await journal.dispose()
   }
-
-  await updateFiles(tree.files, config, {
-    overwrite: options.overwrite,
-    silent: options.silent,
-    path: options.path,
-    supportedFontMarkers,
-  })
-
-  // Write CSS last so the file watcher triggers a rebuild
-  // after all component files and dependencies are in place.
-  const overwriteCssVars = tree.cssVars
-    ? (options.overwriteCssVars ??
-      (await shouldOverwriteCssVars(components, config)))
-    : undefined
-  await updateCss(tree.css, config, {
-    silent: options.silent,
-    cssVars: tree.cssVars,
-    cleanupDefaultNextStyles: options.isNewProject,
-    overwriteCssVars,
-    tailwindVersion,
-    tailwindConfig: tree.tailwind?.config,
-  })
 
   if (tree.docs) {
     logger.info(tree.docs)
   }
 }
 
+async function getProjectMutationPaths(
+  tree: z.infer<typeof registryResolvedItemsTreeSchema>,
+  config: Config,
+  options: { path?: string } = {}
+) {
+  const cwd = config.resolvedPaths.cwd
+  const projectInfo = await getProjectInfo(cwd)
+  const relativeComponentPaths = getPlannedFilePaths(tree.files, config, {
+    framework: projectInfo?.framework.name,
+    isSrcDir: projectInfo?.isSrcDir,
+    path: options.path,
+  })
+  const paths = new Set(
+    relativeComponentPaths.map((relativePath) => path.join(cwd, relativePath))
+  )
+
+  for (const filePath of Array.from(paths)) {
+    if (/middleware\.(ts|js)$/.test(filePath)) {
+      paths.add(filePath.replace(/middleware\.(ts|js)$/, "proxy.$1"))
+    }
+  }
+
+  for (const configuredPath of [
+    config.resolvedPaths.tailwindConfig,
+    config.resolvedPaths.tailwindCss,
+  ]) {
+    if (configuredPath) paths.add(configuredPath)
+  }
+
+  for (const relativePath of [
+    ".env.local",
+    "app/layout.tsx",
+    "app/layout.jsx",
+    "src/app/layout.tsx",
+    "src/app/layout.jsx",
+  ]) {
+    paths.add(path.join(cwd, relativePath))
+  }
+
+  const environmentFiles = await fg(["**/.env", "**/.env.*"], {
+    absolute: true,
+    cwd,
+    dot: true,
+    ignore: ["**/node_modules/**", "**/.git/**"],
+  })
+  for (const environmentFile of environmentFiles) paths.add(environmentFile)
+
+  const packageFiles = [
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "bun.lock",
+    "bun.lockb",
+    "deno.json",
+    "deno.lock",
+  ]
+  let currentDirectory = cwd
+  while (true) {
+    for (const packageFile of packageFiles) {
+      paths.add(path.join(currentDirectory, packageFile))
+    }
+
+    if (path.dirname(currentDirectory) === currentDirectory) break
+    const isRepositoryRoot = await fg(".git", {
+      cwd: currentDirectory,
+      dot: true,
+      onlyDirectories: true,
+    }).then((matches) => matches.length > 0)
+    if (isRepositoryRoot) break
+    currentDirectory = path.dirname(currentDirectory)
+  }
+
+  return paths
+}
+
 async function addWorkspaceComponents(
+  components: string[],
+  config: z.infer<typeof configSchema>,
+  workspaceConfig: z.infer<typeof workspaceConfigSchema>,
+  options: {
+    overwrite?: boolean
+    overwriteCssVars?: boolean
+    silent?: boolean
+    isNewProject?: boolean
+    isRemote?: boolean
+    path?: string
+  }
+) {
+  const journal = await ProjectMutationJournal.create()
+
+  try {
+    let tree = await resolveRegistryTree(components, configWithDefaults(config))
+    if (tree) {
+      tree = await massageTreeForFonts(tree, config)
+      const targetConfigs = new Set<Config>([config])
+
+      for (const targetConfig of Object.values(workspaceConfig)) {
+        if (targetConfig?.resolvedPaths) {
+          targetConfigs.add(targetConfig)
+        }
+      }
+
+      for (const targetConfig of targetConfigs) {
+        await journal.capture(
+          await getProjectMutationPaths(tree, targetConfig, {
+            path: options.path,
+          })
+        )
+      }
+    }
+
+    return await addWorkspaceComponentsUnsafe(
+      components,
+      config,
+      workspaceConfig,
+      options
+    )
+  } catch (error) {
+    try {
+      await journal.rollback()
+    } catch (rollbackError) {
+      throw new AggregateError(
+        [error, rollbackError],
+        "The workspace install failed, and Honest UI could not fully restore the changed files."
+      )
+    }
+    throw error
+  } finally {
+    await journal.dispose()
+  }
+}
+
+async function addWorkspaceComponentsUnsafe(
   components: string[],
   config: z.infer<typeof configSchema>,
   workspaceConfig: z.infer<typeof workspaceConfigSchema>,

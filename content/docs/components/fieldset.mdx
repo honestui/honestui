@@ -1,6 +1,6 @@
 ---
 title: Fieldset
-description: A native fieldset element with a legend.
+description: Group related form controls under one visible question or label.
 
 links:
   doc: https://base-ui.com/react/components/fieldset#api-reference
@@ -67,11 +67,39 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Fieldset, FieldsetLegend } from "@/components/ui/fieldset"
+import { Fieldset, FieldsetLegend } from "@/components/ui/fieldset";
 ```
 
 ```tsx
 <Fieldset>
-  <FieldsetLegend>Fieldset legend</FieldsetLegend>
+  <FieldsetLegend>Notification channels</FieldsetLegend>
 </Fieldset>
 ```
+
+## Examples
+
+### Notification settings
+
+Use one legend to provide context for several related preferences.
+
+<ComponentPreview name="fieldset-notification-settings" />
+
+### Billing address
+
+Group address fields that form one larger answer.
+
+<ComponentPreview name="fieldset-billing-address" />
+
+### Danger zone
+
+Use clear structure and consequences around high-impact settings.
+
+<ComponentPreview name="fieldset-danger-zone" />
+
+## Decision guidance
+
+Use Fieldset when several controls answer one question, such as a radio choice, a set of checkboxes, or related address fields. The legend names the group; it does not replace each control's own label. Use FieldGroup when fields only need visual spacing and do not form one semantic question.
+
+## API reference
+
+`Fieldset` and `FieldsetLegend` forward their matching Base UI Fieldset props. See the [Base UI Fieldset API](https://base-ui.com/react/components/fieldset#api-reference).

@@ -8,7 +8,6 @@ import {
   buildUrlAndHeadersForRegistryItem,
   resolveRegistryUrl,
 } from "@/src/registry/builder"
-import { setRegistryHeaders } from "@/src/registry/context"
 import {
   RegistryNotConfiguredError,
   RegistryParseError,
@@ -22,10 +21,7 @@ import {
 } from "@/src/registry/utils"
 import {
   RegistryFontItem,
-  registryItemCommonSchema,
-  registryItemFontSchema,
   registryItemSchema,
-  registryItemTypeSchema,
   registryResolvedItemsTreeSchema,
 } from "@/src/schema"
 import { Config, getTargetStyleFromConfig } from "@/src/utils/get-config"
@@ -38,7 +34,6 @@ export function resolveRegistryItemsFromRegistries(
   items: string[],
   config: Config
 ) {
-  const registryHeaders: Record<string, Record<string, string>> = {}
   const resolvedItems = [...items]
 
   for (let i = 0; i < resolvedItems.length; i++) {
@@ -47,13 +42,8 @@ export function resolveRegistryItemsFromRegistries(
     if (resolved) {
       resolvedItems[i] = resolved.url
 
-      if (Object.keys(resolved.headers).length > 0) {
-        registryHeaders[resolved.url] = resolved.headers
-      }
     }
   }
-
-  setRegistryHeaders(registryHeaders)
 
   return resolvedItems
 }
@@ -80,8 +70,11 @@ export async function fetchRegistryItems(
         }
       }
 
-      const paths = resolveRegistryItemsFromRegistries([item], config)
-      const [result] = await fetchRegistry(paths, options)
+      const resolved = buildUrlAndHeadersForRegistryItem(item, config)
+      const [result] = await fetchRegistry(
+        [resolved?.url ?? item],
+        resolved ? { ...options, headers: resolved.headers } : options
+      )
       try {
         return registryItemSchema.parse(result)
       } catch (error) {
@@ -93,16 +86,9 @@ export async function fetchRegistryItems(
   return results
 }
 
-// Helper schema for items with source tracking.
-const registryItemWithSourceSchema = registryItemCommonSchema
-  .extend({
-    type: registryItemTypeSchema,
-    _source: z.string().optional(),
-    // Optional fields for specific item types.
-    font: registryItemFontSchema.optional(),
-    config: z.any().optional(),
-  })
-  .passthrough()
+type RegistryItemWithSource = z.infer<typeof registryItemSchema> & {
+  _source?: string
+}
 
 // Resolves a list of registry items with all their dependencies and returns
 // a complete installation bundle with merged configuration.
@@ -116,9 +102,9 @@ export async function resolveRegistryTree(
     ...options,
   }
 
-  let payload: z.infer<typeof registryItemWithSourceSchema>[] = []
-  let allDependencyItems: z.infer<typeof registryItemWithSourceSchema>[] = []
-  let allDependencyRegistryNames: string[] = []
+  let payload: RegistryItemWithSource[] = []
+  const allDependencyItems: RegistryItemWithSource[] = []
+  const allDependencyRegistryNames: string[] = []
 
   const uniqueNames = Array.from(new Set(names))
 
@@ -133,16 +119,13 @@ export async function resolveRegistryTree(
 
   for (const [sourceName, item] of Array.from(resultMap.entries())) {
     // Add source tracking
-    const itemWithSource: z.infer<typeof registryItemWithSourceSchema> = {
+    const itemWithSource: RegistryItemWithSource = {
       ...item,
       _source: sourceName,
     }
     payload.push(itemWithSource)
 
     if (item.registryDependencies) {
-      // Resolve namespace syntax and set headers for dependencies
-      let resolvedDependencies = item.registryDependencies
-
       // Check for namespaced dependencies when no registries are configured
       if (!config?.registries) {
         const namespacedDeps = item.registryDependencies.filter((dep: string) =>
@@ -152,15 +135,10 @@ export async function resolveRegistryTree(
           const { registry } = parseRegistryAndItemFromString(namespacedDeps[0])
           throw new RegistryNotConfiguredError(registry)
         }
-      } else {
-        resolvedDependencies = resolveRegistryItemsFromRegistries(
-          item.registryDependencies,
-          config
-        )
       }
 
       const { items, registryNames } = await resolveDependenciesRecursively(
-        resolvedDependencies,
+        item.registryDependencies,
         config,
         options,
         new Set(uniqueNames)
@@ -196,7 +174,7 @@ export async function resolveRegistryTree(
 
       for (let i = 0; i < depResults.length; i++) {
         const item = depResults[i]
-        const itemWithSource: z.infer<typeof registryItemWithSourceSchema> = {
+        const itemWithSource: RegistryItemWithSource = {
           ...item,
           _source: namespacedDepItems[i],
         }
@@ -231,7 +209,7 @@ export async function resolveRegistryTree(
 
         // Deduplicate URLs
         const uniqueUrls = Array.from(new Set(registryUrls))
-        let result = await fetchRegistry(uniqueUrls, options)
+        const result = await fetchRegistry(uniqueUrls, options)
         const registryPayload = z.array(registryItemSchema).parse(result)
         payload.push(...registryPayload)
       }
@@ -262,7 +240,7 @@ export async function resolveRegistryTree(
 
   // Build source map for topological sort.
   const sourceMap = new Map<
-    z.infer<typeof registryItemWithSourceSchema>,
+    RegistryItemWithSource,
     string
   >()
   payload.forEach((item) => {
@@ -320,13 +298,12 @@ export async function resolveRegistryTree(
   )
 
   // Collect font items.
-  const fonts: RegistryFontItem[] = payload
-    .filter((item) => item.type === "registry:font" && item.font)
-    .map((item) => ({
-      ...item,
-      type: "registry:font" as const,
-      font: item.font!,
-    }))
+  const fonts: RegistryFontItem[] = []
+  for (const item of payload) {
+    if (item.type === "registry:font") {
+      fonts.push(item)
+    }
+  }
 
   const parsed = registryResolvedItemsTreeSchema.parse({
     dependencies: deepmerge.all(payload.map((item) => item.dependencies ?? [])),
@@ -369,16 +346,8 @@ async function resolveDependenciesRecursively(
       if (item) {
         items.push(item)
         if (item.registryDependencies) {
-          // Resolve namespaced dependencies to set proper headers.
-          const resolvedDeps = config?.registries
-            ? resolveRegistryItemsFromRegistries(
-                item.registryDependencies,
-                config
-              )
-            : item.registryDependencies
-
           const nested = await resolveDependenciesRecursively(
-            resolvedDeps,
+            item.registryDependencies,
             config,
             options,
             visited
@@ -402,16 +371,8 @@ async function resolveDependenciesRecursively(
       if (item) {
         items.push(item)
         if (item.registryDependencies) {
-          // Resolve namespaced dependencies to set proper headers.
-          const resolvedDeps = config?.registries
-            ? resolveRegistryItemsFromRegistries(
-                item.registryDependencies,
-                config
-              )
-            : item.registryDependencies
-
           const nested = await resolveDependenciesRecursively(
-            resolvedDeps,
+            item.registryDependencies,
             config,
             options,
             visited
@@ -429,16 +390,8 @@ async function resolveDependenciesRecursively(
         try {
           const [item] = await fetchRegistryItems([dep], config, options)
           if (item && item.registryDependencies) {
-            // Resolve namespaced dependencies to set proper headers.
-            const resolvedDeps = config?.registries
-              ? resolveRegistryItemsFromRegistries(
-                  item.registryDependencies,
-                  config
-                )
-              : item.registryDependencies
-
             const nested = await resolveDependenciesRecursively(
-              resolvedDeps,
+              item.registryDependencies,
               config,
               options,
               visited
@@ -446,7 +399,7 @@ async function resolveDependenciesRecursively(
             items.push(...nested.items)
             registryNames.push(...nested.registryNames)
           }
-        } catch (error) {
+        } catch {
           // If we can't fetch the registry item, that's okay - we'll still
           // include the name.
         }
@@ -605,16 +558,16 @@ function extractItemIdentifierFromDependency(dependency: string) {
 }
 
 function topologicalSortRegistryItems(
-  items: z.infer<typeof registryItemWithSourceSchema>[],
-  sourceMap: Map<z.infer<typeof registryItemWithSourceSchema>, string>
+  items: RegistryItemWithSource[],
+  sourceMap: Map<RegistryItemWithSource, string>
 ) {
   const itemMap = new Map<
     string,
-    z.infer<typeof registryItemWithSourceSchema>
+    RegistryItemWithSource
   >()
   const hashToItem = new Map<
     string,
-    z.infer<typeof registryItemWithSourceSchema>
+    RegistryItemWithSource
   >()
   const inDegree = new Map<string, number>()
   const adjacencyList = new Map<string, string[]>()
@@ -681,7 +634,7 @@ function topologicalSortRegistryItems(
 
   // Implements Kahn's algorithm.
   const queue: string[] = []
-  const sorted: z.infer<typeof registryItemWithSourceSchema>[] = []
+  const sorted: RegistryItemWithSource[] = []
 
   inDegree.forEach((degree, hash) => {
     if (degree === 0) {

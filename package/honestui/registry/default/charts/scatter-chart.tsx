@@ -820,11 +820,14 @@ export function ScatterChart<TData extends Record<string, unknown>>({
       ref={containerRef}
       data-chart={chartId}
       className={`relative flex flex-col text-xs ${className ?? ""}`}
-      role="img"
-      aria-label={ariaLabel ?? defaultAriaLabel}
+      aria-busy={isLoading}
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      <div className="relative min-h-0 w-full flex-1">
+      <div
+        className="relative min-h-0 w-full flex-1"
+        role="img"
+        aria-label={ariaLabel ?? defaultAriaLabel}
+      >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
 
@@ -846,12 +849,17 @@ export function ScatterChart<TData extends Record<string, unknown>>({
       {isLoading && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="text-primary bg-background flex items-center justify-center gap-2 rounded-md border px-2 py-0.5 text-sm"
           >
-            <div className="border-border border-t-primary h-3 w-3 animate-spin rounded-full border" />
+            <div
+              aria-hidden
+              className={`border-border border-t-primary h-3 w-3 rounded-full border ${shouldReduceMotion ? "" : "animate-spin"}`}
+            />
             <span>Loading</span>
           </motion.div>
         </div>

@@ -1,14 +1,12 @@
 ---
 title: Meter
-description: A graphical display of a numeric value within a range.
+description: Show a known measurement within a fixed range, such as storage or a score.
 
 links:
   doc: https://base-ui.com/react/components/meter#api-reference
 ---
 
-<ComponentPreview
-  name="meter-demo"
-/>
+<ComponentPreview name="meter-demo" />
 
 ## Overview
 
@@ -76,7 +74,7 @@ import {
   MeterLabel,
   MeterTrack,
   MeterValue,
-} from "@/components/ui/meter"
+} from "@/components/ui/meter";
 ```
 
 ```tsx
@@ -100,22 +98,22 @@ import {
 
 ## Examples
 
-Our examples cover a simple meter, formatted value, and range-based display.
+The main example shows both built-in layouts. The examples below show custom children, formatted values, and a range whose meaning changes across thresholds.
 
 ### Without Label and Value
 
-<ComponentPreview
-  name="meter-simple"
-/>
+<ComponentPreview name="meter-simple" />
 
 ### With Formatted Value
 
-<ComponentPreview
-  name="meter-with-formatted-value"
-/>
+<ComponentPreview name="meter-with-formatted-value" />
 
 ### With Range
 
-<ComponentPreview
-  name="meter-with-range"
-/>
+<ComponentPreview name="meter-with-range" />
+
+## API reference
+
+`Meter` accepts Base UI Meter root props plus `variant="linear" | "circular"`. Its defaults are `min={0}` and `max={100}`. When it has no children, it renders the matching track and value automatically. The label, track, indicator, and value parts forward Base UI props; `MeterCircularTrack` accepts native SVG props.
+
+See the [Base UI Meter API](https://base-ui.com/react/components/meter#api-reference) for value formatting and state details.

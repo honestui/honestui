@@ -8,7 +8,7 @@ export default function SheetCheckoutSummary() {
       <SheetPopup>
         <SheetHeader><SheetTitle>Checkout</SheetTitle></SheetHeader>
         <div className="grid gap-3 px-4 text-sm">
-          <div className="flex justify-between"><span>Team plan</span><span>$29</span></div>
+          <div className="flex justify-between"><span>Pro plan</span><span>$29</span></div>
           <div className="flex justify-between"><span>Tax</span><span>$2.32</span></div>
           <div className="flex justify-between font-medium"><span>Total</span><span>$31.32</span></div>
         </div>

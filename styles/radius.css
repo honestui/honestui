@@ -1,19 +1,19 @@
 [data-style="modern"] {
-    --rs-radius-1: 2px;
-    --rs-radius-2: 4px;
-    --rs-radius-3: 6px;
-    --rs-radius-4: 8px;
-    --rs-radius-5: 12px;
-    --rs-radius-6: 16px;
-    --rs-radius-full: 800px;
+    --hui-radius-1: 2px;
+    --hui-radius-2: 4px;
+    --hui-radius-3: 6px;
+    --hui-radius-4: 8px;
+    --hui-radius-5: 12px;
+    --hui-radius-6: 16px;
+    --hui-radius-full: 800px;
 }
 
 [data-style="traditional"] {
-    --rs-radius-1: 8px;
-    --rs-radius-2: 16px;
-    --rs-radius-3: 20px;
-    --rs-radius-4: 24px;
-    --rs-radius-5: 32px;
-    --rs-radius-6: 40px;
-    --rs-radius-full: 1600px;
+    --hui-radius-1: 8px;
+    --hui-radius-2: 16px;
+    --hui-radius-3: 20px;
+    --hui-radius-4: 24px;
+    --hui-radius-5: 32px;
+    --hui-radius-6: 40px;
+    --hui-radius-full: 1600px;
 }

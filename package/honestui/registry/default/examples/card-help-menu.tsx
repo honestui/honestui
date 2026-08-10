@@ -67,10 +67,10 @@ export default function CardHelpMenu() {
       <CardFooter>
         <Button size="sm">
           <Avatar className="size-5">
-            <AvatarImage src="https://github.com/loveconnor.png" alt="@honestui" />
+            <AvatarImage src="https://github.com/loveconnor.png" alt="@honest-ui" />
             <AvatarFallback>CH</AvatarFallback>
           </Avatar>
-          <span className="text-xs">@honestui</span>
+          <span className="text-xs">@honest-ui</span>
         </Button>
       </CardFooter>
     </Card>

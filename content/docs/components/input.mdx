@@ -1,14 +1,12 @@
 ---
 title: Input
-description: A native input element.
+description: Collect a short, single-line value such as a name, email address, or search term.
 
 links:
   doc: https://base-ui.com/react/components/input#api-reference
 ---
 
-<ComponentPreview
-  name="input-demo"
-/>
+<ComponentPreview name="input-demo" />
 
 ## Overview
 
@@ -69,7 +67,7 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 ```
 
 ```tsx
@@ -78,48 +76,40 @@ import { Input } from "@/components/ui/input"
 
 ## Examples
 
-Our examples cover sizes, disabled state, file input, labels, attached buttons, and form usage.
+Examples cover sizes, disabled state, file input, labels, attached buttons, and form usage.
 
-For accessible labelling and validation, prefer using the `Field` component to wrap inputs, or the `FieldControl` component. See some [related examples](/ui/docs/components/field).
+For accessible labeling and validation, use `Field` and `FieldControl` to connect the input with its label, description, and error. See the [Field examples](/docs/components/field).
 
 ### Small Size
 
-<ComponentPreview
-  name="input-sm"
-/>
+<ComponentPreview name="input-sm" />
 
 ### Large Size
 
-<ComponentPreview
-  name="input-lg"
-/>
+<ComponentPreview name="input-lg" />
 
 ### Disabled
 
-<ComponentPreview
-  name="input-disabled"
-/>
+<ComponentPreview name="input-disabled" />
 
 ### File
 
-<ComponentPreview
-  name="input-file"
-/>
+<ComponentPreview name="input-file" />
 
 ### With Label
 
-<ComponentPreview
-  name="input-with-label"
-/>
+<ComponentPreview name="input-with-label" />
 
 ### With Button
 
-<ComponentPreview
-  name="input-with-button"
-/>
+<ComponentPreview name="input-with-button" />
 
 ### Form Integration
 
-<ComponentPreview
-  name="form-demo"
-/>
+<ComponentPreview name="form-demo" />
+
+## API reference
+
+`Input` accepts Base UI Input props and Honest UI's `size` option. Native attributes such as `type`, `name`, `required`, `disabled`, `autoComplete`, `inputMode`, `minLength`, and `pattern` pass through to the underlying input.
+
+Use controlled state only when the application needs it; native uncontrolled inputs work well with `FormData`. See the [Base UI Input API](https://base-ui.com/react/components/input#api-reference).

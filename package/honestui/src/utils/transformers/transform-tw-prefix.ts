@@ -222,7 +222,7 @@ export function applyPrefixesCss(
   tailwindVersion: TailwindVersion
 ) {
   const lines = css.split("\n")
-  for (let line of lines) {
+  for (const line of lines) {
     if (line.includes("@apply")) {
       const originalTWCls = line.replace("@apply", "").trim()
       const prefixedTwCls = applyPrefix(originalTWCls, prefix, tailwindVersion)
