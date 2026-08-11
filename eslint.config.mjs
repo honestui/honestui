@@ -27,6 +27,9 @@ const eslintConfig = defineConfig([
     "build/**",
     "dist/**",
     "package/honestui/dist/**",
+    // The asset catalogs are generated source verified by the HonestUI package
+    // typecheck and export tests.
+    "package/honestui/src/assets/**",
     // The package registry is copied from the root registry by
     // package/honestui/scripts/copy-registry.mjs. Lint the source copy once.
     "package/honestui/registry/**",

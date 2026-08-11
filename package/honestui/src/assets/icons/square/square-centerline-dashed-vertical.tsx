@@ -1,0 +1,43 @@
+/** Auto-generated - Do not edit */
+import React from 'react';
+
+export interface SquareCenterlineDashedVerticalProps extends React.SVGProps<SVGSVGElement> {
+  size?: number | string;
+  strokeWidth?: number;
+}
+
+export const SquareCenterlineDashedVertical = React.forwardRef<SVGSVGElement, SquareCenterlineDashedVerticalProps>(
+  ({ size = 24, className = '', strokeWidth = 1, ...props }, ref) => (
+    <svg 
+      ref={ref}
+      width={size}
+      height={size} 
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      {...(strokeWidth !== undefined ? { strokeWidth } : {})}
+      {...props}
+    >
+      <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3" />
+  <path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3" />
+  <path d="M4 12H2" />
+  <path d="M10 12H8" />
+  <path d="M16 12h-2" />
+  <path d="M22 12h-2" />
+    </svg>
+  )
+);
+SquareCenterlineDashedVertical.displayName = "SquareCenterlineDashedVertical";
+export const SquareCenterlineDashedVerticalMetadata = { 
+  id: "square-centerline-dashed-vertical", 
+  baseId: "square-centerline-dashed-vertical", 
+  variant: "default", 
+  name: "Square Centerline Dashed Vertical", 
+  category: "square", 
+  tags: [], 
+  viewBox: "0 0 24 24" 
+} as const;
+
+export default SquareCenterlineDashedVertical;

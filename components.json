@@ -1,5 +1,5 @@
 {
-  "$schema": "https://www.loveui.dev/schema.json",
+  "$schema": "https://honestui.com/schema.json",
   "style": "base-default",
   "rsc": true,
   "tsx": true,

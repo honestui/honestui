@@ -12,7 +12,7 @@ import {
 } from "@/globals/constants/site";
 import "./globals.css";
 
-const loveUI = localFont({
+const loveSans = localFont({
   src: [
     {
       path: "../public/fonts/LoveSans-Light.woff",
@@ -65,7 +65,7 @@ const loveUI = localFont({
       style: "italic",
     },
   ],
-  variable: "--font-love-ui",
+  variable: "--font-love-sans",
   display: "swap",
 });
 
@@ -200,7 +200,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${loveUI.variable} ${jetbrainsMono.variable}`}
+      className={`${loveSans.variable} ${jetbrainsMono.variable}`}
       data-scroll-behavior="smooth"
       data-style="modern"
       suppressHydrationWarning

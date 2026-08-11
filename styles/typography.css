@@ -1,10 +1,10 @@
 :root {
   /* Fonts */
-  --hui-font-love-ui: var(--font-love-ui), Arial, sans-serif;
+  --hui-font-love-sans: var(--font-love-sans), Arial, sans-serif;
 
   /* Font Families */
-  --hui-font-title: var(--hui-font-love-ui);
-  --hui-font-body: var(--hui-font-love-ui);
+  --hui-font-title: var(--hui-font-love-sans);
+  --hui-font-body: var(--hui-font-love-sans);
   --hui-font-mono:
     var(--font-jetbrains-mono), "JetBrains Mono", Menlo, monospace;
 
@@ -29,7 +29,7 @@
   --hui-line-height-large: 24px;
   --hui-line-height-base: var(--hui-line-height-regular);
 
-  /* Body letter spacing — tuned for LoveUI, which is spaced generously already.
+  /* Body letter spacing — tuned for LoveSans, which is spaced generously already.
      Near-zero at small sizes, slightly negative as size grows. em-based so it
      scales with font-size. */
   --hui-letter-spacing-micro: 0.01em;
@@ -77,14 +77,14 @@
 }
 
 [data-style="modern"] {
-  --hui-font-title: var(--hui-font-love-ui);
-  --hui-font-body: var(--hui-font-love-ui);
+  --hui-font-title: var(--hui-font-love-sans);
+  --hui-font-body: var(--hui-font-love-sans);
   font-family: var(--hui-font-body);
 }
 
 [data-style="traditional"] {
-  --hui-font-title: var(--hui-font-love-ui);
-  --hui-font-body: var(--hui-font-love-ui);
+  --hui-font-title: var(--hui-font-love-sans);
+  --hui-font-body: var(--hui-font-love-sans);
   font-family: var(--hui-font-body);
 }
 
@@ -96,7 +96,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Every used weight and italic style is supplied by the local LoveUI family. */
+  /* Every used weight and italic style is supplied by the local LoveSans family. */
   font-synthesis: none;
 }
 

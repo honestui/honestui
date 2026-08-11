@@ -6,6 +6,7 @@ export default tseslint.config(
     ignores: [
       "dist/**",
       "tests/**",
+      "src/assets/**",
       "src/**/*.test.ts",
       "src/**/*.test.tsx",
     ],

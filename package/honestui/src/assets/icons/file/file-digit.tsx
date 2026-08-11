@@ -1,0 +1,42 @@
+/** Auto-generated - Do not edit */
+import React from 'react';
+
+export interface FileDigitProps extends React.SVGProps<SVGSVGElement> {
+  size?: number | string;
+  strokeWidth?: number;
+}
+
+export const FileDigit = React.forwardRef<SVGSVGElement, FileDigitProps>(
+  ({ size = 24, className = '', strokeWidth = 1, ...props }, ref) => (
+    <svg 
+      ref={ref}
+      width={size}
+      height={size} 
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      {...(strokeWidth !== undefined ? { strokeWidth } : {})}
+      {...props}
+    >
+      <path d="M4 12V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2" />
+  <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+  <path d="M10 16h2v6" />
+  <path d="M10 22h4" />
+  <rect x="2" y="16" width="4" height="6" rx="2" />
+    </svg>
+  )
+);
+FileDigit.displayName = "FileDigit";
+export const FileDigitMetadata = { 
+  id: "file-digit", 
+  baseId: "file-digit", 
+  variant: "default", 
+  name: "File Digit", 
+  category: "file", 
+  tags: [], 
+  viewBox: "0 0 24 24" 
+} as const;
+
+export default FileDigit;

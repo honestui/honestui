@@ -8,7 +8,7 @@
   <title id="honest-ui-wordmark-title">Honest UI</title>
   <style>
     @font-face {
-      font-family: "Love UI";
+      font-family: "LoveSans";
       src: url("/fonts/LoveSans-Semibold.woff") format("woff");
       font-style: normal;
       font-weight: 600;
@@ -25,7 +25,7 @@
     x="138"
     y="157"
     fill="currentColor"
-    font-family="Love UI, Arial, sans-serif"
+    font-family="LoveSans, Arial, sans-serif"
     font-size="108"
     font-weight="600"
     letter-spacing="-3"

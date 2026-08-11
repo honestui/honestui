@@ -1,0 +1,40 @@
+/** Auto-generated - Do not edit */
+import React from 'react';
+
+export interface BalloonProps extends React.SVGProps<SVGSVGElement> {
+  size?: number | string;
+  strokeWidth?: number;
+}
+
+export const Balloon = React.forwardRef<SVGSVGElement, BalloonProps>(
+  ({ size = 24, className = '', strokeWidth = 1, ...props }, ref) => (
+    <svg 
+      ref={ref}
+      width={size}
+      height={size} 
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      {...(strokeWidth !== undefined ? { strokeWidth } : {})}
+      {...props}
+    >
+      <path d="M12 16v1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v1" />
+  <path d="M12 6a2 2 0 0 1 2 2" />
+  <path d="M18 8c0 4-3.5 8-6 8s-6-4-6-8a6 6 0 0 1 12 0" />
+    </svg>
+  )
+);
+Balloon.displayName = "Balloon";
+export const BalloonMetadata = { 
+  id: "balloon", 
+  baseId: "balloon", 
+  variant: "default", 
+  name: "Balloon", 
+  category: "others", 
+  tags: [], 
+  viewBox: "0 0 24 24" 
+} as const;
+
+export default Balloon;

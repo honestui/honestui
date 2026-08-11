@@ -5,7 +5,7 @@ description: Apply Honest UI's font-family, weight, body, title, and technical-t
 
 Honest UI separates typography into family roles and coordinated scales. Each size has a matching line height and letter spacing value, so text remains consistent across component labels, body copy, headings, and technical content.
 
-The default family resolves through `--font-love-ui` and falls back to Arial, then the system sans-serif. You can load LoveUI in your application or point `--font-love-ui` at a typeface you already own.
+The default family resolves through `--font-love-sans` and falls back to Arial, then the system sans-serif. You can load LoveSans in your application or point `--font-love-sans` at a typeface you already own.
 
 ## Font families
 
@@ -13,10 +13,10 @@ The default family resolves through `--font-love-ui` and falls back to Arial, th
   caption="Honest UI font-family tokens"
   type="typography"
   tokens={[
-    { name: "--hui-font-love-ui", value: "var(--font-love-ui), Arial, sans-serif", description: "Shared family stack and customization point" },
-    { name: "--hui-font-title", value: "var(--hui-font-love-ui)", description: "Headings and display titles" },
-    { name: "--hui-font-body", value: "var(--hui-font-love-ui)", description: "Body copy, controls, labels, and supporting text" },
-    { name: "--hui-font-mono", value: "var(--hui-font-love-ui)", description: "Technical-text role; override it when true monospaced alignment is required" },
+    { name: "--hui-font-love-sans", value: "var(--font-love-sans), Arial, sans-serif", description: "Shared family stack and customization point" },
+    { name: "--hui-font-title", value: "var(--hui-font-love-sans)", description: "Headings and display titles" },
+    { name: "--hui-font-body", value: "var(--hui-font-love-sans)", description: "Body copy, controls, labels, and supporting text" },
+    { name: "--hui-font-mono", value: "var(--hui-font-love-sans)", description: "Technical-text role; override it when true monospaced alignment is required" },
   ]}
 />
 
@@ -26,7 +26,7 @@ To provide an application font without changing component code:
 
 ```css
 :root {
-  --font-love-ui: "Your Product Sans";
+  --font-love-sans: "Your Product Sans";
   --hui-font-mono: "Your Product Mono", ui-monospace, monospace;
 }
 ```

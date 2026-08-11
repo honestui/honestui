@@ -103,7 +103,7 @@ function TokenSample({ token, type }: { token: TokenDefinition; type: TokenPrevi
     if (token.name.includes("line-height")) style.lineHeight = variable;
     if (token.name.includes("letter-spacing")) style.letterSpacing = variable;
     if (token.name.includes("font-weight")) style.fontWeight = variable;
-    if (["--hui-font-love-ui", "--hui-font-title", "--hui-font-body", "--hui-font-mono"].includes(token.name)) {
+    if (["--hui-font-love-sans", "--hui-font-title", "--hui-font-body", "--hui-font-mono"].includes(token.name)) {
       style.fontFamily = variable;
     }
 

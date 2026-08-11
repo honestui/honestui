@@ -1,9 +1,13 @@
 import assert from "node:assert/strict"
 import { execFile } from "node:child_process"
 import { readFile } from "node:fs/promises"
+import path from "node:path"
 import { promisify } from "node:util"
+import { fileURLToPath } from "node:url"
+import fg from "fast-glob"
 
 const execFileAsync = promisify(execFile)
+const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const listenersBeforeImport = {
   SIGINT: process.listenerCount("SIGINT"),
   SIGTERM: process.listenerCount("SIGTERM"),
@@ -32,6 +36,35 @@ assert.deepEqual(Object.keys(shaders).sort(), [
   "Grainient",
   "LightRays",
 ])
+
+for (const [catalogName, catalog] of [
+  ["icons", icons.allIcons],
+  ["logos", logos.allLogos],
+  ["vectors", vectors.allVectors],
+]) {
+  for (const [categoryName, entries] of Object.entries(catalog)) {
+    for (const [exportName, entry] of Object.entries(entries)) {
+      assert.equal(
+        typeof entry.metadata.variant,
+        "string",
+        `${catalogName}/${categoryName}/${exportName} must define a metadata variant`
+      )
+    }
+  }
+}
+
+const catalogSources = await fg("src/assets/{icons,logos,vectors}/**/*.tsx", {
+  absolute: true,
+  cwd: packageRoot,
+})
+for (const sourcePath of catalogSources) {
+  const source = await readFile(sourcePath, "utf8")
+  assert.doesNotMatch(
+    source,
+    /^['"]use client['"];?$/m,
+    `${path.relative(packageRoot, sourcePath)} must remain server-readable`
+  )
+}
 
 const chartsCss = await readFile(new URL("../dist/charts.css", import.meta.url), "utf8")
 const shadersCss = await readFile(new URL("../dist/shaders.css", import.meta.url), "utf8")

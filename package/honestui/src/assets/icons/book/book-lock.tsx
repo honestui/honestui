@@ -1,0 +1,41 @@
+/** Auto-generated - Do not edit */
+import React from 'react';
+
+export interface BookLockProps extends React.SVGProps<SVGSVGElement> {
+  size?: number | string;
+  strokeWidth?: number;
+}
+
+export const BookLock = React.forwardRef<SVGSVGElement, BookLockProps>(
+  ({ size = 24, className = '', strokeWidth = 1, ...props }, ref) => (
+    <svg 
+      ref={ref}
+      width={size}
+      height={size} 
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      {...(strokeWidth !== undefined ? { strokeWidth } : {})}
+      {...props}
+    >
+      <path d="M18 6V4a2 2 0 1 0-4 0v2" />
+  <path d="M20 15v6a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" />
+  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H10" />
+  <rect x="12" y="6" width="8" height="5" rx="1" />
+    </svg>
+  )
+);
+BookLock.displayName = "BookLock";
+export const BookLockMetadata = { 
+  id: "book-lock", 
+  baseId: "book-lock", 
+  variant: "default", 
+  name: "Book Lock", 
+  category: "book", 
+  tags: [], 
+  viewBox: "0 0 24 24" 
+} as const;
+
+export default BookLock;

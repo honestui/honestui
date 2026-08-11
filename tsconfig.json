@@ -20,9 +20,9 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "honestui/icons": ["./lib/honestui-icons.ts"],
-      "honestui/logos": ["./lib/honestui-logos.ts"],
-      "honestui/vectors": ["./lib/honestui-vectors.ts"],
+      "honestui/icons": ["./package/honestui/src/icons.ts"],
+      "honestui/logos": ["./package/honestui/src/logos.ts"],
+      "honestui/vectors": ["./package/honestui/src/vectors.ts"],
       "honestui/shaders": ["./lib/honestui-shaders.ts"]
     }
   },

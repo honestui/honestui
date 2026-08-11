@@ -1,0 +1,40 @@
+/** Auto-generated - Do not edit */
+import React from 'react';
+
+export interface LassoProps extends React.SVGProps<SVGSVGElement> {
+  size?: number | string;
+  strokeWidth?: number;
+}
+
+export const Lasso = React.forwardRef<SVGSVGElement, LassoProps>(
+  ({ size = 24, className = '', strokeWidth = 1, ...props }, ref) => (
+    <svg 
+      ref={ref}
+      width={size}
+      height={size} 
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      {...(strokeWidth !== undefined ? { strokeWidth } : {})}
+      {...props}
+    >
+      <path d="M3.704 14.467a10 8 0 1 1 3.115 2.375" />
+  <path d="M7 22a5 5 0 0 1-2-3.994" />
+  <circle cx="5" cy="16" r="2" />
+    </svg>
+  )
+);
+Lasso.displayName = "Lasso";
+export const LassoMetadata = { 
+  id: "lasso", 
+  baseId: "lasso", 
+  variant: "default", 
+  name: "Lasso", 
+  category: "others", 
+  tags: [], 
+  viewBox: "0 0 24 24" 
+} as const;
+
+export default Lasso;

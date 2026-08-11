@@ -1,0 +1,1 @@
+export { VerifiedBadgeSymbols, VerifiedBadgeSymbolsMetadata, type VerifiedBadgeSymbolsProps } from './Verified-Badge_symbols';

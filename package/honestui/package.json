@@ -1,6 +1,6 @@
 {
   "name": "honestui",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Build and manage Honest UI component libraries.",
   "license": "MIT",
   "homepage": "https://honestui.com",
@@ -15,29 +15,29 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/src/index.d.ts",
       "default": "./dist/index.js"
     },
     "./charts": {
-      "types": "./dist/charts.d.ts",
+      "types": "./dist/src/charts.d.ts",
       "default": "./dist/charts.js"
     },
     "./charts.css": "./dist/charts.css",
     "./icons": {
-      "types": "./dist/icons.d.ts",
+      "types": "./dist/src/icons.d.ts",
       "default": "./dist/icons.js"
     },
     "./logos": {
-      "types": "./dist/logos.d.ts",
+      "types": "./dist/src/logos.d.ts",
       "default": "./dist/logos.js"
     },
     "./shaders": {
-      "types": "./dist/shaders.d.ts",
+      "types": "./dist/src/shaders.d.ts",
       "default": "./dist/shaders.js"
     },
     "./shaders.css": "./dist/shaders.css",
     "./vectors": {
-      "types": "./dist/vectors.d.ts",
+      "types": "./dist/src/vectors.d.ts",
       "default": "./dist/vectors.js"
     },
     "./package.json": "./package.json"
@@ -60,7 +60,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup && node scripts/mark-client-entries.mjs && node scripts/build-chart-styles.mjs",
+    "build": "tsup && npm run build:types && node scripts/mark-client-entries.mjs && node scripts/build-chart-styles.mjs",
+    "build:types": "tsc --project tsconfig.build.json",
     "sync:registry": "node scripts/copy-registry.mjs",
     "verify:registry": "node scripts/verify-registry.mjs",
     "lint": "eslint src registry/default/charts registry/default/ui/charts registry/default/shaders",
@@ -88,7 +89,6 @@
     "fuzzysort": "^3.1.0",
     "https-proxy-agent": "^7.0.6",
     "kleur": "^4.1.5",
-    "love-ui": "^1.2.24",
     "motion": "^12.42.2",
     "node-fetch": "^3.3.2",
     "ogl": "^1.0.11",

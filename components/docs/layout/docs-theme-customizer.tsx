@@ -209,7 +209,7 @@ const TYPOGRAPHY_PROPERTIES: Record<
   },
   editorial: {
     "--hui-font-title": 'Georgia, "Times New Roman", serif',
-    "--hui-font-body": "var(--hui-font-love-ui)",
+    "--hui-font-body": "var(--hui-font-love-sans)",
   },
   serif: {
     "--hui-font-title": 'Georgia, "Times New Roman", serif',
@@ -217,7 +217,7 @@ const TYPOGRAPHY_PROPERTIES: Record<
   },
   technical: {
     "--hui-font-title": "var(--hui-font-mono)",
-    "--hui-font-body": "var(--hui-font-love-ui)",
+    "--hui-font-body": "var(--hui-font-love-sans)",
   },
 };
 

@@ -10,7 +10,7 @@ export default defineConfig({
     vectors: "src/vectors.ts",
   },
   format: ["esm"],
-  dts: true,
+  dts: false,
   sourcemap: true,
   clean: true,
   splitting: true,
