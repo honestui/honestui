@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { buildRegistryBaseColor } from "@/lib/init-registry";
-import { getRegistryIndex } from "@/lib/registry-locations";
+import {
+  getRegistryCatalog,
+  getRegistryIndex,
+} from "@/lib/registry-locations";
 import { getRegistryItem } from "@/lib/registry";
 
 type RouteContext = {
@@ -15,6 +18,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   if (path.length === 1 && fileName === "index.json") {
     return NextResponse.json(await getRegistryIndex());
+  }
+
+  if (path.length === 1 && fileName === "registry.json") {
+    return NextResponse.json(await getRegistryCatalog());
   }
 
   if (

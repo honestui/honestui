@@ -50,25 +50,7 @@ export async function getRegistryItem(name: string) {
     `${path.sep}registry${path.sep}default${path.sep}shaders${path.sep}`,
   );
   const shaderFiles = isShaderComponent
-    ? [
-        {
-          path: registryFile.path,
-          type: "registry:component" as const,
-          target: `components/shaders/${path.basename(registryFile.path)}`,
-        },
-        {
-          path: path.join(
-            path.dirname(registryFile.path),
-            "css",
-            `${path.basename(registryFile.path, path.extname(registryFile.path))}.css`,
-          ),
-          type: "registry:component" as const,
-          target: `components/shaders/css/${path.basename(
-            registryFile.path,
-            path.extname(registryFile.path),
-          )}.css`,
-        },
-      ]
+    ? await getShaderFiles(registryFile.path)
     : null;
 
   const typedItem = {
@@ -125,6 +107,38 @@ export async function getRegistryItem(name: string) {
     }),
     files: finalFiles,
   };
+}
+
+async function getShaderFiles(registryFilePath: string) {
+  const itemName = path.basename(
+    registryFilePath,
+    path.extname(registryFilePath),
+  );
+  const componentFile = {
+    path: registryFilePath,
+    type: "registry:component" as const,
+    target: `components/shaders/${path.basename(registryFilePath)}`,
+  };
+  const cssPath = path.join(
+    path.dirname(registryFilePath),
+    "css",
+    `${itemName}.css`,
+  );
+
+  try {
+    await fs.access(cssPath);
+  } catch {
+    return [componentFile];
+  }
+
+  return [
+    componentFile,
+    {
+      path: cssPath,
+      type: "registry:component" as const,
+      target: `components/shaders/css/${itemName}.css`,
+    },
+  ];
 }
 
 function getDependencies(source: string) {
