@@ -45,7 +45,14 @@ export function DocsSidebar({
         <SidebarContent className={cn("scroll-fade select-none", "pt-2 pb-14")}>
           <SidebarSections tree={source.pageTree} />
         </SidebarContent>
-        <SidebarFooter className="px-4 py-3 group-data-[collapsible=icon]:hidden">
+        <SidebarFooter className="gap-1 px-4 py-3 group-data-[collapsible=icon]:hidden">
+          <p className="mb-1 text-[11px] font-medium text-muted-foreground">Resources</p>
+          <Link
+            className="text-muted-foreground w-fit rounded-sm text-xs outline-none hover:text-foreground hover:underline hover:underline-offset-4 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            href="/compare"
+          >
+            Comparisons
+          </Link>
           <Link
             className="text-muted-foreground w-fit rounded-sm text-xs outline-none hover:text-foreground hover:underline hover:underline-offset-4 focus-visible:ring-[3px] focus-visible:ring-ring/50"
             href="/privacy"

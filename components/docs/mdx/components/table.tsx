@@ -3,7 +3,12 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 export const Table = ({ className, ...props }: React.ComponentProps<"table">) => (
-  <div className="no-scrollbar my-6 w-full overflow-y-auto rounded-lg border">
+  <div
+    aria-label="Scrollable table"
+    className="no-scrollbar my-6 w-full overflow-x-auto rounded-lg border outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-2"
+    role="region"
+    tabIndex={0}
+  >
     <table
       className={cn(
         "relative w-full overflow-hidden border-none text-sm [&_tbody_tr:last-child]:border-b-0",

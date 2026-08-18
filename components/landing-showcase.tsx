@@ -431,6 +431,12 @@ export function LandingShowcase() {
           <span>MIT licensed. Source-first by design.</span>
           <Link
             className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+            href="/compare"
+          >
+            Comparisons
+          </Link>
+          <Link
+            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
             href="/privacy"
           >
             Privacy
@@ -465,6 +471,12 @@ export function LandingShowcase() {
 
       <p className="flex items-center gap-2 px-5 pb-8 text-sm text-[var(--hui-color-foreground-base-secondary)] sm:px-8 lg:hidden">
         <span>MIT licensed. Source-first by design.</span>
+        <Link
+          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+          href="/compare"
+        >
+          Comparisons
+        </Link>
         <Link
           className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
           href="/privacy"

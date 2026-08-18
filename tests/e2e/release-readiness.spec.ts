@@ -142,13 +142,13 @@ test("browser privacy signals disable analytics automatically", async ({
   expect(analyticsRequests).toEqual([]);
 });
 
-test("home and docs reflow without page-level horizontal scrolling", async ({
+test("home, docs, and comparisons reflow without page-level horizontal scrolling", async ({
   page,
 }) => {
   await page.setViewportSize({ height: 800, width: 320 });
   await page.goto("/");
 
-  for (const path of ["/", "/docs"]) {
+  for (const path of ["/", "/docs", "/compare"]) {
     await page.goto(path);
     const dimensions = await page.evaluate(() => ({
       documentWidth: document.documentElement.scrollWidth,
@@ -181,7 +181,7 @@ test("docs header external links are single interactive elements", async ({
 test("public pages have no detectable WCAG A or AA violations", async ({
   page,
 }) => {
-  for (const path of ["/", "/docs", "/privacy"]) {
+  for (const path of ["/", "/docs", "/privacy", "/compare"]) {
     await page.goto(path);
     const results = await new AxeBuilder({ page })
       .withTags([
@@ -208,6 +208,45 @@ test("landing showcase identifies its controls as previews", async ({
       "These examples are interactive previews; they don’t submit data.",
     ),
   ).toBeVisible();
+});
+
+test("published comparisons are discoverable while drafts stay private", async ({
+  page,
+}) => {
+  await page.goto("/compare");
+
+  await expect(
+    page.getByRole("heading", { name: "Compare HonestUI" }),
+  ).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /^index, follow/,
+  );
+  const shadcnGuideLink = page.getByRole("link", {
+    name: /HonestUI vs shadcn\/ui/,
+  });
+  await expect(shadcnGuideLink).toBeVisible();
+  await expect(shadcnGuideLink).toHaveAttribute("href", "/compare/shadcn-ui");
+
+  const shadcnResponse = await page.goto("/compare/shadcn-ui");
+  expect(shadcnResponse?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", { name: "HonestUI vs shadcn/ui", level: 1 }),
+  ).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://www.honestui.com/compare/shadcn-ui",
+  );
+
+  const oldShadcnSlugResponse = await page.goto("/compare/shadcn");
+  expect(oldShadcnSlugResponse?.status()).toBe(404);
+
+  const draftResponse = await page.goto("/compare/example-library");
+  expect(draftResponse?.status()).toBe(404);
+
+  await page.goto("/sitemap.xml");
+  await expect(page.locator("body")).toContainText("/compare/shadcn-ui");
+  await expect(page.locator("body")).not.toContainText("example-library");
 });
 
 test("blur token previews compare sharp and blurred halves", async ({

@@ -6,12 +6,18 @@ import {
   LOGO_CATEGORIES,
   VECTOR_CATEGORIES,
 } from "@/globals/constants/icon-categories";
+import { getPublishedComparisons } from "@/lib/comparisons";
 
 export const dynamic = "force-static";
 export const revalidate = false;
 
+function comparisonLastModified(updatedAt: string) {
+  return new Date(`${updatedAt}T00:00:00Z`);
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  const publishedComparisons = getPublishedComparisons();
 
   const staticEntries: MetadataRoute.Sitemap = [
     {
@@ -74,12 +80,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   );
 
+  const comparisonEntries: MetadataRoute.Sitemap =
+    publishedComparisons.length === 0
+      ? []
+      : [
+          {
+            url: absoluteUrl("/compare"),
+            lastModified: publishedComparisons
+              .map((page) => comparisonLastModified(page.data.updatedAt))
+              .sort((a, b) => b.getTime() - a.getTime())[0],
+            changeFrequency: "monthly" as const,
+            priority: 0.7,
+          },
+          ...publishedComparisons.map((page) => ({
+            url: absoluteUrl(page.url),
+            lastModified: comparisonLastModified(page.data.updatedAt),
+            changeFrequency: "monthly" as const,
+            priority: 0.7,
+          })),
+        ];
+
   const seen = new Set<string>();
   return [
     ...staticEntries,
     ...docsEntries,
     ...iconCategoryEntries,
     ...assetCollectionEntries,
+    ...comparisonEntries,
   ].filter((entry) => {
     if (seen.has(entry.url)) return false;
     seen.add(entry.url);

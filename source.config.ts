@@ -13,4 +13,32 @@ export const docs = defineDocs({
   },
 });
 
-export default defineConfig();
+export const comparisons = defineDocs({
+  dir: "content/compare",
+  docs: {
+    schema: pageSchema.extend({
+      author: z.string().min(1).optional(),
+      authorUrl: z.url().optional(),
+      competitor: z.string().min(1),
+      description: z.string().min(1),
+      draft: z.boolean().default(true),
+      image: z.string().optional(),
+      metaTitle: z.string().min(1),
+      publishedAt: z.iso.date().optional(),
+      reviewedBy: z.string().min(1).optional(),
+      sources: z.array(z.url()).min(1).optional(),
+      updatedAt: z.iso.date().optional(),
+    }),
+  },
+});
+
+export default defineConfig({
+  mdxOptions: {
+    rehypeCodeOptions: {
+      themes: {
+        light: "github-light-high-contrast",
+        dark: "github-dark-high-contrast",
+      },
+    },
+  },
+});
