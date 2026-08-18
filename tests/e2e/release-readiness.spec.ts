@@ -212,7 +212,15 @@ test("landing showcase identifies its controls as previews", async ({
 
 test("published comparisons are discoverable while drafts stay private", async ({
   page,
+  request,
 }) => {
+  const publishedComparisons = [
+    "shadcn-ui",
+    "magic-ui",
+    "aceternity-ui",
+    "mantine",
+  ];
+
   await page.goto("/compare");
 
   await expect(
@@ -222,21 +230,34 @@ test("published comparisons are discoverable while drafts stay private", async (
     "content",
     /^index, follow/,
   );
-  const shadcnGuideLink = page.getByRole("link", {
-    name: /HonestUI vs shadcn\/ui/,
-  });
-  await expect(shadcnGuideLink).toBeVisible();
-  await expect(shadcnGuideLink).toHaveAttribute("href", "/compare/shadcn-ui");
+  for (const slug of publishedComparisons) {
+    const comparisonLink = page.locator(`a[href="/compare/${slug}"]`);
+    await expect(comparisonLink).toBeVisible();
+  }
 
-  const shadcnResponse = await page.goto("/compare/shadcn-ui");
-  expect(shadcnResponse?.status()).toBe(200);
-  await expect(
-    page.getByRole("heading", { name: "HonestUI vs shadcn/ui", level: 1 }),
-  ).toBeVisible();
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://www.honestui.com/compare/shadcn-ui",
-  );
+  for (const slug of publishedComparisons) {
+    const comparisonResponse = await page.goto(`/compare/${slug}`);
+    expect(comparisonResponse?.status(), slug).toBe(200);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      `https://www.honestui.com/compare/${slug}`,
+    );
+
+    const internalLinks = await page
+      .locator('article a[href^="/"]')
+      .evaluateAll((links) => [
+        ...new Set(links.map((link) => link.getAttribute("href"))),
+      ]);
+
+    for (const href of internalLinks) {
+      if (!href) continue;
+
+      const linkedResponse = await request.get(href);
+      expect(linkedResponse.status(), `${slug} links to ${href}`).toBeLessThan(
+        400,
+      );
+    }
+  }
 
   const oldShadcnSlugResponse = await page.goto("/compare/shadcn");
   expect(oldShadcnSlugResponse?.status()).toBe(404);
@@ -245,7 +266,9 @@ test("published comparisons are discoverable while drafts stay private", async (
   expect(draftResponse?.status()).toBe(404);
 
   await page.goto("/sitemap.xml");
-  await expect(page.locator("body")).toContainText("/compare/shadcn-ui");
+  for (const slug of publishedComparisons) {
+    await expect(page.locator("body")).toContainText(`/compare/${slug}`);
+  }
   await expect(page.locator("body")).not.toContainText("example-library");
 });
 

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">HonestUI vs Magic UI</title>
+  <desc id="description">A comparison of two React UI libraries.</desc>
+  <rect width="1200" height="630" fill="#101010" />
+  <rect x="48" y="48" width="1104" height="534" rx="28" fill="#141414" stroke="#303030" />
+  <g fill="#f4f4f4" transform="translate(100 102) scale(.0878734622)">
+    <path d="M0 0h362v115H112v453H0V0Z" />
+    <path d="M419 0h111v115H419V0Z" />
+    <path d="M419 181h111v388H168V451h251V181Z" />
+  </g>
+  <text x="162" y="139" font-family="LoveSans, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="30" letter-spacing="-0.5">
+    <tspan fill="#f4f4f4" font-weight="600">Honest</tspan>
+    <tspan dx="7" fill="#a7a7a7" font-weight="500">UI</tspan>
+  </text>
+  <text x="100" y="286" fill="#f4f4f4" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="72" font-weight="600" letter-spacing="-2.5">HonestUI vs Magic UI</text>
+  <text x="100" y="354" fill="#a7a7a7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="31" font-weight="400">React UI libraries compared</text>
+  <line x1="100" y1="458" x2="1100" y2="458" stroke="#303030" />
+  <text x="100" y="512" fill="#a7a7a7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="24">Source ownership · installation · charts · styling · accessibility</text>
+  <circle cx="1084" cy="125" r="8" fill="#4169e1" />
+</svg>

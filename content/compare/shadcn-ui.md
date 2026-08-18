@@ -22,54 +22,54 @@ sources:
 
 ## The short answer
 
-Use shadcn/ui if you want its established registry ecosystem, blocks, choice of Base UI, Radix UI, or React Aria, and tooling such as presets and MCP. Use HonestUI if you want editable UI components plus packaged charts, icons, logos, vectors, and shaders from the same project.
+Use shadcn/ui if you want its large ecosystem, registry support, blocks, multiple component bases, and tooling around the library.
 
-Both projects give you editable component source. That is not a difference between them. HonestUI's UI and animated components are copied into your project; shadcn/ui describes itself as a code distribution platform and also writes component source into your project. ([HonestUI overview](/docs), [shadcn/ui introduction](https://ui.shadcn.com/docs))
+Use HonestUI if you want editable React components with a more opinionated visual direction, plus charts, icons, logos, vectors, and shaders from the same project.
 
-If shadcn/ui already works for your project, there is no general reason to replace it. The useful question is whether HonestUI's visual collections, ECharts-based charts, and design tokens remove enough separate dependencies or custom work to justify using it.
+Both libraries give you the source code for UI components. You add a component to your project, then you can open the file and change it like any other code. ([HonestUI overview](/docs), [shadcn/ui introduction](https://ui.shadcn.com/docs))
+
+The biggest difference is what surrounds those components. shadcn/ui has the larger ecosystem. HonestUI includes more first-party visual collections outside of standard UI.
+
+If shadcn/ui already works well for your project, there is no reason to switch just to switch. The better question is which approach gives you more of what your project actually needs.
 
 ## Quick comparison
 
-The comparison covers the criteria a developer needs to choose a library: code ownership, installation, primitives, charts, animation, assets, styling, accessibility, extension model, and license.
-
 | Criterion | HonestUI | shadcn/ui |
 | --- | --- | --- |
-| Component model | UI and animated components are copied into your project. Charts, icons, logos, vectors, and shaders are package imports. | Components and blocks are distributed through the CLI and registry system, then owned as project source. |
+| Component model | UI and animated components are copied into your project. Charts, icons, logos, vectors, and shaders are package imports. | Components and blocks are added through the CLI and registry system, then live as source in your project. |
 | Installation | `npx honestui@latest init`, then `npx honestui@latest add button`. Package collections use `npm install honestui`. | `npx shadcn@latest init`, then `npx shadcn@latest add button`. |
-| Component bases | HonestUI interactive components use Base UI where a headless primitive is needed. | Base UI is the default for new projects. Radix UI and React Aria are also supported. |
-| Charts | React components built on Apache ECharts, imported from `honestui/charts`. | Chart source added to your project and composed with Recharts v3. |
-| Animation | A dedicated collection of copied animated components. Motion is installed only when a component needs it. | Animation is handled within individual components and styles. Third-party registries can add other approaches. |
-| Icons and visual assets | Package entry points for icons, logos, vectors, and shaders. | Component examples use external icon packages. No equivalent first-party logo, vector, or shader collections are listed in the current docs. |
-| Styling | Tailwind CSS v4 classes and `--hui-*` semantic tokens. | Tailwind CSS classes with CSS variables and semantic theme tokens by default. |
-| Accessibility | Base UI primitives provide behavior for the components that use them. HonestUI documents the checks still required after customization. | The selected Base UI, Radix UI, or React Aria implementation provides the primitive behavior. Customizations still need application-level testing. |
-| Extension model | HonestUI's own component registry and package collections. | Public, private, and namespaced registries, plus blocks, presets, skills, and MCP tooling. |
+| Component bases | HonestUI uses Base UI where a headless primitive is needed. | Base UI is the default for new projects. Radix UI and React Aria are also supported. |
+| Charts | React chart components built on Apache ECharts and imported from `honestui/charts`. | Chart source is added to your project and composed with Recharts. |
+| Animation | Dedicated collection of animated components. | Animation is handled by individual components and styles, with more available through third-party registries. |
+| Icons and visual assets | First-party icons, logos, vectors, and shaders. | Uses external icon libraries and third-party registries for additional visual collections. |
+| Styling | Tailwind CSS v4 with `--hui-*` semantic design tokens. | Tailwind CSS with CSS variables and theme tokens. |
+| Accessibility | Accessible primitives are used where needed, with additional guidance for testing customized components. | Accessibility behavior comes from the selected Base UI, Radix UI, or React Aria implementation and still requires application-level testing. |
+| Ecosystem | Smaller first-party ecosystem. | Large registry ecosystem with components, blocks, presets, MCP, and third-party libraries. |
 | License | MIT | MIT |
-
-The installation and package split above come from the [HonestUI package README](https://github.com/honestui/honestui/blob/f309533a8e4ba9214c44ee04426b985dfc5a17d4/package/honestui/README.md). shadcn/ui documents its current [`init` and `add` commands](https://ui.shadcn.com/docs/cli), [registry model](https://ui.shadcn.com/docs/registry), and [MIT license](https://github.com/shadcn-ui/ui/blob/8a7701ec27eb9cb8e0377db769fbe6d744113c52/LICENSE.md).
 
 ## When HonestUI fits better
 
-HonestUI fits when you want one project to cover both interface components and visual building blocks.
+HonestUI fits better when you want more than standard application components from one project.
 
-The clearest difference is what ships outside the copied UI layer. HonestUI exposes charts, icons, logos, vectors, and shaders through dedicated package entry points. Those collections stay as package dependencies, while UI and animated components remain editable files in your application. ([HonestUI overview](/docs), [package exports](https://github.com/honestui/honestui/blob/f309533a8e4ba9214c44ee04426b985dfc5a17d4/package/honestui/package.json))
+Along with buttons, dialogs, fields, selects, tables, and other UI components, HonestUI includes animated components and package collections for charts, icons, logos, vectors, and shaders.
 
-Charts are another concrete difference. HonestUI's chart components use [Apache ECharts](/docs/charts) and are imported from `honestui/charts`. That may suit a project already using ECharts or one that wants its chart components delivered as a maintained package.
+Charts are one of the clearer differences. HonestUI uses Apache ECharts and exposes the collection through `honestui/charts`. If you already use ECharts or want its broader visualization capabilities, this may fit your project better.
 
-HonestUI also has its own semantic token system for color, spacing, type, radius, and effects. Use it when you want the existing HonestUI visual direction rather than a neutral starting point you will restyle from scratch. ([HonestUI theme overview](/docs/theme/overview))
+HonestUI also has its own visual system built around semantic tokens for color, spacing, typography, radius, and effects. You still own the component files, but the defaults give the library a more consistent starting point.
 
 ## When shadcn/ui fits better
 
-shadcn/ui fits when you value breadth of tooling and the ability to choose the component foundation.
+shadcn/ui fits better when ecosystem size and flexibility matter most.
 
-New projects use Base UI by default, while Radix UI remains supported. In July 2026, shadcn/ui also added React Aria as a first-class base selectable through the CLI and shadcn/create. ([Base UI default](https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default), [React Aria support](https://ui.shadcn.com/docs/changelog/2026-07-react-aria))
+It has a large registry system and can install components from the official registry, public third-party registries, private registries, and namespaced sources.
 
-Its registry system is also more flexible. A project can install from the official registry, public third-party registries, private registries, or namespaced sources configured in `components.json`. The official MCP server can browse and install from those configured registries through supported coding tools. ([registry configuration](https://ui.shadcn.com/docs/components-json#registries), [MCP server](https://ui.shadcn.com/docs/mcp))
+You also have more choice in the underlying component primitives. Base UI is the default for new projects, while Radix UI and React Aria are also supported. ([Base UI default](https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default), [React Aria support](https://ui.shadcn.com/docs/changelog/2026-07-react-aria))
 
-If your team already has shadcn/ui components, conventions, and local changes, staying put is usually the lower-risk choice. Because you own the generated files, moving libraries means reviewing your own modifications as well as the upstream component APIs.
+If your team already uses shadcn/ui heavily, has custom components based on it, or depends on its registry ecosystem, staying with it will usually make more sense.
 
 ## Installation and component source
 
-The basic command flow is similar.
+The basic workflow is similar.
 
 With HonestUI:
 
@@ -78,7 +78,7 @@ npx honestui@latest init
 npx honestui@latest add button
 ```
 
-With the default component alias, the result is imported from your project:
+Then import the component from your project:
 
 ```tsx
 import { Button } from "@/components/ui/button"
@@ -95,7 +95,7 @@ npx shadcn@latest init
 npx shadcn@latest add button
 ```
 
-The added component is also imported from your project:
+The component also lives in your project:
 
 ```tsx
 import { Button } from "@/components/ui/button"
@@ -105,11 +105,11 @@ export function Example() {
 }
 ```
 
-Both tools can write to a configured UI alias, so inspect `components.json` before adding either library to a project that already has generated components.
+This is an important similarity. Source ownership is not a reason to choose HonestUI over shadcn/ui. Both give you editable component files.
 
 ## How the chart approaches differ
 
-HonestUI installs charts as a package dependency:
+HonestUI installs its chart collection through the package:
 
 ```bash
 npm install honestui
@@ -120,61 +120,70 @@ import { BarChart } from "honestui/charts"
 import "honestui/charts.css"
 ```
 
-shadcn/ui adds its chart integration to your source, then you compose the chart with Recharts:
+shadcn/ui adds its chart integration to your source:
 
 ```bash
 npx shadcn@latest add chart
 ```
+
+Then you compose it with Recharts:
 
 ```tsx
 import { Bar, BarChart } from "recharts"
 import { ChartContainer } from "@/components/ui/chart"
 ```
 
-The [shadcn/ui chart documentation](https://ui.shadcn.com/docs/components/base/chart) states that it uses Recharts v3 and does not wrap the Recharts components. HonestUI provides a higher-level ECharts component API and exposes ECharts options when its API does not cover a setting. Neither model is universally better: choose based on the charting engine, API, and update ownership your project needs.
+The [shadcn/ui chart documentation](https://ui.shadcn.com/docs/components/base/chart) uses Recharts, while HonestUI uses Apache ECharts.
+
+Neither approach is automatically better. If you already prefer one charting engine, that may be the easiest way to decide.
 
 ## Moving between the libraries
 
-Migrate one component at a time.
+Move one component at a time instead of replacing everything at once.
 
-1. Commit the current component and its call sites.
-2. Check both projects' configured component paths so one CLI does not overwrite the other library's files.
-3. Add the replacement under a temporary name or path.
-4. Compare props, dependencies, keyboard behavior, focus handling, theme tokens, and local variants.
-5. Update call sites and test the affected flow before removing the old component.
+1. Commit your current component and its call sites.
+2. Check the configured component paths in `components.json`.
+3. Add the replacement without overwriting the existing component.
+4. Compare props, dependencies, theme values, keyboard behavior, and local variants.
+5. Update the affected parts of the application.
+6. Test the component before removing the old version.
 
-The libraries share a source-first model, but their component APIs and styling conventions are not drop-in replacements.
+The two libraries share a similar source-first model, but their component APIs and styling systems are not drop-in replacements.
 
 ## Common questions
 
 ### Does shadcn/ui also let me own the component code?
 
-Yes. shadcn/ui gives you the component source and expects you to edit it. HonestUI uses the same model for its UI and animated components.
+Yes. Both shadcn/ui and HonestUI add editable component source to your project.
 
 ### Is HonestUI a replacement for shadcn/ui?
 
-Only when its specific scope fits better. HonestUI adds packaged visual collections and ECharts-based charts. shadcn/ui has more component-base choices and registry tooling. An existing shadcn/ui project should not migrate without a concrete benefit.
+It can be, but it does not need to be.
+
+HonestUI makes more sense when you specifically want its components, visual direction, ECharts-based charts, animated components, or additional visual collections.
 
 ### Which library is better for charts?
 
-Choose HonestUI when you want its maintained ECharts component package. Choose shadcn/ui when you want Recharts and prefer the integration source in your project. Check both APIs against the interactions, chart types, performance, and accessibility your application requires.
+HonestUI uses Apache ECharts. shadcn/ui uses Recharts.
+
+Choose based on which chart engine and API fit your project better.
+
+### Which one has the bigger ecosystem?
+
+shadcn/ui has the larger ecosystem, especially around third-party registries, blocks, presets, and tooling.
 
 ### Can I use both?
 
-Yes, but give each library separate file ownership. Confirm their aliases do not target the same component files, then choose which token system and shared primitives define the main interface.
+Yes. Just make sure they are not trying to write to the same component files and keep your styling and token choices consistent.
 
-## Method, disclosure, and sources
+## Which should you choose?
 
-Connor Love, the creator of HonestUI, wrote this comparison. It is not an independent review. The factual claims were checked against each project's documentation, repository, package metadata, and current component implementations on August 18, 2026.
+Choose **shadcn/ui** if you want the larger ecosystem, more registry options, blocks, multiple primitive choices, or you already have a project built around it.
 
-Primary sources:
+Choose **HonestUI** if you want editable UI components with a consistent visual direction and also want charts, animated components, icons, logos, vectors, and shaders from the same project.
 
-- [HonestUI documentation](/docs)
-- [HonestUI repository and package README](https://github.com/honestui/honestui/blob/f309533a8e4ba9214c44ee04426b985dfc5a17d4/package/honestui/README.md)
-- [shadcn/ui documentation](https://ui.shadcn.com/docs)
-- [shadcn/ui CLI](https://ui.shadcn.com/docs/cli)
-- [shadcn/ui chart documentation](https://ui.shadcn.com/docs/components/base/chart)
-- [shadcn/ui registry documentation](https://ui.shadcn.com/docs/registry)
-- [shadcn/ui repository](https://github.com/shadcn-ui/ui/tree/8a7701ec27eb9cb8e0377db769fbe6d744113c52)
+If you want to see how HonestUI approaches it, [explore the components](/docs/component-guide).
 
-The comparison should be reviewed again when either project changes its installation model, component bases, chart engine, package exports, or license.
+## About this comparison
+
+Connor Love, the creator of HonestUI, wrote this comparison. It is not an independent review.
