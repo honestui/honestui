@@ -252,6 +252,32 @@ describe("runInit", () => {
     expect(createProject).not.toHaveBeenCalled()
     expect(postInit).not.toHaveBeenCalled()
   })
+
+  it("does not clean default styles merely because an existing project is Next.js", async () => {
+    vi.mocked(getProjectInfo).mockResolvedValue({
+      ...projectInfo,
+      framework: { ...projectInfo.framework, name: "next-app" },
+    } as any)
+    vi.mocked(preFlightInit).mockResolvedValue({
+      errors: {},
+      projectInfo: {
+        ...projectInfo,
+        framework: { ...projectInfo.framework, name: "next-app" },
+      } as any,
+    })
+
+    await runInit({
+      ...createInitOptions(cwd),
+      template: undefined,
+      isNewProject: false,
+    })
+
+    expect(addComponents).toHaveBeenCalledWith(
+      expect.any(Array),
+      expect.any(Object),
+      expect.objectContaining({ isNewProject: false })
+    )
+  })
 })
 
 describe("init options", () => {

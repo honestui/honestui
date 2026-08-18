@@ -65,7 +65,10 @@ export function getPreviousMinorVersion(version: string) {
   const major = Number.parseInt(match[1], 10)
   const minor = Number.parseInt(match[2], 10)
 
-  if (minor === 0) {
+  // There is no derivable previous minor for x.0.x. Likewise, 0.1.x would
+  // otherwise suggest 0.0.0 even though prerelease patch versions cannot be
+  // inferred from the current version.
+  if (minor === 0 || (major === 0 && minor === 1)) {
     return null
   }
 

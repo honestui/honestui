@@ -59,6 +59,7 @@ describe("handleError", () => {
     expect(getPreviousMinorVersion("4.6.0")).toBe("4.5.0")
     expect(getPreviousMinorVersion("4.6.3")).toBe("4.5.0")
     expect(getPreviousMinorVersion("4.0.0")).toBeNull()
+    expect(getPreviousMinorVersion("0.1.0")).toBeNull()
     expect(getPreviousMinorVersion("latest")).toBeNull()
   })
 

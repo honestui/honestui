@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
-import './css/grainient.css';
 import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
 
 export interface GrainientProps {
@@ -325,7 +324,14 @@ const Grainient: React.FC<GrainientProps> = ({
   ]);
 
 
-  return <div aria-hidden="true" ref={containerRef} className={`grainient-container ${className}`.trim()} />;
+  return (
+    <div
+      aria-hidden="true"
+      ref={containerRef}
+      className={`relative size-full overflow-hidden ${className}`.trim()}
+      style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}
+    />
+  );
 };
 
 export default Grainient;

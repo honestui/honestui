@@ -2,7 +2,6 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { Renderer, Program, Triangle, Mesh } from 'ogl';
-import './css/light-rays.css';
 import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
 
 export type RaysOrigin =
@@ -489,7 +488,21 @@ void main() {
     }
   }, [followMouse, isPaused]);
 
-  return <div aria-hidden="true" ref={containerRef} className={`light-rays-container ${className}`.trim()} />;
+  return (
+    <div
+      aria-hidden="true"
+      ref={containerRef}
+      className={`pointer-events-none relative z-[3] size-full overflow-hidden ${className}`.trim()}
+      style={{
+        position: 'relative',
+        zIndex: 3,
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        pointerEvents: 'none'
+      }}
+    />
+  );
 };
 
 export default LightRays;

@@ -10,6 +10,10 @@ import { Config } from "@/src/utils/get-config"
 import { TailwindVersion } from "@/src/utils/get-project-info"
 import { highlighter } from "@/src/utils/highlighter"
 import { spinner } from "@/src/utils/spinner"
+import {
+  getCssSyntax,
+  preserveCssLineEndings,
+} from "@/src/utils/updaters/css-syntax"
 import { transformCssVars } from "@/src/utils/updaters/update-css-vars"
 import postcss from "postcss"
 import AtRule from "postcss/lib/at-rule"
@@ -69,7 +73,7 @@ export async function updateCss(
 
   // Apply CSS transform if provided.
   if (hasCss) {
-    output = await transformCss(output, css!)
+    output = await transformCss(output, css!, { cssFilepath })
   }
 
   await fs.writeFile(cssFilepath, output, "utf8")
@@ -78,12 +82,14 @@ export async function updateCss(
 
 export async function transformCss(
   input: string,
-  css: z.infer<typeof registryItemCssSchema>
+  css: z.infer<typeof registryItemCssSchema>,
+  options: { cssFilepath?: string } = {}
 ) {
   const plugins = [updateCssPlugin(css)]
 
   const result = await postcss(plugins).process(input, {
     from: undefined,
+    syntax: getCssSyntax(options.cssFilepath),
   })
 
   let output = result.css
@@ -98,15 +104,31 @@ export async function transformCss(
       !lastNode.nodes &&
       !output.trimEnd().endsWith(";")
     ) {
-      output = output.trimEnd() + ";"
+      const trailingWhitespace = output.match(/\s*$/)?.[0] ?? ""
+      const contentEnd = trailingWhitespace.length
+        ? -trailingWhitespace.length
+        : output.length
+      output = `${output.slice(0, contentEnd)};${trailingWhitespace}`
     }
   }
 
   output = output.replace(/\/\* ---break--- \*\//g, "")
-  output = output.replace(/(\n\s*\n)+/g, "\n\n")
-  output = output.trimEnd()
 
-  return output
+  return preserveCssLineEndings(input, output)
+}
+
+function normalizeImportParams(params: string) {
+  let normalized = params
+    .trim()
+    .replace(/(["'])(.*?)\1/g, '"$2"')
+    .replace(/\s+/g, " ")
+
+  const urlMatch = normalized.match(/^url\(\s*(".*?")\s*\)(.*)$/)
+  if (urlMatch) {
+    normalized = `${urlMatch[1]}${urlMatch[2]}`
+  }
+
+  return normalized
 }
 
 function updateCssPlugin(css: z.infer<typeof registryItemCssSchema>) {
@@ -128,7 +150,8 @@ function updateCssPlugin(css: z.infer<typeof registryItemCssSchema>) {
               (node): node is AtRule =>
                 node.type === "atrule" &&
                 node.name === "import" &&
-                node.params === params
+                normalizeImportParams(node.params) ===
+                  normalizeImportParams(params)
             )
 
             if (!existingImport) {
@@ -389,7 +412,7 @@ function updateCssPlugin(css: z.infer<typeof registryItemCssSchema>) {
               if (typeof properties === "object") {
                 for (const [prop, value] of Object.entries(properties)) {
                   if (typeof value === "string") {
-                    const existingDecl = utilityAtRule.nodes?.find(
+                    const existingDeclarations = utilityAtRule.nodes?.filter(
                       (node): node is Declaration =>
                         node.type === "decl" && node.prop === prop
                     )
@@ -400,8 +423,10 @@ function updateCssPlugin(css: z.infer<typeof registryItemCssSchema>) {
                       raws: { semicolon: true, before: "\n    " },
                     })
 
-                    if (existingDecl) {
-                      existingDecl.replaceWith(decl)
+                    if (existingDeclarations?.length) {
+                      for (const existingDeclaration of existingDeclarations) {
+                        existingDeclaration.replaceWith(decl.clone())
+                      }
                     } else {
                       utilityAtRule.append(decl)
                     }
@@ -595,13 +620,15 @@ function processRule(
         })
 
         // Replace existing property or add new one.
-        const existingDecl = rule.nodes?.find(
+        const existingDeclarations = rule.nodes?.filter(
           (node): node is Declaration =>
             node.type === "decl" && node.prop === prop
         )
 
-        if (existingDecl) {
-          existingDecl.replaceWith(decl)
+        if (existingDeclarations?.length) {
+          for (const existingDecl of existingDeclarations) {
+            existingDecl.replaceWith(decl.clone())
+          }
         } else {
           rule.append(decl)
         }

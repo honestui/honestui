@@ -39,10 +39,9 @@ import { Vercel } from "honestui/logos"
 import { Abstract1Shapes } from "honestui/vectors"
 
 import { LightRays } from "honestui/shaders"
-import "honestui/shaders.css"
 ```
 
-Load each CSS entry point once in your application root when you use its corresponding collection.
+Load `honestui/charts.css` once in your application root when you use charts. Shaders use Tailwind utilities and do not require a separate stylesheet.
 
 ## Registry API
 

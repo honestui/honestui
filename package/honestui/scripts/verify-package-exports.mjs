@@ -32,6 +32,8 @@ assert.ok(vectors.Abstract1Shapes, "honestui/vectors must export Abstract1Shapes
 assert.ok(charts.BarChart, "honestui/charts must export BarChart")
 assert.ok(shaders.LightRays, "honestui/shaders must export LightRays")
 assert.deepEqual(Object.keys(shaders).sort(), [
+  "ChromaticImage",
+  "DitherShader",
   "GradientBlinds",
   "Grainient",
   "LightRays",
@@ -67,10 +69,8 @@ for (const sourcePath of catalogSources) {
 }
 
 const chartsCss = await readFile(new URL("../dist/charts.css", import.meta.url), "utf8")
-const shadersCss = await readFile(new URL("../dist/shaders.css", import.meta.url), "utf8")
 assert.match(chartsCss, /\.animate-spin/)
 assert.match(chartsCss, /\.focus-visible\\:outline-2/)
-assert.match(shadersCss, /gradient-blinds-container/)
 
 const { stdout: help } = await execFileAsync(
   process.execPath,

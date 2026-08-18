@@ -1,6 +1,6 @@
 {
   "name": "honestui",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Build and manage Honest UI component libraries.",
   "license": "MIT",
   "homepage": "https://honestui.com",
@@ -35,7 +35,6 @@
       "types": "./dist/src/shaders.d.ts",
       "default": "./dist/shaders.js"
     },
-    "./shaders.css": "./dist/shaders.css",
     "./vectors": {
       "types": "./dist/src/vectors.d.ts",
       "default": "./dist/vectors.js"
@@ -95,6 +94,7 @@
     "open": "^11.0.0",
     "ora": "^8.2.0",
     "postcss": "^8.5.6",
+    "postcss-scss": "^4.0.9",
     "postcss-selector-parser": "^7.1.0",
     "prompts": "^2.4.2",
     "recast": "^0.23.11",

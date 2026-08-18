@@ -1,0 +1,127 @@
+---
+title: Context Menu
+description: Show actions at a pointer location with keyboard and touch access.
+
+links:
+  doc: https://base-ui.com/react/components/context-menu#api-reference
+---
+
+<ComponentPreview name="context-menu-demo" />
+
+## Overview
+
+Use Context Menu for secondary actions that relate to a specific surface, document, or selected object. It opens where a person right-clicks or long-presses, keeping the available actions close to the object they affect.
+
+Do not make a context menu the only way to reach an essential action. Many people will not discover it, and some input methods do not provide a familiar context-menu gesture. Keep primary and high-frequency actions visible elsewhere in the interface.
+
+## Anatomy
+
+Context Menu includes a root, trigger region, content, items, optional groups and labels, separators, an empty state, and nested submenus. Every part is defined in the single `context-menu.tsx` file and exported as a named PascalCase component, matching the rest of Honest UI.
+
+## Behavior
+
+The trigger opens the menu on right-click, long-press, or the platform context-menu keyboard command. Items close the menu after selection. Submenus open from a submenu trigger and preserve arrow-key navigation.
+
+Set `autocomplete` on the root when a genuinely long command list benefits from filtering. In automatic mode, item `value` strings and text labels are matched against the query. Labels and separators are hidden while filtering so the results remain a single navigable list. Use `autocompleteMode="manual"` when your application owns filtering.
+
+## Accessibility
+
+Give a non-interactive trigger region `tabIndex={0}` so keyboard users can focus it and open the menu with Shift+F10 or the Menu key. The same actions must also be available through a visible control when they are required to complete a task.
+
+Use concise action labels and mark unavailable items as disabled instead of removing them when their absence would be confusing. The searchable variant gives its input an explicit accessible label through `searchLabel`; change that label when “Search menu items” is not specific enough. Base UI supplies menu roles, focus management, arrow-key movement, Escape behavior, and long-press handling.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add context-menu
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the required dependency:</Step>
+
+```bash
+npm install @base-ui/react
+```
+
+<Step>Copy and paste the component into your project.</Step>
+
+<ComponentSource name="context-menu" title="components/ui/context-menu.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+```
+
+```tsx
+<ContextMenu>
+  <ContextMenuTrigger tabIndex={0}>
+    Right-click this document
+  </ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuGroup>
+      <ContextMenuLabel>Document</ContextMenuLabel>
+      <ContextMenuItem>Rename</ContextMenuItem>
+      <ContextMenuItem>Duplicate</ContextMenuItem>
+    </ContextMenuGroup>
+    <ContextMenuSeparator />
+    <ContextMenuSub>
+      <ContextMenuSubTrigger>Move to</ContextMenuSubTrigger>
+      <ContextMenuSubContent>
+        <ContextMenuItem>Projects</ContextMenuItem>
+        <ContextMenuItem>Archive</ContextMenuItem>
+      </ContextMenuSubContent>
+    </ContextMenuSub>
+  </ContextMenuContent>
+</ContextMenu>
+```
+
+## Examples
+
+The first example shows grouped actions, a nested destination menu, destructive styling, and visible feedback after selection. The second adds inline search for a longer command list.
+
+### Nested actions
+
+<ComponentPreview name="context-menu-demo" />
+
+### Searchable commands
+
+<ComponentPreview name="context-menu-search" />
+
+## API reference
+
+`ContextMenu` accepts the matching Base UI Context Menu root props plus optional search props: `autocomplete`, `autocompleteMode`, `inputValue`, `defaultInputValue`, and `onInputValueChange`. `ContextMenuContent` accepts popup props, positioning offsets, `searchLabel`, and `searchPlaceholder`.
+
+Items accept Base UI item props plus `value`, `leadingIcon`, `trailingIcon`, `inset`, and `variant`. The `value` supplies searchable text when it should differ from the visible item label. See the [Base UI Context Menu API](https://base-ui.com/react/components/context-menu#api-reference) for the underlying open-state, event, positioning, and interaction details.

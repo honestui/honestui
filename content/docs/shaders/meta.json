@@ -3,6 +3,8 @@
   "pages": [
     "index",
     "installation",
+    "chromatic-image",
+    "dither",
     "blinds",
     "grainient",
     "light-rays"

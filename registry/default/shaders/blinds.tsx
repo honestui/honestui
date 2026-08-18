@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
-import './css/blinds.css';
 import { usePrefersReducedMotion } from './use-prefers-reduced-motion';
 
 export interface GradientBlindsProps {
@@ -470,8 +469,12 @@ void main() {
     <div
       aria-hidden="true"
       ref={containerRef}
-      className={`gradient-blinds-container ${className}`}
+      className={`relative size-full overflow-hidden ${className ?? ''}`.trim()}
       style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
         ...(mixBlendMode && {
           mixBlendMode: mixBlendMode as React.CSSProperties['mixBlendMode']
         })

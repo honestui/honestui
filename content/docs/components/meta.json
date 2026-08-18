@@ -12,6 +12,8 @@
     "checkbox",
     "collapsible",
     "combobox",
+    "command",
+    "context-menu",
     "color-picker",
     "dialog",
     "empty",

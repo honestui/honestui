@@ -286,7 +286,7 @@ async function processCss(
 
   // Apply CSS transform.
   if (hasCss) {
-    output = await transformCss(output, tree.css!)
+    output = await transformCss(output, tree.css!, { cssFilepath })
   }
 
   // Count CSS variables across all modes.

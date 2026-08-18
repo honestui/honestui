@@ -8,6 +8,10 @@ import { Config } from "@/src/utils/get-config"
 import { TailwindVersion } from "@/src/utils/get-project-info"
 import { highlighter } from "@/src/utils/highlighter"
 import { spinner } from "@/src/utils/spinner"
+import {
+  getCssSyntax,
+  preserveCssLineEndings,
+} from "@/src/utils/updaters/css-syntax"
 import postcss from "postcss"
 import AtRule from "postcss/lib/at-rule"
 import Root from "postcss/lib/root"
@@ -113,17 +117,34 @@ export async function transformCssVars(
 
   const result = await postcss(plugins).process(input, {
     from: undefined,
+    syntax: getCssSyntax(config.resolvedPaths.tailwindCss),
   })
 
   let output = result.css
 
   output = output.replace(/\/\* ---break--- \*\//g, "")
 
-  if (options.tailwindVersion === "v4") {
-    output = output.replace(/(\n\s*\n)+/g, "\n\n")
-  }
+  return preserveCssLineEndings(input, output)
+}
 
-  return output
+function ruleIncludesSelector(rule: Rule, selector: string) {
+  return rule.selectors.some((candidate) => candidate.trim() === selector)
+}
+
+function getDeclarations(rule: Rule | AtRule, prop: string) {
+  return rule.nodes?.filter(
+    (node): node is postcss.Declaration =>
+      node.type === "decl" && node.prop === prop
+  )
+}
+
+function replaceDeclarations(
+  declarations: postcss.Declaration[],
+  declaration: postcss.Declaration
+) {
+  for (const existingDeclaration of declarations) {
+    existingDeclaration.replaceWith(declaration.clone())
+  }
 }
 
 function updateCssVarsPlugin(
@@ -260,7 +281,8 @@ function addOrUpdateVars(
   vars: Record<string, string>
 ) {
   let ruleNode = baseLayer.nodes?.find(
-    (node): node is Rule => node.type === "rule" && node.selector === selector
+    (node): node is Rule =>
+      node.type === "rule" && ruleIncludesSelector(node, selector)
   )
 
   if (!ruleNode) {
@@ -281,13 +303,12 @@ function addOrUpdateVars(
       raws: { semicolon: true },
     })
 
-    const existingDecl = ruleNode?.nodes.find(
-      (node): node is postcss.Declaration =>
-        node.type === "decl" && node.prop === prop
-    )
+    const existingDeclarations = ruleNode
+      ? getDeclarations(ruleNode, prop)
+      : undefined
 
-    if (existingDecl) {
-      existingDecl.replaceWith(newDecl)
+    if (existingDeclarations?.length) {
+      replaceDeclarations(existingDeclarations, newDecl)
     } else {
       ruleNode?.append(newDecl)
     }
@@ -317,23 +338,20 @@ function updateCssVarsPluginV4(
               raws: { semicolon: true },
             })
 
-            const existingDecl = themeNode?.nodes?.find(
-              (node): node is postcss.Declaration =>
-                node.type === "decl" && node.prop === prop
-            )
+            const existingDeclarations = getDeclarations(themeNode, prop)
 
             // Only overwrite if overwriteCssVars is true
             // i.e for registry:theme and registry:style
             // We do not want new components to overwrite existing vars.
             // Keep user defined vars.
             if (options.overwriteCssVars) {
-              if (existingDecl) {
-                existingDecl.replaceWith(newDecl)
+              if (existingDeclarations?.length) {
+                replaceDeclarations(existingDeclarations, newDecl)
               } else {
                 themeNode?.append(newDecl)
               }
             } else {
-              if (!existingDecl) {
+              if (!existingDeclarations?.length) {
                 themeNode?.append(newDecl)
               }
             }
@@ -343,7 +361,7 @@ function updateCssVarsPluginV4(
 
         let ruleNode = root.nodes?.find(
           (node): node is Rule =>
-            node.type === "rule" && node.selector === selector
+            node.type === "rule" && ruleIncludesSelector(node, selector)
         )
 
         if (!ruleNode && Object.keys(vars).length > 0) {
@@ -373,23 +391,22 @@ function updateCssVarsPluginV4(
             value,
             raws: { semicolon: true },
           })
-          const existingDecl = ruleNode?.nodes.find(
-            (node): node is postcss.Declaration =>
-              node.type === "decl" && node.prop === prop
-          )
+          const existingDeclarations = ruleNode
+            ? getDeclarations(ruleNode, prop)
+            : undefined
 
           // Only overwrite if overwriteCssVars is true
           // i.e for registry:theme and registry:style
           // We do not want new components to overwrite existing vars.
           // Keep user defined vars.
           if (options.overwriteCssVars) {
-            if (existingDecl) {
-              existingDecl.replaceWith(newDecl)
+            if (existingDeclarations?.length) {
+              replaceDeclarations(existingDeclarations, newDecl)
             } else {
               ruleNode?.append(newDecl)
             }
           } else {
-            if (!existingDecl) {
+            if (!existingDeclarations?.length) {
               ruleNode?.append(newDecl)
             }
           }
@@ -526,7 +543,9 @@ function addCustomVariant({ params }: { params: string }) {
     Once(root: Root) {
       const customVariant = root.nodes.find(
         (node): node is AtRule =>
-          node.type === "atrule" && node.name === "custom-variant"
+          node.type === "atrule" &&
+          node.name === "custom-variant" &&
+          node.params.trim().split(/\s+/, 1)[0] === "dark"
       )
 
       if (!customVariant) {
@@ -546,9 +565,11 @@ function addCustomVariant({ params }: { params: string }) {
           // Insert after the last import
           const lastImport = importNodes[importNodes.length - 1]
           root.insertAfter(lastImport, variantNode)
-        } else {
+        } else if (root.nodes.length > 0) {
           // If no imports, insert after the first node
           root.insertAfter(root.nodes[0], variantNode)
+        } else {
+          root.append(variantNode)
         }
 
         root.insertBefore(variantNode, postcss.comment({ text: "---break---" }))

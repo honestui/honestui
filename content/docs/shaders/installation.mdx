@@ -17,13 +17,12 @@ Honest UI shaders are available from the `honestui/shaders` package entry point.
 
 <CommandBlock commands={["honestui"]} />
 
-## Import the component and styles
+## Import a shader
 
-Import shader components from the dedicated entry point and load the shared shader styles once in the application root.
+Import shader components from the dedicated entry point. Shader layout is expressed with Tailwind utilities, so there is no separate shader stylesheet to import.
 
 ```tsx
 import { LightRays } from "honestui/shaders"
-import "honestui/shaders.css"
 ```
 
 ## Size the container and add a fallback

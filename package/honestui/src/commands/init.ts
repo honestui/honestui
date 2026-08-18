@@ -791,8 +791,7 @@ export async function runInit(
     // Reinstall should overwrite existing CSS variables.
     overwriteCssVars: options.reinstall || undefined,
     silent: options.silent,
-    isNewProject:
-      options.isNewProject || projectInfo?.framework.name === "next-app",
+    isNewProject: options.isNewProject,
   })
 
   // Run postInit only for newly scaffolded projects.

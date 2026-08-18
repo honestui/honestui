@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { getNavItemIcon } from "@/globals/functions/getNavItemIcon";
 import { flattenTree, type Root as PageTreeRoot } from "fumadocs-core/page-tree";
@@ -34,6 +35,13 @@ const OVERVIEW_ICONS: Record<string, ReactNode> = {
   "/docs/contributing": <GithubIcon />,
 };
 
+const NEW_PAGE_URLS = new Set([
+  "/docs/components/command",
+  "/docs/components/context-menu",
+  "/docs/shaders/chromatic-image",
+  "/docs/shaders/dither",
+]);
+
 function PageGroup({ label, pages }: { label: string; pages: PageItem[] }) {
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -46,6 +54,7 @@ function PageGroup({ label, pages }: { label: string; pages: PageItem[] }) {
       <SidebarMenu>
         {pages.map((page) => {
           const isActive = pathname === page.url;
+          const isNew = NEW_PAGE_URLS.has(page.url);
           const icon = page.icon ?? OVERVIEW_ICONS[page.url] ?? getNavItemIcon(page.url);
 
           return (
@@ -67,7 +76,12 @@ function PageGroup({ label, pages }: { label: string; pages: PageItem[] }) {
                 isActive={isActive}
               >
                 {icon}
-                <span>{page.name}</span>
+                <span className="min-w-0 truncate">{page.name}</span>
+                {isNew && (
+                  <Badge className="ms-auto" size="micro" variant="neutral">
+                    New
+                  </Badge>
+                )}
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

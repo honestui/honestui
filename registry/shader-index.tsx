@@ -2,11 +2,15 @@
 import type { ComponentType } from "react";
 
 import shaderExample0 from "./default/examples/shaders/blinds-demo";
-import shaderExample1 from "./default/examples/shaders/grainient-demo";
-import shaderExample2 from "./default/examples/shaders/light-rays-demo";
+import shaderExample1 from "./default/examples/shaders/chromatic-image-demo";
+import shaderExample2 from "./default/examples/shaders/dither-demo";
+import shaderExample3 from "./default/examples/shaders/grainient-demo";
+import shaderExample4 from "./default/examples/shaders/light-rays-demo";
 
 export const ShaderIndex: Record<string, { component: ComponentType }> = {
   "blinds-demo": { component: shaderExample0 },
-  "grainient-demo": { component: shaderExample1 },
-  "light-rays-demo": { component: shaderExample2 },
+  "chromatic-image-demo": { component: shaderExample1 },
+  "dither-demo": { component: shaderExample2 },
+  "grainient-demo": { component: shaderExample3 },
+  "light-rays-demo": { component: shaderExample4 },
 };

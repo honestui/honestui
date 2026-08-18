@@ -1,0 +1,48 @@
+---
+title: Chromatic Image
+description: Warp an image toward the pointer with chromatic RGB separation.
+---
+
+<ComponentPreview name="chromatic-image-demo" playground />
+
+## Overview
+
+Chromatic Image adds pointer-driven displacement, RGB separation, zoom, and perspective tilt to an image. The original image remains available as a fallback while WebGL loads or when WebGL is unavailable.
+
+The playground uses free Unsplash photographs by [Marc Wieland](https://unsplash.com/photos/sunset-over-a-serene-mountain-lake-1Kcgpq1ap9E) and [Martin Péchy](https://unsplash.com/photos/blue-and-orange-building-faPvxns9O70).
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { ChromaticImage } from "honestui/shaders"
+
+<ChromaticImage
+  alt="An alpine lake reflecting an orange sunset between dark mountain ridges."
+  className="h-80 rounded-xl"
+  src="https://images.unsplash.com/photo-1776348568867-24146d18b736?auto=format&fit=crop&w=1600&q=85"
+/>
+```
+
+Remote image hosts must allow cross-origin image use so WebGL can upload the texture. Use a same-origin image when you control the asset pipeline.
+
+## Accessibility
+
+Write `alt` text for the image's purpose and context; use an empty string when the image is decorative. The effect does not hide the source image from assistive technology, and pointer movement is not required to access its content. When reduced motion is enabled, Chromatic Image renders the image without displacement or tilt.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="src" type="string">Image URL used by the WebGL texture and fallback image.</ApiRow>
+  <ApiRow name="alt" type="string">Alternative text for the image. Use an empty string for decorative images.</ApiRow>
+  <ApiRow name="children" type="React.ReactNode">Optional foreground content rendered over the image.</ApiRow>
+  <ApiRow name="backgroundColor" type="string" default='"#111111"'>Hex color shown behind the WebGL canvas.</ApiRow>
+  <ApiRow name="zoom" type="number" default="0.2">Pointer-driven zoom amount.</ApiRow>
+  <ApiRow name="displacement" type="number" default="0.05">Strength of the horizontal bands and pointer displacement.</ApiRow>
+  <ApiRow name="chromaticShift" type="number" default="0.01">Distance between the red, green, and blue samples.</ApiRow>
+  <ApiRow name="tilt" type="number" default="0.3">Strength of the pointer-driven perspective tilt.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and styling the container.</ApiRow>
+</ApiTable>

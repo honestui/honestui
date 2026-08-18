@@ -38,7 +38,6 @@ try {
     "dist/src/vectors.d.ts",
     "dist/shaders.js",
     "dist/src/shaders.d.ts",
-    "dist/shaders.css",
   ]
 
   for (const requiredFile of requiredFiles) {
@@ -47,6 +46,10 @@ try {
   assert.ok(
     Array.from(packedFiles).every((file) => !file.includes("tailwind.css")),
     "Packed package must not contain a package-level tailwind.css file"
+  )
+  assert.ok(
+    !packedFiles.has("dist/shaders.css"),
+    "Packed shaders must not require a separate stylesheet"
   )
 
   await writeFile(

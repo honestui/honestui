@@ -1,0 +1,115 @@
+---
+title: Command
+description: Search and run actions from an inline list or command palette.
+
+links:
+  doc: https://base-ui.com/react/components/autocomplete#api-reference
+---
+
+<ComponentPreview name="command-demo" />
+
+## Overview
+
+Use Command to help people find and run actions from a compact, keyboard-oriented list. It works inline for a persistent command browser or inside `CommandDialog` for a temporary command palette.
+
+Command is built on Base UI Autocomplete, so the input and results share highlight state and keyboard navigation. Use it for actions such as opening a document, navigating to a workspace area, or changing a setting. Use Combobox instead when the person is selecting a value for a field rather than running an action.
+
+## Anatomy
+
+Command includes the root panel, search input, scrollable content, items, an empty state, optional groups and labels, and separators. The dialog variant adds a root, trigger, viewport, and popup. All parts and Tailwind styles live in one `command.tsx` file and use named PascalCase exports.
+
+## Behavior
+
+Typing filters JSX items by their `value` or visible text. When you supply the root `items` prop, Base UI owns filtering and supports object values through `itemToStringValue`. The first result is highlighted by default, arrow keys move the highlight, Enter runs the highlighted item, and Escape closes the dialog variant.
+
+Groups and separators disappear during the built-in JSX filtering fallback so results form one continuous list. The empty state appears only when no option remains. Keep item labels action-oriented and use the optional trailing area for concise keyboard hints rather than secondary descriptions.
+
+## Accessibility
+
+`CommandInput` has the default accessible name “Search commands.” Pass a more specific `aria-label` when the command scope is narrower. The dialog content includes a visually hidden title; change its `title` prop so screen-reader users hear the same scope as sighted users.
+
+Base UI manages the combobox, listbox, option, dialog, focus, and keyboard relationships. If you add a global shortcut, support both Control and Command where appropriate, prevent the browser default only for that shortcut, remove the listener when the component unmounts, and keep a visible trigger for people who do not know the shortcut.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+```bash
+npx honestui@latest add command
+```
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the required dependency:</Step>
+
+```bash
+npm install @base-ui/react
+```
+
+<Step>Copy and paste the component into your project.</Step>
+
+<ComponentSource name="command" title="components/ui/command.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Command,
+  CommandContent,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandLabel,
+} from "@/components/ui/command";
+```
+
+```tsx
+<Command>
+  <CommandInput placeholder="Search commands..." />
+  <CommandContent>
+    <CommandEmpty>No matching commands.</CommandEmpty>
+    <CommandGroup>
+      <CommandLabel>Workspace</CommandLabel>
+      <CommandItem value="new document">New document</CommandItem>
+      <CommandItem value="workspace settings">Workspace settings</CommandItem>
+    </CommandGroup>
+  </CommandContent>
+</Command>
+```
+
+## Examples
+
+The inline example demonstrates grouping, filtering, keyboard hints, icons, and visible action feedback. The dialog example adds a persistent trigger and the familiar Control/Command+K shortcut.
+
+### Inline command list
+
+<ComponentPreview name="command-demo" />
+
+### Command dialog
+
+<ComponentPreview name="command-dialog" />
+
+## API reference
+
+`Command` forwards Base UI Autocomplete root props and adds a panel `className`. `CommandInput` accepts Base UI input props plus `leadingIcon` and `size`. `CommandItem` accepts Base UI item props plus `leadingIcon` and `trailingIcon`.
+
+`CommandDialog` and `CommandDialogTrigger` forward their matching Base UI Dialog props. `CommandDialogContent` accepts popup props plus `title` and `width`. See the [Base UI Autocomplete API](https://base-ui.com/react/components/autocomplete#api-reference) and [Base UI Dialog API](https://base-ui.com/react/components/dialog#api-reference) for controlled state, item collections, filtering, and focus behavior.
