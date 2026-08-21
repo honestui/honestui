@@ -448,6 +448,7 @@ export function LandingShowcase() {
         aria-label="Honest UI component previews"
         className="min-w-0 overflow-x-auto pb-14 pl-5 sm:pl-8 lg:min-h-0 lg:overflow-visible lg:p-0"
       >
+        <h2 className="sr-only">Honest UI component previews</h2>
         <div className="w-[74.5rem] origin-top-left pb-10 lg:rotate-[4deg] lg:translate-x-20 lg:translate-y-10 xl:translate-x-28">
           <div className="grid grid-cols-3 gap-7">
             <div className="flex flex-col gap-7">

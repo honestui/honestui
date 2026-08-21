@@ -40,6 +40,35 @@ export function getAgentDocPages() {
   return source.getPages();
 }
 
+export function generateHomeMarkdown() {
+  return `# Honest UI — Source-First React Components
+
+> Thoughtful React components, charts, icons, and visual effects with good defaults, visible source, and no lock-in.
+
+Honest UI is a React component library. Copy components into your project, change the source, and import charts, icons, and visual effects only when you need them. The project is MIT licensed and source-first by design.
+
+## Start here
+
+- [Get started](${absoluteUrl("/docs/get-started.md")}) — choose the installation path that matches the feature you need.
+- [Component guide](${absoluteUrl("/docs/component-guide.md")}) — browse copied React components you can adapt.
+- [Full documentation index](${absoluteUrl("/llms.txt")}) — find every agent-readable documentation page.
+
+## Libraries and assets
+
+- [Charts](${absoluteUrl("/docs/charts.md")}) — composable data visualizations for product interfaces.
+- [Icons](${absoluteUrl("/docs/icons.md")}) — a consistent, themeable icon set.
+- [Animated components](${absoluteUrl("/docs/animated.md")}) — motion components with reduced-motion and fallback guidance.
+- [Shaders](${absoluteUrl("/docs/shaders.md")}) — visual effects with WebGL fallbacks.
+
+## Machine-readable resources
+
+- [OpenAPI specification](${absoluteUrl("/openapi.json")})
+- [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
+- [Agent skill](${absoluteUrl("/skill.md")})
+- [XML sitemap](${absoluteUrl("/sitemap.xml")})
+`;
+}
+
 export function generateLlmsTxt() {
   const pages = getAgentDocPages();
   const startHere = pages.filter((page) => START_HERE_DOCS.has(page.url));

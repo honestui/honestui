@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { jsonApiError } from "@/lib/api-errors";
 import {
   buildRegistryBase,
   parseInitConfig,
@@ -9,7 +10,14 @@ export async function GET(request: NextRequest) {
   const result = parseInitConfig(request.nextUrl.searchParams);
 
   if (!result.success) {
-    return NextResponse.json({ error: result.error }, { status: 400 });
+    return jsonApiError(
+      {
+        code: "INVALID_PRESET_CONFIGURATION",
+        message: result.error,
+        resolution: "Use only the documented values in /openapi.json for preset query parameters.",
+      },
+      400,
+    );
   }
 
   try {
@@ -17,9 +25,14 @@ export async function GET(request: NextRequest) {
       buildRegistryBase(result.data, request.nextUrl.searchParams.get("only")),
     );
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Invalid request" },
-      { status: 400 },
+    const message = error instanceof Error ? error.message : "Invalid request";
+    return jsonApiError(
+      {
+        code: "INVALID_ONLY_VALUE",
+        message,
+        resolution: "Set only to theme, font, fonts, or a comma-separated combination of those values.",
+      },
+      400,
     );
   }
 }

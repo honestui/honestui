@@ -48,6 +48,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postinstall": "fumadocs-mdx",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "build:package": "npm --prefix package/honestui run build",

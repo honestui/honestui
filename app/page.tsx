@@ -11,6 +11,9 @@ export const metadata: Metadata = {
     "Thoughtful React components, charts, icons, and visual effects with good defaults, visible source, and no lock-in.",
   alternates: {
     canonical: "/",
+    types: {
+      "text/markdown": "/index.md",
+    },
   },
 }
 

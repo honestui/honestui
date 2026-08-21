@@ -181,7 +181,13 @@ test("docs header external links are single interactive elements", async ({
 test("public pages have no detectable WCAG A or AA violations", async ({
   page,
 }) => {
-  for (const path of ["/", "/docs", "/privacy", "/compare"]) {
+  for (const path of [
+    "/",
+    "/docs",
+    "/privacy",
+    "/compare",
+    "/agent-readiness-check-this-path-does-not-exist",
+  ]) {
     await page.goto(path);
     const results = await new AxeBuilder({ page })
       .withTags([
