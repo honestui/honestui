@@ -28,7 +28,10 @@ function CommandBlock({ commands }: CommandBlockProps) {
       value={packageManager}
       onValueChange={(value) => {
         const nextPackageManager = value as PackageManager;
-        setConfig({ packageManager: nextPackageManager });
+        setConfig({
+          componentInstaller: nextPackageManager,
+          packageManager: nextPackageManager,
+        });
       }}
     >
       <div className="group mt-2 flex flex-col rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1">

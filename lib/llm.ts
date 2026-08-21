@@ -1,6 +1,10 @@
 import fs from "fs"
 import path from "path"
 import { source } from "@/lib/source"
+import {
+  getComponentInstallCommand,
+  installMethods,
+} from "@/lib/install-commands"
 
 const showcaseItems = [
   {
@@ -30,13 +34,6 @@ const packageInstallCommands = {
   yarn: "yarn add",
   bun: "bun add",
   pnpm: "pnpm add",
-}
-
-const honestUiCliCommands = {
-  npm: "npx honestui@latest add",
-  yarn: "yarn dlx honestui@latest add",
-  bun: "bunx --bun honestui@latest add",
-  pnpm: "pnpm dlx honestui@latest add",
 }
 
 function getComponentsList() {
@@ -184,7 +181,15 @@ export function processMdxForLLMs(content: string) {
 
   content = content.replace(
     /<CliBlock\s+commands=\{\[([\s\S]*?)\]\}\s*\/>/g,
-    (_match, commands) => renderPackageCommands(commands, honestUiCliCommands),
+    (_match, commands) => {
+      const items = parseCommands(commands)
+      return installMethods
+        .map(
+          (method) =>
+            `### ${method}\n\n\`\`\`bash\n${getComponentInstallCommand(method, items)}\n\`\`\``,
+        )
+        .join("\n\n")
+    },
   )
 
   content = content.replace(

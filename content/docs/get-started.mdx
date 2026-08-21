@@ -32,9 +32,7 @@ If `components.json` already exists, the CLI asks before replacing it. Review th
 
 Add Button after initialization:
 
-```bash
-npx honestui@latest add button
-```
+<CliBlock commands={["button"]} />
 
 The CLI shows the files and packages it plans to add. To inspect the change without writing files, run:
 
@@ -66,11 +64,7 @@ You can now edit the component source and its variants as normal project code.
 
 Every component page includes its CLI name. For example:
 
-```bash
-npx honestui@latest add dialog
-npx honestui@latest add select
-npx honestui@latest add tabs
-```
+<CliBlock commands={["dialog", "select", "tabs"]} />
 
 Start with [Field](/docs/components/field) and the specific controls you need for forms. Use [Dialog](/docs/components/dialog) for focused work, [Table](/docs/components/table) for tabular data, and [Toast](/docs/components/toast) for brief, noncritical feedback.
 
