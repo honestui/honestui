@@ -16,10 +16,13 @@ const errorResponse = (description: string) => ({
   },
 });
 
-const registryDocumentSchema = {
-  type: "object",
-  additionalProperties: true,
-} as const;
+const methodNotAllowedResponse = {
+  description: "The HTTP method is not supported.",
+};
+
+const registryCatalogSchema = { $ref: "#/components/schemas/RegistryCatalog" };
+const registryItemSchema = { $ref: "#/components/schemas/RegistryItem" };
+const registryBaseColorSchema = { $ref: "#/components/schemas/RegistryBaseColor" };
 
 const initializationParameters = [
   {
@@ -159,7 +162,7 @@ export function getOpenApiDocument() {
     jsonSchemaDialect: "https://json-schema.org/draft/2020-12/schema",
     info: {
       title: "Honest UI Registry API",
-      version: "1.0.0",
+      version: "1.1.0",
       description:
         "Versioned, read-only endpoints for discovering Honest UI registry items and generating shadcn-compatible initialization presets. New integrations should use /api/v1; the unversioned /r and /init paths remain compatibility aliases.",
       license: {
@@ -174,10 +177,17 @@ export function getOpenApiDocument() {
     },
     externalDocs: {
       description: "Honest UI developer resources and API lifecycle policy",
-      url: `${SITE_URL}/docs/developers`,
+      url: `${SITE_URL}/developers`,
     },
     servers: [{ url: SITE_URL }],
     security: [],
+    "x-mcp-server": {
+      url: `${SITE_URL}/mcp`,
+      transport: "streamable-http",
+      protocolVersion: "2026-07-28",
+      authentication: "none",
+      tools: ["list_registry_items", "get_registry_item"],
+    },
     tags: [
       {
         name: "Registry",
@@ -219,7 +229,7 @@ export function getOpenApiDocument() {
           tags: ["Initialization"],
           parameters: initializationParameters,
           responses: {
-            "200": versionedJsonResponse(registryDocumentSchema),
+            "200": versionedJsonResponse(registryItemSchema),
             "400": problemResponse("The preset configuration is invalid."),
             "405": problemResponse("The HTTP method is not supported."),
           },
@@ -231,7 +241,7 @@ export function getOpenApiDocument() {
           summary: "Get the public registry catalog",
           tags: ["Registry"],
           responses: {
-            "200": versionedJsonResponse(registryDocumentSchema),
+            "200": versionedJsonResponse(registryCatalogSchema),
             "405": problemResponse("The HTTP method is not supported."),
           },
         },
@@ -257,7 +267,7 @@ export function getOpenApiDocument() {
           tags: ["Registry"],
           parameters: [registryNameParameter],
           responses: {
-            "200": versionedJsonResponse(registryDocumentSchema),
+            "200": versionedJsonResponse(registryItemSchema),
             "404": problemResponse("No registry item has the requested name."),
             "405": problemResponse("The HTTP method is not supported."),
           },
@@ -270,7 +280,7 @@ export function getOpenApiDocument() {
           tags: ["Registry"],
           parameters: [registryNameParameter],
           responses: {
-            "200": versionedJsonResponse(registryDocumentSchema),
+            "200": versionedJsonResponse(registryBaseColorSchema),
             "405": problemResponse("The HTTP method is not supported."),
           },
         },
@@ -282,7 +292,7 @@ export function getOpenApiDocument() {
           tags: ["Initialization"],
           parameters: initializationParameters,
           responses: {
-            "200": jsonResponse(registryDocumentSchema),
+            "200": jsonResponse(registryItemSchema),
             "400": errorResponse("The preset configuration is invalid."),
           },
         },
@@ -297,6 +307,7 @@ export function getOpenApiDocument() {
               type: "array",
               items: { $ref: "#/components/schemas/RegistryIndexItem" },
             }),
+            "405": methodNotAllowedResponse,
           },
         },
       },
@@ -305,7 +316,10 @@ export function getOpenApiDocument() {
           operationId: "getRegistryCatalog",
           summary: "Get the public registry catalog",
           tags: ["Registry"],
-          responses: { "200": jsonResponse(registryDocumentSchema) },
+          responses: {
+            "200": jsonResponse(registryCatalogSchema),
+            "405": methodNotAllowedResponse,
+          },
         },
       },
       "/r/{name}.json": {
@@ -322,7 +336,7 @@ export function getOpenApiDocument() {
             },
           ],
           responses: {
-            "200": jsonResponse(registryDocumentSchema),
+            "200": jsonResponse(registryItemSchema),
             "404": errorResponse("No registry item has the requested name."),
           },
         },
@@ -340,7 +354,10 @@ export function getOpenApiDocument() {
               schema: { type: "string", pattern: "^[a-z0-9-]+$" },
             },
           ],
-          responses: { "200": jsonResponse(registryDocumentSchema) },
+          responses: {
+            "200": jsonResponse(registryBaseColorSchema),
+            "405": methodNotAllowedResponse,
+          },
         },
       },
       "/.well-known/agent-skills/index.json": {
@@ -352,6 +369,7 @@ export function getOpenApiDocument() {
             "200": jsonResponse({
               $ref: "#/components/schemas/AgentSkillsIndex",
             }),
+            "405": methodNotAllowedResponse,
           },
         },
       },
@@ -360,7 +378,12 @@ export function getOpenApiDocument() {
           operationId: "getOpenApiDocument",
           summary: "Get this OpenAPI document",
           tags: ["Agent discovery"],
-          responses: { "200": jsonResponse({ type: "object" }) },
+          responses: {
+            "200": jsonResponse({
+              $ref: "#/components/schemas/OpenApiDocument",
+            }),
+            "405": methodNotAllowedResponse,
+          },
         },
       },
     },
@@ -390,6 +413,7 @@ export function getOpenApiDocument() {
             "authentication",
             "documentation",
             "openapi",
+            "mcp",
             "resources",
           ],
           properties: {
@@ -399,6 +423,7 @@ export function getOpenApiDocument() {
             authentication: { type: "string", const: "none" },
             documentation: { type: "string", format: "uri" },
             openapi: { type: "string", format: "uri" },
+            mcp: { type: "string", format: "uri" },
             resources: {
               type: "object",
               additionalProperties: { type: "string", format: "uri" },
@@ -457,6 +482,188 @@ export function getOpenApiDocument() {
             },
             message: { type: "string" },
             resolution: { type: "string" },
+          },
+        },
+        RegistryItemType: {
+          type: "string",
+          enum: [
+            "registry:lib",
+            "registry:block",
+            "registry:component",
+            "registry:ui",
+            "registry:hook",
+            "registry:page",
+            "registry:file",
+            "registry:theme",
+            "registry:style",
+            "registry:item",
+            "registry:base",
+            "registry:font",
+            "registry:example",
+            "registry:internal",
+          ],
+        },
+        RegistryFile: {
+          type: "object",
+          additionalProperties: false,
+          required: ["path", "type", "content"],
+          properties: {
+            path: { type: "string" },
+            type: { $ref: "#/components/schemas/RegistryItemType" },
+            content: { type: "string" },
+            target: { type: "string" },
+          },
+        },
+        StringMap: {
+          type: "object",
+          additionalProperties: { type: "string" },
+        },
+        RegistryCssVariables: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            theme: { $ref: "#/components/schemas/StringMap" },
+            light: { $ref: "#/components/schemas/StringMap" },
+            dark: { $ref: "#/components/schemas/StringMap" },
+          },
+        },
+        RegistryItem: {
+          type: "object",
+          additionalProperties: true,
+          required: ["name", "type"],
+          properties: {
+            $schema: { type: "string", format: "uri" },
+            extends: { type: "string" },
+            name: { type: "string", minLength: 1 },
+            title: { type: "string" },
+            author: { type: "string" },
+            description: { type: "string" },
+            type: { $ref: "#/components/schemas/RegistryItemType" },
+            dependencies: {
+              type: "array",
+              items: { type: "string" },
+              uniqueItems: true,
+            },
+            devDependencies: {
+              type: "array",
+              items: { type: "string" },
+              uniqueItems: true,
+            },
+            registryDependencies: {
+              type: "array",
+              items: { type: "string", format: "uri-reference" },
+              uniqueItems: true,
+            },
+            files: {
+              type: "array",
+              items: { $ref: "#/components/schemas/RegistryFile" },
+            },
+            cssVars: { $ref: "#/components/schemas/RegistryCssVariables" },
+            envVars: { $ref: "#/components/schemas/StringMap" },
+            categories: {
+              type: "array",
+              items: { type: "string" },
+            },
+            docs: { type: "string" },
+            config: {
+              type: "object",
+              description:
+                "Initialization configuration for registry:base responses.",
+              additionalProperties: true,
+            },
+            tailwind: {
+              type: "object",
+              additionalProperties: true,
+            },
+            css: {
+              type: "object",
+              additionalProperties: true,
+            },
+            meta: {
+              type: "object",
+              additionalProperties: true,
+            },
+            font: {
+              type: "object",
+              additionalProperties: false,
+              required: ["family", "provider", "import", "variable"],
+              properties: {
+                family: { type: "string" },
+                provider: { type: "string", const: "google" },
+                import: { type: "string" },
+                variable: { type: "string" },
+                weight: { type: "array", items: { type: "string" } },
+                subsets: { type: "array", items: { type: "string" } },
+                selector: { type: "string" },
+                dependency: { type: "string" },
+              },
+            },
+          },
+        },
+        RegistryCatalog: {
+          type: "object",
+          additionalProperties: false,
+          required: ["$schema", "name", "homepage", "items"],
+          properties: {
+            $schema: { type: "string", format: "uri" },
+            name: { type: "string", const: "honestui" },
+            homepage: { type: "string", format: "uri" },
+            items: {
+              type: "array",
+              items: { $ref: "#/components/schemas/RegistryIndexItem" },
+            },
+          },
+        },
+        RegistryBaseColor: {
+          type: "object",
+          additionalProperties: false,
+          required: ["cssVars", "cssVarsV4"],
+          properties: {
+            cssVars: {
+              type: "object",
+              additionalProperties: false,
+              required: ["light", "dark"],
+              properties: {
+                light: { $ref: "#/components/schemas/StringMap" },
+                dark: { $ref: "#/components/schemas/StringMap" },
+              },
+            },
+            cssVarsV4: {
+              type: "object",
+              additionalProperties: false,
+              required: ["light", "dark"],
+              properties: {
+                light: { $ref: "#/components/schemas/StringMap" },
+                dark: { $ref: "#/components/schemas/StringMap" },
+              },
+            },
+          },
+        },
+        OpenApiDocument: {
+          type: "object",
+          additionalProperties: true,
+          required: ["openapi", "info", "servers", "paths"],
+          properties: {
+            openapi: { type: "string", const: "3.1.1" },
+            jsonSchemaDialect: { type: "string", format: "uri" },
+            info: {
+              type: "object",
+              required: ["title", "version"],
+              properties: {
+                title: { type: "string" },
+                version: { type: "string" },
+                description: { type: "string" },
+              },
+            },
+            servers: {
+              type: "array",
+              items: {
+                type: "object",
+                required: ["url"],
+                properties: { url: { type: "string", format: "uri" } },
+              },
+            },
+            paths: { type: "object", additionalProperties: true },
           },
         },
         RegistryIndexItem: {

@@ -9,7 +9,7 @@
     "styling",
     "accessibility",
     "contributing",
-    "developers",
+    "!developers",
     "icons",
     "animated",
     "shaders",

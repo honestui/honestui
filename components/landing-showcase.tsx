@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import {
   ArrowRight,
@@ -13,8 +15,7 @@ import {
 } from "lucide-react"
 
 import { GithubIcon } from "@/assets/icons"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { LandingAccountTabs } from "@/components/landing-account-tabs"
 import {
   Card,
   CardDescription,
@@ -23,17 +24,82 @@ import {
   CardPanel,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
+import styles from "@/components/landing-showcase.module.css"
 
 const previewCardClass =
   "w-[23.5rem] gap-5 rounded-[var(--hui-radius-5)] bg-[var(--hui-color-background-base-primary)] py-5 shadow-[var(--hui-shadow-lifted)] ring-[0.5px] ring-[var(--hui-color-border-base-primary)]"
 
 const previewLabelClass =
   "text-sm font-medium text-[var(--hui-color-foreground-base-primary)]"
+
+function cx(...classes: Array<string | false | undefined>) {
+  return classes.filter(Boolean).join(" ")
+}
+
+function previewButtonClass({
+  className,
+  size,
+  variant = "default",
+}: {
+  className?: string
+  size?: "default" | "icon" | "large"
+  variant?: "default" | "outline"
+}) {
+  return cx(
+    styles.button,
+    variant === "default" ? styles.buttonDefault : styles.buttonOutline,
+    size === "large" && styles.buttonLarge,
+    size === "icon" && styles.buttonIcon,
+    className,
+  )
+}
+
+function PreviewButton({
+  className,
+  fullWidth = false,
+  size = "default",
+  variant = "default",
+  type = "button",
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  fullWidth?: boolean
+  size?: "default" | "icon" | "large"
+  variant?: "default" | "outline"
+}) {
+  return (
+    <button
+      {...props}
+      className={cx(
+        previewButtonClass({ className, size, variant }),
+        fullWidth && styles.buttonFull,
+      )}
+      type={type}
+    />
+  )
+}
+
+function PreviewBadge({
+  children,
+  size = "default",
+  variant = "secondary",
+}: {
+  children: React.ReactNode
+  size?: "default" | "small"
+  variant?: "secondary" | "success"
+}) {
+  return (
+    <span
+      className={cx(
+        styles.badge,
+        size === "small" && styles.badgeSmall,
+        variant === "secondary" ? styles.badgeSecondary : styles.badgeSuccess,
+      )}
+    >
+      {children}
+    </span>
+  )
+}
 
 function PreviewField({
   id,
@@ -49,7 +115,14 @@ function PreviewField({
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <Input id={id} type={type} placeholder={placeholder} />
+      <span className={styles.inputControl}>
+        <input
+          className={styles.input}
+          id={id}
+          type={type}
+          placeholder={placeholder}
+        />
+      </span>
     </div>
   )
 }
@@ -67,14 +140,14 @@ function SignUpCard({ idPrefix }: { idPrefix: string }) {
       </CardHeader>
       <CardPanel className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          <Button className="w-full" variant="outline">
+          <PreviewButton fullWidth variant="outline">
             <span aria-hidden="true" className="font-semibold">G</span>
             Google
-          </Button>
-          <Button className="w-full" variant="outline">
+          </PreviewButton>
+          <PreviewButton fullWidth variant="outline">
             <GithubIcon aria-hidden="true" />
             GitHub
-          </Button>
+          </PreviewButton>
         </div>
         <p className="text-center text-xs text-[var(--hui-color-foreground-base-secondary)]">
           or continue with email
@@ -93,7 +166,7 @@ function SignUpCard({ idPrefix }: { idPrefix: string }) {
         />
       </CardPanel>
       <CardFooter>
-        <Button className="w-full">Create account</Button>
+        <PreviewButton fullWidth>Create account</PreviewButton>
       </CardFooter>
     </Card>
   )
@@ -135,16 +208,20 @@ function NotificationsCard() {
                 {option.description}
               </p>
             </div>
-            <Switch
+            <input
               aria-label={option.label}
               defaultChecked={option.checked}
-              className="mt-1"
+              className={styles.switch}
+              role="switch"
+              type="checkbox"
             />
           </div>
         ))}
       </CardPanel>
       <CardFooter>
-        <Button className="w-full" variant="outline">Save preferences</Button>
+        <PreviewButton fullWidth variant="outline">
+          Save preferences
+        </PreviewButton>
       </CardFooter>
     </Card>
   )
@@ -165,7 +242,7 @@ function PricingCard() {
           <CardTitle>
             <h3>Starter plan</h3>
           </CardTitle>
-          <Badge variant="secondary" size="sm">Example</Badge>
+          <PreviewBadge size="small">Example</PreviewBadge>
         </div>
         <CardDescription>A compact pricing-card composition.</CardDescription>
       </CardHeader>
@@ -183,7 +260,7 @@ function PricingCard() {
         </ul>
       </CardPanel>
       <CardFooter>
-        <Button className="w-full">Choose plan</Button>
+        <PreviewButton fullWidth>Choose plan</PreviewButton>
       </CardFooter>
     </Card>
   )
@@ -225,7 +302,7 @@ function PaymentCard() {
         </div>
       </CardPanel>
       <CardFooter>
-        <Button className="w-full">Continue</Button>
+        <PreviewButton fullWidth>Continue</PreviewButton>
       </CardFooter>
     </Card>
   )
@@ -237,7 +314,9 @@ function EcommerceCard() {
   return (
     <Card className={previewCardClass}>
       <CardHeader className="gap-3">
-        <Badge className="w-fit" variant="success">In stock</Badge>
+        <div className="w-fit">
+          <PreviewBadge variant="success">In stock</PreviewBadge>
+        </div>
         <CardTitle className="text-2xl">
           <h3>Studio sneakers</h3>
         </CardTitle>
@@ -271,10 +350,10 @@ function EcommerceCard() {
           <Ruler aria-hidden="true" className="size-4" /> View size guide
         </p>
         <div className="grid grid-cols-[1fr_auto] gap-3">
-          <Button className="w-full">Add to cart</Button>
-          <Button aria-label="Save item" size="icon-lg" variant="outline">
+          <PreviewButton fullWidth>Add to cart</PreviewButton>
+          <PreviewButton aria-label="Save item" size="icon" variant="outline">
             <Heart aria-hidden="true" />
-          </Button>
+          </PreviewButton>
         </div>
         <div className="space-y-3 rounded-[var(--hui-radius-3)] bg-[var(--hui-color-background-base-secondary)] p-4 text-sm">
           <p className="flex items-center gap-3"><ShoppingBag aria-hidden="true" className="size-4" /> Free shipping and returns</p>
@@ -304,10 +383,17 @@ function SharingCard() {
         <div className="space-y-2">
           <Label htmlFor="share-link">Document link</Label>
           <div className="flex gap-2">
-            <Input id="share-link" readOnly value="https://honestui.com/docs" />
-            <Button aria-label="Copy document link" size="icon-lg" variant="outline">
+            <span className={styles.inputControl}>
+              <input
+                className={styles.input}
+                id="share-link"
+                readOnly
+                value="https://honestui.com/docs"
+              />
+            </span>
+            <PreviewButton aria-label="Copy document link" size="icon" variant="outline">
               <Copy aria-hidden="true" />
-            </Button>
+            </PreviewButton>
           </div>
         </div>
         <p className={previewLabelClass}>Members with access</p>
@@ -320,7 +406,7 @@ function SharingCard() {
                 </span>
                 <span className="text-sm font-medium">{member.label}</span>
               </div>
-              <Badge variant="secondary">{member.access}</Badge>
+              <PreviewBadge>{member.access}</PreviewBadge>
             </li>
           ))}
         </ul>
@@ -354,56 +440,18 @@ function IssueCard() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="issue-description">Description</Label>
-          <Textarea id="issue-description" rows={4} placeholder="What happened, and what did you expect?" />
+          <textarea
+            className={styles.textarea}
+            id="issue-description"
+            rows={4}
+            placeholder="What happened, and what did you expect?"
+          />
         </div>
       </CardPanel>
       <CardFooter className="justify-end gap-3">
-        <Button variant="outline">Cancel</Button>
-        <Button>Submit issue</Button>
+        <PreviewButton variant="outline">Cancel</PreviewButton>
+        <PreviewButton>Submit issue</PreviewButton>
       </CardFooter>
-    </Card>
-  )
-}
-
-function AccountTabsCard() {
-  return (
-    <Card className={previewCardClass}>
-      <Tabs defaultValue="login" size="medium">
-        <TabsList className="mx-5 w-auto" variant="plain">
-          <TabsTab value="login">Log in</TabsTab>
-          <TabsTab value="register">Register</TabsTab>
-        </TabsList>
-        <TabsPanel value="login">
-          <CardHeader className="mt-5">
-            <CardTitle>
-              <h3>Welcome back</h3>
-            </CardTitle>
-            <CardDescription>Enter your credentials to continue.</CardDescription>
-          </CardHeader>
-          <CardPanel className="mt-5 space-y-4">
-            <PreviewField id="login-email" label="Email" type="email" placeholder="you@example.com" />
-            <PreviewField id="login-password" label="Password" type="password" placeholder="Enter your password" />
-          </CardPanel>
-          <CardFooter className="mt-5">
-            <Button className="w-full">Log in</Button>
-          </CardFooter>
-        </TabsPanel>
-        <TabsPanel value="register">
-          <CardHeader className="mt-5">
-            <CardTitle>
-              <h3>Create an account</h3>
-            </CardTitle>
-            <CardDescription>Start with your email and a password.</CardDescription>
-          </CardHeader>
-          <CardPanel className="mt-5 space-y-4">
-            <PreviewField id="register-email" label="Email" type="email" placeholder="you@example.com" />
-            <PreviewField id="register-password" label="Password" type="password" placeholder="Choose a password" />
-          </CardPanel>
-          <CardFooter className="mt-5">
-            <Button className="w-full">Register</Button>
-          </CardFooter>
-        </TabsPanel>
-      </Tabs>
     </Card>
   )
 }
@@ -413,8 +461,8 @@ export function LandingShowcase() {
     <main
       id="main-content"
       tabIndex={-1}
-      className="lg:grid lg:h-[calc(100svh-4rem)] lg:grid-cols-[minmax(30rem,5fr)_6fr] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden"
     >
+      <div className="lg:grid lg:h-[calc(100svh-4rem)] lg:grid-cols-[minmax(30rem,5fr)_6fr] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
       <section className="flex flex-col px-5 py-16 sm:px-8 md:py-24 lg:min-h-0 lg:py-10">
         <div className="flex flex-1 items-center lg:justify-end">
           <div className="w-full max-w-[42rem] lg:max-w-[34rem]">
@@ -428,25 +476,29 @@ export function LandingShowcase() {
               Honest UI is a React component library with good defaults and no lock-in. Copy components into your project, change the source, and import charts, icons, and visual effects only when you need them.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button render={<Link href="/docs/get-started" />} size="xl">
+              <Link
+                className={previewButtonClass({ size: "large" })}
+                href="/docs/get-started"
+              >
                 Get started
                 <ArrowRight aria-hidden="true" />
-              </Button>
-              <Button
-                className="hover:bg-[var(--hui-color-background-base-primary-hover)] active:bg-[var(--hui-color-background-neutral-secondary)]"
-                render={<Link href="/docs/component-guide" />}
-                size="xl"
-                variant="outline"
+              </Link>
+              <Link
+                className={previewButtonClass({
+                  size: "large",
+                  variant: "outline",
+                })}
+                href="/docs/component-guide"
               >
                 Browse components
-              </Button>
+              </Link>
             </div>
             <p className="mt-4 text-xs text-[var(--hui-color-foreground-base-secondary)]">
               These examples are interactive previews; they don’t submit data.
             </p>
           </div>
         </div>
-        <p className="mt-12 hidden items-center gap-2 text-sm text-[var(--hui-color-foreground-base-secondary)] lg:flex">
+        <p className="mt-12 hidden flex-wrap items-center gap-2 text-sm text-[var(--hui-color-foreground-base-secondary)] lg:flex">
           <span>MIT licensed. Source-first by design.</span>
           <Link
             className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
@@ -462,9 +514,15 @@ export function LandingShowcase() {
           </Link>
           <Link
             className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-            href="/docs/developers"
+            href="/about"
           >
-            Developers
+            About
+          </Link>
+          <Link
+            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+            href="/contact"
+          >
+            Contact
           </Link>
         </p>
       </section>
@@ -489,13 +547,13 @@ export function LandingShowcase() {
             <div className="flex flex-col gap-7">
               <SharingCard />
               <IssueCard />
-              <AccountTabsCard />
+              <LandingAccountTabs cardClassName={previewCardClass} />
             </div>
           </div>
         </div>
       </section>
 
-      <p className="flex items-center gap-2 px-5 pb-8 text-sm text-[var(--hui-color-foreground-base-secondary)] sm:px-8 lg:hidden">
+      <p className="flex flex-wrap items-center gap-2 px-5 pb-8 text-sm text-[var(--hui-color-foreground-base-secondary)] sm:px-8 lg:hidden">
         <span>MIT licensed. Source-first by design.</span>
         <Link
           className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
@@ -511,11 +569,83 @@ export function LandingShowcase() {
         </Link>
         <Link
           className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-          href="/docs/developers"
+          href="/about"
         >
-          Developers
+          About
+        </Link>
+        <Link
+          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+          href="/contact"
+        >
+          Contact
         </Link>
       </p>
+      </div>
+
+      <section
+        aria-labelledby="honest-ui-ownership"
+        className="border-t border-[var(--hui-color-border-base-primary)] px-5 py-16 sm:px-8 sm:py-20"
+      >
+        <div className="mx-auto max-w-5xl">
+          <div className="max-w-3xl">
+            <p className="text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
+              Source-first by design
+            </p>
+            <h2
+              className="mt-3 text-3xl font-medium tracking-tight sm:text-4xl"
+              id="honest-ui-ownership"
+            >
+              Own the interface you ship
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--hui-color-foreground-base-secondary)]">
+              Honest UI separates copied application code from package-backed tools so you can choose the right ownership model for each job. UI and animated components become source files in your repository. Charts, icons, logos, vectors, and shaders remain explicit package imports. The documentation identifies that boundary on every collection instead of treating installation as a single interchangeable step.
+            </p>
+            <p className="mt-5 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+              Start with a component’s documented structure, states, and styling hooks, then adapt them to the language and constraints of your product. Honest UI supplies the implementation and its design tokens without claiming to know your validation rules, permissions, data, or content. That boundary keeps the starting point useful while leaving consequential product decisions in the application that owns them.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-10 md:grid-cols-3">
+            <article>
+              <h3 className="text-xl font-medium">Change copied components directly</h3>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Use the Honest UI CLI when you want component source inside your application. The CLI shows the files and dependencies it plans to add, supports a dry run, and leaves the result under your version control. You can rename the component, change its behavior, or remove it without waiting for a library release. Because the source becomes yours, your team also owns final accessibility, content, testing, and maintenance decisions.
+              </p>
+            </article>
+            <article>
+              <h3 className="text-xl font-medium">Import maintained collections</h3>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Use the published package for charts, icons, logos, vectors, and shaders when a maintained dependency is the better fit. Each collection has a dedicated import path, which keeps the dependency visible and avoids suggesting that generated assets or rendering systems were copied into your project. The guides document runtime dependencies, reduced-motion behavior, WebGL fallbacks, and the checks your application still needs to perform.
+              </p>
+            </article>
+            <article>
+              <h3 className="text-xl font-medium">Know what the defaults cover</h3>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Components use semantic foundations and share a coherent token system for color, type, spacing, radius, effects, and motion. Their final quality still depends on the context around them. Review real content, interaction states, keyboard behavior, focus order, contrast, reduced motion, responsive layout, and failure recovery in the application before treating a composition as complete.
+              </p>
+            </article>
+          </div>
+
+          <div className="mt-12 flex flex-wrap gap-3">
+            <Link
+              className={previewButtonClass({ size: "large" })}
+              href="/docs/get-started"
+            >
+              Read the installation guide
+              <ArrowRight aria-hidden="true" />
+            </Link>
+            <Link
+              className={previewButtonClass({
+                size: "large",
+                variant: "outline",
+              })}
+              href="/docs/accessibility"
+            >
+              Review accessibility guidance
+            </Link>
+          </div>
+        </div>
+      </section>
     </main>
   )
 }

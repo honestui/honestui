@@ -18,7 +18,10 @@ const knownPublicPrefixes = [
 
 const knownPublicPaths = new Set([
   "/404.md",
+  "/about",
   "/apple-icon.png",
+  "/contact",
+  "/developers",
   "/favicon.ico",
   "/icon.png",
   "/index.md",

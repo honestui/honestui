@@ -153,6 +153,18 @@ const structuredData = {
         "@type": "ImageObject",
         url: absoluteUrl("/logo.svg"),
       },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "technical support",
+        url: absoluteUrl("/contact"),
+        availableLanguage: ["English"],
+      },
+      contactPage: absoluteUrl("/contact"),
+      founder: {
+        "@type": "Person",
+        name: "Connor Love",
+        url: "https://x.com/cando145",
+      },
       sameAs: [
         "https://github.com/honestui/honestui",
         "https://x.com/cando145",

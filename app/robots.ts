@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/api/v1"],
+        allow: ["/", "/api/v1", "/mcp"],
         disallow: ["/api/", "/admin/"],
       },
       {
@@ -25,7 +25,7 @@ export default function robots(): MetadataRoute.Robots {
           "Google-Extended",
           "Applebot-Extended",
         ],
-        allow: ["/", "/api/v1"],
+        allow: ["/", "/api/v1", "/mcp"],
         disallow: ["/api/", "/admin/"],
       },
     ],

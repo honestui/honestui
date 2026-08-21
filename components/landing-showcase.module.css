@@ -1,0 +1,286 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  flex-shrink: 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hui-space-3);
+  white-space: nowrap;
+  border-radius: var(--hui-radius-2);
+  border: 0;
+  padding: var(--hui-space-3) var(--hui-space-4);
+  font-size: var(--hui-font-size-small);
+  font-weight: var(--hui-font-weight-medium);
+  letter-spacing: var(--hui-letter-spacing-small);
+  line-height: var(--hui-line-height-small);
+  outline: none;
+  transition: var(--hui-transition-interactive);
+}
+
+.button:focus-visible,
+.switch:focus-visible,
+.tab:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+.button:active {
+  scale: var(--hui-scale-pressed);
+  transition: var(--hui-transition-pressed);
+}
+
+.button svg {
+  width: var(--hui-space-4);
+  height: var(--hui-space-4);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.buttonDefault {
+  color: var(--hui-color-foreground-accent-emphasis);
+  background: var(--hui-color-background-accent-emphasis);
+  box-shadow: var(--hui-shadow-feather);
+}
+
+.buttonDefault:hover,
+.buttonDefault:active {
+  background: var(--hui-color-background-accent-emphasis-hover);
+}
+
+.buttonDefault:focus-visible {
+  outline-offset: var(--hui-focus-ring-offset-accent);
+}
+
+.buttonOutline {
+  color: var(--hui-color-foreground-accent-primary);
+  background: var(--hui-color-background-base-primary);
+  border: 0.5px solid var(--hui-color-border-accent-emphasis);
+  box-shadow: var(--hui-shadow-feather);
+}
+
+.buttonOutline:hover,
+.buttonOutline:active {
+  background: var(--hui-color-background-accent-primary);
+}
+
+.buttonLarge {
+  padding: var(--hui-space-4) var(--hui-space-6);
+  font-size: var(--hui-font-size-large);
+  letter-spacing: var(--hui-letter-spacing-large);
+  line-height: var(--hui-line-height-large);
+}
+
+.buttonLarge svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.buttonIcon {
+  width: var(--hui-space-9);
+  height: var(--hui-space-9);
+  padding: 0;
+}
+
+.buttonFull {
+  width: 100%;
+}
+
+.inputControl {
+  position: relative;
+  display: flex;
+  min-height: var(--hui-space-9);
+  width: 100%;
+  align-items: center;
+  overflow: hidden;
+  border: 0.5px solid var(--hui-color-border-base-tertiary);
+  border-radius: var(--hui-radius-2);
+  background: var(--hui-color-background-base-primary);
+  transition: var(--hui-transition-interactive);
+}
+
+.inputControl:focus-within {
+  border-color: var(--hui-color-border-accent-emphasis);
+}
+
+.input {
+  box-sizing: border-box;
+  height: var(--hui-space-9);
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  padding: 0 var(--hui-space-2) 0 var(--hui-space-3);
+  color: var(--hui-color-foreground-base-primary);
+  background: transparent;
+  font-size: var(--hui-font-size-small);
+  font-weight: var(--hui-font-weight-regular);
+  letter-spacing: var(--hui-letter-spacing-small);
+  line-height: var(--hui-line-height-t2);
+  outline: none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--hui-color-foreground-base-tertiary);
+  font-size: var(--hui-font-size-small);
+  font-weight: var(--hui-font-weight-regular);
+}
+
+.input:read-only {
+  background: var(--hui-color-background-base-secondary);
+}
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  height: 22px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hui-space-2);
+  border: 0;
+  border-radius: var(--hui-radius-1);
+  padding: var(--hui-space-1) var(--hui-space-2);
+  color: var(--hui-color-foreground-base-primary);
+  font-size: var(--hui-font-size-small);
+  font-weight: var(--hui-font-weight-regular);
+  letter-spacing: var(--hui-letter-spacing-small);
+  line-height: var(--hui-line-height-small);
+  white-space: nowrap;
+}
+
+.badgeSmall {
+  height: 18px;
+  font-size: var(--hui-font-size-micro);
+  letter-spacing: var(--hui-letter-spacing-micro);
+  line-height: var(--hui-line-height-micro);
+}
+
+.badgeSecondary {
+  background: var(--hui-color-background-neutral-secondary);
+}
+
+.badgeSuccess {
+  background: var(--hui-color-background-success-primary);
+}
+
+.switch {
+  width: 1.875rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  margin-top: var(--hui-space-1);
+  border: 0;
+  border-radius: 999px;
+  padding: 1px;
+  appearance: none;
+  background: var(--hui-color-background-base-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition: var(--hui-transition-interactive);
+}
+
+.switch::after {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  background: var(--hui-color-background-base-primary);
+  box-shadow: var(--hui-shadow-feather);
+  content: "";
+  transition: translate var(--hui-duration-normal) var(--hui-ease-out);
+}
+
+.switch:checked {
+  background: var(--hui-color-background-accent-emphasis);
+}
+
+.switch:checked::after {
+  translate: 0.75rem 0;
+}
+
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+  border: 0.5px solid var(--hui-color-border-base-tertiary);
+  border-radius: var(--hui-radius-2);
+  margin: 0;
+  padding: var(--hui-space-3);
+  appearance: none;
+  color: var(--hui-color-foreground-base-primary);
+  background: var(--hui-color-background-base-primary);
+  font-size: var(--hui-font-size-small);
+  line-height: var(--hui-line-height-small);
+  outline: none;
+  transition: var(--hui-transition-interactive);
+}
+
+.textarea:focus {
+  border-color: var(--hui-color-border-accent-emphasis);
+}
+
+.tabs {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.tabsList {
+  display: flex;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hui-space-6);
+  margin-inline: var(--hui-space-5);
+}
+
+.tab {
+  height: var(--hui-space-7);
+  cursor: pointer;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding-inline: var(--hui-space-3);
+  color: var(--hui-color-foreground-base-secondary);
+  background: transparent;
+  font-size: var(--hui-font-size-small);
+  font-weight: var(--hui-font-weight-medium);
+  letter-spacing: var(--hui-letter-spacing-small);
+  line-height: var(--hui-line-height-small);
+  outline: none;
+}
+
+.tab:hover,
+.tabActive {
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.tabActive {
+  border-bottom-color: var(--hui-color-border-base-emphasis);
+}
+
+.tabPanel:focus {
+  outline: none;
+}
+
+@media (pointer: coarse) {
+  .button::after,
+  .tab::after {
+    position: absolute;
+    min-width: 44px;
+    min-height: 44px;
+    content: "";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .inputControl,
+  .switch,
+  .switch::after,
+  .textarea {
+    transition: none;
+  }
+}

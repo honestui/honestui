@@ -64,8 +64,10 @@ Honest UI is a React component library. Copy components into your project, chang
 ## Machine-readable resources
 
 - [Honest UI developer resources](${absoluteUrl("/docs/developers.md")})
+- [Developer resource index](${absoluteUrl("/developers")})
 - [REST API v1](${absoluteUrl("/api/v1")})
 - [OpenAPI specification](${absoluteUrl("/openapi.json")})
+- [MCP Streamable HTTP server](${absoluteUrl("/mcp")})
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
 - [Agent skill](${absoluteUrl("/skill.md")})
 - [XML sitemap](${absoluteUrl("/sitemap.xml")})
@@ -91,9 +93,27 @@ export function generateLlmsTxt() {
 > Honest UI provides copied React components and package-based charts, icons, logos, vectors, and shaders. The documentation explains what you own, what remains a dependency, and what your application still needs to verify.
 
 ## Honest UI Developer Resources
+- [Developer resource index](${absoluteUrl("/developers")}) - Choose the Honest UI CLI, npm package, REST API, OpenAPI specification, or agent documentation.
 - [Developer guide and REST API policy](${absoluteUrl("/docs/developers.md")}) - Integrate with the public Honest UI API, parse errors, and plan for version changes.
 - [REST API v1](${absoluteUrl("/api/v1")}) - Discover current public API resources.
 - [OpenAPI 3.1 specification](${absoluteUrl("/openapi.json")}) - Read the machine-readable HTTP contract.
+- [MCP Streamable HTTP server](${absoluteUrl("/mcp")}) - Discover exact registry names and retrieve component source with typed, read-only tools.
+- [Official honestui package](https://www.npmjs.com/package/honestui) - Run the published CLI or import package-backed collections.
+
+## When to use Honest UI
+- Use the Honest UI CLI when a React project needs editable UI or animated component source under its own version control.
+- Use the \`honestui\` package when a project needs maintained charts, icons, logos, vectors, or shaders.
+- Use the REST API or OpenAPI document when software needs to discover registry items or initialization presets without running the CLI.
+- Use the MCP server when an agent can call tools directly and needs to list exact registry names or retrieve component source.
+- Use the Markdown guides and Honest UI skill when an agent needs installation, customization, accessibility, fallback, or verification guidance.
+
+## How to use Honest UI
+1. Read the getting-started guide before choosing a delivery model.
+2. Run \`npx honestui@latest init\` for copied components, or install \`honestui\` for a package-backed collection.
+3. Inspect a CLI change with \`--dry-run\` before writing files when the project already contains related configuration.
+4. Verify the final application behavior, accessibility, styling, fallbacks, and tests; copied source does not transfer those product decisions back to Honest UI.
+
+For MCP clients, connect to \`${absoluteUrl("/mcp")}\` over Streamable HTTP. Call \`list_registry_items\` first when the name is unknown, then call \`get_registry_item\` with an exact returned name. Both tools are public, read-only, and idempotent; no credential is required.
 
 ## Start Here
 ${renderLinks(startHere)}
@@ -116,6 +136,7 @@ ${renderLinks(shaders)}
 ## Agent Resources
 - [Honest UI developer resources](${absoluteUrl("/docs/developers.md")})
 - [OpenAPI specification](${absoluteUrl("/openapi.json")})
+- [MCP Streamable HTTP server](${absoluteUrl("/mcp")})
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
 - [Agent skill](${absoluteUrl("/skill.md")})
 `;

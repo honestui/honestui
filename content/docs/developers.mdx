@@ -26,7 +26,19 @@ The existing `/r/*` and `/init` URLs remain available for CLI and registry compa
 
 ## Authentication and access
 
-The documented API is public and read-only. It does not require an API key, OAuth token, session cookie, or other credentials. Honest UI does not currently publish webhooks or an MCP server. Use the [agent skill](/skill.md) and [llms.txt](/llms.txt) for agent-oriented discovery.
+The documented API is public and read-only. Requests do not require an account and do not carry a key, token, session cookie, or other credential. Use the [Honest UI developer resource index](/developers), [agent skill](/skill.md), and [llms.txt](/llms.txt) for discovery.
+
+## Honest UI MCP server
+
+Honest UI also publishes a public, read-only Model Context Protocol server at:
+
+```text
+https://www.honestui.com/mcp
+```
+
+Use the Streamable HTTP transport. The server implements MCP protocol version `2026-07-28` and supports the standard `server/discover`, `tools/list`, and `tools/call` methods. It does not require a credential.
+
+Use `list_registry_items` when an agent needs valid Honest UI component names. Its optional `query` argument filters names by a case-insensitive substring. Then call `get_registry_item` with an exact returned name to retrieve the shadcn-compatible source files and dependencies. Both tools are read-only and idempotent. If `get_registry_item` reports that a name is missing, call `list_registry_items` instead of guessing another name.
 
 ## JSON error responses
 
@@ -83,11 +95,19 @@ If a deprecated endpoint is scheduled to stop responding, Honest UI will also se
 
 ## Agent-readable resources
 
+- [Honest UI developer resource index](/developers)
 - [OpenAPI specification](/openapi.json)
+- [MCP Streamable HTTP endpoint](/mcp)
 - [Documentation index](/llms.txt)
 - [Full documentation snapshot](/llms-full.txt)
 - [Honest UI agent skill](/skill.md)
 - [Agent Skills discovery index](/.well-known/agent-skills/index.json)
 - [XML sitemap](/sitemap.xml)
+
+## CLI and package resources
+
+- [Honest UI installation guide](/docs/get-started)
+- [Official `honestui` package on npm](https://www.npmjs.com/package/honestui)
+- [Honest UI source repository](https://github.com/honestui/honestui)
 
 Use the [GitHub repository](https://github.com/honestui/honestui) to report a contract or documentation problem.

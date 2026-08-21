@@ -49,6 +49,7 @@ test("renders substantial, structured homepage content in raw HTML", async ({
   expect(html).toMatch(/<h1(?:\s|>)/);
   expect(html).toMatch(/<h1(?:\s|>)[\s\S]*?Honest UI:/);
   expect(html).toMatch(/<h2(?:\s|>)[\s\S]*?Honest UI component previews/);
+  expect(html).toMatch(/<h2(?:\s|>)[\s\S]*?Own the interface you ship/);
   expect(html).toMatch(/<h3(?:\s|>)[\s\S]*?Sign up/);
   expect(html.match(/<h3(?:\s|>)/g)?.length).toBeGreaterThanOrEqual(8);
 
@@ -61,6 +62,7 @@ test("renders substantial, structured homepage content in raw HTML", async ({
     .trim();
 
   expect(visibleText.length).toBeGreaterThan(500);
+  expect(visibleText.length / html.length).toBeGreaterThanOrEqual(0.05);
 });
 
 test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
@@ -74,7 +76,7 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
     openapi: "3.1.1",
     info: {
       title: "Honest UI Registry API",
-      version: "1.0.0",
+      version: "1.1.0",
     },
     servers: [
       { url: expect.stringMatching(/^https:\/\/(?:www\.)?honestui\.com$/) },
@@ -108,6 +110,47 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
     currentMajorVersion: "v1",
     policy: expect.stringContaining("/docs/developers#deprecation-policy"),
   });
+  expect(document["x-mcp-server"]).toMatchObject({
+    url: expect.stringContaining("/mcp"),
+    transport: "streamable-http",
+    protocolVersion: "2026-07-28",
+    authentication: "none",
+    tools: ["list_registry_items", "get_registry_item"],
+  });
+
+  const pathItems = Object.values(document.paths) as Array<
+    Record<string, unknown>
+  >;
+  const operations = pathItems.flatMap(
+    (pathItem) =>
+      ["get", "post", "put", "patch", "delete"].flatMap((method) =>
+        pathItem[method] ? [pathItem[method]] : [],
+      ),
+  ) as Array<{
+    operationId: string;
+    responses: Record<string, { content?: Record<string, { schema?: Record<string, unknown> }> }>;
+  }>;
+
+  expect(operations).toHaveLength(13);
+  for (const operation of operations) {
+    expect(
+      Object.keys(operation.responses).some((status) => /^4\d\d$/.test(status)),
+      `${operation.operationId} must document a client-error response`,
+    ).toBe(true);
+    const successContent = operation.responses["200"]?.content;
+    const successSchema = successContent
+      ? Object.values(successContent)[0]?.schema
+      : undefined;
+    expect(successSchema, operation.operationId).toBeDefined();
+    expect(
+      Boolean(
+        successSchema?.$ref ||
+          successSchema?.properties ||
+          (successSchema?.type === "array" && successSchema.items),
+      ),
+      `${operation.operationId} must publish a typed success schema`,
+    ).toBe(true);
+  }
 });
 
 test("publishes an explicit, versioned API entry point", async ({ request }) => {
@@ -127,8 +170,9 @@ test("publishes an explicit, versioned API entry point", async ({ request }) => 
     name: "Honest UI Registry API",
     version: "v1",
     authentication: "none",
-    documentation: expect.stringContaining("/docs/developers"),
+    documentation: expect.stringContaining("/developers"),
     openapi: expect.stringContaining("/openapi.json"),
+    mcp: expect.stringContaining("/mcp"),
   });
 
   const options = await request.fetch("/api/v1", { method: "OPTIONS" });
@@ -232,6 +276,15 @@ test("makes Honest UI developer resources discoverable by name", async ({
   expect(html).toContain("Deprecation policy");
   expect(html).toContain('href="/openapi.json"');
 
+  const index = await request.get("/developers");
+  expect(index.status()).toBe(200);
+  const indexHtml = await index.text();
+  expect(indexHtml).toContain("Honest UI Developer Resources");
+  expect(indexHtml).toContain("Honest UI CLI");
+  expect(indexHtml).toContain("Honest UI REST API v1");
+  expect(indexHtml).toContain("https://www.npmjs.com/package/honestui");
+  expect(indexHtml).toContain("https://www.honestui.com/mcp");
+
   const markdownGuide = await request.get("/docs/developers.md");
   expect(markdownGuide.status()).toBe(200);
   expect(markdownGuide.headers()["content-type"]).toContain("text/markdown");
@@ -242,16 +295,168 @@ test("makes Honest UI developer resources discoverable by name", async ({
   const llms = await request.get("/llms.txt");
   const llmsBody = await llms.text();
   expect(llmsBody).toContain("## Honest UI Developer Resources");
+  expect(llmsBody).toContain("## When to use Honest UI");
+  expect(llmsBody).toContain("## How to use Honest UI");
+  expect(llmsBody).toContain("/developers");
   expect(llmsBody).toContain("/docs/developers.md");
   expect(llmsBody).toContain("/api/v1");
   expect(llmsBody).toContain("/openapi.json");
+  expect(llmsBody).toContain("/mcp");
+  expect(llmsBody).toContain("list_registry_items");
 
   const sitemap = await request.get("/sitemap.xml");
   expect(await sitemap.text()).toContain("/docs/developers");
+  expect(await sitemap.text()).toContain("/developers");
 
   const robots = await request.get("/robots.txt");
   const robotsBody = await robots.text();
   expect(robotsBody).toContain("Allow: /api/v1");
+  expect(robotsBody).toContain("Allow: /mcp");
+});
+
+test("serves typed, read-only MCP tools over Streamable HTTP", async ({
+  request,
+}) => {
+  const meta = {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientInfo": {
+      name: "Honest UI release test",
+      version: "1.0.0",
+    },
+    "io.modelcontextprotocol/clientCapabilities": {},
+  };
+  const call = async (
+    id: string,
+    method: string,
+    params: Record<string, unknown>,
+    name?: string,
+  ) =>
+    request.post("/mcp", {
+      data: {
+        jsonrpc: "2.0",
+        id,
+        method,
+        params: { ...params, _meta: meta },
+      },
+      headers: {
+        "content-type": "application/json",
+        "mcp-protocol-version": "2026-07-28",
+        "mcp-method": method,
+        ...(name ? { "mcp-name": name } : {}),
+      },
+    });
+
+  const discovery = await call("discover", "server/discover", {});
+  expect(discovery.status()).toBe(200);
+  expect(discovery.headers()["content-type"]).toContain("application/json");
+  expect(discovery.headers()["x-content-type-options"]).toBe("nosniff");
+  await expect(discovery.json()).resolves.toMatchObject({
+    jsonrpc: "2.0",
+    id: "discover",
+    result: {
+      resultType: "complete",
+      supportedVersions: ["2026-07-28"],
+      capabilities: { tools: {} },
+      _meta: {
+        "io.modelcontextprotocol/serverInfo": {
+          name: "honest-ui",
+          version: "1.0.0",
+        },
+      },
+    },
+  });
+
+  const list = await call("list", "tools/list", {});
+  expect(list.status()).toBe(200);
+  const listBody = await list.json();
+  expect(listBody.result.tools).toHaveLength(2);
+  expect(listBody.result.tools).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "list_registry_items",
+        inputSchema: expect.objectContaining({ type: "object" }),
+        outputSchema: expect.objectContaining({ type: "object" }),
+        annotations: expect.objectContaining({ readOnlyHint: true }),
+      }),
+      expect.objectContaining({
+        name: "get_registry_item",
+        inputSchema: expect.objectContaining({
+          type: "object",
+          required: ["name"],
+        }),
+        annotations: expect.objectContaining({ readOnlyHint: true }),
+      }),
+    ]),
+  );
+
+  const item = await call(
+    "item",
+    "tools/call",
+    { name: "get_registry_item", arguments: { name: "button" } },
+    "get_registry_item",
+  );
+  expect(item.status()).toBe(200);
+  const itemBody = await item.json();
+  expect(itemBody.result).toMatchObject({
+    resultType: "complete",
+  });
+  expect(itemBody.result.isError).not.toBe(true);
+  expect(itemBody.result.content[0].text).toContain('\"name\":\"button\"');
+
+  const methodError = await request.get("/mcp");
+  expect(methodError.status()).toBe(405);
+  expect(methodError.headers()["content-type"]).toContain("application/json");
+  await expect(methodError.json()).resolves.toMatchObject({
+    jsonrpc: "2.0",
+    error: { code: -32600 },
+  });
+});
+
+test("publishes substantial About and Contact trust pages", async ({ request }) => {
+  for (const path of ["/about", "/contact"]) {
+    const response = await request.get(path);
+    expect(response.status(), path).toBe(200);
+    expect(response.headers()["content-type"], path).toContain("text/html");
+
+    const html = await response.text();
+    expect(html, path).toMatch(/<h1(?:\s|>)/);
+    expect(html, path).toMatch(/<h2(?:\s|>)/);
+    const text = html
+      .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&(?:[a-z]+|#\d+);/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    expect(text.length, path).toBeGreaterThan(500);
+  }
+
+  const sitemap = await request.get("/sitemap.xml");
+  const sitemapBody = await sitemap.text();
+  expect(sitemapBody).toContain("/about");
+  expect(sitemapBody).toContain("/contact");
+});
+
+test("publishes only verified organization contact data", async ({ page }) => {
+  await page.goto("/");
+  const graph = await page
+    .locator('script[type="application/ld+json"]')
+    .evaluate((script) => JSON.parse(script.textContent ?? "{}"));
+  const organization = graph["@graph"].find(
+    (entry: Record<string, unknown>) => entry["@type"] === "Organization",
+  );
+
+  expect(organization).toMatchObject({
+    name: "Honest UI",
+    contactPage: expect.stringContaining("/contact"),
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "technical support",
+      url: expect.stringContaining("/contact"),
+      availableLanguage: ["English"],
+    },
+  });
+  expect(organization.address).toBeUndefined();
 });
 
 test("negotiates Markdown by quality and varies cache entries by Accept", async ({

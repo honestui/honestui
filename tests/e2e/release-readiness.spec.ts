@@ -148,7 +148,15 @@ test("home, docs, and comparisons reflow without page-level horizontal scrolling
   await page.setViewportSize({ height: 800, width: 320 });
   await page.goto("/");
 
-  for (const path of ["/", "/docs", "/docs/developers", "/compare"]) {
+  for (const path of [
+    "/",
+    "/about",
+    "/contact",
+    "/developers",
+    "/docs",
+    "/docs/developers",
+    "/compare",
+  ]) {
     await page.goto(path);
     const dimensions = await page.evaluate(() => ({
       documentWidth: document.documentElement.scrollWidth,
@@ -183,6 +191,9 @@ test("public pages have no detectable WCAG A or AA violations", async ({
 }) => {
   for (const path of [
     "/",
+    "/about",
+    "/contact",
+    "/developers",
     "/docs",
     "/docs/developers",
     "/privacy",
@@ -214,6 +225,73 @@ test("landing showcase identifies its controls as previews", async ({
     page.getByText(
       "These examples are interactive previews; they don’t submit data.",
     ),
+  ).toBeVisible();
+});
+
+test("landing sign-up preview buttons fill their layout columns", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  for (const [name, parentFraction] of [
+    ["Google", 0.47],
+    ["GitHub", 0.47],
+    ["Create account", 1],
+  ] as const) {
+    const button = page.getByRole("button", { name, exact: true }).first();
+    const widths = await button.evaluate((element) => ({
+      button: element.clientWidth,
+      parent: (() => {
+        const parent = element.parentElement;
+        if (!parent) return 0;
+        const styles = getComputedStyle(parent);
+        return (
+          parent.clientWidth -
+          Number.parseFloat(styles.paddingLeft) -
+          Number.parseFloat(styles.paddingRight)
+        );
+      })(),
+    }));
+
+    expect(widths.button, name).toBeGreaterThanOrEqual(
+      widths.parent * parentFraction,
+    );
+  }
+});
+
+test("developer resources stay out of customer-facing navigation", async ({
+  page,
+}) => {
+  for (const path of ["/", "/about", "/docs/contributing"]) {
+    await page.goto(path);
+    await expect(
+      page.getByRole("link", { name: "Developers", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("link", {
+        name: "Honest UI Developer Resources",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+  }
+});
+
+test("landing account preview preserves native tab keyboard behavior", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const loginTab = page.getByRole("tab", { name: "Log in" });
+  const registerTab = page.getByRole("tab", { name: "Register" });
+  await expect(loginTab).toHaveAttribute("aria-selected", "true");
+  await loginTab.focus();
+  await loginTab.press("ArrowRight");
+  await expect(registerTab).toBeFocused();
+  await expect(registerTab).toHaveAttribute("aria-selected", "true");
+  await expect(
+    page.getByRole("tabpanel").getByRole("heading", {
+      name: "Create an account",
+    }),
   ).toBeVisible();
 });
 
