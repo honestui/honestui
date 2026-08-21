@@ -52,7 +52,7 @@ export function ExamplesGrid() {
                 {example.name}
               </CardTitle>
               <CardDescription className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
-                Full-page client management workspace
+                {example.description}
               </CardDescription>
             </CardHeader>
             <CardFooter className="shrink-0 p-0">
