@@ -58,7 +58,9 @@ function SignUpCard({ idPrefix }: { idPrefix: string }) {
   return (
     <Card className={previewCardClass}>
       <CardHeader>
-        <CardTitle>Sign up</CardTitle>
+        <CardTitle>
+          <h3>Sign up</h3>
+        </CardTitle>
         <CardDescription>
           An account-flow composition built from components you can edit.
         </CardDescription>
@@ -119,7 +121,9 @@ function NotificationsCard() {
   return (
     <Card className={previewCardClass}>
       <CardHeader>
-        <CardTitle>Notifications</CardTitle>
+        <CardTitle>
+          <h3>Notifications</h3>
+        </CardTitle>
         <CardDescription>Choose which product updates reach you.</CardDescription>
       </CardHeader>
       <CardPanel className="space-y-5">
@@ -158,7 +162,9 @@ function PricingCard() {
     <Card className={previewCardClass}>
       <CardHeader>
         <div className="mb-2 flex items-center justify-between gap-3">
-          <CardTitle>Starter plan</CardTitle>
+          <CardTitle>
+            <h3>Starter plan</h3>
+          </CardTitle>
           <Badge variant="secondary" size="sm">Example</Badge>
         </div>
         <CardDescription>A compact pricing-card composition.</CardDescription>
@@ -187,7 +193,9 @@ function PaymentCard() {
   return (
     <Card className={previewCardClass}>
       <CardHeader>
-        <CardTitle>Payment method</CardTitle>
+        <CardTitle>
+          <h3>Payment method</h3>
+        </CardTitle>
         <CardDescription>Add a payment method to this example account.</CardDescription>
       </CardHeader>
       <CardPanel className="space-y-4">
@@ -230,7 +238,9 @@ function EcommerceCard() {
     <Card className={previewCardClass}>
       <CardHeader className="gap-3">
         <Badge className="w-fit" variant="success">In stock</Badge>
-        <CardTitle className="text-2xl">Studio sneakers</CardTitle>
+        <CardTitle className="text-2xl">
+          <h3>Studio sneakers</h3>
+        </CardTitle>
         <div className="flex items-center justify-between gap-4">
           <p className="text-xl font-medium">$79.99</p>
           <p className="flex items-center gap-1 text-sm text-[var(--hui-color-foreground-base-secondary)]">
@@ -285,7 +295,9 @@ function SharingCard() {
   return (
     <Card className={previewCardClass}>
       <CardHeader>
-        <CardTitle>Share document</CardTitle>
+        <CardTitle>
+          <h3>Share document</h3>
+        </CardTitle>
         <CardDescription>Invite collaborators and choose their access.</CardDescription>
       </CardHeader>
       <CardPanel className="space-y-5">
@@ -321,7 +333,9 @@ function IssueCard() {
   return (
     <Card className={previewCardClass}>
       <CardHeader>
-        <CardTitle>Report an issue</CardTitle>
+        <CardTitle>
+          <h3>Report an issue</h3>
+        </CardTitle>
         <CardDescription>Describe a problem clearly enough to reproduce it.</CardDescription>
       </CardHeader>
       <CardPanel className="space-y-4">
@@ -361,7 +375,9 @@ function AccountTabsCard() {
         </TabsList>
         <TabsPanel value="login">
           <CardHeader className="mt-5">
-            <CardTitle>Welcome back</CardTitle>
+            <CardTitle>
+              <h3>Welcome back</h3>
+            </CardTitle>
             <CardDescription>Enter your credentials to continue.</CardDescription>
           </CardHeader>
           <CardPanel className="mt-5 space-y-4">
@@ -374,7 +390,9 @@ function AccountTabsCard() {
         </TabsPanel>
         <TabsPanel value="register">
           <CardHeader className="mt-5">
-            <CardTitle>Create an account</CardTitle>
+            <CardTitle>
+              <h3>Create an account</h3>
+            </CardTitle>
             <CardDescription>Start with your email and a password.</CardDescription>
           </CardHeader>
           <CardPanel className="mt-5 space-y-4">
@@ -401,12 +419,13 @@ export function LandingShowcase() {
         <div className="flex flex-1 items-center lg:justify-end">
           <div className="w-full max-w-[42rem] lg:max-w-[34rem]">
             <h1 className="text-[clamp(2.375rem,10vw,3.25rem)]! leading-[0.94]! font-medium tracking-[var(--hui-letter-spacing-t4)]">
+              <span className="sr-only">Honest UI: </span>
               <span className="block whitespace-nowrap">Good interfaces.</span>
               {" "}
               <span className="block whitespace-nowrap">Honest code.</span>
             </h1>
             <p className="mt-7 max-w-[38rem] text-lg leading-7 text-[var(--hui-color-foreground-base-secondary)]">
-              HonestUI is a React component library with good defaults and no lock-in. Copy components into your project, change the source, and import charts, icons, and visual effects only when you need them.
+              Honest UI is a React component library with good defaults and no lock-in. Copy components into your project, change the source, and import charts, icons, and visual effects only when you need them.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Button render={<Link href="/docs/get-started" />} size="xl">
@@ -440,6 +459,12 @@ export function LandingShowcase() {
             href="/privacy"
           >
             Privacy
+          </Link>
+          <Link
+            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+            href="/docs/developers"
+          >
+            Developers
           </Link>
         </p>
       </section>
@@ -483,6 +508,12 @@ export function LandingShowcase() {
           href="/privacy"
         >
           Privacy
+        </Link>
+        <Link
+          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+          href="/docs/developers"
+        >
+          Developers
         </Link>
       </p>
     </main>

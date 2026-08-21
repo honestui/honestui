@@ -9,6 +9,7 @@ const START_HERE_DOCS = new Set([
   "/docs/styling",
   "/docs/accessibility",
   "/docs/contributing",
+  "/docs/developers",
 ]);
 
 function getMarkdownUrl(pageUrl: string) {
@@ -62,6 +63,8 @@ Honest UI is a React component library. Copy components into your project, chang
 
 ## Machine-readable resources
 
+- [Honest UI developer resources](${absoluteUrl("/docs/developers.md")})
+- [REST API v1](${absoluteUrl("/api/v1")})
 - [OpenAPI specification](${absoluteUrl("/openapi.json")})
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
 - [Agent skill](${absoluteUrl("/skill.md")})
@@ -87,6 +90,11 @@ export function generateLlmsTxt() {
 
 > Honest UI provides copied React components and package-based charts, icons, logos, vectors, and shaders. The documentation explains what you own, what remains a dependency, and what your application still needs to verify.
 
+## Honest UI Developer Resources
+- [Developer guide and REST API policy](${absoluteUrl("/docs/developers.md")}) - Integrate with the public Honest UI API, parse errors, and plan for version changes.
+- [REST API v1](${absoluteUrl("/api/v1")}) - Discover current public API resources.
+- [OpenAPI 3.1 specification](${absoluteUrl("/openapi.json")}) - Read the machine-readable HTTP contract.
+
 ## Start Here
 ${renderLinks(startHere)}
 
@@ -106,6 +114,8 @@ ${renderLinks(animated)}
 ${renderLinks(shaders)}
 
 ## Agent Resources
+- [Honest UI developer resources](${absoluteUrl("/docs/developers.md")})
+- [OpenAPI specification](${absoluteUrl("/openapi.json")})
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
 - [Agent skill](${absoluteUrl("/skill.md")})
 `;

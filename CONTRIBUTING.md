@@ -20,7 +20,7 @@ request.
 
 ## Local development
 
-You need Node.js 20.18.1 or newer and npm.
+You need Node.js 22.13.0 or newer and npm.
 
 ```bash
 git clone https://github.com/honestui/honestui.git

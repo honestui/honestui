@@ -148,7 +148,7 @@ test("home, docs, and comparisons reflow without page-level horizontal scrolling
   await page.setViewportSize({ height: 800, width: 320 });
   await page.goto("/");
 
-  for (const path of ["/", "/docs", "/compare"]) {
+  for (const path of ["/", "/docs", "/docs/developers", "/compare"]) {
     await page.goto(path);
     const dimensions = await page.evaluate(() => ({
       documentWidth: document.documentElement.scrollWidth,
@@ -184,6 +184,7 @@ test("public pages have no detectable WCAG A or AA violations", async ({
   for (const path of [
     "/",
     "/docs",
+    "/docs/developers",
     "/privacy",
     "/compare",
     "/agent-readiness-check-this-path-does-not-exist",

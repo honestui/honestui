@@ -55,7 +55,7 @@ The package provides these ES module entry points with TypeScript declarations:
 
 ## Development
 
-You need Node.js 20.18.1 or newer and npm.
+You need Node.js 22.13.0 or newer and npm.
 
 ```bash
 npm install

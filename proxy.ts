@@ -8,6 +8,7 @@ import {
 const knownPublicPrefixes = [
   "/.well-known/",
   "/_next/",
+  "/api/",
   "/compare/",
   "/docs/",
   "/examples/",

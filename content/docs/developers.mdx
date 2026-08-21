@@ -1,0 +1,93 @@
+---
+title: Honest UI Developer Resources
+description: Integrate with the public Honest UI Registry API, parse errors, and plan for version changes.
+---
+
+Honest UI publishes a public, read-only REST API for registry discovery and initialization presets. Start with the [OpenAPI 3.1 specification](/openapi.json) for the complete machine-readable contract or request the [API v1 index](/api/v1) for links to its resources.
+
+## Honest UI REST API v1
+
+The current base URL is:
+
+```text
+https://www.honestui.com/api/v1
+```
+
+| Resource | Purpose |
+| --- | --- |
+| `GET /api/v1` | Discover the current version, documentation, specification, and primary resources. |
+| `GET /api/v1/registry` | Retrieve the public shadcn-compatible registry catalog. |
+| `GET /api/v1/registry/index` | List public registry item names and types. |
+| `GET /api/v1/registry/{name}` | Retrieve one public registry item. |
+| `GET /api/v1/colors/{name}` | Retrieve the registry base-color definition. |
+| `GET /api/v1/init` | Generate an initialization preset from documented query parameters. |
+
+The existing `/r/*` and `/init` URLs remain available for CLI and registry compatibility. New HTTP integrations should use `/api/v1` so their major API version is explicit.
+
+## Authentication and access
+
+The documented API is public and read-only. It does not require an API key, OAuth token, session cookie, or other credentials. Honest UI does not currently publish webhooks or an MCP server. Use the [agent skill](/skill.md) and [llms.txt](/llms.txt) for agent-oriented discovery.
+
+## JSON error responses
+
+Versioned API errors follow [RFC 9457 Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457) and use `Content-Type: application/problem+json`. Every problem includes the standard `type`, `title`, `status`, `detail`, and `instance` members plus stable `code`, `message`, and `resolution` extensions.
+
+```json
+{
+  "type": "https://www.honestui.com/docs/developers#registry-item-not-found",
+  "title": "Registry item not found",
+  "status": 404,
+  "detail": "No public Honest UI registry item is named \"missing-item\".",
+  "instance": "https://www.honestui.com/api/v1/registry/missing-item",
+  "code": "REGISTRY_ITEM_NOT_FOUND",
+  "message": "Registry item not found",
+  "resolution": "GET /api/v1/registry to find a valid item name."
+}
+```
+
+Clients should branch on the HTTP status and `code`, not parse the human-readable `detail`, `message`, or `resolution` strings.
+
+### Registry item not found
+
+`REGISTRY_ITEM_NOT_FOUND` uses HTTP 404 when no public registry item matches the requested name. Retrieve `/api/v1/registry` before retrying with a valid name.
+
+### Invalid preset configuration
+
+`INVALID_PRESET_CONFIGURATION` uses HTTP 400 when an `/api/v1/init` query parameter has an unsupported value. Read `/openapi.json` for the accepted values.
+
+### Invalid only value
+
+`INVALID_ONLY_VALUE` uses HTTP 400 when the `only` query parameter contains a registry subset other than `theme`, `font`, or `fonts`.
+
+### API route not found
+
+`API_ROUTE_NOT_FOUND` uses HTTP 404 when the requested `/api/v1` path is not part of the published contract. Start at `/api/v1` or inspect `/openapi.json`.
+
+### Method not allowed
+
+`API_METHOD_NOT_ALLOWED` uses HTTP 405 when a client sends a modifying method to a read-only resource. The response includes `Allow: GET, HEAD`.
+
+## Versioning and compatibility
+
+Honest UI versions the REST API in the URL path. The current major version is `v1`. Additive fields and endpoints may be introduced within `v1`; clients should ignore JSON object members they do not recognize. A change that removes or renames a documented field or changes its meaning requires a new major path such as `/api/v2`.
+
+The `X-Api-Version` response header identifies the major version. The OpenAPI `info.version` field identifies the contract release within that major version.
+
+## Deprecation policy
+
+No `/api/v1` endpoint is currently deprecated or scheduled for retirement.
+
+Every versioned API response links to this policy with `Link: <https://www.honestui.com/docs/developers#deprecation-policy>; rel="deprecation"; type="text/html"`. When an endpoint is scheduled for deprecation, Honest UI will add the RFC 9745 `Deprecation` header using its Structured Field date syntax and publish a migration guide with the replacement and effective date.
+
+If a deprecated endpoint is scheduled to stop responding, Honest UI will also send the RFC 8594 `Sunset` header with that retirement date. A Sunset date will never be earlier than its Deprecation date. Until those headers and dates are published, clients should not infer a retirement date.
+
+## Agent-readable resources
+
+- [OpenAPI specification](/openapi.json)
+- [Documentation index](/llms.txt)
+- [Full documentation snapshot](/llms-full.txt)
+- [Honest UI agent skill](/skill.md)
+- [Agent Skills discovery index](/.well-known/agent-skills/index.json)
+- [XML sitemap](/sitemap.xml)
+
+Use the [GitHub repository](https://github.com/honestui/honestui) to report a contract or documentation problem.
