@@ -109,6 +109,14 @@ export const ShaderStartedOptions: SidebarOption[] = [
   },
 ];
 
+export const ExampleOptions: SidebarOption[] = [
+  {
+    name: "Overview",
+    url: "/docs/examples",
+    icon: <HouseIcon />,
+  },
+];
+
 // Pages reachable from the grouped links above; NavMain skips them so they do
 // not appear twice in the chart-family list.
 export const EXCLUDED_PAGE_SUFFIXES: string[] = ["/installation", "/changelog"];

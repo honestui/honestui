@@ -16,6 +16,7 @@ import { ComponentSource } from "../component/component-source";
 import { stripCodeAnnotations } from "@/lib/highlight-code";
 import { Description, P, Strong } from "./components/text";
 import { ShowcaseGrid } from "./components/showcase-grid";
+import { ExamplesGrid } from "../examples/examples-grid";
 import { CommandBlock } from "./components/command-block";
 import { Alert, AlertContent } from "./components/alert";
 import { Table, Tr, Th, Td } from "./components/table";
@@ -162,5 +163,6 @@ export const mdxComponents: MDXComponents = {
   ApiRow,
   ApiHeading,
   ShowcaseGrid,
+  ExamplesGrid,
   TokenTable,
 };

@@ -102,7 +102,8 @@ export function DocsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
           page.url === "/docs/charts" ||
           page.url === "/docs/icons" ||
           page.url === "/docs/animated" ||
-          page.url === "/docs/shaders"
+          page.url === "/docs/shaders" ||
+          page.url === "/docs/examples"
         )
           return false;
         if (page.url.startsWith("/docs/chart-")) return false;

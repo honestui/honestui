@@ -5,6 +5,7 @@ import {
   ChartComponentOptions,
   ChartStartedOptions,
   DocumentationOptions,
+  ExampleOptions,
   IconStartedOptions,
   AnimatedStartedOptions,
   ShaderStartedOptions,
@@ -60,6 +61,8 @@ export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
           <RenderDefaultOptions label="Get Started" options={ShaderStartedOptions} />
           <ShaderTreeNavigation tree={tree} />
         </>
+      ) : activeArea === "examples" ? (
+        <RenderDefaultOptions label="Examples" options={ExampleOptions} />
       ) : (
         <>
           <RenderDefaultOptions label="Get Started" options={AnimatedStartedOptions} />

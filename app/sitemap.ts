@@ -7,6 +7,7 @@ import {
   VECTOR_CATEGORIES,
 } from "@/globals/constants/icon-categories";
 import { getPublishedComparisons } from "@/lib/comparisons";
+import { HONEST_UI_EXAMPLES } from "@/lib/examples";
 
 export const dynamic = "force-static";
 export const revalidate = false;
@@ -51,6 +52,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority,
     };
   });
+
+  const exampleEntries: MetadataRoute.Sitemap = HONEST_UI_EXAMPLES.map((example) => ({
+    url: absoluteUrl(example.previewHref),
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
 
   const iconCategoryEntries: MetadataRoute.Sitemap = ICON_CATEGORIES.map((category) => ({
     url: absoluteUrl(`/docs/icons/categories/${category.slug}`),
@@ -104,6 +112,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticEntries,
     ...docsEntries,
+    ...exampleEntries,
     ...iconCategoryEntries,
     ...assetCollectionEntries,
     ...comparisonEntries,

@@ -24,9 +24,16 @@ import {
 } from "@/assets/icons";
 import { usePathname, useRouter } from "next/navigation";
 import { CaretDown } from "@carbon/icons-react";
+import { PanelsTopLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type ProductArea = "components" | "charts" | "icons" | "animated" | "shaders";
+export type ProductArea =
+  | "components"
+  | "charts"
+  | "icons"
+  | "animated"
+  | "shaders"
+  | "examples";
 
 interface ProductAreaMeta {
   id: ProductArea;
@@ -83,6 +90,15 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     tint:
       "text-fuchsia-400 group-focus/dropdown-menu-item:text-fuchsia-400!",
   },
+  {
+    id: "examples",
+    name: "Examples",
+    tagline: "Complete product interfaces",
+    href: "/docs/examples",
+    icon: PanelsTopLeft,
+    tint:
+      "text-violet-400 group-focus/dropdown-menu-item:text-violet-400!",
+  },
 ];
 
 export function areaFromPathname(pathname: string): ProductArea {
@@ -104,6 +120,10 @@ export function areaFromPathname(pathname: string): ProductArea {
 
   if (pathname === "/docs/shaders" || pathname.startsWith("/docs/shaders/")) {
     return "shaders";
+  }
+
+  if (pathname === "/docs/examples" || pathname.startsWith("/docs/examples/")) {
+    return "examples";
   }
 
   return "components";

@@ -85,6 +85,8 @@ function buildDocsJsonLd(page: DocsPage) {
     crumbs.push({ name: "Animated", url: absoluteUrl("/docs/animated") });
   } else if (section === "shaders" && page.url !== "/docs/shaders") {
     crumbs.push({ name: "Shaders", url: absoluteUrl("/docs/shaders") });
+  } else if (section === "examples" && page.url !== "/docs/examples") {
+    crumbs.push({ name: "Examples", url: absoluteUrl("/docs/examples") });
   }
   if (page.url !== "/docs") {
     crumbs.push({ name: title, url });
