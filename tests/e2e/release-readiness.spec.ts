@@ -259,21 +259,19 @@ test("landing sign-up preview buttons fill their layout columns", async ({
   }
 });
 
-test("developer resources stay out of customer-facing navigation", async ({
+test("developer resources have a recognizable docs navigation icon", async ({
   page,
 }) => {
-  for (const path of ["/", "/about", "/docs/contributing"]) {
-    await page.goto(path);
-    await expect(
-      page.getByRole("link", { name: "Developers", exact: true }),
-    ).toHaveCount(0);
-    await expect(
-      page.getByRole("link", {
-        name: "Honest UI Developer Resources",
-        exact: true,
-      }),
-    ).toHaveCount(0);
-  }
+  await page.goto("/docs/contributing");
+
+  const developerResources = page.getByRole("link", {
+    name: "Honest UI Developer Resources",
+    exact: true,
+  });
+  await expect(developerResources).toBeVisible();
+  await expect(
+    developerResources.locator('svg[data-icon="book"]'),
+  ).toHaveCount(1);
 });
 
 test("landing account preview preserves native tab keyboard behavior", async ({

@@ -2,6 +2,7 @@
 
 import {
   AddMagicIcon,
+  BookIcon,
   CheckIcon,
   GithubIcon,
   HouseIcon,
@@ -33,6 +34,7 @@ const OVERVIEW_ICONS: Record<string, ReactNode> = {
   "/docs/styling": <AddMagicIcon />,
   "/docs/accessibility": <CheckIcon />,
   "/docs/contributing": <GithubIcon />,
+  "/docs/developers": <BookIcon aria-hidden="true" data-icon="book" />,
 };
 
 const NEW_PAGE_URLS = new Set([
