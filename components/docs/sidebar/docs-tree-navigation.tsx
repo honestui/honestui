@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { History as HistoryIcon } from "honestui/icons";
 import { getNavItemIcon } from "@/globals/functions/getNavItemIcon";
 import { flattenTree, type Root as PageTreeRoot } from "fumadocs-core/page-tree";
 import { usePathname } from "next/navigation";
@@ -34,6 +35,7 @@ const OVERVIEW_ICONS: Record<string, ReactNode> = {
   "/docs/styling": <AddMagicIcon />,
   "/docs/accessibility": <CheckIcon />,
   "/docs/contributing": <GithubIcon />,
+  "/docs/changelog": <HistoryIcon aria-hidden="true" />,
   "/docs/developers": <BookIcon aria-hidden="true" data-icon="book" />,
 };
 

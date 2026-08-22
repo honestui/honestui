@@ -1,0 +1,61 @@
+---
+title: Changelog
+description: What changed in Honest UI, newest first.
+---
+
+This page summarizes user-facing changes to Honest UI in reverse chronological order. It covers new components, behavior changes, fixes that affect you, and documentation updates. Internal refactors appear only when they change something you can observe.
+
+Entries are maintained by hand alongside each change. Until the first stable release, dates refer to commits on the main branch rather than numbered versions.
+
+## August 21, 2026
+
+- Added structured data (JSON-LD) to documentation pages so search engines and answer engines can cite component facts accurately.
+- Improved agent readiness: registry files now carry the metadata AI coding agents need to install and adapt components correctly.
+- The docs API now returns proper error responses and supports content negotiation instead of failing silently.
+- Fixed a missing navigation icon on the Developers resources page.
+- Clarified developer resource paths in the docs.
+
+## August 18, 2026
+
+- Added the [Command](/docs/components/command) component for command palettes and searchable menus, built on autocomplete with keyboard-first behavior.
+- Added the [Context Menu](/docs/components/context-menu) component.
+- Added comparison graphics showing how Honest UI differs from shadcn/ui and Mantine on the [Comparisons](/compare) pages.
+
+## August 16, 2026
+
+- Expanded the registry server with catalog retrieval, item validation, and tests, making CLI installs more reliable.
+
+## August 10, 2026
+
+- Added a standalone `honestui` CLI package as the single way to initialize projects and add components.
+- Reworked CLI installation commands around that package.
+- Added a privacy page describing analytics and added consent management before tracking loads.
+- Pinned two dependency versions (`ast-types-flow`, `cnfast`) to resolve install issues.
+
+## August 9, 2026
+
+- Added the [Color Picker](/docs/components/color-picker) component with HEX, RGB, HSL, and OKLCH output modes.
+- Added theme documentation covering radius, spacing, typography, and Tailwind integration.
+- Added input group examples and a Vitest configuration for the registry.
+- Added scatter plot and heatmap chart examples.
+
+## August 8, 2026
+
+- Added foundational styles: themes, colors, spacing, typography, and z-index tokens that all components now share.
+
+## August 3–4, 2026
+
+- Expanded the assets collection with logos and vectors alongside icons, each behind its own package entry point.
+- Added event tracking across documentation components, gated by consent.
+- Updated the Textarea component with new size and variant props.
+- Removed an unused logging integration from the codebase.
+
+## July 28, 2026
+
+- Added the grid distortion and light rays shaders with interactive effects.
+- Added animated component examples and a generated index.
+- Added box plot, scatter, and heatmap chart examples with reworked scenario data.
+
+## July 27, 2026
+
+- Shipped the first registry server implementation: item retrieval, base color responses, environment loading, and tests.

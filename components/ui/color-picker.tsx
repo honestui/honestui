@@ -757,7 +757,6 @@ function ColorPickerHue({ className, ...props }: ColorPickerHueProps) {
       step={isOklch ? 0.1 : 1}
       value={value}
       onValueChange={handleValueChange}
-      thumbAlignment="edge"
       data-slot="color-picker-hue"
     >
       <SliderPrimitive.Control
@@ -815,7 +814,6 @@ function ColorPickerAlpha({ className, ...props }: ColorPickerAlphaProps) {
           : nextValue
         setColor({ alpha: value / 100 })
       }}
-      thumbAlignment="edge"
       data-slot="color-picker-alpha"
     >
       <SliderPrimitive.Control

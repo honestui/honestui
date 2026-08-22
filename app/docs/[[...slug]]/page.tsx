@@ -10,6 +10,7 @@ import { absoluteUrl, SITE_URL } from "@/lib/utils";
 import { Link as LinkIcon } from "honestui/icons";
 import { source } from "@/lib/source";
 import type { Metadata } from "next";
+import Script from "next/script";
 
 export function generateStaticParams() {
   return source.generateParams();
@@ -144,7 +145,8 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
 
   return (
     <div className="relative mt-10 flex sm:mt-0">
-      <script
+      <Script
+        id="docs-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           // Escape "<" so frontmatter text can never smuggle in a premature </script>.

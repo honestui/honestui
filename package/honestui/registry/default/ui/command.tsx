@@ -145,7 +145,7 @@ function CommandInput({
       data-slot="command-input-container"
       className="flex flex-col bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-2)]"
     >
-      <div className="flex items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-3)] shadow-none outline-none focus-within:bg-[var(--hui-color-background-base-primary-hover)] forced-colors:focus-within:outline forced-colors:focus-within:outline-1 forced-colors:focus-within:outline-offset-[-2px]">
+      <div className="flex items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-3)] shadow-none outline-none forced-colors:focus-within:outline forced-colors:focus-within:outline-1 forced-colors:focus-within:outline-offset-[-2px]">
         {leadingIcon ? (
           <span
             aria-hidden="true"
