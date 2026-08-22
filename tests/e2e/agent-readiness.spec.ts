@@ -272,8 +272,11 @@ test("makes Honest UI developer resources discoverable by name", async ({
 
   const html = await guide.text();
   expect(html).toContain("Honest UI Developer Resources");
+  expect(html).toContain("Choose the right starting point");
   expect(html).toContain("Honest UI REST API v1");
   expect(html).toContain("Deprecation policy");
+  expect(html).toContain('href="/docs/get-started"');
+  expect(html).toContain('href="/docs/contributing"');
   expect(html).toContain('href="/openapi.json"');
 
   const index = await request.get("/developers");
@@ -288,9 +291,9 @@ test("makes Honest UI developer resources discoverable by name", async ({
   const markdownGuide = await request.get("/docs/developers.md");
   expect(markdownGuide.status()).toBe(200);
   expect(markdownGuide.headers()["content-type"]).toContain("text/markdown");
-  expect(await markdownGuide.text()).toContain(
-    "# Honest UI Developer Resources",
-  );
+  const markdownGuideBody = await markdownGuide.text();
+  expect(markdownGuideBody).toContain("# Honest UI Developer Resources");
+  expect(markdownGuideBody).toContain("## Choose the right starting point");
 
   const llms = await request.get("/llms.txt");
   const llmsBody = await llms.text();
