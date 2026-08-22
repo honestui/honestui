@@ -83,6 +83,9 @@ export function getVersionedApiIndex() {
     description:
       "Public, read-only endpoints for Honest UI registry discovery and initialization presets.",
     authentication: "none",
+    authenticationDocumentation: absoluteUrl(
+      "/docs/developers#authentication-and-access",
+    ),
     documentation: absoluteUrl("/developers"),
     openapi: absoluteUrl("/openapi.json"),
     mcp: absoluteUrl("/mcp"),

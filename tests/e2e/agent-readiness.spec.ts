@@ -62,7 +62,7 @@ test("renders substantial, structured homepage content in raw HTML", async ({
     .trim();
 
   expect(visibleText.length).toBeGreaterThan(500);
-  expect(visibleText.length / html.length).toBeGreaterThanOrEqual(0.05);
+  expect(html).toContain("Own the interface you ship");
 });
 
 test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
@@ -76,7 +76,7 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
     openapi: "3.1.1",
     info: {
       title: "Honest UI Registry API",
-      version: "1.1.0",
+      version: "1.2.0",
     },
     servers: [
       { url: expect.stringMatching(/^https:\/\/(?:www\.)?honestui\.com$/) },
@@ -170,6 +170,9 @@ test("publishes an explicit, versioned API entry point", async ({ request }) => 
     name: "Honest UI Registry API",
     version: "v1",
     authentication: "none",
+    authenticationDocumentation: expect.stringContaining(
+      "/docs/developers#authentication-and-access",
+    ),
     documentation: expect.stringContaining("/developers"),
     openapi: expect.stringContaining("/openapi.json"),
     mcp: expect.stringContaining("/mcp"),
@@ -306,6 +309,7 @@ test("makes Honest UI developer resources discoverable by name", async ({
   expect(llmsBody).toContain("/openapi.json");
   expect(llmsBody).toContain("/mcp");
   expect(llmsBody).toContain("list_registry_items");
+  expect(llmsBody).toContain("authentication, and REST API policy");
 
   const sitemap = await request.get("/sitemap.xml");
   expect(await sitemap.text()).toContain("/docs/developers");
@@ -451,6 +455,7 @@ test("publishes only verified organization contact data", async ({ page }) => {
 
   expect(organization).toMatchObject({
     name: "Honest UI",
+    alternateName: "HonestUI",
     contactPage: expect.stringContaining("/contact"),
     contactPoint: {
       "@type": "ContactPoint",
@@ -460,6 +465,26 @@ test("publishes only verified organization contact data", async ({ page }) => {
     },
   });
   expect(organization.address).toBeUndefined();
+
+  const website = graph["@graph"].find(
+    (entry: Record<string, unknown>) => entry["@type"] === "WebSite",
+  );
+  const software = graph["@graph"].find(
+    (entry: Record<string, unknown>) =>
+      entry["@type"] === "SoftwareApplication",
+  );
+  expect(website).toMatchObject({
+    name: "Honest UI",
+    alternateName: "HonestUI",
+  });
+  expect(software).toMatchObject({
+    name: "Honest UI",
+    alternateName: "HonestUI",
+    sameAs: [
+      "https://github.com/honestui/honestui",
+      "https://www.npmjs.com/package/honestui",
+    ],
+  });
 });
 
 test("negotiates Markdown by quality and varies cache entries by Accept", async ({

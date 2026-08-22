@@ -94,7 +94,7 @@ export function generateLlmsTxt() {
 
 ## Honest UI Developer Resources
 - [Developer resource index](${absoluteUrl("/developers")}) - Choose the Honest UI CLI, npm package, REST API, OpenAPI specification, or agent documentation.
-- [Developer guide and REST API policy](${absoluteUrl("/docs/developers.md")}) - Integrate with the public Honest UI API, parse errors, and plan for version changes.
+- [Developer guide, authentication, and REST API policy](${absoluteUrl("/docs/developers.md")}) - Confirm the public API's access model, integrate with its resources, parse errors, and plan for version changes.
 - [REST API v1](${absoluteUrl("/api/v1")}) - Discover current public API resources.
 - [OpenAPI 3.1 specification](${absoluteUrl("/openapi.json")}) - Read the machine-readable HTTP contract.
 - [MCP Streamable HTTP server](${absoluteUrl("/mcp")}) - Discover exact registry names and retrieve component source with typed, read-only tools.

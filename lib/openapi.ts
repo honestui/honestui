@@ -162,9 +162,9 @@ export function getOpenApiDocument() {
     jsonSchemaDialect: "https://json-schema.org/draft/2020-12/schema",
     info: {
       title: "Honest UI Registry API",
-      version: "1.1.0",
+      version: "1.2.0",
       description:
-        "Versioned, read-only endpoints for discovering Honest UI registry items and generating shadcn-compatible initialization presets. New integrations should use /api/v1; the unversioned /r and /init paths remain compatibility aliases.",
+        "Versioned, public, read-only endpoints for discovering Honest UI registry items and generating shadcn-compatible initialization presets. No account or credential is required. New integrations should use /api/v1; the unversioned /r and /init paths remain compatibility aliases.",
       license: {
         name: "MIT",
         identifier: "MIT",
@@ -411,6 +411,7 @@ export function getOpenApiDocument() {
             "version",
             "description",
             "authentication",
+            "authenticationDocumentation",
             "documentation",
             "openapi",
             "mcp",
@@ -421,6 +422,10 @@ export function getOpenApiDocument() {
             version: { type: "string", const: "v1" },
             description: { type: "string" },
             authentication: { type: "string", const: "none" },
+            authenticationDocumentation: {
+              type: "string",
+              format: "uri",
+            },
             documentation: { type: "string", format: "uri" },
             openapi: { type: "string", format: "uri" },
             mcp: { type: "string", format: "uri" },
