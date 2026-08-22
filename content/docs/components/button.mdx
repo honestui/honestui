@@ -7,27 +7,41 @@ description: Trigger an action, submit a form, or open another control.
 
 ## Overview
 
-Use a button for actions. A button should do something on the current page, submit a form, open a menu, start a task, or confirm a choice.
-
-Use a link when the user is navigating to another page. If a link must look like a button, render the link through the button component so the visual style is shared while the semantics stay correct.
+Use a button for actions: submitting a form, opening a menu, starting a task, or confirming a choice. Use a link when the person is navigating to another page or view. When a link needs to look like a button, render it through `Button` so the visual style is shared while the semantics stay correct. See [Don't do this](#dont-do-this) for the most common way this goes wrong.
 
 ## Anatomy
 
-A button has a visible label, optional icon, variant, size, and state. The label should describe the action directly. Prefer `Save changes`, `Invite member`, or `Delete project` over vague labels like `Submit` or `Continue` when the result is specific.
+A button has a visible label, an optional icon, a variant, a size, and a state. The label names the action directly: prefer `Save changes`, `Invite member`, or `Delete project` over vague labels like `Submit` or `Continue` when you know what happens next. Specific labels also survive translation and screen-reader link lists better than generic ones.
 
 ## Variants
 
-Use the default variant for primary actions, secondary for supporting actions, outline for medium emphasis, ghost for low emphasis, link for inline actions, and destructive for dangerous actions.
+Use one default button per view for the primary action. Use secondary or outline for supporting actions, ghost for low-emphasis controls in toolbars and cards, and link for inline actions inside text. Reserve destructive and destructive-outline for actions that are hard to reverse, such as deleting data. A destructive action that is merely prominent is not a destructive action; it must actually destroy something.
 
 ## Appearances
 
-Use the `appearance` prop to change a button's surface treatment without changing its semantic variant or color. Choose `flat` to keep the original treatment, `glossy` for a polished sheen, `glow` for an internally lit treatment, or `bevel` for an extruded key-like treatment.
+Use the `appearance` prop to change a button's surface treatment without changing its semantic variant or color: `flat` keeps the original treatment, `glossy` adds a polished sheen, `glow` lights the surface from within, and `bevel` makes it feel like an extruded key. Appearances compose with every variant, so `variant="destructive" appearance="glossy"` stays destructive while gaining depth. Treat appearances as emphasis for hero surfaces, not as a replacement for variants; they change how heavy a button looks, never what it does.
 
-Appearances compose with every variant. For example, `variant="destructive" appearance="glossy"` keeps the destructive color and behavior while adding the glossy depth treatment.
+## Behavior
+
+**Loading.** While work runs in the background, keep the label stable and show a spinner next to it. The label is the only thing telling people which action is pending; swapping it to `Loading…` removes that information and shifts layout at the same time. Disable the button while pending so duplicate submissions cannot fire.
+
+**Disabled.** Disabled buttons are skipped by keyboard focus and screen readers do not announce why they are unavailable. Use disabled for actions that never apply in the current state, and pair it with nearby text that explains why when the reason is not obvious from the page.
+
+**Async actions.** After a click triggers server work, disable immediately, keep the original label with a spinner, and report the outcome in surrounding text. Do not close menus or dialogs until the operation succeeds or fails.
 
 ## Accessibility
 
-Buttons must have accessible names. Icon-only buttons need a label through text, `aria-label`, or an equivalent pattern. Keep disabled and loading states clear so users understand why the action is unavailable.
+Buttons receive keyboard focus and activate with both <kbd>Enter</kbd> and <kbd>Space</kbd>. The focus ring appears only for keyboard focus (`focus-visible`), so mouse users do not see it and keyboard users always do.
+
+On devices with coarse pointers, such as phones, an invisible layer expands every button's hit area to at least 44 × 44 px even when the visual control is smaller. Small icon buttons remain easy to tap without extra wrappers.
+
+Icon-only buttons have no text content, so give each one an `aria-label`. Buttons are announced by their text content; decorative icons should be marked `aria-hidden`.
+
+Long labels never wrap. The button grows to fit its label on one line. Keep labels short enough to fit their container, or truncate deliberately with `max-w-full` and the `truncate` utility on the label span.
+
+In right-to-left layouts, spacing and order mirror automatically because the component uses logical flexbox spacing. Directional arrow icons do not flip on their own; choose direction-neutral icons or flip them intentionally.
+
+Colors come from theme tokens, so buttons adapt to dark mode automatically. The glossy, glow, and bevel appearances overlay fixed light and dark gradients tuned against accent surfaces; re-check legibility if you place them on unusual backgrounds.
 
 ## Installation
 
@@ -88,26 +102,69 @@ import { Button } from "@/components/ui/button";
 ```
 
 ```tsx
-<Button>Button</Button>
+<Button>Publish</Button>
 ```
 
-## Link
+The native type defaults to `"button"` so stray buttons can never accidentally submit a form. Set `type="submit"` explicitly on the button that submits.
 
-You can use the [`render`](https://base-ui.com/react/utils/use-render#migrating-from-radix-ui) prop to make another component look like a button. Here's an example of a link that looks like a button.
+## Don't do this
+
+### Navigating with onClick
 
 ```tsx
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
-
-export function LinkAsButton() {
-  return <Button render={<Link href="/login" />}>Login</Button>;
-}
+// Bad
+<Button onClick={() => router.push("/settings")}>
+  Settings
+</Button>
 ```
 
-## Examples
+```tsx
+// Good
+<Button render={<Link href="/settings" />}>
+  Settings
+</Button>
+```
 
-The main example compares semantic variants, sizes, an icon-only action, disabled state, and link composition in one place. The examples below focus on behavior that needs its own code path.
+The bad version looks like a link to no one. Browsers treat it as a button: it cannot be opened in a new tab with middle-click or <kbd>Cmd</kbd> click, the URL does not appear on hover, and assistive technology announces a button instead of a link, so people expect something different to happen. The `render` prop renders a real anchor element with button styling, which keeps navigation semantics intact.
+
+### Swapping the label while loading
+
+```tsx
+// Bad
+<Button disabled={pending}>
+  {pending ? "Loading…" : "Save changes"}
+</Button>
+```
+
+```tsx
+// Good
+<Button disabled={pending}>
+  {pending && <LoaderCircleIcon className="animate-spin" aria-hidden="true" />}
+  Save changes
+</Button>
+```
+
+Replacing the label erases the only information about what is happening, changes the button's width mid-interaction, and makes several stacked buttons indistinguishable while all of them say `Loading…`.
+
+### Icon-only buttons without a name
+
+```tsx
+// Bad
+<Button size="icon">
+  <TrashIcon />
+</Button>
+```
+
+```tsx
+// Good
+<Button size="icon" aria-label="Delete item">
+  <TrashIcon aria-hidden="true" />
+</Button>
+```
+
+An icon-only button has no accessible name, so screen readers announce just "button" and voice-control users have nothing to say to activate it. Name every icon-only control.
+
+## Examples
 
 ### Surface appearances
 
@@ -117,16 +174,43 @@ Use appearance sparingly. It changes visual depth, not the action's meaning or p
 
 ### Loading state
 
-Keep the button label stable enough that people know which action is pending. Disable duplicate submission while work is in progress, and expose the same state with `aria-disabled` or `disabled` as appropriate.
+The label stays stable while the spinner communicates progress.
 
 <ComponentPreview name="button-loading" />
 
-### Icon placement
+### Async action
 
-<ComponentPreview name="button-with-icon" />
+Disable during the request, restore after it settles, and report the result outside the button.
+
+<ComponentPreview name="button-async-action" />
+
+### Form submission
+
+`type="submit"` is explicit here; the ghost Cancel button demonstrates why the default `type="button"` matters. Pressing <kbd>Enter</kbd> in the field submits too.
+
+<ComponentPreview name="button-form-submit" />
+
+### Long labels
+
+Labels grow rather than wrap. Prefer a shorter verb-first label like the second button.
+
+<ComponentPreview name="button-long-text" />
+
+### Right-to-left languages
+
+Spacing and order mirror automatically under `dir="rtl"`.
+
+<ComponentPreview name="button-rtl" />
 
 ## API reference
 
-`Button` accepts native button props and Base UI's `render` composition prop. Honest UI adds `variant` (`default`, `outline`, `secondary`, `destructive`, `destructive-outline`, `ghost`, or `link`), `size` (`xs`, `sm`, `default`, `lg`, `xl`, `icon`, `icon-sm`, or `icon-lg`), and `appearance` (`flat`, `glossy`, `glow`, or `bevel`).
+`Button` accepts native button props and Base UI's `render` composition prop. Honest UI adds:
 
-The native default is `type="button"`. Set `type="submit"` explicitly inside a form. Use `render` or `asChild` to preserve link semantics when a navigation action needs button styling.
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` | `default`, `outline`, `secondary`, `destructive`, `destructive-outline`, `ghost`, `link` | `default` |
+| `size` | `xs`, `sm`, `default`, `lg`, `xl`, `icon`, `icon-sm`, `icon-lg` | `default` |
+| `appearance` | `flat`, `glossy`, `glow`, `bevel` | `flat` |
+| `asChild` | boolean | `false` |
+
+The native default is `type="button"`; set `type="submit"` explicitly inside a form. With `render` or `asChild`, the type attribute is left off so the rendered element decides its own semantics.

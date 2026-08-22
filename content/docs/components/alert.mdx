@@ -10,31 +10,41 @@ links:
 
 ## Overview
 
-Use an alert to call attention to information that affects the current page or task.
+Use an Alert to call attention to information that affects the current page or task: warnings about expiring payment methods, errors that need recovery, success confirmations worth keeping visible, and neutral guidance at the point of action.
 
-Alerts are best for inline feedback, warnings, success messages, errors, and important context. They should be visible near the content they explain. Use a toast instead when the message is temporary and does not need to stay on the page.
-
-Use Alert Dialog when the user must make a decision before the app can continue. Alert dialogs are for high-impact choices such as deleting data, leaving with unsaved changes, confirming a destructive action, or acknowledging a blocking error.
+Alerts live in the flow of the page, near the content they explain, and stay there until removed. That persistence is the dividing line from Toast: a toast confirms and disappears, while an alert remains as long as its condition does. When information must block all work until a person decides — deleting data, leaving with unsaved changes — use [Alert Dialog](/docs/components/alert-dialog) instead.
 
 ## Anatomy
 
-An alert usually has a container, optional icon, title, description, and optional actions. The title should be short. The description should explain what happened or what the user should do next.
+An Alert has a container, optional icon, title, description, and optional actions. The title names what happened in a few words. The description explains the consequence or what to do next. Actions sit in their own column on wide screens and drop below the text on narrow ones, so recovery is never more than one glance away.
 
-An alert dialog has a trigger, popup, title, description, and actions. The title should state the decision. The description should explain the consequence. The actions should make the safe choice and the risky choice easy to distinguish.
+When you render an icon as the first child, it occupies a fixed column aligned to the first line of text; the title and description shift to the second column automatically.
 
 ## Variants
 
-Choose the variant by meaning, not by color preference. Use info for neutral guidance, success for completed work, warning for possible risk, error for a failed action, and destructive when the user is dealing with a harmful or irreversible action.
+Choose the variant by meaning, not by color preference:
+
+- `default` — neutral information with no state attached.
+- `info` — guidance that changes how someone completes the current task.
+- `success` — confirmation that completed work was saved or applied.
+- `warning` — risk ahead: expiring cards, limits approaching, irreversible settings.
+- `error` — something failed and needs recovery before the task can continue.
+
+Each variant pairs a border and background tint with matching icon color. Because the tint uses low-alpha tokens over the card background, variants remain distinguishable in dark mode without vibrating against it.
 
 ## Behavior
 
-Keep alerts close to the content they explain. Keep alert dialogs short and focused. If a flow needs a form, browsing, or several steps, use Dialog or Sheet instead.
+Keep alerts close to the content they explain: a billing warning belongs on the billing page next to the payment method, not in a global banner where its context is lost. One alert per condition; when several conditions fire at once, consolidate them into a single message listing each item rather than stacking five boxes.
+
+Render an Alert only while its condition holds. A stale success banner left on the page teaches people to ignore every other alert — see [Don't do this](#dont-do-this).
 
 ## Accessibility
 
-Do not rely on color alone. Pair state colors with clear text and, when useful, an icon. Keep action buttons keyboard reachable and avoid putting long instructions inside a small alert.
+Every `Alert` renders `role="alert"`, so content inserted into the DOM inside it is announced immediately by screen readers, including failures reported after an async request completes. This urgency cuts both ways: reserve the component for information genuinely worth interrupting for, and note that an alert present at page load is typically not announced — sighted-only emphasis there is fine, but critical load-time context also needs a heading or focus target.
 
-Alert dialogs should have a clear title and description. Keep focus inside the popup while it is open. Make sure the cancel action is easy to reach and that destructive actions use explicit copy such as `Delete project`, not vague copy like `OK`.
+Do not rely on color alone. The variant color is always paired with your title and description text; add an icon when the extra cue helps scanning. Action buttons inside `AlertAction` are ordinary buttons, reachable by <kbd>Tab</kbd> with visible focus rings.
+
+Text wraps within the container rather than truncating, so localized descriptions grow downward without clipping the action column. The grid uses logical properties and mirrors under `dir="rtl"`. Colors come from theme tokens, so all five variants hold WCAG-readable contrast in dark mode automatically.
 
 ## Installation
 
@@ -112,65 +122,107 @@ npm install @base-ui-components/react
 import {
   Alert,
   AlertDescription,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogClose,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogPopup,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertAction,
   AlertTitle,
 } from "@/components/ui/alert";
 ```
 
 ```tsx
-<Alert>
-  <AlertTitle>Heads up!</AlertTitle>
+<Alert variant="warning">
+  <TriangleAlertIcon />
+  <AlertTitle>Payment method expires soon</AlertTitle>
   <AlertDescription>
-    You can add components and dependencies to your app using the cli.
+    Update the card on file before June 14 to keep automations running.
   </AlertDescription>
+  <AlertAction>
+    <Button variant="secondary" size="sm">Update card</Button>
+  </AlertAction>
+</Alert>
+```
+
+The same file also exports the modal family — `AlertDialog`, `AlertDialogTrigger`, `AlertDialogPopup`, and related parts. Those follow Base UI's Alert Dialog semantics instead; see [Alert Dialog](/docs/components/alert-dialog) for when a blocking decision is appropriate and how it differs from Dialog.
+
+## Don't do this
+
+### Marketing decoration
+
+```tsx
+// Bad
+<Alert variant="error">
+  <AlertTitle>🔥 Summer sale ends tonight!</AlertTitle>
+  <AlertDescription>Use code SUMMER for 20% off.</AlertDescription>
 </Alert>
 ```
 
 ```tsx
-<AlertDialog>
-  <AlertDialogTrigger>Delete Account</AlertDialogTrigger>
-  <AlertDialogPopup>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-    </AlertDialogHeader>
-    <AlertDialogBody>
-      <AlertDialogDescription>
-        This action cannot be undone. This will permanently delete your account
-        and remove your data from our servers.
-      </AlertDialogDescription>
-    </AlertDialogBody>
-    <AlertDialogFooter>
-      <AlertDialogClose>Cancel</AlertDialogClose>
-      <AlertDialogClose>Delete Account</AlertDialogClose>
-    </AlertDialogFooter>
-  </AlertDialogPopup>
-</AlertDialog>
+// Good
+<div className="rounded-xl border bg-card p-3.5 text-sm">
+  Use code <strong>SUMMER</strong> for 20% off before midnight.
+</div>
 ```
+
+Every red box trains people a little more to skim past red boxes. When promotions wear error styling, real errors lose the urgency they depend on — and screen-reader users get "alert" announced for an advertisement. Style marketing content neutrally and save the component for conditions that affect the task.
+
+### Warnings without a consequence
+
+```tsx
+// Bad
+<Alert variant="warning">
+  <AlertTitle>Warning!</AlertTitle>
+  <AlertDescription>Please review your settings.</AlertDescription>
+</Alert>
+```
+
+```tsx
+// Good
+<Alert variant="warning">
+  <AlertTitle>Deploys paused for this repository</AlertTitle>
+  <AlertDescription>
+    Billing is suspended. Restore payment within 7 days to keep deploy history.
+  </AlertDescription>
+</Alert>
+```
+
+"Warning" announces that something might be wrong somewhere, which helps no one deciding what to do next. Name the affected thing in the title and state what changes if nothing happens. If you cannot write the consequence, the alert probably is not needed yet.
+
+### One alert per failure
+
+```tsx
+// Bad
+<Alert variant="error"><AlertTitle>Name is missing.</AlertTitle></Alert>
+<Alert variant="error"><AlertTitle>Email is invalid.</AlertTitle></Alert>
+<Alert variant="error"><AlertTitle>Password is too short.</AlertTitle></Alert>
+```
+
+```tsx
+// Good
+<Alert variant="error">
+  <AlertTitle>Fix 3 fields before saving</AlertTitle>
+  <AlertDescription>
+    <ul>
+      <li>Name is required.</li>
+      <li>Email must include an @.</li>
+      <li>Password must be at least 12 characters.</li>
+    </ul>
+  </AlertDescription>
+</Alert>
+```
+
+A stack of near-identical boxes shouts the same interruption three times, triples the visual noise, and pushes the form itself off screen. Consolidate into one alert with a list, and keep per-field messages next to their fields where correction happens.
 
 ## Examples
 
-Each example places the alert inside the task that produces it, including the
-action, result, and recovery path where they matter.
+Each example places the alert inside the task that produces it, including the action, result, and recovery path where they matter.
 
 ### With Icon
 
-Generate a new set of recovery codes and see how the alert explains the
-consequence before and after the action.
+Generate a new set of recovery codes and see how the alert explains the consequence before and after the action.
 
 <ComponentPreview name="alert-with-icon" previewClassName="h-96 sm:h-96" />
 
 ### With Icon and Action Buttons
 
-Turn on two-step verification, defer it, or return to the setup from the same
-account-security workflow.
+Turn on two-step verification, defer it, or return to the setup from the same account-security workflow.
 
 <ComponentPreview
   name="alert-with-icon-action"
@@ -179,51 +231,45 @@ account-security workflow.
 
 ### Info Alert
 
-Give neutral guidance at the point where it changes how someone completes a
-form.
+Give neutral guidance at the point where it changes how someone completes a form.
 
 <ComponentPreview name="alert-info" previewClassName="h-96 sm:h-96" />
 
 ### Success Alert
 
-Confirm a saved profile change while keeping the edited field and next state in
-view.
+Confirm a saved profile change while keeping the edited field and next state in view.
 
 <ComponentPreview name="alert-success" previewClassName="h-96 sm:h-96" />
 
 ### Warning Alert
 
-Warn about an expiring payment method and show what changes after it is
-replaced.
+Warn about an expiring payment method and show what changes after it is replaced.
 
 <ComponentPreview name="alert-warning" previewClassName="h-96 sm:h-96" />
 
 ### Error Alert
 
-Preserve the failed value, explain the valid format, and let the user recover in
-place.
+Preserve the failed value, explain the valid format, and let the user recover in place.
 
 <ComponentPreview name="alert-error" previewClassName="h-96 sm:h-96" />
 
-## Alert Dialog
+### Standalone notice
 
-Alert Dialog is included in the same component file. Use it only when the user must respond before continuing.
+A compact warning with icon and no actions — the smallest complete alert.
 
-### Basic Alert Dialog
-
-Show the destructive action in its settings context, require confirmation, then
-make the completed state visible.
-
-<ComponentPreview name="alert-dialog-demo" previewClassName="h-96 sm:h-96" />
-
-### Close Confirmation
-
-Use this pattern when closing would discard work, interrupt a process, or hide important state.
-
-<ComponentPreview name="dialog-close-confirmation" />
+<ComponentPreview name="alert-billing-notice" />
 
 ## API reference
 
-The inline `Alert` accepts native `div` props plus its documented visual variants; its title, description, and action parts accept native element props. The modal alert parts forward the matching Base UI Alert Dialog props. `AlertDialogOverlay` and `AlertDialogContent` are aliases for the backdrop and popup.
+The inline family accepts native element props plus:
 
-Use the inline family for information that does not block work. Use Alert Dialog only when the user must make an explicit consequential choice before continuing. See the [Base UI Alert Dialog API](https://base-ui.com/react/components/alert-dialog#api-reference).
+| Part | Renders | Props |
+| --- | --- | --- |
+| `Alert` | `div role="alert"` | `variant`: `default`, `info`, `success`, `warning`, `error` (default `default`) |
+| `AlertTitle` | `div` | Native div props |
+| `AlertDescription` | `div` | Native div props |
+| `AlertAction` | `div` | Native div props; wrap buttons or links |
+
+`Alert` renders `role="alert"` unconditionally, which drives the announcement behavior described above. Render it only when its content should be announced or emphasized; use plain containers for decorative callouts.
+
+The modal parts (`AlertDialog` and children) forward Base UI Alert Dialog props and are documented on the [Alert Dialog page](/docs/components/alert-dialog).

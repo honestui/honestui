@@ -64,6 +64,7 @@ import breadcrumb_card from "./default/examples/breadcrumb-card";
 import breadcrumb_custom_separator from "./default/examples/breadcrumb-custom-separator";
 import breadcrumb_demo from "./default/examples/breadcrumb-demo";
 import button_appearances from "./default/examples/button-appearances";
+import button_async_action from "./default/examples/button-async-action";
 import button_default from "./default/examples/button-default";
 import button_default_icons from "./default/examples/button-default-icons";
 import button_demo from "./default/examples/button-demo";
@@ -74,6 +75,8 @@ import button_destructive_outline_icons from "./default/examples/button-destruct
 import button_disabled from "./default/examples/button-disabled";
 import button_ghost from "./default/examples/button-ghost";
 import button_ghost_icons from "./default/examples/button-ghost-icons";
+import button_form_submit from "./default/examples/button-form-submit";
+import button_long_text from "./default/examples/button-long-text";
 import button_icon from "./default/examples/button-icon";
 import button_icon_lg from "./default/examples/button-icon-lg";
 import button_icon_sm from "./default/examples/button-icon-sm";
@@ -83,6 +86,7 @@ import button_link_icons from "./default/examples/button-link-icons";
 import button_loading from "./default/examples/button-loading";
 import button_outline from "./default/examples/button-outline";
 import button_outline_icons from "./default/examples/button-outline-icons";
+import button_rtl from "./default/examples/button-rtl";
 import button_secondary from "./default/examples/button-secondary";
 import button_secondary_icons from "./default/examples/button-secondary-icons";
 import button_sm from "./default/examples/button-sm";
@@ -122,7 +126,9 @@ import context_menu_search from "./default/examples/context-menu-search";
 import color_picker_controlled from "./default/examples/color-picker-controlled";
 import color_picker_demo from "./default/examples/color-picker-demo";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
+import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
+import dialog_form_submit from "./default/examples/dialog-form-submit";
 import dialog_from_menu from "./default/examples/dialog-from-menu";
 import dialog_nested from "./default/examples/dialog-nested";
 import empty_demo from "./default/examples/empty-demo";
@@ -158,6 +164,10 @@ import input_demo from "./default/examples/input-demo";
 import input_disabled from "./default/examples/input-disabled";
 import input_file from "./default/examples/input-file";
 import input_lg from "./default/examples/input-lg";
+import input_long_text from "./default/examples/input-long-text";
+import input_rtl from "./default/examples/input-rtl";
+import input_sizes from "./default/examples/input-sizes";
+import input_states from "./default/examples/input-states";
 import input_sm from "./default/examples/input-sm";
 import input_with_button from "./default/examples/input-with-button";
 import input_with_label from "./default/examples/input-with-label";
@@ -202,6 +212,7 @@ import radio_group_card from "./default/examples/radio-group-card";
 import radio_group_demo from "./default/examples/radio-group-demo";
 import radio_group_disabled from "./default/examples/radio-group-disabled";
 import radio_group_form from "./default/examples/radio-group-form";
+import radio_group_error from "./default/examples/radio-group-error";
 import radio_group_with_description from "./default/examples/radio-group-with-description";
 import scroll_area_both from "./default/examples/scroll-area-both";
 import scroll_area_demo from "./default/examples/scroll-area-demo";
@@ -221,6 +232,7 @@ import skeleton_demo from "./default/examples/skeleton-demo";
 import skeleton_only from "./default/examples/skeleton-only";
 import slider_demo from "./default/examples/slider-demo";
 import slider_form from "./default/examples/slider-form";
+import slider_disabled from "./default/examples/slider-disabled";
 import slider_range from "./default/examples/slider-range";
 import slider_vertical from "./default/examples/slider-vertical";
 import slider_with_label_value from "./default/examples/slider-with-label-value";
@@ -229,6 +241,7 @@ import switch_demo from "./default/examples/switch-demo";
 import switch_disabled from "./default/examples/switch-disabled";
 import switch_form from "./default/examples/switch-form";
 import switch_with_description from "./default/examples/switch-with-description";
+import switch_pending from "./default/examples/switch-pending";
 import table_demo from "./default/examples/table-demo";
 import table_framed from "./default/examples/table-framed";
 import tabs_demo from "./default/examples/tabs-demo";
@@ -499,6 +512,7 @@ export const Index: Record<string, { component: ComponentType }> = {
   "breadcrumb-custom-separator": { component: breadcrumb_custom_separator },
   "breadcrumb-demo": { component: breadcrumb_demo },
   "button-appearances": { component: button_appearances },
+  "button-async-action": { component: button_async_action },
   "button-default": { component: button_default },
   "button-default-icons": { component: button_default_icons },
   "button-demo": { component: button_demo },
@@ -510,6 +524,8 @@ export const Index: Record<string, { component: ComponentType }> = {
   },
   "button-disabled": { component: button_disabled },
   "button-ghost": { component: button_ghost },
+  "button-form-submit": { component: button_form_submit },
+  "button-long-text": { component: button_long_text },
   "button-ghost-icons": { component: button_ghost_icons },
   "button-icon": { component: button_icon },
   "button-icon-lg": { component: button_icon_lg },
@@ -520,6 +536,7 @@ export const Index: Record<string, { component: ComponentType }> = {
   "button-loading": { component: button_loading },
   "button-outline": { component: button_outline },
   "button-outline-icons": { component: button_outline_icons },
+  "button-rtl": { component: button_rtl },
   "button-secondary": { component: button_secondary },
   "button-secondary-icons": { component: button_secondary_icons },
   "button-sm": { component: button_sm },
@@ -559,8 +576,10 @@ export const Index: Record<string, { component: ComponentType }> = {
   "color-picker-controlled": { component: color_picker_controlled },
   "color-picker-demo": { component: color_picker_demo },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
+  "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },
   "dialog-from-menu": { component: dialog_from_menu },
+  "dialog-form-submit": { component: dialog_form_submit },
   "dialog-nested": { component: dialog_nested },
   "empty-demo": { component: empty_demo },
   "field-autocomplete": { component: field_autocomplete },
@@ -595,6 +614,10 @@ export const Index: Record<string, { component: ComponentType }> = {
   "input-disabled": { component: input_disabled },
   "input-file": { component: input_file },
   "input-lg": { component: input_lg },
+  "input-long-text": { component: input_long_text },
+  "input-rtl": { component: input_rtl },
+  "input-sizes": { component: input_sizes },
+  "input-states": { component: input_states },
   "input-sm": { component: input_sm },
   "input-with-button": { component: input_with_button },
   "input-with-label": { component: input_with_label },
@@ -640,6 +663,7 @@ export const Index: Record<string, { component: ComponentType }> = {
   "radio-group-card": { component: radio_group_card },
   "radio-group-demo": { component: radio_group_demo },
   "radio-group-disabled": { component: radio_group_disabled },
+  "radio-group-error": { component: radio_group_error },
   "radio-group-form": { component: radio_group_form },
   "radio-group-with-description": { component: radio_group_with_description },
   "scroll-area-both": { component: scroll_area_both },
@@ -659,6 +683,7 @@ export const Index: Record<string, { component: ComponentType }> = {
   "skeleton-demo": { component: skeleton_demo },
   "skeleton-only": { component: skeleton_only },
   "slider-demo": { component: slider_demo },
+  "slider-disabled": { component: slider_disabled },
   "slider-form": { component: slider_form },
   "slider-range": { component: slider_range },
   "slider-vertical": { component: slider_vertical },
@@ -667,6 +692,7 @@ export const Index: Record<string, { component: ComponentType }> = {
   "switch-demo": { component: switch_demo },
   "switch-disabled": { component: switch_disabled },
   "switch-form": { component: switch_form },
+  "switch-pending": { component: switch_pending },
   "switch-with-description": { component: switch_with_description },
   "table-demo": { component: table_demo },
   "table-framed": { component: table_framed },

@@ -10,21 +10,31 @@ links:
 
 ## Overview
 
-Use Popover for contextual content that appears near a trigger.
+Use a Popover for contextual content that appears near a trigger when the person asks for it: lightweight forms, explanations, filters, small pickers, and secondary controls that would crowd the page if they were always visible.
 
-Popovers are good for lightweight forms, explanations, filters, small pickers, and secondary controls. Use Dialog when the task needs focus trapping or a larger workflow.
+A popover is deliberately opened, so it can hold interactive controls — unlike a Tooltip, which disappears as soon as focus moves and should never contain anything a person needs to operate. When the task needs the rest of the page blocked or a larger workflow, use Dialog instead; a popover is non-modal by default and lets people keep working while it is open.
 
 ## Anatomy
 
-A popover has a trigger, popup, optional title or description, content, and optional close action.
+A popover has a trigger, popup, optional title, optional description, content, and an optional close action. `PopoverPopup` renders the portal and positioner internally, so positioning props like `side` and `align` sit directly on it. The title names what opened; the description carries supporting context. Both wire into the popup's accessible name automatically when present.
 
 ## Behavior
 
-Keep popover content short and directly related to the trigger. Avoid putting complex multi-step workflows inside a popover.
+**Opening.** Clicking the trigger opens the popup and moves focus into it — to the first tabbable control inside, or to the popup itself when there is nothing tabbable. If it was opened by touch, the popup element receives focus so the on-screen keyboard does not pop open over content nobody can see yet.
+
+**While open.** The default mode is non-modal: <kbd>Tab</kbd> walks through the popup's controls and then continues back into the page. Pressing <kbd>Escape</kbd> closes it, and clicking outside closes it too. Set `modal` on the root to `"trap-focus"` (focus cycles inside but the page stays scrollable) or `true` (interaction limited to the popup and page scroll locked) when the content must be dealt with before continuing.
+
+**Closing.** Focus returns to the trigger, so keyboard users continue where they left off. Pass `finalFocus` on the popup to send focus somewhere else.
+
+**Positioning.** `side` places the popup relative to the trigger (`bottom` by default), `align` sets alignment within that side, and `sideOffset` adds distance. When there is no room, the popup flips to the opposite side or shifts sideways to stay in the viewport, and its height never exceeds the available viewport space. The positioner forwards Base UI's full set of collision options if you need finer control.
 
 ## Accessibility
 
-The trigger should clearly describe what opens. Make sure focus behavior is predictable and that users can dismiss the popover with keyboard controls.
+The popup gets `role="dialog"`. Its accessible name comes from `PopoverTitle` and its description from `PopoverDescription`, so include both whenever the content needs context — an unlabeled dialog is announced as just "dialog". The trigger keeps its own name and state (`aria-expanded`), which is why the trigger text should describe what opens.
+
+Everything dismissible by mouse is dismissible by keyboard: <kbd>Escape</kbd> always works, and moving focus outside the popup closes it. Because focus returns to the trigger on close, a popover is safe to open from the keyboard mid-task.
+
+Colors come from theme tokens, so the popup adapts to dark mode automatically. Padding uses logical properties, so the layout mirrors in right-to-left locales. Content wraps inside the popup's capped width rather than overflowing; very long text grows the popup vertically up to the viewport limit before scrolling becomes your responsibility to style.
 
 ## Installation
 
@@ -86,16 +96,111 @@ import {
 </Popover>
 ```
 
-## Examples
+`PopoverContent` is an alias of `PopoverPopup`. Use controlled state (`open` / `onOpenChange` on the root) only when something else must own whether the popover is visible.
 
-The example shows a popover with an explicit close action.
+## Don't do this
+
+### Confirming destructive actions in a popover
+
+```tsx
+// Bad
+<PopoverPopup>
+  <PopoverTitle>Delete project?</PopoverTitle>
+  <Button variant="destructive" onClick={destroy}>Delete</Button>
+</PopoverPopup>
+```
+
+```tsx
+// Good
+<AlertDialog>
+  <AlertDialogTrigger render={<Button variant="destructive" />}>
+    Delete project
+  </AlertDialogTrigger>
+  <AlertDialogPopup initialFocus={cancelRef}>
+    <AlertDialogTitle>Delete Aurora website?</AlertDialogTitle>
+    <AlertDialogDescription>
+      This permanently removes the site and all deployments.
+    </AlertDialogDescription>
+    <AlertDialogFooter>
+      <AlertDialogClose render={<Button variant="ghost" ref={cancelRef} />}>
+        Cancel
+      </AlertDialogClose>
+      <Button variant="destructive">Delete</Button>
+    </AlertDialogFooter>
+  </AlertDialogPopup>
+</AlertDialog>
+```
+
+A popover closes on any outside click, which means a stray click can silently cancel a confirmation — or worse, leave someone unsure whether the action ran. Destructive confirmations need a modal surface that interrupts, states the consequence, and cannot be dismissed by accident. That is AlertDialog's job.
+
+### Omitting the title
+
+```tsx
+// Bad
+<PopoverPopup className="w-72">
+  <Slider defaultValue={40} aria-label="Opacity" />
+</PopoverPopup>
+```
+
+```tsx
+// Good
+<PopoverPopup className="w-72">
+  <PopoverTitle>Opacity</PopoverTitle>
+  <Slider defaultValue={40} aria-label="Opacity" />
+</PopoverPopup>
+```
+
+The popup is announced as a dialog, and its name comes from the title. Without one, screen-reader users hear "dialog" with no indication of what it controls. A visually hidden title still provides the name if the design has none.
+
+### Opening on hover to fake a tooltip
+
+```tsx
+// Bad
+<PopoverTrigger openOnHover delay={0}>
+  Details
+</PopoverTrigger>
+```
+
+```tsx
+// Good
+<Tooltip>
+  <TooltipTrigger>Details</TooltipTrigger>
+  <TooltipPopup>Shows archived projects too.</TooltipPopup>
+</Tooltip>
+```
+
+A hover-opened popup appears under the cursor without being asked for, swallows clicks meant for nearby content, and lingers unpredictably. Text hints belong in Tooltips, which are tuned for hover and focus with delays and instant grouping; Popovers are for content people choose to open.
+
+## Examples
 
 ### With Close Button
 
+An explicit close action plus a corner dismiss button. Escape and outside clicks work regardless.
+
 <ComponentPreview name="popover-with-close" />
+
+### Account summary
+
+Read-only detail revealed on demand, with title and description providing the accessible name.
+
+<ComponentPreview name="popover-account-summary" />
+
+### Small picker
+
+Compact choice sets fit a popover well. Larger pickers deserve a Dialog or their own route.
+
+<ComponentPreview name="popover-color-swatch" />
 
 ## API reference
 
-`Popover`, `PopoverTrigger`, `PopoverPopup`, `PopoverTitle`, `PopoverDescription`, and `PopoverClose` forward their matching Base UI Popover props. `PopoverContent` is an alias of the popup. Use title and description when the popup needs an accessible name or explanatory context.
+All parts forward their matching Base UI Popover props. Honest UI adds positioning shortcuts on `PopoverPopup`:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `side` | `top`, `right`, `bottom`, `left`, and logical `inline` variants | `bottom` |
+| `align` | `start`, `center`, `end` | `center` |
+| `sideOffset` | number | `4` |
+
+The root accepts `open` / `onOpenChange` for controlled usage and `modal={false | 'trap-focus' | true}` (`false` by default). The popup accepts `initialFocus` and `finalFocus` to direct where focus lands on open and close. `PopoverContent` aliases `PopoverPopup`.
 
 See the [Base UI Popover API](https://base-ui.com/react/components/popover#api-reference).

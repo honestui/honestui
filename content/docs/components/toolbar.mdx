@@ -10,21 +10,33 @@ links:
 
 ## Overview
 
-Use Toolbar to group controls that act on the same surface.
+Use Toolbar to group compact controls that all act on the same surface or object: a text formatting bar, canvas tools, table density controls, a media transport. The grouping is not just visual — it changes keyboard behavior, letting people move through the whole set with arrow keys instead of tabbing through every control.
 
-Toolbars are useful in editors, tables, canvases, filters, and dashboards where several commands belong together.
+Toolbars are for actions on content that is already visible. They are not site navigation and not a form; see [Don't do this](#dont-do-this).
 
 ## Anatomy
 
-A toolbar can contain buttons, links, inputs, toggles, groups, separators, menus, and other compact controls. `ToolbarButton`, `ToolbarLink`, and `ToolbarInput` participate in the toolbar's roving keyboard navigation.
+A toolbar root holds buttons, links, inputs, toggle groups, selects, separators, and menus. `ToolbarButton`, `ToolbarLink`, and `ToolbarInput` participate in the toolbar's roving keyboard navigation; `ToolbarGroup` marks a related subset such as an alignment trio; `ToolbarSeparator` divides groups visually and follows the root's orientation.
 
-## Usage guidance
+Compose with existing primitives through the `render` prop — the full demo wires `Toggle`, `Select`, `Button`, and `Tooltip` into toolbar parts so each control keeps its own behavior while joining the roving focus model.
 
-Keep the most common actions visible and group related commands. Move less common actions into a menu when the toolbar becomes crowded. Use a horizontal toolbar by default; vertical orientation is appropriate only when the controlled surface and labels make the direction obvious.
+## Behavior
+
+**Keyboard model.** The toolbar is one <kbd>Tab</kbd> stop. Once inside, <kbd>ArrowLeft</kbd>/<kbd>ArrowRight</kbd> (or Up/Down when vertical) move between controls and wrap around by default; set `loopFocus={false}` to stop at the ends. Note that <kbd>Home</kbd>/<kbd>End</kbd> are not wired up in toolbars, unlike tabs. An input inside the toolbar keeps normal caret movement: <kbd>ArrowLeft</kbd>/<kbd>ArrowRight</kbd> move through its text first, and only when the caret is already at the edge do they move focus to the next control. Holding <kbd>Shift</kbd> or having a selection always keeps the keys native.
+
+**Disabled state.** Set `disabled` on the root to disable everything at once. Individual `ToolbarButton`s accept `focusableWhenDisabled` so a disabled control stays reachable and announced while ignoring activation — useful when you need to explain *why* something is off.
+
+**Orientation.** Horizontal is right for bars above or below content. Vertical suits rails beside a canvas, but only when labels make the direction obvious.
 
 ## Accessibility
 
-Give the toolbar an accessible label when the surrounding heading does not name it. Icon-only controls need accessible names, toggles need a persistent pressed state, and separators must not receive focus. Arrow keys move among toolbar controls; Tab should move into and out of the toolbar as one stop.
+The root renders `<div role="toolbar" aria-orientation="...">`. Give it an accessible name when no nearby heading does: pass `aria-label="Text formatting"` (or `aria-labelledby`) on `Toolbar`.
+
+Icon-only controls have no text, so give each one an `aria-label`; the examples pair them with Tooltips whose text matches. Toggles must expose their pressed state persistently — compose with `Toggle` rather than swapping icons, because "pressed" is information, not decoration. Separators never receive focus.
+
+Focus remains visible on every control via `focus-visible` rings. Colors come from theme tokens, so hover, active, and disabled states adapt to dark mode automatically. In right-to-left layouts the arrow-key direction mirrors automatically through the direction provider.
+
+Long labels do not wrap inside toolbar buttons; keep command labels to one or two words and push less common commands into a menu when the bar crowds.
 
 ## Installation
 
@@ -78,7 +90,7 @@ import {
 ```
 
 ```tsx
-<Toolbar>
+<Toolbar aria-label="Text formatting">
   <ToolbarGroup>
     <ToolbarButton render={<Toggle />}>Bold</ToolbarButton>
     <ToolbarButton render={<Toggle />}>Underline</ToolbarButton>
@@ -88,24 +100,102 @@ import {
 </Toolbar>
 ```
 
+Wrap icon-only buttons with Tooltip to surface their names on hover while `aria-label` carries the accessible name everywhere else.
+
+## Don't do this
+
+### Faking a toolbar with plain buttons
+
+```tsx
+// Bad
+<div className="flex gap-1">
+  <Button size="icon" onClick={select}><MousePointer2Icon /></Button>
+  <Button size="icon" onClick={move}><MoveIcon /></Button>
+  <Button size="icon" onClick={draw}><PenLineIcon /></Button>
+</div>
+```
+
+```tsx
+// Good
+<Toolbar aria-label="Canvas tools">
+  <ToolbarButton render={<Button variant="ghost" size="icon" />} aria-label="Select">
+    <MousePointer2Icon />
+  </ToolbarButton>
+  ...
+</Toolbar>
+```
+
+The `<div>` version makes every button its own <kbd>Tab</kbd> stop, ignores arrow keys entirely, and announces nothing about the grouping. Keyboard users pay one Tab press per control instead of one per toolbar, and screen-reader users lose the "toolbar" landmark that signals these commands act on adjacent content.
+
+### Icon-only buttons without names
+
+```tsx
+// Bad
+<ToolbarButton render={<Button variant="ghost" size="icon" />}>
+  <PlayIcon />
+</ToolbarButton>
+```
+
+```tsx
+// Good
+<ToolbarButton render={<Button variant="ghost" size="icon" />} aria-label="Play">
+  <PlayIcon />
+</ToolbarButton>
+```
+
+An unnamed icon button is announced as bare "button" and is invisible to voice control. Tooltips help sighted mouse users but do nothing on touch screens or for screen readers — `aria-label` is the fix, and the tooltip text should repeat it verbatim.
+
+### Using a toolbar for page navigation
+
+```tsx
+// Bad
+<Toolbar>
+  <ToolbarLink href="/docs">Docs</ToolbarLink>
+  <ToolbarLink href="/pricing">Pricing</ToolbarLink>
+</Toolbar>
+```
+
+```tsx
+// Good
+<nav aria-label="Main">
+  <Link href="/docs">Docs</Link>
+  <Link href="/pricing">Pricing</Link>
+</nav>
+```
+
+A toolbar means "these controls edit the thing next to them." Primary destinations are not edits on anything; burying them in a toolbar hides them from the navigation landmark screen readers use to orient, and implies the wrong mental model even for sighted users.
+
 ## Examples
 
-The main example covers buttons, grouped toggles, an input, a link, a select, separators, and tooltips. The examples below show purpose-specific command sets without changing the underlying keyboard model.
-
 ### Canvas controls
+
+Tool selection grouped with a separator before the draw action — the classic editor rail pattern.
 
 <ComponentPreview name="toolbar-canvas-controls" />
 
 ### Media controls
 
+Transport buttons where every control needs both a tooltip and an `aria-label`.
+
 <ComponentPreview name="toolbar-media-controls" />
 
 ### Density controls
+
+Table or list density toggles with a reset action separated from the group.
 
 <ComponentPreview name="toolbar-density-controls" />
 
 ## API reference
 
-All Toolbar parts forward their matching Base UI Toolbar props. Use `orientation="vertical"` on `Toolbar` when needed. `ToolbarGroup` creates a related subset; `ToolbarSeparator` follows the root orientation; and the Button, Link, and Input parts provide the focusable controls.
+All parts forward their matching Base UI Toolbar props.
+
+| Prop | Component | Values | Default |
+| --- | --- | --- | --- |
+| `orientation` | `Toolbar` | `"horizontal"`, `"vertical"` | `"horizontal"` |
+| `loopFocus` | `Toolbar` | boolean | `true` |
+| `disabled` | `Toolbar` | boolean | `false` |
+| `focusableWhenDisabled` | `ToolbarButton` | boolean | — |
+
+The root renders `<div role="toolbar" aria-orientation="...">`. `ToolbarButton`, `ToolbarLink`, and `ToolbarInput` join the roving focus set; other children render normally without participating in arrow-key movement. `ToolbarSeparator` mirrors the root's orientation automatically. Unlike tabs, Home/End keys are not enabled inside toolbars — arrows wrap instead.
 
 See the [Base UI Toolbar API](https://base-ui.com/react/components/toolbar#api-reference) for keyboard behavior and root props.

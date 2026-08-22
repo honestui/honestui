@@ -10,21 +10,33 @@ links:
 
 ## Overview
 
-Use Scroll Area when content needs its own scrollable region with custom scrollbars.
+Use Scroll Area when content must overflow inside a bounded region — a fixed-height sidebar, an activity feed, a code pane, a wide table — and the native scrollbar's look would clash with the surrounding design. It renders a real scrolling viewport with styled, fading scrollbars while keeping native scrolling physics on every platform.
 
-Scroll areas are useful for menus, sidebars, code panes, tables, activity feeds, and fixed-height panels.
+The key word is *bounded*: Scroll Area is for regions whose size is fixed by the layout. When the page itself can simply grow and scroll natively, prefer that — see [Don't do this](#dont-do-this).
 
 ## Anatomy
 
-A scroll area has a viewport, content, and optional horizontal or vertical scrollbars.
+A scroll area has a root, a viewport that actually scrolls, optional vertical or horizontal scrollbars with thumbs, and a corner piece where both meet. The Honest UI `ScrollArea` wrapper adds an `orientation` convenience prop (`"vertical"`, `"horizontal"`, or `"both"`) that mounts the matching scrollbars in one line.
 
-## Usage guidance
+Scrollbars stay invisible at rest and fade in when the region is hovered or actively scrolling, so quiet surfaces do not carry permanent chrome.
 
-Use scroll areas when the surrounding layout needs to stay fixed. Avoid hiding important content in a small scroll region when the page itself can scroll naturally.
+## Behavior
+
+**Keyboard.** The viewport is focusable: it receives a visible focus ring and arrow keys, <kbd>Page Up</kbd>/<kbd>Page Down</kbd>, and <kbd>Space</kbd> scroll its content once focused. That makes keyboard-only use possible without any extra wiring — but only if people can reach it, which <kbd>Tab</kbd> handles as long as the region sits in a sensible focus order.
+
+**Overscroll.** The viewport uses `overscroll-contain`, so flicking to the end of an inner feed does not scroll the whole page underneath — the gesture stops at the region instead of yanking the document.
+
+**Overflow signals.** The root exposes data attributes such as `has-overflow-x` and directional edge attributes (with a configurable `overflowEdgeThreshold`), which you can use for edge fades or "scroll for more" hints without measuring the DOM yourself.
 
 ## Accessibility
 
-Make sure keyboard and touch users can reach the content. Keep scrollable regions large enough to use comfortably.
+Because the viewport takes a tab stop, a page with many nested scroll areas multiplies keyboard stops — one more reason to reserve this component for regions that truly need it. Screen readers announce nothing special about the region by default; add `aria-label` or `tabindex`-adjacent context when the bounded content is not obviously connected to a heading nearby.
+
+Keep scrollable regions large enough to use comfortably. A region that shows two items and hides twenty invites missed content, especially on touch screens where no scrollbar is visible until interaction. If actions live inside the region — buttons, links — confirm they remain reachable by keyboard after the viewport takes its own stop; focus moves through the inner controls normally once the region itself has focus.
+
+Scrollbar thumbs and track colors come from theme tokens (`foreground/20` for the thumb), so they adapt to dark mode automatically; the bars themselves stay out of screenshots and print layouts because they are invisible until hovered or scrolled. Horizontal scrolling is appropriate for wide content like code or tables where reflowing would destroy meaning; ordinary prose should reflow rather than scroll sideways, per WCAG reflow guidance.
+
+There is no loading or error state. Render skeletons or feedback inside the viewport while content loads.
 
 ## Installation
 
@@ -71,34 +83,95 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 ```tsx
 <ScrollArea className="h-64 rounded-md border">
   <div className="p-4">
-    Just as suddenly as it had begun, the sensation stopped, leaving Alice
-    feeling slightly disoriented. She looked around and realized that the room
-    hadn't changed at all - it was she who had grown smaller, shrinking down to
-    a fraction of her previous size. Alice felt herself growing larger and
-    larger, filling up the entire room until she feared she might burst. The
-    sensation was both thrilling and terrifying, as if she were expanding beyond
-    the confines of her own body. She wondered if this was what it felt like to
-    be a balloon, swelling with air until it could hold no more.
+    Long content that overflows vertically…
   </div>
 </ScrollArea>
 ```
 
+The height (or max-height) comes from you — pass `orientation="both"` when content can overflow in both directions, and keep padding inside an inner wrapper if you want it to scroll with the content.
+
+## Don't do this
+
+### Wrapping primary page content
+
+```tsx
+// Bad
+<ScrollArea className="h-screen">
+  <main>{/* The entire page */}</main>
+</ScrollArea>
+```
+
+```tsx
+// Good
+<main>{/* Normal document flow */}</main>
+```
+
+Nested scroll traps fight the browser: the wheel scrolls the wrong container first, browser find-in-page and anchor jumps misbehave, momentum feels foreign, and mobile browsers show their own overlays anyway. Native document scrolling preserves zoom behavior and URL fragments for free. Reserve Scroll Area for regions the design genuinely pins in place.
+
+### Hiding required actions in a tiny region
+
+```tsx
+// Bad
+<ScrollArea className="h-16 rounded-md border">
+  {terms}
+  {/* Agree button lives below the fold inside */}
+</ScrollArea>
+```
+
+```tsx
+// Good
+<ScrollArea className="h-40 rounded-md border">{terms}</ScrollArea>
+<div className="mt-3">
+  <Button>I agree to the terms above</Button>
+</div>
+```
+
+A region too short to reveal its own contents hides decisions from people who never discover it scrolls — a real accessibility failure for anyone who does not see the faint custom thumb. Keep required content and actions outside the scrollable area, or make the region tall enough to surface what matters.
+
+### Horizontal scrolling for plain text
+
+```tsx
+// Bad
+<ScrollArea orientation="horizontal" className="w-full">
+  <p className="whitespace-nowrap">{sentence}</p>
+</ScrollArea>
+```
+
+```tsx
+// Good
+<p>{sentence}</p>
+```
+
+Prose should wrap; forcing it sideways breaks reading flow, hides most of the sentence at any moment, and fails WCAG reflow expectations. Horizontal scroll areas belong to inherently wide content: code blocks, data tables, timelines, kanban lanes.
+
 ## Examples
 
-Examples cover horizontal scrolling and combined horizontal and vertical scrolling.
+### Activity Feed
+
+A fixed-height panel where new events arrive below the fold — the canonical bounded-feed case.
+
+<ComponentPreview name="scroll-area-activity" />
 
 ### Horizontal Scroll
+
+Wide content scrolls sideways under a slim horizontal bar.
 
 <ComponentPreview name="scroll-area-horizontal" />
 
 ### Both Scrollbars
 
+Content overflowing in both directions, with the corner piece closing the gap between bars.
+
 <ComponentPreview name="scroll-area-both" />
-
-## Decision guidance
-
-Use Scroll Area when overflow must remain inside a bounded region. Prefer normal page scrolling for primary content, and never hide required actions in a region whose boundaries are unclear. Horizontal scrolling is appropriate for wide content such as code or tables when reflow would destroy meaning.
 
 ## API reference
 
-`ScrollArea` forwards the Base UI root props and renders the viewport and corner treatment. `ScrollBar` accepts Base UI scrollbar props, including orientation. See the [Base UI Scroll Area API](https://base-ui.com/react/components/scroll-area#api-reference).
+`ScrollArea` forwards Base UI root props (including `overflowEdgeThreshold`) and adds:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `orientation` | `"vertical"`, `"horizontal"`, `"both"` | `"vertical"` |
+
+The wrapper renders the viewport (which receives the focus ring and `overscroll-contain`), mounts the matching `ScrollBar` parts from `orientation`, and always renders the corner. `ScrollBar` accepts Base UI scrollbar props including `orientation`; thumbs fade in via `data-hovering` and `data-scrolling` states. Root state attributes such as `has-overflow-x` and per-edge overflow flags are available for building edge fades or hints.
+
+See the [Base UI Scroll Area API](https://base-ui.com/react/components/scroll-area#api-reference).

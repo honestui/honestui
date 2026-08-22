@@ -10,21 +10,39 @@ links:
 
 ## Overview
 
-Use Number Field when users need to enter or adjust a numeric value.
+Use Number Field when people must enter a specific numeric value and benefit from adjusting it without retyping: quantities, limits, prices, percentages, durations, ticket counts. It combines three input styles in one control — type the digits, press the steppers for ±1, or scrub the label for coarse adjustments — so the same field works for precise entry and quick nudges.
 
-Number Field is useful for quantities, limits, prices, percentages, durations, counts, and settings where incrementing or decrementing is helpful.
+For values where only approximate position matters, prefer Slider. For identifiers that merely look numeric (card numbers, codes), use Input with `inputMode="numeric"`, because Number Field parses, formats, and rounds its value as a quantity.
 
 ## Anatomy
 
-A number field has an input, value, increment and decrement controls, optional scrub area, range constraints, step size, and formatted display.
+A number field has a root, an editable input, decrement and increment buttons grouped around it, an optional scrub area with a visible label, and range constraints (`min`, `max`, `step`) that live on the root. The input displays the formatted value centered with tabular numerals, so digits keep a fixed width while counting up or down.
+
+`NumberFieldScrubArea` requires being inside a `NumberField`; it renders the label text you pass and throws otherwise, because the scrub gesture needs a labeled, associated input to be accessible.
 
 ## Behavior
 
-Set sensible minimum, maximum, and step values. Use formatting when the number represents currency, percent, units, or other structured values.
+**Typing.** The input accepts digits and locale-appropriate separators while rejecting other characters. Partial values stay as typed until the field blurs, when the value is reformatted and clamped into range. Clearing the field sets the value to `null`, which submits as empty rather than zero — keep those meanings apart in your code.
+
+**Steppers.** The buttons step by `step` (default 1) and disable automatically at the `min`/`max` boundary. Holding <kbd>Shift</kbd> while using arrow keys steps by `largeStep` (10); holding <kbd>Alt</kbd> steps by `smallStep` (0.1).
+
+**Clamping and snapping.** Values beyond the range clamp on blur and on stepper use. `snapOnStep` additionally snaps typed or scrubbed values onto multiples of `step`, which suits inventories and price increments where 0.3 of a unit is meaningless.
+
+**Formatting.** Pass `format` (an `Intl.NumberFormatOptions` object) and `locale` to display currency, percent, or unit styling while the underlying value stays a plain number. Formatting follows the user's runtime locale by default.
+
+**Commit timing.** `onValueChange` fires on every intermediate change; `onValueCommitted` fires when the input blurs, a scrub ends, or a button press releases — do side effects like network calls there.
+
+**Disabled and read-only.** `disabled` dims the whole assembly and blocks all three input styles; `readOnly` keeps the value visible and submittable but rejects edits.
 
 ## Accessibility
 
-Provide a label and make sure the increment and decrement controls have accessible names. Keep typed input available for keyboard users.
+The root generates an id for the input and shares it through context, so `NumberFieldScrubArea` can render a `Label` connected via `htmlFor` without extra wiring. Give every field a label — external via `FieldLabel`, or through the scrub-area label — because the steppers carry no text of their own; they rely on Base UI's built-in accessible names ("Increase"/"Decrease") plus the field context.
+
+Keyboard support on the input: <kbd>Arrow Up</kbd>/<kbd>Arrow Down</kbd> step by `step` (<kbd>Shift</kbd> applies `largeStep`, <kbd>Alt</kbd> applies `smallStep`), <kbd>Home</kbd> jumps to `min` and <kbd>End</kbd> jumps to `max` when those bounds are set, and ordinary editing keys behave natively. The stepper buttons are regular focusable buttons with visible focus rings, so keyboard users are never forced through the scrub gesture.
+
+On touch devices an invisible layer expands each stepper's hit area to at least 44 × 44 px, even though the visible button is 24 px square. The scrub area is pointer-driven by design; keyboard and touch users have equivalent paths through typing and steppers, which is why it stays optional.
+
+Setting invalid state (for example `aria-invalid` via `Field`) turns the input border toward the danger color, including on focus. Colors come from `--hui-*` tokens, so borders, backgrounds, and disabled states adapt to dark mode. The layout is direction-aware: the decrement sits at the inline start and the increment at the inline end via logical border radii, so groups mirror correctly under right-to-left locales. Long formatted values widen the input within the group; keep the surrounding column wide enough for the largest plausible value at 200% zoom so nothing truncates mid-edit.
 
 ## Installation
 
@@ -86,6 +104,57 @@ import {
 </NumberField>
 ```
 
+Omit the scrub area when the label row would be redundant; wrap the group with an external `FieldLabel` instead. See [With external label](#with-external-label).
+
+## Don't do this
+
+### Using it for identifiers
+
+```tsx
+// Bad
+<NumberField name="card" format={{ useGrouping: true }} />
+
+// Good
+<Input
+  name="card"
+  type="text"
+  inputMode="numeric"
+  autoComplete="cc-number"
+/>
+```
+
+A card number is not a quantity. Number Field strips leading zeros while parsing, reformats digits into groups, and offers steppers that corrupt the value with one stray click. Identifiers should be plain text fields with a numeric touch keyboard and the matching `autoComplete` token.
+
+### Zero as a stand-in for "no answer"
+
+```tsx
+// Bad
+<NumberField name="guests" defaultValue={0} />
+
+// Good
+<NumberField name="guests" />
+```
+
+An empty field means "not answered"; zero means "answered, none". Seeding `defaultValue={0}` silently records zero for everyone who skips the question, polluting averages and counts downstream. Leave the field empty when not answering is legitimate, and handle the `null` value explicitly.
+
+### Re-validating on every keystroke
+
+```tsx
+// Bad
+<NumberField
+  defaultValue={1}
+  onValueChange={(value) => checkAvailability(value)}
+/>
+
+// Good
+<NumberField
+  defaultValue={1}
+  onValueCommitted={(value) => checkAvailability(value)}
+/>
+```
+
+While someone types "12", `onValueChange` reports 1 then 12, firing a request for a quantity nobody wanted. Scrubbing makes this far worse — dozens of intermediate values per second. Wait for `onValueCommitted`, which fires once per completed interaction, and validate the settled value.
+
 ## Examples
 
 Examples cover sizes, disabled state, external labels, scrub input, ranges, formatting, step values, and form integration.
@@ -110,9 +179,13 @@ For accessible labeling and validation, use `Field` to connect the number field 
 
 ### With Scrub
 
+Drag the label horizontally to change the value; the field stays the source of truth.
+
 <ComponentPreview name="number-field-with-scrub" />
 
 ### With Range
+
+Values type outside `min`/`max` clamp on blur, and the steppers stop at the boundaries.
 
 <ComponentPreview name="number-field-with-range" />
 
@@ -130,6 +203,16 @@ For accessible labeling and validation, use `Field` to connect the number field 
 
 ## API reference
 
-Number Field exports the root, scrub area, group, decrement button, increment button, and input. Each forwards its matching Base UI Number Field props. Put range, step, locale, formatting, controlled value, and disabled state on the root; the input remains the editable text surface.
+Number Field exports its parts from one file — root, scrub area, scrub cursor, group, decrement, increment, and input — each forwarding its matching Base UI props:
+
+| Part | Purpose |
+| --- | --- |
+| `NumberField` | Root: value, range, step, formatting, disabled state |
+| `NumberFieldInput` | The editable, formatted text surface |
+| `NumberFieldGroup` | Lays out decrement + input + increment inline |
+| `NumberFieldDecrement` / `NumberFieldIncrement` | Stepper buttons with built-in icons |
+| `NumberFieldScrubArea` | Pointer-drag surface; takes a required `label` |
+
+Honest UI adds `size` (`"sm"`, `"default"`, `"lg"`) on the root. Put `min`, `max`, `step`, `largeStep`, `smallStep`, `snapOnStep`, `allowWheelScrub`, `format`, `locale`, `required`, `disabled`, and `readOnly` on the root; `value` is `number | null`, where `null` represents an empty field. The scrub area accepts `direction`, `pixelSensitivity`, and `teleportDistance` from Base UI.
 
 See the [Base UI Number Field API](https://base-ui.com/react/components/number-field#api-reference).

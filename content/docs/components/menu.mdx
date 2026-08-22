@@ -10,25 +10,37 @@ links:
 
 ## Overview
 
-Use Menu for a compact list of actions or choices opened from a trigger.
+Use Menu for a compact list of actions or choices opened from a trigger: overflow actions behind an icon button, account menus, row actions, editor commands, and grouped command lists. Opening the menu is a deliberate act, so its contents can be dense — but the actions themselves should still be reachable elsewhere if they are frequent or essential.
 
-Menus are useful for overflow actions, account menus, row actions, editor commands, and grouped command lists. Do not use a menu for primary navigation when links should stay visible.
+Do not use a menu for primary navigation when links should stay visible and crawlable, and do not use one when people must compare options side by side; menus hide everything except the highlighted item. For text entry or filtering over long lists, use Autocomplete or Combobox instead.
 
 ## Anatomy
 
-A menu has a trigger, popup, items, optional groups, labels, separators, checkbox items, radio items, links, and nested submenus.
+A menu has a trigger, popup, items, optional groups with labels, separators, checkbox items, radio groups, shortcut hints, and nested submenus. `MenuPopup` renders its own portal and positioner, so alignment props like `align` and `sideOffset` sit directly on it. Each part is defined in `menu.tsx` and exported as a named PascalCase component; `dropdown-menu.tsx` re-exports the same parts under `DropdownMenu*` names.
 
 ## Behavior
 
-Keep menu labels short and action-oriented. Use nested menus sparingly because they require more pointer and keyboard precision.
+**Opening.** Clicking, pressing <kbd>Enter</kbd> or <kbd>Space</kbd>, or pressing <kbd>Arrow Down</kbd> on the trigger opens the menu and moves focus to the first item. By default the menu is modal while open: page scroll locks and pointer interaction outside is disabled. Set `openOnHover` on the trigger to also open after a short hover delay.
 
-`MenuPopup` limits itself to Base UI's available viewport height and scrolls vertically when its content is taller. To give a long menu a smaller product-specific limit, pass a `max-height` class that keeps `--available-height` as the upper bound, such as `max-h-[min(18rem,var(--available-height))]`.
+**Navigating.** <kbd>Arrow Up</kbd> and <kbd>Arrow Down</kbd> move the highlight, wrapping around by default (`loopFocus`); <kbd>Home</kbd> and <kbd>End</kbd> jump to the first and last item. Typing letters jumps straight to matching item labels — the typeahead resets shortly after you stop typing. Pass `label` to an item whose visible text differs from what should match.
+
+**Activating.** <kbd>Enter</kbd> and <kbd>Space</kbd> activate the highlighted item, and items close the menu after activating by default (`closeOnClick`). Checkbox and radio items keep their checked state visible through the leading indicator column. Set `closeOnClick={false}` on items that toggle something without dismissing their context.
+
+**Closing.** <kbd>Escape</kbd> closes the menu and returns focus to the trigger. Outside clicks close it as well. Pass `finalFocus` on the popup to send focus elsewhere on close.
+
+**Submenus.** Highlighting a submenu trigger and pressing <kbd>Arrow Right</kbd> opens it (<kbd>Arrow Left</kbd> mirrors in right-to-left layouts); <kbd>Escape</kbd> closes only the child menu, leaving the parent open.
+
+**Scrolling.** `MenuPopup` limits itself to Base UI's available viewport height and scrolls vertically when its content is taller, with `overscroll-contain` so wheel and touch scrolling never chains to the page. To add a smaller product-specific limit, pass a `max-height` class that keeps `--available-height` as the upper bound, such as `max-h-[min(18rem,var(--available-height))]`.
 
 ## Accessibility
 
-Menu items should be reachable with arrow-key navigation, including items outside the initially visible scroll area. Wheel and touch scrolling should not move the page once the menu reaches its edge. Use checkbox and radio menu items only when the checked state matters inside the menu.
+The trigger announces itself with `aria-haspopup="menu"` and `aria-expanded`; the popup carries `role="menu"` and is labelled by the trigger. All navigation works with arrows, typeahead, Home/End, Enter, and Space, including items outside the initially visible scroll area — scrolling to reach them happens inside the popup, not the page.
 
-If a list becomes difficult to scan even with scrolling, use Autocomplete or Combobox instead. Search and filtering are more useful than forcing people through a very long action menu.
+Checkbox and radio items expose their checked state to assistive technology; use them only when the checked state genuinely matters inside the menu. Disabled items stay focusable but inert and are dimmed through tokens rather than removed, so people can find them and hear that they exist.
+
+Colors come from theme tokens, so highlights, disabled states, and the destructive variant adapt to dark mode automatically. Item padding uses logical properties, so indentation and shortcut alignment mirror in right-to-left locales; the submenu chevron does not flip automatically, so verify direction under `dir="rtl"`. Long labels wrap within the item rather than widening the popup past the viewport, since horizontal overflow is hidden.
+
+If a list becomes difficult to scan even with scrolling and typeahead, use Autocomplete or Combobox instead — search beats forcing people through a very long action menu.
 
 ## Installation
 
@@ -144,48 +156,131 @@ import {
 </Menu>
 ```
 
+`MenuShortcut` renders a decorative hint span aligned to the end edge; it does not register a keyboard shortcut by itself.
+
+## Don't do this
+
+### Navigating with onClick
+
+```tsx
+// Bad
+<MenuItem onClick={() => router.push("/docs")}>Docs</MenuItem>
+```
+
+```tsx
+// Good
+<MenuItem render={<Link href="/docs" />}>Docs</MenuItem>
+```
+
+The bad version is a div pretending to be a link: it cannot be opened in a new tab with middle-click or <kbd>Cmd</kbd> click, shows no URL on hover, and assistive technology announces a command rather than a destination. Rendering through `Link` keeps real anchor semantics while inheriting the item's styling and keyboard behavior.
+
+### Fake keyboard shortcuts
+
+```tsx
+// Bad
+<MenuItem onClick={() => setTheme("dark")}>
+  Dark theme
+  <MenuShortcut>⌘D</MenuShortcut>
+</MenuItem>
+```
+
+```tsx
+// Good
+useHotkey("mod+d", () => setTheme("dark"))
+
+<MenuItem onClick={() => setTheme("dark")}>
+  Dark theme
+  <MenuShortcut>⌘D</MenuShortcut>
+</MenuItem>
+```
+
+`MenuShortcut` is purely visual. Advertising a shortcut that does nothing breaks trust twice: once when it fails inside the app, and once when someone tries it from muscle memory outside the menu. Register the binding globally before printing it.
+
+### Text fields inside the popup
+
+```tsx
+// Bad
+<MenuPopup>
+  <Input placeholder="Filter actions" />
+  <MenuItem>Rename</MenuItem>
+</MenuPopup>
+```
+
+```tsx
+// Good
+<Combobox items={actions}>
+  {/* Filterable list */}
+</Combobox>
+```
+
+Menus intercept keystrokes for typeahead and arrow-key navigation, so a text input inside the popup fights the component for every keypress and the highlight jumps as people type. When a list needs filtering, use a component built around text entry.
+
 ## Examples
 
-Examples cover hover opening, checkbox items, radio groups, links, group labels, nesting, scrolling, close behavior, and opening a dialog.
-
 ### Open on Hover
+
+Hover opening suits toolbar-style triggers; keep click working by default elsewhere because hover menus misfire on touch screens.
 
 <ComponentPreview name="menu-hover" />
 
 ### With Checkbox
 
+Toggleable settings keep the menu open context while showing state.
+
 <ComponentPreview name="menu-checkbox" />
 
 ### With Radio Group
+
+One selected value per group, indicated in the leading column.
 
 <ComponentPreview name="menu-radio-group" />
 
 ### With Link
 
+Items rendered as real links keep middle-click and new-tab behavior.
+
 <ComponentPreview name="menu-link" />
 
 ### With Group Label
 
+Labels give screen readers group names and sighted users scan lines.
+
 <ComponentPreview name="menu-group-labels" />
 
+### Icon-only trigger
+
+An icon-only trigger needs an explicit `aria-label` — the menu's accessible name comes from it.
+
+<ComponentPreview name="menu-project-actions" />
+
 ### Scrollable Menu
+
+A product-specific cap keeps long lists manageable while `--available-height` remains the ceiling.
 
 <ComponentPreview name="menu-scrollable" />
 
 ### Nested Menu
 
+Submenus preserve arrow-key navigation and close independently on Escape. Keep nesting shallow: each level costs precision and memory.
+
 <ComponentPreview name="menu-nested" />
 
-### Close on Click
-
-<ComponentPreview name="menu-close-on-click" />
-
 ### Open a Dialog
+
+Actions that need more space or confirmation hand off to a Dialog on selection.
 
 <ComponentPreview name="dialog-from-menu" />
 
 ## API reference
 
-Menu exports root, trigger, portal, backdrop, popup, arrow, item, group, group label, separator, checkbox item, radio group, radio item, and submenu parts. Each forwards its matching Base UI Menu props; link composition uses the `render` prop on an item.
+All parts forward their matching Base UI Menu props from `@base-ui/react`. Honest UI adds:
 
-Use the root's controlled props only when another part of the application must own open state. See the [Base UI Menu API](https://base-ui.com/react/components/menu#api-reference) for focus, submenu, checkbox, and radio behavior.
+| Part | Props | Default |
+| --- | --- | --- |
+| `MenuPopup` / `MenuSubPopup` | `sideOffset`, `align`, `alignOffset` | `4`, `center`, `0` |
+| `MenuItem` | `inset`, `variant` | `false`, `"default"` |
+| `MenuGroupLabel`, `MenuSubTrigger` | `inset` | `false` |
+
+The root accepts controlled `open` / `onOpenChange`, `loopFocus` (wraps arrow navigation, `true` by default), `modal` (scroll lock and outside-pointer blocking, `true` by default), and `orientation`. Items accept `disabled`, `closeOnClick` (`true` by default), and a `label` override for typeahead matching. The popup accepts `finalFocus` for post-close focus placement. `MenuSubPopup` tightens the offsets so submenus hug their trigger. Every `Menu*` export is also aliased as `DropdownMenu*` from the same file.
+
+See the [Base UI Menu API](https://base-ui.com/react/components/menu#api-reference) for focus, submenu, checkbox, and radio behavior.

@@ -7,21 +7,23 @@ description: Present data whose rows and columns have meaningful relationships.
 
 ## Overview
 
-Use Table for structured data arranged in rows and columns.
-
-Tables are useful for invoices, users, orders, logs, permissions, metrics, and any data where users compare values across rows.
+Use Table for structured data where people compare values across rows: invoices, users, orders, logs, permissions, metrics. A table's promise is alignment — each column means the same thing on every row, so scanning down beats reading across. When each item has varied content and nobody needs to align values, use cards or lists instead.
 
 ## Anatomy
 
-A table has a caption or surrounding heading, header rows, body rows, cells, and an optional footer. `TableSectionHeader` can divide a long body into named row groups without abandoning table semantics.
+A table has an optional caption, a header row, body rows, cells, an optional footer, and optional section headers. `Table` renders the native `<table>` element inside a horizontally scrollable container, so wide tables scroll rather than compressing their columns into illegibility.
 
-## Usage guidance
+## Formatting
 
-Use tables for comparison. Use cards or lists when each item has varied content and users do not need column alignment. Keep numeric columns aligned, format values consistently, and let the built-in container scroll horizontally instead of compressing content beyond recognition.
+Keep numeric columns right-aligned so digits line up for comparison; the component already applies tabular figures, which keeps columns of numbers from wobbling as values change. Format consistently within a column — same currency, same precision, same date format on every row. Cells clip overflow onto one line with an ellipsis rather than wrapping; see [Accessibility](#accessibility) for how to keep clipped values reachable.
 
 ## Accessibility
 
-Add a concise caption or associate the table with a visible heading. Set `scope="col"` on column headers and `scope="row"` on row headers; use `scope="colgroup"` for a section header. Keep row actions clearly labeled, and do not make an entire row clickable unless the same destination is exposed as a real link.
+Give the table a `TableCaption` or connect it to a visible heading so its purpose is announced before people enter the cell maze. Set `scope="col"` on every column header and `scope="row"` on row headers (`TableHead` used inside `TableBody`); use `scope="colgroup"` with a matching `colSpan` for `TableSectionHeader`. The components pass these attributes through but do not add them for you.
+
+Cell text truncated by the ellipsis is still announced fully by screen readers — clipping is visual only — but sighted users lose the ending silently. Copy the full value into a `title` attribute, or move long content out of dense tables entirely.
+
+`interactive` on `TableRow` adds hover, active, and cursor styling only. It adds no click handler and no keyboard semantics, so an "interactive-looking" row must still expose its actions through real controls inside the cells: a link on the primary value, a menu button per row, or a checkbox for selection paired with the built-in selected state. Colors come from theme tokens, so tables adapt to dark mode automatically, and the sticky header stays legible over scrolling body rows.
 
 ## Installation
 
@@ -74,8 +76,8 @@ import {
   <TableCaption>Caption</TableCaption>
   <TableHeader>
     <TableRow>
-      <TableHead>Header</TableHead>
-      <TableHead>Header</TableHead>
+      <TableHead scope="col">Header</TableHead>
+      <TableHead scope="col">Header</TableHead>
     </TableRow>
   </TableHeader>
   <TableBody>
@@ -87,17 +89,110 @@ import {
 </Table>
 ```
 
+The header sticks while the page scrolls vertically; the container scrolls horizontally when columns exceed the available width.
+
+## Don't do this
+
+### Headers without scope
+
+```tsx
+// Bad
+<TableHeader>
+  <TableRow>
+    <TableHead>User</TableHead>
+    <TableHead>Role</TableHead>
+  </TableRow>
+</TableHeader>
+```
+
+```tsx
+// Good
+<TableHeader>
+  <TableRow>
+    <TableHead scope="col">User</TableHead>
+    <TableHead scope="col">Role</TableHead>
+  </TableRow>
+</TableHeader>
+```
+
+Without explicit scopes, screen readers guess which headers describe which cells. Guessing works on tiny two-column tables and fails exactly when tables get big enough to need help — many columns, section headers, or split header rows. One attribute per header removes the guesswork.
+
+### Rows that navigate by click alone
+
+```tsx
+// Bad
+<TableRow interactive onClick={() => router.push(`/invoices/${id}`)}>
+  <TableCell>INV-1042</TableCell>
+  <TableCell>$240</TableCell>
+</TableRow>
+```
+
+```tsx
+// Good
+<TableRow interactive>
+  <TableCell>
+    <Link className="underline-offset-4 hover:underline" href={`/invoices/${id}`}>
+      INV-1042
+    </Link>
+  </TableCell>
+  <TableCell>$240</TableCell>
+</TableRow>
+```
+
+The click-only version cannot be focused or triggered by keyboard, cannot be opened in a new tab, and gives no hint of what clicking does. Keep the hover affordance if you like it, but put the destination on a real link — the invoice number is the natural place.
+
+### Numbers aligned left
+
+```tsx
+// Bad
+<TableHead>Amount</TableHead>
+...
+<TableCell>$12,500</TableCell>
+```
+
+```tsx
+// Good
+<TableHead className="text-right">Amount</TableHead>
+...
+<TableCell className="text-right">$12,500</TableCell>
+```
+
+Left-aligned amounts destroy the comparison a money column exists for: varying digit counts put commas and cents at different horizontal positions on every row. Align both the header and the cells right so magnitude reads at a glance.
+
 ## Examples
 
-The main example includes a caption, column and row headers, section headers, status text, numeric alignment, and a footer. The framed example shows how to place the same semantic table inside a bordered surface.
-
 ### Framed Table
+
+The same semantic structure presented inside a bordered surface.
 
 <ComponentPreview
   name="table-framed"
   previewClassName="h-[28rem] sm:h-[28rem]"
 />
 
+### Invoice list
+
+Badged status, right-aligned amounts, scoped headers.
+
+<ComponentPreview name="table-invoice-list" />
+
+### User roles
+
+A minimal two-column readout.
+
+<ComponentPreview name="table-user-roles" />
+
 ## API reference
 
-All Table parts accept props for their matching native HTML elements. `TableRow` adds `interactive?: boolean` for hover and active styling; it does not add click behavior. `Table` wraps the native table in a horizontally scrollable container. `TableSectionHeader` renders a `tr`, so place one or more `TableHead` cells inside it.
+All Table parts accept props for their matching native HTML elements — `<table>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>`, `<td>`, `<caption>` — plus one addition:
+
+| Part | Prop | Values | Default |
+| --- | --- | --- | --- |
+| `TableRow` | `interactive` | boolean | `false` |
+
+Notes:
+
+- `Table` wraps the native table in a horizontally scrollable container; the table itself uses `caption-bottom` and tabular figures.
+- `TableHeader` renders a sticky header (`top-0`) against vertical page scroll.
+- `TableSectionHeader` renders a `tr`; place one or more `TableHead` cells inside it with a `colSpan` covering the table's width and `scope="colgroup"` for correct announcement.
+- `data-state="selected"` on a `TableRow` applies the selected background, ready for controlled row selection.

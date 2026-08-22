@@ -10,21 +10,39 @@ links:
 
 ## Overview
 
-Use an accordion when the page has related sections that should stay close together, but the user does not need to see every section at the same time.
+Use an accordion when the page has several peer sections that people scan by heading first and read selectively: FAQs, settings groups, filter facets, detail panels, and optional sections of long forms. Opening a panel keeps its neighbors visible, so the accordion works best when the headings alone tell people whether a section matters to them.
 
-Accordions work well for settings, FAQs, filters, details panels, and long forms with optional sections. Avoid them when all content must be compared side by side.
+Avoid an accordion when people must compare contents side by side, such as pricing plans or spec sheets, and never put required steps or the only explanation of an error inside a closed panel. If everything should stay visible, use plain headings and spacing instead. See [Don't do this](#dont-do-this) for the failure modes.
 
 ## Anatomy
 
-An accordion is made from an accordion root, one or more items, a trigger for each item, and content for each panel. The trigger should clearly describe what will open. The content should be short enough that opening one panel does not make the page hard to scan.
+An accordion is made from a root, one or more items, a header-wrapped trigger for each item, and a panel for each item. The trigger names the section as a question or noun phrase; the built-in chevron rotates when the panel opens. The panel content stays short enough that opening one item does not push the rest of the page out of view.
+
+Each trigger is a real button with `aria-expanded`, so assistive technology announces both the section name and its open state. The panel is connected to its trigger through ids managed by the component.
 
 ## Behavior
 
-Use a single accordion when only one panel should be open. Use a multiple accordion when several panels can stay open at once. Use controlled state when the open panel needs to sync with routing, saved preferences, or another part of the page.
+**Single versus multiple.** Pass `type="single"` when only one panel should be open at a time, and `type="multiple"` when several panels can stay open. In single mode the Honest UI wrapper accepts plain strings for `value`, `defaultValue`, and `onValueChange`, so you never handle arrays by hand.
+
+**Collapsible.** By default a single accordion keeps one panel open: collapsing the last open panel is cancelled. Pass `collapsible` when all panels may be closed at once. Multiple accordions are always collapsible.
+
+**Controlled state.** Use `value` and `onValueChange` when the open panels need to sync with routing, saved preferences, or another part of the page. See the [controlled example](#controlled-accordion).
+
+**Disabled items.** A disabled item's trigger stays reachable by keyboard focus but cannot be activated, and it is dimmed. Explain nearby why the section is locked when the reason is not obvious.
 
 ## Accessibility
 
-Keep triggers as real buttons, use clear headings, and make sure focus remains visible. Keyboard users should be able to tab to the trigger and open or close it with the keyboard.
+Every trigger is a real `<button>` and remains in the <kbd>Tab</kbd> order, so you can reach any section with repeated <kbd>Tab</kbd> presses. Arrow keys provide faster movement once a trigger has focus:
+
+- <kbd>ArrowDown</kbd> and <kbd>ArrowUp</kbd> move between triggers in a vertical accordion, the default orientation.
+- <kbd>ArrowLeft</kbd> and <kbd>ArrowRight</kbd> move between triggers in a horizontal accordion. In right-to-left layouts these directions mirror automatically.
+- <kbd>Home</kbd> and <kbd>End</kbd> jump to the first and last enabled trigger. Movement wraps around by default; set `loopFocus={false}` on the root to stop at the ends.
+
+<kbd>Enter</kbd> and <kbd>Space</kbd> toggle the focused panel. The trigger carries `aria-expanded` at all times, and `aria-controls` references the panel while it is open. Disabled triggers stay focusable so screen readers can still find and announce them.
+
+Panel colors use theme tokens, so open and closed states adapt to dark mode automatically. Triggers wrap their label rather than truncating it, which keeps long localized questions readable; the chevron reserves its own space and does not collide with text.
+
+The accordion exposes no loading or error states. Render progress or failure feedback inside the panel content itself.
 
 ## Installation
 
@@ -85,37 +103,125 @@ import {
 </Accordion>
 ```
 
-## Examples
+Set `defaultValue={["item-1"]}` to open a panel initially, and `type="multiple"` when several panels can stay open. `AccordionContent` is an alias of `AccordionPanel`, so either name works.
 
-Examples cover the main accordion modes: one open panel, many open panels, and externally controlled state.
+## Don't do this
+
+### Burying required content in a collapsed panel
+
+```tsx
+// Bad
+<Accordion>
+  <AccordionItem value="error">
+    <AccordionTrigger>Why did my payment fail?</AccordionTrigger>
+    <AccordionPanel>The card was declined. Retry or add another card.</AccordionPanel>
+  </AccordionItem>
+</Accordion>
+```
+
+```tsx
+// Good
+<div role="alert">
+  <p>The card was declined. Retry or add another card.</p>
+</div>
+```
+
+People should not have to discover and expand a section to learn something they are required to know. Anything the task depends on — required fields, error recovery, legal obligations — belongs in the open page flow, where it cannot be missed.
+
+### Comparing content across closed panels
+
+```tsx
+// Bad
+<Accordion type="multiple">
+  <AccordionItem value="starter"><AccordionTrigger>Starter</AccordionTrigger><AccordionPanel>$9, 3 seats</AccordionPanel></AccordionItem>
+  <AccordionItem value="team"><AccordionTrigger>Team</AccordionTrigger><AccordionPanel>$29, 10 seats</AccordionPanel></AccordionItem>
+</Accordion>
+```
+
+```tsx
+// Good
+<table>
+  {/* Plans as columns, features as rows */}
+</table>
+```
+
+An accordion forces people to hold one panel's contents in memory while opening the next, because only expanded content is visible. Decisions that require comparison — plans, tiers, specs — need everything visible at once: a table, columns, or plain stacked sections.
+
+### Vague trigger labels
+
+```tsx
+// Bad
+<AccordionTrigger>More info</AccordionTrigger>
+```
+
+```tsx
+// Good
+<AccordionTrigger>How do I export my data?</AccordionTrigger>
+```
+
+The trigger is the only thing visible before expansion, so it carries the entire scanning job. Labels like `More info` or `Details` tell screen-reader users navigating by form controls nothing about what hides underneath. Write each trigger as the question it answers or the noun it expands.
+
+## Examples
 
 ### Single Accordion
 
-Use this for compact pages where opening one section should close the previous section.
+Opening one section closes the previous one. Add `collapsible` if the person should be able to close every section.
 
 <ComponentPreview name="accordion-single" />
 
 ### Multiple Accordion
 
-Use this when each section is independent and users may need to keep several answers open.
+Each section toggles independently, so answers can stay open side by side.
 
 <ComponentPreview name="accordion-multiple" />
 
 ### Controlled Accordion
 
-Use this when the open item must be controlled by your application state.
+Application state owns the open panels here, which is how you sync an accordion to a route query or a saved preference.
 
 <ComponentPreview
   name="accordion-controlled"
   previewClassName="h-[26rem] sm:h-[26rem]"
 />
 
-## Decision guidance
+### Disabled items
 
-Choose Accordion when several sections are peers and people benefit from scanning their headings before opening details. Use Collapsible for one optional region, and use normal headings when all content should remain visible. Do not hide a required step or the only explanation of an error inside a closed item.
+The locked trigger stays visible and focusable but dimmed, so people can see that premium content exists even though it cannot be opened.
+
+<ComponentPreview name="accordion-disabled" />
+
+### Inside a Card
+
+An accordion pairs well with a card header that frames the topic and a description that sets expectations.
+
+<ComponentPreview name="accordion-in-card" />
+
+### Leading icon
+
+Swap the trailing chevron for a leading indicator that rotates from right to down as panels open.
+
+<ComponentPreview name="accordion-leading-icon" />
+
+### Product FAQ
+
+Short question-and-answer pairs where the headings do the scanning work.
+
+<ComponentPreview name="accordion-product-faq" />
 
 ## API reference
 
-`Accordion`, `AccordionItem`, `AccordionTrigger`, and `AccordionPanel` forward their matching Base UI Accordion props. `AccordionContent` is an alias of `AccordionPanel`. Configure single or multiple expansion, controlled state, and disabled items on the Base UI parts.
+The Honest UI wrapper normalizes single and multiple selection on top of Base UI's Accordion Root. Parts forward their matching Base UI props.
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `type` | `"single"`, `"multiple"` | multiple |
+| `collapsible` | boolean | `false` |
+| `value` | string (single) or string[] (multiple) | — |
+| `defaultValue` | string (single) or string[] (multiple) | — |
+| `onValueChange` | `(value, eventDetails) => void` | — |
+
+With `type="single"`, `value`, `defaultValue`, and the `onValueChange` argument are plain strings, and collapsing the last open panel is cancelled unless `collapsible` is set. With `type="multiple"`, values are arrays and panels toggle freely. Base UI props such as `disabled`, `orientation`, `loopFocus`, `keepMounted`, and `hiddenUntilFound` pass through to the root; `hiddenUntilFound` lets browser page search expand a closed panel when it finds matching text inside.
+
+`AccordionItem` accepts `disabled` and `open` state attributes. `AccordionContent` is an alias of `AccordionPanel`.
 
 See the [Base UI Accordion API](https://base-ui.com/react/components/accordion#api-reference).

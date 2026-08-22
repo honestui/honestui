@@ -3,6 +3,7 @@
   "pages": [
     "accordion",
     "alert",
+    "alert-dialog",
     "autocomplete",
     "avatar",
     "badge",

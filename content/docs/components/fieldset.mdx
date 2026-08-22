@@ -10,21 +10,29 @@ links:
 
 ## Overview
 
-Use Fieldset to group related form controls under one legend.
+Use Fieldset to group related form controls under one legend. A fieldset is useful for radio groups, checkbox groups, address sections, permission groups, and any form area where several inputs answer one larger question.
 
-Fieldset is useful for radio groups, checkbox groups, address sections, permission groups, and any form area where several inputs answer one larger question.
+The root renders a real `<fieldset>` element with the browser's default border, padding, and margins removed, so you get the native grouping semantics without fighting the default chrome. Setting `disabled` on the root disables every field inside it in one place.
 
 ## Anatomy
 
 A fieldset has a container, legend, optional description, and controls. The legend names the group. The controls inside should all relate to that group.
 
-## Usage guidance
+`FieldsetLegend` renders a styled `div` rather than a native `<legend>` element. Its generated id is applied as `aria-labelledby` on the fieldset, which is what gives the group its accessible name — and because it is a normal block element inside a flex column, it participates in layout predictably instead of obeying `<legend>`'s unusual rendering rules.
 
-Use Field for one control. Use Fieldset for a set of related controls. Combine both when each control in the group also needs its own label, description, or error.
+## Grouping decisions
+
+Use Field for one control. Use Fieldset for a set of related controls that answer one question. Combine both when each control in the group also needs its own label, description, or error — the fieldset names the question, each field names its part.
+
+If fields only need visual spacing and do not form one semantic question, use `FieldGroup` from [Field](/docs/components/field) instead. Adding a legend to purely visual structure makes screen readers announce a group boundary that does not mean anything.
 
 ## Accessibility
 
-The legend gives assistive technology context for the controls inside. Keep it visible and specific.
+Screen readers announce the fieldset as a named group: the legend's id is wired to the fieldset through `aria-labelledby`, so controls inside are heard in context ("Notifications, checkbox, Product updates…"). Keep the legend visible and specific — an invisible or generic name helps no one.
+
+Fields inside keep their own labels, descriptions, and errors; the legend supplements them, it does not replace them. `disabled` on the root propagates to every field, so assistive technology and the visual dimming agree about what is interactive.
+
+Grouping is semantic, not focusable: keyboard users tab straight to the controls, so a fieldset adds context without adding keystrokes. Colors come from theme tokens, long legends wrap rather than overflow, and the flex-column layout mirrors cleanly in right-to-left locales.
 
 ## Installation
 
@@ -71,33 +79,95 @@ import { Fieldset, FieldsetLegend } from "@/components/ui/fieldset";
 ```tsx
 <Fieldset>
   <FieldsetLegend>Notification channels</FieldsetLegend>
+  {/* Related Fields go here */}
 </Fieldset>
 ```
+
+## Don't do this
+
+### Vague legends
+
+```tsx
+// Bad
+<Fieldset>
+  <FieldsetLegend>Details</FieldsetLegend>
+  <Field>{/* Phone */}</Field>
+  <Field>{/* Address */}</Field>
+</Fieldset>
+```
+
+```tsx
+// Good
+<Fieldset>
+  <FieldsetLegend>Contact information</FieldsetLegend>
+  <Field>{/* Phone */}</Field>
+  <Field>{/* Address */}</Field>
+</Fieldset>
+```
+
+The legend is announced before every control inside the group — "Details, textbox, Phone" tells someone nothing about what question they are answering. Name the shared question, like "Contact information" or "Billing address", so context survives even when someone jumps directly to the third control.
+
+### One legend doing the labels' job
+
+```tsx
+// Bad
+<Fieldset>
+  <FieldsetLegend>Enter your shipping address, then your billing address if different</FieldsetLegend>
+  <FieldControl name="shipping" />
+  <FieldControl name="billing" />
+</Fieldset>
+```
+
+```tsx
+// Good
+<Fieldset>
+  <FieldsetLegend>Shipping details</FieldsetLegend>
+  <Field>
+    <FieldLabel>Street address</FieldLabel>
+    <FieldControl name="shipping" />
+  </Field>
+  <Field>
+    <FieldLabel>Billing street address</FieldLabel>
+    <FieldControl name="billing" />
+  </Field>
+</Fieldset>
+```
+
+Instructions crammed into a legend do not become each control's accessible name. Screen reader users landing on the second input hear only "Billing details, edit text" with no hint about what belongs there. Every control gets its own label; the legend stays short enough to serve as context, not instructions.
 
 ## Examples
 
 ### Notification settings
 
-Use one legend to provide context for several related preferences.
+One legend provides context for several related preferences, each with its own label.
 
 <ComponentPreview name="fieldset-notification-settings" />
 
 ### Billing address
 
-Group address fields that form one larger answer.
+Group address fields that together form one larger answer.
 
 <ComponentPreview name="fieldset-billing-address" />
 
 ### Danger zone
 
-Use clear structure and consequences around high-impact settings.
+Clear structure and consequences around high-impact settings.
 
 <ComponentPreview name="fieldset-danger-zone" />
 
-## Decision guidance
+### Disabling a whole group
 
-Use Fieldset when several controls answer one question, such as a radio choice, a set of checkboxes, or related address fields. The legend names the group; it does not replace each control's own label. Use FieldGroup when fields only need visual spacing and do not form one semantic question.
+`disabled` on the root reaches every field inside, useful when an entire section depends on another setting.
+
+<ComponentSource name="fieldset-disabled" title="examples/fieldset-disabled.tsx" />
 
 ## API reference
 
-`Fieldset` and `FieldsetLegend` forward their matching Base UI Fieldset props. See the [Base UI Fieldset API](https://base-ui.com/react/components/fieldset#api-reference).
+| Part | Renders | Props |
+| --- | --- | --- |
+| `Fieldset` | `<fieldset>` | Native fieldset props plus `disabled` (boolean, default `false`), which disables all fields inside |
+| `FieldsetLegend` | `<div>` | Native div props; its generated id is applied as the fieldset's `aria-labelledby` |
+
+Both parts forward Base UI's `render` composition prop. The root strips the browser's default fieldset border, padding, and margins and lays its children out as a column.
+
+See the [Base UI Fieldset API](https://base-ui.com/react/components/fieldset#api-reference).

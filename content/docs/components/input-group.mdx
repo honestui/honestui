@@ -13,21 +13,27 @@ The group is visual structure, not a replacement for a field. Give the control a
 
 ## Anatomy
 
-`InputGroup` is the outer container. Add one `InputGroupInput` or `InputGroupTextarea`, then place `InputGroupAddon` before or after it. An addon can contain `InputGroupText` for non-interactive context or `InputGroupButton` for an action.
+`InputGroup` is the outer container, rendered as a `div` with `role="group"`. Add one `InputGroupInput` or `InputGroupTextarea`, then place `InputGroupAddon` before or after it. An addon can contain `InputGroupText` for non-interactive context or `InputGroupButton` for an action.
 
-Inline addons sit at the start or end of a single-line input. Block addons sit above or below the control and let a textarea or input grow to its natural height.
+Inline addons sit at the start or end of a single-line input. Block addons sit above or below the control and let a textarea or input grow to its natural height — the container switches from a fixed 32 px line to an auto-height column whenever it detects a textarea or a block-aligned addon.
 
 ## Behavior
 
-Clicking a non-interactive addon focuses the input. Clicking a button preserves the button action. The border reflects focus, invalid, and disabled states from the control, so put `aria-invalid` and `disabled` on the input or textarea itself.
+Clicking anywhere in a non-interactive addon focuses the group's input, so the prefix area behaves as part of the field rather than dead space. Clicking an `InputGroupButton` keeps its own action instead. Note this focus hand-off targets `<input>` elements only; clicking a textarea's addon does not move focus into it.
+
+The shared border reflects the control's state: focus shows a ring, `aria-invalid="true"` turns the border and ring to the danger color, and disabling the control dims the whole group. Put these attributes on the input or textarea itself, not on the container.
 
 Prefix and suffix text is not submitted with the input value. If the server needs the complete value, combine the visible context with the submitted value in your application logic.
 
 ## Accessibility
 
-Keep a visible label outside the group. Decorative icons need `aria-hidden="true"`; icon-only buttons need an `aria-label` that names the action. Do not put required instructions or error messages only inside an addon, because addons are not automatically associated descriptions.
+Keep a visible label outside the group, connected through `htmlFor`/`id`. The container's `role="group"` carries no name of its own, and addons are never announced as part of the field's name or description — a `https://` prefix visible on screen does nothing for someone navigating by screen reader unless the accessible name covers it.
 
-Use native input types and attributes where possible. Keep the control usable at 200% zoom, and avoid adding so many inline actions that the text entry area becomes too narrow.
+Decorative icons need `aria-hidden="true"`; icon-only buttons need an `aria-label` that names the action. Do not put required instructions or error messages only inside an addon, because they will not be associated with the control — pair the group with Field below it for descriptions and errors.
+
+Keyboard users reach the input with <kbd>Tab</kbd> and type normally; the clear button and any other addon buttons are ordinary tab stops. The single-line group stands 32 px tall, clearing the WCAG 2.2 minimum target size of 24 px, though addon buttons are smaller and should stay easy to hit with surrounding spacing. Colors come from theme tokens, so focus rings, danger states, and dimmed disabled groups adapt to dark mode automatically.
+
+Addon placement relies on flex ordering rather than fixed margins, so start and end addons swap sides correctly in right-to-left layouts; check the spacing next to each addon visually after localizing. Avoid stacking so many inline actions that the text entry area becomes too narrow — long values already scroll horizontally inside the control.
 
 ## Installation
 
@@ -82,22 +88,82 @@ import {
 </InputGroup>
 ```
 
+## Don't do this
+
+### Letting the addon act as the label
+
+```tsx
+// Bad
+<InputGroup>
+  <InputGroupAddon>
+    <InputGroupText>honestui.com/</InputGroupText>
+  </InputGroupAddon>
+  <InputGroupInput name="slug" />
+</InputGroup>
+```
+
+```tsx
+// Good
+<Label htmlFor={id}>Project URL</Label>
+<InputGroup>
+  <InputGroupAddon>
+    <InputGroupText>honestui.com/</InputGroupText>
+  </InputGroupAddon>
+  <InputGroupInput id={id} name="slug" />
+</InputGroup>
+```
+
+The prefix explains the value's shape but never becomes its name: the field is announced as "edit text" (or by placeholder alone), leaving screen reader users to guess what belongs there. Keep a real label outside the group; the addon adds context on top of it.
+
+### Unnamed icon buttons in an addon
+
+```tsx
+// Bad
+<InputGroupButton size="icon-xs" onClick={clear}>
+  <XIcon />
+</InputGroupButton>
+```
+
+```tsx
+// Good
+<InputGroupButton size="icon-xs" aria-label="Clear search" onClick={clear}>
+  <XIcon aria-hidden="true" />
+</InputGroupButton>
+```
+
+An icon-only button has no accessible name, so assistive technology announces just "button" and voice-control users have nothing to say to trigger it. Name every icon-only addon action, and mark its icon decorative.
+
 ## Examples
 
 These examples focus on the relationships that are unique to Input Group: an action beside a control, contextual text that is not part of the value, and a block addon below a textarea.
 
 ### Prefix and suffix
 
+Both sides add context; only the slug itself is submitted.
+
 <ComponentPreview name="input-group-url" />
 
 ### Textarea with a block addon
 
+A block-end addon holds guidance that would not fit beside the control.
+
 <ComponentPreview name="input-group-textarea" />
+
+### Keyboard shortcut hint
+
+A `kbd` element in an end addon advertises the shortcut; wiring the hint to real behavior keeps it honest.
+
+<ComponentSource name="input-group-kbd" title="examples/input-group-kbd.tsx" />
 
 ## API reference
 
-- `InputGroup` accepts native `div` props and renders the shared container.
-- `InputGroupAddon` accepts native `div` props and `align`: `inline-start`, `inline-end`, `block-start`, or `block-end`.
-- `InputGroupButton` accepts Button props and the sizes `xs`, `sm`, `icon-xs`, or `icon-sm`. Its default `type` is `button`.
-- `InputGroupText` accepts native `span` props.
-- `InputGroupInput` and `InputGroupTextarea` accept their matching native control props.
+| Part | Renders | Notable props |
+| --- | --- | --- |
+| `InputGroup` | `div` with `role="group"` | Native div props |
+| `InputGroupAddon` | `div` with `role="group"` | `align`: `inline-start` (default), `inline-end`, `block-start`, `block-end`; clicking it focuses the group's input unless a button was clicked |
+| `InputGroupButton` | `Button` | `type` defaults to `button`; `variant` defaults to `ghost`; `size`: `xs` (default), `sm`, `icon-xs`, `icon-sm` |
+| `InputGroupText` | `span` | Native span props; muted styling |
+| `InputGroupInput` | `input` | Native input props; borderless and stretched inside the group |
+| `InputGroupTextarea` | `textarea` | Native textarea props; resizing is disabled so the group controls height |
+
+State attributes (`aria-invalid`, `disabled`) belong on the input or textarea; the container reacts to them through selectors.

@@ -10,21 +10,36 @@ links:
 
 ## Overview
 
-Use Tabs to switch between related panels without leaving the current page.
+Use Tabs to switch between peer panels without leaving the current page: settings sections, profile views, code examples in different languages, billing periods. Tabs tell people "these are alternative views of the same object" — only one is visible at a time, and switching costs nothing.
 
-Tabs are useful for settings sections, profile views, code examples, billing panels, and compact content groups. The panels should be peers, not steps in a process.
+Tabs are the wrong tool when panels are steps in a sequence (use a wizard with Back and Next), when people need to compare panels side by side, or when each panel deserves its own URL that can be linked and revisited. If tabs must deep-link, mirror the active tab into the route. See [Don't do this](#dont-do-this).
 
 ## Anatomy
 
-Tabs include a root, list, triggers, and content panels. Each trigger controls one panel.
+Tabs include a root, a list with an animated indicator, one trigger per tab, and one panel per tab. The trigger labels name their panels; every `value` on a `TabsTab` must match exactly one `TabsPanel` value or the panel will never appear. The indicator slides between triggers to show which panel is active, and it works in both orientations and all variants.
 
 ## Behavior
 
-Use horizontal tabs for most layouts. Use vertical tabs when labels are longer or when the tab list acts like a side navigation within a page.
+**Orientation.** Horizontal is the default. Use vertical tabs when labels are long or numerous enough that a horizontal row would wrap or truncate — a vertical list keeps every label fully visible.
+
+**Activation mode.** By default activation is manual: arrow keys move focus between triggers, and <kbd>Enter</kbd>, <kbd>Space</kbd>, or a click activates the focused tab. Set `activateOnFocus` on the `TabsList` for automatic activation, where focusing a trigger immediately switches the panel. Reserve automatic mode for panels that render instantly; manual mode prevents slow panels from flashing past while someone arrows across the list.
+
+**Controlled state.** Pass `value` and `onValueChange` to sync the active tab with routing or other page state. Passing `null` as the value renders no active tab at all.
 
 ## Accessibility
 
-Keep tab labels short and unique. Keyboard users should be able to move through tabs and reach the active panel.
+The list has `role="tablist"` and each trigger has `role="tab"` with `aria-selected` and `aria-controls` pointing at its panel, so screen readers announce position within the set.
+
+Focus follows a roving model: the whole list is a single <kbd>Tab</kbd> stop, and <kbd>Tab</kbd> again moves into the active panel. Within the list:
+
+- <kbd>ArrowLeft</kbd> and <kbd>ArrowRight</kbd> move between tabs in horizontal orientation; <kbd>ArrowUp</kbd> and <kbd>ArrowDown</kbd> in vertical. Directions mirror automatically in right-to-left layouts.
+- <kbd>Home</kbd> and <kbd>End</kbd> jump to the first and last tab.
+- Movement wraps from end to end by default; set `loopFocus={false}` on the list to stop at the edges.
+- <kbd>Enter</kbd> or <kbd>Space</kbd> activates the focused tab under manual activation.
+
+Disabled triggers remain focusable and announced but cannot be activated. Colors come from theme tokens, so active, hover, and disabled states adapt to dark mode automatically.
+
+Trigger labels use `white-space: nowrap` with ellipsis overflow: long labels are silently cut off rather than wrapped. Keep labels to one or two words, or switch to vertical orientation where there is room to grow.
 
 ## Installation
 
@@ -75,24 +90,106 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from "@/components/ui/tabs";
 </Tabs>
 ```
 
+`TabsTrigger` and `TabsContent` are aliases of `TabsTab` and `TabsPanel`. Style panels independently — the component imposes no panel layout of its own.
+
+## Don't do this
+
+### Using tabs for page navigation
+
+```tsx
+// Bad
+<Tabs defaultValue="docs">
+  <TabsList>
+    <TabsTab value="docs">Docs</TabsTab>
+    <TabsTab value="pricing">Pricing</TabsTab>
+  </TabsList>
+  ...
+</Tabs>
+```
+
+```tsx
+// Good
+<nav aria-label="Main">
+  <Link href="/docs">Docs</Link>
+  <Link href="/pricing">Pricing</Link>
+</nav>
+```
+
+Tabs switch in-view content; they do not navigate. A tabbed site header breaks browser Back, cannot be opened in a new tab, hides every page from direct linking, and announces itself as a tab set rather than navigation. Top-level destinations belong in links and nav landmarks. If sections genuinely share a URL-able route, sync the active tab to the router instead of relying on local state alone.
+
+### Sequencing steps as tabs
+
+```tsx
+// Bad
+<Tabs>
+  <TabsList>
+    <TabsTab value="shipping">Shipping</TabsTab>
+    <TabsTab value="payment">Payment</TabsTab>
+  </TabsList>
+</Tabs>
+```
+
+```tsx
+// Good
+<ol>{/* Step 1, then step 2 with Next/Back */}</ol>
+```
+
+Tabs imply equal peers that can be visited in any order. Checkout steps have order, dependencies, and validation: jumping straight to Payment skips required Shipping data. Sequential flows need explicit progression with validation between steps.
+
+### Overloading the tab bar
+
+```tsx
+// Bad
+<TabsTab value="notifications-and-email-preferences">
+  Notifications and email preferences
+</TabsTab>
+```
+
+```tsx
+// Good
+<TabsTab value="notifications">Notifications</TabsTab>
+```
+
+Trigger text does not wrap; it truncates with an ellipsis once it outgrows the bar, so both sighted and screen-reader users lose the tail of the label. Keep each label short and unique, and split genuinely distinct concerns into more tabs rather than longer names.
+
 ## Examples
 
-Examples cover default tabs, underline styling, vertical orientation, and vertical underline styling.
+### Settings sections
+
+Two peer panels with independent, short labels — the canonical settings shape.
+
+<ComponentPreview name="tabs-settings" />
 
 ### Underline Variant
+
+A quieter treatment for content pages: no filled background, just an animated underline marking the active tab.
 
 <ComponentPreview name="tabs-underline" />
 
 ### Vertical Orientation
 
+Longer label lists read better down the side; arrow keys switch to Up and Down automatically.
+
 <ComponentPreview name="tabs-vertical" />
 
 ### Underline with Vertical Orientation
+
+The underline variant composed with a vertical list.
 
 <ComponentPreview name="tabs-underline-vertical" />
 
 ## API reference
 
-Tabs exports root, list, tab, and panel parts; Trigger and Content are aliases for Tab and Panel. All parts forward their matching Base UI Tabs props. Put controlled or default value, orientation, and activation behavior on the root, and match every tab value to one panel value.
+`Tabs`, `TabsList`, `TabsTab`, and `TabsPanel` forward their matching Base UI props. Root props include `value`, `defaultValue`, `onValueChange`, and `orientation` (`"horizontal"` default, `"vertical"`); passing `value={null}` leaves no tab active.
 
-Use automatic activation only when switching panels is immediate. See the [Base UI Tabs API](https://base-ui.com/react/components/tabs#api-reference).
+Honest UI additions:
+
+| Prop | Component | Values | Default |
+| --- | --- | --- | --- |
+| `size` | `Tabs` | `"small"`, `"medium"`, `"large"`, `"regular"` | `"large"` |
+| `variant` | `TabsList` | `"default"`, `"underline"`, `"standalone"`, `"plain"` | `"default"` |
+| `indicatorClassName` | `TabsList` | string | — |
+
+`small` and `medium` reduce trigger height, font size, and letter spacing for dense surfaces; `large` and `regular` currently share the same base metrics. `variant="underline"` renders a borderless list with a sliding bottom indicator, `standalone` draws individual bordered chips with a raised active card, and `plain` is the underline style used internally. Set `activateOnFocus` and `loopFocus` on `TabsList` to change keyboard behavior.
+
+See the [Base UI Tabs API](https://base-ui.com/react/components/tabs#api-reference).

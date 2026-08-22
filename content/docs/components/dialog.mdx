@@ -10,21 +10,33 @@ links:
 
 ## Overview
 
-Use a dialog when the user needs to focus on a task without leaving the current page.
-
-Dialogs are good for forms, confirmations, detail views, short workflows, and focused editing. Avoid dialogs for large multi-step experiences that need a full page.
+Use a dialog when the person needs to focus on one task without leaving the current page: short forms, confirmations, detail views, focused editing. Avoid dialogs for large multi-step experiences that deserve their own URL and back-button behavior.
 
 ## Anatomy
 
-A dialog has a trigger, popup, header, title, description, content, footer, and close action. The title should explain the task. The footer usually contains the main action and a cancel or close action.
+A dialog has a trigger, popup, header, title, description, content, footer, and close action. The title names the task; the description states its consequence. The footer holds the main action and a way to back out.
 
 ## Behavior
 
-Dialogs open above the page and should keep focus inside while open. Use nested dialogs only when the second dialog is a true interruption, such as confirming a close action.
+**Opening.** When the dialog opens as modal (the default), focus moves into the popup and the page behind it becomes inert. Scrolling behind is locked.
+
+**While open.** <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> cycle inside the popup only. <kbd>Escape</kbd> closes it, and clicking the backdrop closes it in non-blocking cases. Use `initialFocus` on the popup to place focus on a specific control instead of the first tabbable one.
+
+**Closing.** Focus returns to the trigger so keyboard users continue where they left off. If the dialog contains unsaved input, intercept close attempts with controlled state and confirm before discarding — see the [close confirmation](#close-confirmation) example.
+
+Nested dialogs are for true interruptions only, such as confirming an exit while a form has unsaved changes.
 
 ## Accessibility
 
-Always provide a title. Add a description when the task needs context. Make sure destructive actions are explicit and that focus returns to the trigger when the dialog closes.
+Always provide a `DialogTitle`; it gives the dialog its accessible name, so screen-reader users know what opened. Add `DialogDescription` when the task needs context or states consequences.
+
+Keep destructive actions explicit: name the affected object in the title ("Delete Aurora website?"), describe what is lost, and style the confirming button with the destructive variant. Place initial focus on the safe action, not the destructive one.
+
+The title should survive truncation on small screens; keep it short enough to read at 200% zoom without wrapping past two lines.
+
+Colors and overlays come from theme tokens, so dialogs render correctly in dark mode automatically. The backdrop dims whatever is behind using tokens as well; verify legibility if you layer custom content under a non-modal dialog.
+
+Dialogs mirror correctly in right-to-left locales because positioning uses logical properties; long localized titles wrap rather than overflow the popup.
 
 ## Installation
 
@@ -68,6 +80,7 @@ npm install @base-ui-components/react
 import {
   Dialog,
   DialogBody,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -95,9 +108,70 @@ import {
 </Dialog>
 ```
 
+## Don't do this
+
+### Letting Enter trigger destruction
+
+```tsx
+// Bad
+<DialogFooter>
+  <Button variant="ghost" onClick={close}>Cancel</Button>
+  <Button variant="destructive" onClick={destroy}>Delete project</Button>
+</DialogFooter>
+```
+
+```tsx
+// Good
+<DialogPopup initialFocus={cancelRef}>
+  <DialogFooter>
+    <DialogClose render={<Button variant="ghost" />} ref={cancelRef}>
+      Cancel
+    </DialogClose>
+    <Button variant="destructive" onClick={destroy}>Delete project</Button>
+  </DialogFooter>
+</DialogPopup>
+```
+
+Without `initialFocus`, focus lands on the first tabbable element — often the destructive button itself. A person pressing <kbd>Enter</kbd>, or double-clicking out of habit, confirms an irreversible action by accident. Start focus on the safe action and let the destructive one require deliberate movement toward it.
+
+### Using a dialog where a page belongs
+
+```tsx
+// Bad
+<Dialog>
+  <DialogTrigger>Settings</DialogTrigger>
+  <DialogPopup>
+    {/* Six sections of settings */}
+  </DialogPopup>
+</Dialog>
+```
+
+Large surfaces inside a dialog lose everything a page provides: no URL to share or bookmark, browser Back exits the whole flow instead of a step, and reload discards progress. If content scrolls more than a screen or represents navigation to somewhere, give it a route.
+
+### Opening a dialog without a title
+
+```tsx
+// Bad
+<DialogPopup>
+  <DialogBody>{/* fields */}</DialogBody>
+</DialogPopup>
+```
+
+The accessible name comes from the title. Without it, assistive technology announces an unlabeled dialog and people cannot tell what they just opened. Every popup gets a `DialogTitle`, even when it looks minimal.
+
 ## Examples
 
-Examples cover opening from a menu, nesting, and confirming close actions.
+### Destructive confirmation
+
+Focus starts on Cancel via `initialFocus`; the destructive action requires deliberate activation.
+
+<ComponentPreview name="dialog-destructive-confirm" />
+
+### Form submission with save pending
+
+While the invite sends, both buttons disable and closing is blocked so work cannot be silently discarded.
+
+<ComponentPreview name="dialog-form-submit" />
 
 ### Open from a Menu
 
@@ -109,10 +183,12 @@ Examples cover opening from a menu, nesting, and confirming close actions.
 
 ### Close Confirmation
 
+With unsaved input, closing asks whether to discard first.
+
 <ComponentPreview name="dialog-close-confirmation" />
 
 ## API reference
 
-All Dialog parts forward their matching Base UI props. `DialogOverlay` aliases `DialogBackdrop`, and `DialogContent` aliases `DialogPopup`. Use the root for controlled or uncontrolled open state, the trigger to open it, the close part for explicit dismissal, and the title and description to provide its accessible name and purpose.
+All Dialog parts forward their matching Base UI props. `DialogOverlay` aliases `DialogBackdrop`, and `DialogContent` aliases `DialogPopup`. Use the root for controlled (`open` / `onOpenChange`) or uncontrolled open state, the trigger to open it, and `DialogClose` for explicit dismissal. The popup accepts `initialFocus` to direct where focus lands when it opens, and `showCloseButton` to toggle the built-in dismiss affordance.
 
 See the [Base UI Dialog API](https://base-ui.com/react/components/dialog#api-reference).

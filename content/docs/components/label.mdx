@@ -7,21 +7,25 @@ description: Give a form control a visible name and a larger activation target.
 
 ## Overview
 
-Use Label to name a form control.
+Use Label to name a form control. Labels help every user understand what a control does, and they are required for good screen-reader and click-target behavior: the label becomes the control's accessible name, and clicking it focuses or toggles the control.
 
-Labels help every user understand what a control does. They are also required for good screen-reader and click-target behavior.
+Label is a styled native `<label>` element — nothing more. Use Field when you need a label plus description or validation wired together; use Label directly when you only need the name.
 
 ## Anatomy
 
-A label is connected to a control. The visible text should be short, specific, and stable.
+A label is connected to a control. The visible text should be short, specific, and stable. Styling matches `FieldLabel` — small text with room for an inline icon or required marker — so a bare Label sits comfortably next to Field-based controls in the same form.
 
-## Usage guidance
+## Association
 
-Use Field when you need a label plus description or validation. Use Label directly when you only need the label primitive.
+Connect a label to its control one of two ways: match `htmlFor` to the control's `id`, or nest the control inside the label. Nesting works well for compact controls like checkboxes and radios; `htmlFor` suits inputs where you want the label on its own line.
+
+Association must be one-to-one. Two controls sharing one label leaves both ambiguously named, and a control with no label has no accessible name at all. Clicking an associated label activates the control, which effectively enlarges checkboxes and radios far beyond their visual footprint.
 
 ## Accessibility
 
-Do not replace labels with placeholders. A placeholder disappears when the user types and is not enough context for many users.
+Do not replace labels with placeholders. A placeholder disappears when the user types and is not enough context for many users; screen readers do not reliably treat placeholder text as the field's name.
+
+Keep label text visible and permanent, put required or optional guidance next to it consistently across the form, and mark decorative icons inside labels with `aria-hidden="true"` so only the words are announced. Colors come from theme tokens, so labels adapt to dark mode automatically, and text wraps normally when localized strings run long.
 
 ## Installation
 
@@ -60,23 +64,96 @@ import { Label } from "@/components/ui/label";
 ```
 
 ```tsx
-<Label htmlFor="email">Email</Label>
+<Label htmlFor={id}>Email</Label>
+<Input id={id} type="email" />
 ```
-
-## Examples
-
-The example shows Label connected to a checkbox.
 
 For labels, descriptions, and validation that belong together, use `FieldLabel` inside `Field`. See the [Field examples](/docs/components/field).
 
-### With Checkbox
+## Don't do this
+
+### An unassociated label
+
+```tsx
+// Bad
+<Label>Email address</Label>
+<Input name="email" type="email" />
+```
+
+```tsx
+// Good
+const id = useId();
+
+<Label htmlFor={id}>Email address</Label>
+<Input id={id} name="email" type="email" />
+```
+
+Without `htmlFor` matching an `id` (or nesting), the label is just text sitting near a field. Screen readers announce an unnamed input, clicking the label does nothing, and voice-control users cannot target the field by name. Generate the id with `useId` rather than hand-writing one that might collide.
+
+### One label for two controls
+
+```tsx
+// Bad
+<Label>Phone number</Label>
+<Input name="countryCode" inputMode="numeric" className="w-16" />
+{" "}
+<Input name="phone" inputMode="tel" className="flex-1" />
+```
+
+```tsx
+// Good
+<Fieldset>
+  <FieldsetLegend>Phone number</FieldsetLegend>
+  <Field>
+    <FieldLabel>Country code</FieldLabel>
+    <FieldControl name="countryCode" inputMode="numeric" />
+  </Field>
+  <Field>
+    <FieldLabel>Number</FieldLabel>
+    <FieldControl name="phone" inputMode="tel" />
+  </Field>
+</Fieldset>
+```
+
+Two inputs under one visible caption each end up named "Phone number" — or, if only the first is associated, the second ends up named nothing at all. When several inputs answer one question, group them with a legend and label each control individually.
+
+### Naming a control with its placeholder
+
+```tsx
+// Bad
+<Input name="search" placeholder="Search components" aria-label="Search components" />
+
+// Good
+<Label htmlFor={id}>Search components</Label>
+<Input id={id} name="search" placeholder="Try “dialog”" />
+```
+
+A placeholder vanishes on first keystroke, usually fails contrast requirements, and is not reliably announced as the control's name. Keep the label permanent; let the placeholder show format or an example instead of carrying the name alone.
+
+## Examples
+
+### Explicit association
+
+`htmlFor` matched to the input's `id`; the label sits above the field.
+
+<ComponentPreview name="label-password-field" />
+
+### Nested association
+
+Nesting makes the whole line clickable for checkbox-style controls.
 
 <ComponentPreview name="checkbox-demo" />
 
 ## Decision guidance
 
-Use Label for a native control when you are not using Field. A visible label should name the value people need to enter, not repeat its type or placeholder. Put optional or required guidance next to the label only when it is consistent across the form.
+Use Label for a native control when you are not using Field. A visible label should name the value people need to enter, not repeat its type or placeholder. Put optional or required guidance next to the label only when it is consistent across the form. If you later need descriptions or errors, migrate to `Field` — `FieldLabel` renders identically.
 
 ## API reference
 
-`Label` forwards Base UI Label props, including its `render` composition support. Associate it with a control by nesting the control or by matching `htmlFor` to the control's `id`. See the [Base UI Field Label API](https://base-ui.com/react/components/field#label).
+`Label` accepts standard React label props (`React.ComponentProps<"label">`) and forwards them to the native element. It is plain HTML styling — there is no Base UI behavior, context wiring, or `render` prop here; association happens entirely through `htmlFor`/`id` or nesting, exactly as with a raw `<label>`.
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `htmlFor` | The `id` of the labeled control | — |
+
+Everything else (`className`, event handlers, children) passes through unchanged.

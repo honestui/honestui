@@ -7,21 +7,35 @@ description: Show a compact status, count, category, or piece of metadata.
 
 ## Overview
 
-Use a badge to display a short label, status, count, category, or metadata.
-
-Badges should be compact and easy to scan. They are useful in tables, cards, headers, filters, and lists. Do not use a badge for long messages or primary actions.
+Use a badge to display a short status, count, category, or piece of metadata where people scan rather than read: table rows, list items, card headers, filter chips. Badges annotate other content. They are not containers for sentences, and they are not actions — when something needs to be clicked, render the badge as a real link or button so it behaves like one. See [Links and interactivity](#links-and-interactivity).
 
 ## Anatomy
 
-A badge is usually a small inline container with text and optional icon. It can also render another element, such as a link, when the badge needs to be interactive.
+A badge is a small inline container with text and an optional leading icon. It renders a `span` by default, so it participates in a sentence or row without breaking line flow. Labels stay on one line by design; the component never wraps them.
 
 ## Variants
 
-Choose the variant by meaning. Outline is neutral, secondary is low emphasis, destructive is for dangerous state, and state variants such as info, success, warning, and error should match the status being shown.
+Choose the variant by meaning, then by emphasis. `outline` and `secondary` are neutral; `success`, `warning`, `info`, `error`, and `destructive` map to states people already know from elsewhere in the product. Use one status vocabulary across your app: if `Failed` is `error` in one table, it should not be `destructive` in another.
+
+Honest caveat about the API surface: several variants are visual aliases of each other. `info`, `accent`, and `default` share identical styles, as do `error`, `danger`, and `destructive`, and `neutral` matches `secondary`. Prefer the semantic names (`error`, not `danger`) so intent survives future restyling.
+
+## Sizes
+
+Sizes are `sm` (18 px tall, micro type), `default` (22 px), and `lg` (32 px). Use `sm` inside dense table cells and meta lines, `default` almost everywhere, and `lg` sparingly for hero-level labels. Icon size scales with the badge automatically.
+
+## Links and interactivity
+
+By default a badge is static decoration with no keyboard presence — nothing to focus, nothing to announce beyond its text. That is correct for statuses. To make one navigable, pass Base UI's `render` prop with a real `Link`; the badge keeps its look while gaining link semantics, a visible `focus-visible` ring, and an expanded touch target of at least 44 × 44 px on coarse pointers.
 
 ## Accessibility
 
-Use readable text, not color alone. If a badge is a link, make sure the destination is clear from the visible text or surrounding context.
+A badge is announced as part of the surrounding text — there is no "badge" role. Write labels that make sense spoken aloud in context: `Failed` reads naturally after a row's other content; a bare colored dot reads as nothing at all. Never encode meaning in the variant color alone; pair color with text, and add an icon (`aria-hidden`) when you want a second non-color cue.
+
+Mark decorative icons `aria-hidden="true"` so screen readers don't announce "check" before "Ready". The component disables pointer events on child SVGs but does not hide them from assistive technology for you.
+
+Labels use theme tokens and adapt to dark mode automatically. The `gradient` variant is the exception — it uses fixed hardcoded colors — so verify its legibility in both themes before adopting it. Because labels never wrap, very long text will overflow its container rather than break the layout; shorten the label or truncate deliberately.
+
+Badges have no loading, disabled, or validation states — they are static metadata. If a value is still loading, show a skeleton or spinner in its place instead of a placeholder badge.
 
 ## Installation
 
@@ -103,27 +117,85 @@ import { Badge } from "@/components/ui/badge";
 <Badge>Badge</Badge>
 ```
 
-## Link
+Pick the label first, then the least emphatic variant that still communicates the state. A quiet `outline` badge keeps attention on the content it annotates.
 
-You can use the [`render`](https://base-ui.com/react/utils/use-render#migrating-from-radix-ui) prop to make another component look like a badge. Here's an example of a link that looks like a badge.
+## Don't do this
+
+### Status conveyed by color alone
 
 ```tsx
-import Link from "next/link";
-
-import { Badge } from "@/components/ui/badge";
-
-export function LinkAsBadge() {
-  return <Badge render={<Link href="/pricing" />}>New</Badge>;
-}
+// Bad
+<Badge variant="error" aria-label="Failed">
+  ●
+</Badge>
 ```
+
+```tsx
+// Good
+<Badge variant="error">
+  <CircleXIcon aria-hidden="true" />
+  Failed
+</Badge>
+```
+
+A colored dot fails colorblind users, forced-colors themes, grayscale printing, and screen readers all at once — `aria-label` on a span helps only the last group. The word plus an icon gives every channel the same signal.
+
+### Sentences inside badges
+
+```tsx
+// Bad
+<Badge variant="warning">
+  This invoice is overdue by more than 30 days and may incur late fees
+</Badge>
+```
+
+```tsx
+// Good
+<div>
+  <Badge variant="warning">Overdue 30 days</Badge>
+  <p className="text-muted-foreground">
+    Late fees apply after day 30.
+  </p>
+</div>
+```
+
+Labels never wrap, so long badges either overflow their container or force the surrounding layout wide enough to scroll sideways. Keep one to three words in the badge and put explanation in adjacent body text.
+
+### Fake links
+
+```tsx
+// Bad
+<Badge onClick={() => router.push("/releases")}>v2.4.0</Badge>
+```
+
+```tsx
+// Good
+<Badge render={<Link href="/releases" />} variant="outline">
+  v2.4.0
+</Badge>
+```
+
+An `onClick` on a span produces something that looks clickable but cannot be focused by keyboard, opened in a new tab, or recognized as a link by assistive technology. The `render` prop outputs a real anchor with badge styling, plus the focus ring and enlarged touch target described above.
 
 ## Examples
 
-The main example compares all status variants, sizes, icon use, and a link rendered with badge styling. Choose the label first, then use the least emphatic variant that still communicates the state.
+### Release status
 
-### Badge inside a release status
+Icon, text, and variant working together; each state is distinguishable without color.
+
+<ComponentPreview name="badge-release-status" />
+
+### Icon plus text
 
 <ComponentPreview name="badge-with-icon" />
+
+### Small
+
+<ComponentPreview name="badge-sm" />
+
+### Large
+
+<ComponentPreview name="badge-lg" />
 
 ### Link composition
 
@@ -131,6 +203,13 @@ The main example compares all status variants, sizes, icon use, and a link rende
 
 ## API reference
 
-`Badge` accepts native span props and Base UI's `render` composition prop. Honest UI adds `variant` (`default`, `destructive`, `outline`, `secondary`, `info`, `success`, `warning`, `error`, `neutral`, `accent`, `danger`, or `gradient`) and `size` (`sm`, `default`, or `lg`; the aliases `micro`, `small`, and `regular` are also supported).
+`Badge` accepts native `span` props and Base UI's `render` composition prop. Honest UI adds:
 
-Badge is non-interactive by default. When composing it as a link or button, supply a clear accessible name and keep the target at least 44 by 44 CSS pixels for coarse pointers.
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` | `default`, `destructive`, `outline`, `secondary`, `info`, `success`, `warning`, `error`, `neutral`, `accent`, `danger`, `gradient` | `default` |
+| `size` | `sm`, `default`, `lg` (aliases: `micro`, `small`, `regular`) | `default` |
+
+Note that `info`/`accent`, `error`/`danger`/`destructive`, and `neutral`/`secondary` are style-identical aliases. The `size` aliases map `micro`→`sm`, `small`→`default`, and `regular`→`lg`.
+
+When composing a badge into a link or button through `render`, supply a clear accessible name from the visible text; the built-in focus ring and coarse-pointer hit-area expansion apply automatically once the rendered element is an anchor or button.

@@ -10,21 +10,35 @@ links:
 
 ## Overview
 
-Use an avatar to represent a person, team, account, or organization.
-
-Avatars work best when they support identity, not when they carry critical information by themselves. Always pair them with names in places where identity must be unambiguous.
+Use an avatar to represent a person, team, account, or organization wherever recognition helps someone parse the page: comment authors, assignees, collaborators, members. An avatar supports identity; it should not carry information that appears nowhere else. Where identity must be unambiguous — approvals, permissions, audit logs — pair the avatar with a visible name. See [Don't do this](#dont-do-this) for the alt-text mistakes that most often break this rule.
 
 ## Anatomy
 
-An avatar has an image and a fallback. The image is shown when it loads successfully. The fallback is shown when there is no image or the image fails to load.
+An avatar has an image, a fallback, and an optional status badge. The image renders when it loads successfully; the fallback renders when there is no image, the URL is broken, or loading is still in progress after the fallback's delay. The fallback takes over the full surface, so the avatar keeps its exact footprint either way and nothing around it shifts.
 
-## Usage guidance
+## Fallbacks
 
-Use initials, an icon, or a neutral placeholder as the fallback. Keep avatar sizes consistent in the same surface. Use grouped avatars when showing a small set of collaborators or participants.
+Always render `AvatarFallback`, even when every current user has a photo. Networks fail, images get deleted, and new records have no picture yet. Initials work well because they stay legible at every size; the component scales their font size and letter spacing to match the avatar automatically. Use a single initial or an icon when the name has no obvious initials, such as some non-Latin names. `AvatarFallback` accepts Base UI's `delay` prop if you want to wait briefly before showing the fallback while a slow image loads.
+
+## Sizes, shapes, and color
+
+Sizes run from `1` (16 px, inline with text) to `13` (120 px, profile pages). Pick one or two sizes per surface and keep them consistent; avatars compete for attention when every row uses a different size. The default shape is `full` (a circle); `rounded` gives a squircle for teams and organizations. The `color` prop tints the fallback background and pairs with `variant`: `soft` (the default) for a muted tint, `solid` for emphasis. Color is decoration here — never use it as the only signal about a person.
+
+## Groups and status badges
+
+`AvatarGroup` overlaps members with a shared border ring and works with `AvatarGroupCount` (`+5`) when the list is longer than you show. Keep the visible count truthful: it must equal the number of hidden members, not a rough total.
+
+`AvatarBadge` renders a small dot pinned to the bottom-right corner. It is purely visual — a colored dot says nothing to anyone who cannot perceive that color, including screen readers. Pair it with a visible text label for the state it represents, as the [status example](#status-badge-with-a-text-equivalent) shows.
 
 ## Accessibility
 
-Use meaningful alt text when the avatar image adds identity. Use empty alt text when the visible name already identifies the person next to the image.
+Give `AvatarImage` alt text that matches its job. When the person's name is visible right next to the avatar, pass `alt=""` so assistive technology skips the redundant image and reads just the name once. When the avatar stands alone, give it real alt text — the person's name, not `"Avatar"` and not `"Avatar of Sarah Chen"`. If neither a name nor useful alt text exists, reconsider whether the avatar belongs there at all.
+
+The fallback initials are real text content. Screen readers read them letter by letter ("C", "L") when no image loads, which is acceptable noise beside a visible name but another reason the name should be present.
+
+A loaded image fades in with a short animation that is skipped entirely under reduced-motion preferences. The `disabled` prop dims the avatar and sets `aria-disabled`, but does not block pointer events — apply any interaction rules yourself.
+
+Single avatars mirror correctly in right-to-left layouts. `AvatarGroup`'s overlap currently uses a physical left margin rather than a logical one, so stacked groups do not fully mirror; verify groups in RTL before shipping them.
 
 ## Installation
 
@@ -76,9 +90,84 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 </Avatar>
 ```
 
-## Examples
+When the name appears beside the avatar, change `alt` to `""` so the image is treated as decorative. Keep the fallback even then — it preserves the layout while the image loads and whenever it fails.
 
-The examples cover fallback behavior, visual variants, a real group using `AvatarGroupCount`, and status badges paired with text. Do not infer a person's status from color alone.
+## Don't do this
+
+### Redundant or missing alt text
+
+```tsx
+// Bad — name is already visible beside the avatar
+<li>
+  <Avatar>
+    <AvatarImage src="/avatars/sarah.png" alt="Avatar of Sarah Chen" />
+    <AvatarFallback>SC</AvatarFallback>
+  </Avatar>
+  Sarah Chen
+</li>
+```
+
+```tsx
+// Good
+<li>
+  <Avatar>
+    <AvatarImage src="/avatars/sarah.png" alt="" />
+    <AvatarFallback>SC</AvatarFallback>
+  </Avatar>
+  Sarah Chen
+</li>
+```
+
+With the redundant version, a screen reader announces "Sarah Chen graphic, Avatar of Sarah Chen, Sarah Chen" — the same fact three times for every row in the list. When the name is adjacent, `alt=""` makes the image decorative. When the avatar stands alone, drop the `"Avatar of"` prefix and use plain alt text like `"Sarah Chen"`.
+
+### Status conveyed by a colored dot alone
+
+```tsx
+// Bad
+<Avatar>
+  <AvatarImage src={src} alt="" />
+  <AvatarFallback>NJ</AvatarFallback>
+  <AvatarBadge className="bg-green-500" />
+</Avatar>
+```
+
+```tsx
+// Good
+<div className="flex items-center gap-3">
+  <Avatar>
+    <AvatarImage src={src} alt="" />
+    <AvatarFallback>NJ</AvatarFallback>
+    <AvatarBadge className="bg-primary" aria-hidden="true" />
+  </Avatar>
+  <div>
+    <p>Nick Johnson</p>
+    <p className="text-muted-foreground">Available</p>
+  </div>
+</div>
+```
+
+The dot alone fails people who cannot distinguish green from gray, people using forced-colors themes, and screen reader users, who hear nothing at all. Mark the dot `aria-hidden` and put the state in visible text where everyone gets it.
+
+### No fallback behind the image
+
+```tsx
+// Bad
+<Avatar>
+  <AvatarImage src="https://cdn.example.com/u/42.png" alt="Ana Ruiz" />
+</Avatar>
+```
+
+```tsx
+// Good
+<Avatar>
+  <AvatarImage src="https://cdn.example.com/u/42.png" alt="Ana Ruiz" />
+  <AvatarFallback>AR</AvatarFallback>
+</Avatar>
+```
+
+Without a fallback, a deleted file, offline session, or broken CDN link leaves an anonymous empty circle. The fallback costs one line and guarantees the avatar always represents something.
+
+## Examples
 
 ### Fallback Only
 
@@ -108,12 +197,32 @@ The examples cover fallback behavior, visual variants, a real group using `Avata
   className="[&_[data-slot=code]_pre]:h-[240px] [&_[data-slot=preview]>*]:h-[240px]"
 />
 
+### Group with supporting copy
+
+The stack plus a short claim reads as social proof without pretending each member approved anything.
+
+<ComponentPreview name="avatar-group-trust" />
+
 ### Status badge with a text equivalent
+
+Every dot is paired with a visible state label; the dots themselves are hidden from assistive technology.
 
 <ComponentPreview name="avatar-status" />
 
 ## API reference
 
-`Avatar` adds `variant` (`soft` or `solid`), `color`, `size` (`1` through `13`), `shape` (`rounded` or `full`), and `disabled` to the Base UI root props. `AvatarImage` and `AvatarFallback` forward Base UI avatar props. `AvatarBadge`, `AvatarGroup`, and `AvatarGroupCount` accept native element props and provide layout only.
+`Avatar` wraps the Base UI avatar root and adds these props:
 
-See the [Base UI Avatar API](https://base-ui.com/react/components/avatar#api-reference) for image loading and fallback props.
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` | `soft`, `solid` | `soft` |
+| `color` | `indigo`, `orange`, `mint`, `neutral`, `sky`, `lime`, `grass`, `cyan`, `iris`, `purple`, `pink`, `crimson`, `gold` | `neutral` |
+| `size` | `1`–`13` (16 px to 120 px) | `5` |
+| `shape` | `rounded`, `full` | `full` |
+| `disabled` | boolean | `false` |
+
+`color` and `size` replace the Base UI root props of the same names. All other Base UI root props, including `render` composition, pass through.
+
+Parts: `AvatarImage` forwards native `<img>` props plus Base UI's `onLoadingStatusChange`; `AvatarFallback` accepts Base UI's `delay` (milliseconds); `AvatarBadge`, `AvatarGroup`, and `AvatarGroupCount` accept native element props and provide layout only.
+
+See the [Base UI Avatar API](https://base-ui.com/react/components/avatar#api-reference).

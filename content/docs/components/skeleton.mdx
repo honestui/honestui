@@ -7,21 +7,29 @@ description: Reserve layout space while content is loading.
 
 ## Overview
 
-Use Skeleton to reserve space while content is loading.
-
-Skeletons are useful for cards, tables, lists, avatars, charts, and forms where the layout is known before the data arrives.
+Use Skeleton to reserve space while content is loading, so the page around the data keeps its shape instead of collapsing and jumping when values arrive. Skeletons are useful for cards, tables, lists, avatars, charts, and any region whose layout is known before its contents are.
 
 ## Anatomy
 
-A skeleton is a neutral placeholder shape. It should roughly match the size and rhythm of the content that will replace it.
+A skeleton is a single placeholder shape: a muted surface with a lighter band that suggests motion. It takes whatever size and radius you give it. That is the whole component — which means every decision about what it communicates lives in how you compose it.
 
-## Usage guidance
+## When to use skeletons
 
-Use skeletons for short loading states where preserving layout helps. Avoid showing too many animated placeholders at once.
+Skeletons buy you something specific: stable layout during short, predictable loads. They work best when the final shape is known and the wait is brief. For long operations, pair the placeholders with plain language ("Loading your invoices…"); for fast ones, delay showing skeletons briefly so they don't flash for 100 ms and vanish.
+
+Match each placeholder to the geometry of what replaces it — circle for avatar, full-width bar for a line of text, block for an image — without reproducing every element. A rough rhythm is the goal; a wireframe of the entire page is noise. Keep the total number of animated shapes low; a page of shimmering rectangles reads as broken rather than busy.
 
 ## Accessibility
 
-Do not announce every skeleton as content. Pair long loading states with clear loading text when users need to understand what is happening.
+Skeletons have no semantic meaning by default — a screen reader encounters empty `div`s and announces nothing. That silence is mostly right (the shapes carry no information), but it must not leave people without status:
+
+- Mark placeholder shapes `aria-hidden="true"` to make their decoration explicit.
+- Set `aria-busy="true"` on the containing region whose contents are still loading, and clear it when data arrives.
+- Provide one status message for the whole region — visually hidden text or a polite live region such as "Loading conversation" — rather than announcing each shape.
+
+Replace skeletons with real content rather than nesting content inside them; assistive technology should encounter either the placeholder state or the finished one, not both at once. Colors come from theme tokens, including a dimmer highlight in dark mode, so placeholders stay subtle against either theme.
+
+Skeleton is the loading state — it has no error, disabled, or empty variant of its own. If the request fails while placeholders are up, swap them for an [Empty](/docs/components/empty) state with a retry action instead of leaving the shimmer running.
 
 ## Installation
 
@@ -63,18 +71,90 @@ import { Skeleton } from "@/components/ui/skeleton";
 <Skeleton className="size-10 rounded-full" />
 ```
 
+Compose shapes into the layout they stand in for, and render the whole region conditionally: skeletons while loading, content after.
+
+## Don't do this
+
+### Endless skeletons with no explanation
+
+```tsx
+// Bad
+{isLoading && (
+  <div className="space-y-3">{rows.map((i) => <Skeleton key={i} className="h-12" />)}</div>
+)}
+// isLoading stays true for 30 seconds with nothing else on screen
+```
+
+```tsx
+// Good
+{isLoading && (
+  <div aria-busy="true">
+    {rows.map((i) => (
+      <Skeleton key={i} className="h-12" aria-hidden="true" />
+    ))}
+    <p className="sr-only" role="status">Loading your invoices…</p>
+  </div>
+)}
+```
+
+Shimmering placeholders communicate "soon", not "how long". Past a couple of seconds, people can't tell progress from a hang, and screen-reader users hear nothing at all. After roughly two seconds, add a status message; past ten, offer a way out — cancel, retry, or support.
+
+### Shapes that don't match the content
+
+```tsx
+// Bad
+{isLoading ? <Skeleton className="h-4 w-full" /> : <Avatar … />}
+```
+
+```tsx
+// Good
+{isLoading ? <Skeleton className="size-10 rounded-full" /> : <Avatar … />}
+```
+
+A thin line swapping for a round avatar moves everything below it twice — once on load, once if the image later fails. Measure the placeholder against what replaces it: same height, same width tendency, same radius. The whole point of the component is zero layout shift.
+
+### Content inside the skeleton
+
+```tsx
+// Bad
+<Skeleton className="h-24 p-4">
+  <InvoiceCard invoice={invoice} />
+</Skeleton>
+```
+
+```tsx
+// Good
+{invoice ? <InvoiceCard invoice={invoice} /> : <Skeleton className="h-24 rounded-xl" />}
+```
+
+Nesting real content under a shimmer shows both states at once and announces both to assistive technology. The skeleton is a stand-in, not a wrapper — render one *or* the other.
+
 ## Examples
 
-Examples cover a composed loading layout and a standalone skeleton primitive.
+### Dashboard card
+
+Headline, figure, and grid placeholders matching the card they replace.
+
+<ComponentPreview name="skeleton-dashboard-card" />
+
+### Chat list
+
+Repeated row rhythm with circular and line placeholders.
+
+<ComponentPreview name="skeleton-chat-list" />
 
 ### Skeleton Only
 
+The bare primitive at arbitrary sizes.
+
 <ComponentPreview name="skeleton-only" />
-
-## Decision guidance
-
-Match skeleton shapes to the stable layout, but do not reproduce every line of the final content. Keep the loading region's size steady to avoid layout shift. For fast operations, delay the visual skeleton briefly so it does not flash; for long operations, add plain language that says what is loading.
 
 ## API reference
 
-`Skeleton` accepts native `div` props and has no accessible name by default. Mark decorative shapes with `aria-hidden="true"`, put `aria-busy="true"` on a containing region when you can track the shared loading state, and provide a status message when loading is not otherwise clear. Replace the skeleton with real content rather than placing content inside it.
+`Skeleton` accepts native `div` props:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `className` | string | — |
+
+There are no variants or states. Size and shape come entirely from your classes (`h-*`, `w-*`, `rounded-*`). The component renders a `div` with no accessible role; mark decorative shapes `aria-hidden="true"`, put `aria-busy="true"` on the loading region, and provide a status message when loading is not otherwise clear.

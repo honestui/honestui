@@ -10,29 +10,43 @@ links:
 
 ## Overview
 
-Use a checkbox when the user can turn an independent option on or off.
+Use a checkbox when each option stands on its own and any combination of states is valid: preferences, permissions, filters, notification channels, optional add-ons. Because every checkbox toggles independently, people can select none, some, or all of a set without breaking anything.
 
-Checkboxes are right for preferences, permissions, optional settings, and multi-select lists. Use a radio group when the user must choose exactly one option from a set.
+Use a radio group when exactly one option must be chosen from a visible set — see [Don't do this](#dont-do-this) for what happens when the two get mixed up. Use Switch for a single setting that takes effect immediately rather than as part of a form submission.
 
-Use Checkbox Group when several checkboxes belong to the same question or setting. Groups are useful for permissions, filters, notification channels, roles, and feature selections where more than one option can be selected.
+`CheckboxGroup` shares one value across several checkboxes and ships in the same file. It is covered under [Examples](#examples) below.
 
 ## Anatomy
 
-A checkbox has an input, visual indicator, label, optional description, and state. The label should make sense when read on its own.
+A checkbox has an input, a visual indicator, a label, an optional description, and a state. The indicator draws a checkmark when checked and a dash when indeterminate; both are inline SVGs so they inherit text color and scale with the control. The label should make sense read on its own, because screen readers announce checkboxes by their label text alone.
 
-A checkbox group provides shared state and contains individual checkbox items. It should have a group label or surrounding Fieldset so users understand what the choices are about.
+A group holds several checkboxes that answer one question and submits one shared array value. A group needs its own visible label — through `aria-labelledby`, a `Fieldset` legend, or surrounding heading — so people know what the choices are about before reading the first option.
 
-## Behavior
+## States
 
-A checkbox can be checked, unchecked, disabled, or invalid. Some grouped checkbox patterns also use an indeterminate parent state to show that only some child items are selected.
+**Checked / unchecked.** Checked boxes fill with the accent background and drop their border. Unchecked boxes show a bordered surface with a subtle hover state.
 
-Use disabled items for options that are visible but unavailable. Use parent checkboxes when a group needs select-all behavior. Use nested parent checkboxes when choices are hierarchical.
+**Indeterminate.** Set `indeterminate` to show the dash. The hidden input receives `aria-checked="mixed"`, so screen readers announce it as partially checked rather than silently disagreeing with the visual. Indeterminate is a display state: clicking an indeterminate checkbox checks or unchecks it like any other toggle, so your code decides what happens to the children.
+
+**Disabled.** Disabled items keep their current visual state but dim to half opacity, show a not-allowed cursor, are skipped by keyboard focus, and submit no value. Use them for options that are visible but unavailable in the current context.
+
+**Read-only.** `readOnly` keeps the checkbox in the tab order and submits its value but ignores clicks, with a default cursor and reduced opacity. Prefer disabled for unavailable options; prefer read-only when the value exists and must be submitted but must not change here.
+
+**Invalid.** Setting `aria-invalid="true"` switches the border and checked fill to the danger colors, so validation reaches assistive technology as well as the eye. Pair it with error text that says what to fix.
 
 ## Accessibility
 
-Always connect the checkbox to a label. Descriptions and errors should be associated through Field when the checkbox appears in a form.
+The checkbox renders a span with `role="checkbox"` plus a visually hidden native input, wrapped in a `Label`. Press <kbd>Space</kbd> to toggle; <kbd>Enter</kbd> also activates it because Base UI gives the element button-style key handling. Focus moves with <kbd>Tab</kbd> and shows a visible ring only for keyboard focus (`focus-visible`).
 
-Group related checkboxes with a visible label. Make sure each checkbox has its own label and that parent states are understandable through text, not only the visual indeterminate mark.
+Always wrap the checkbox in a `Label` (or connect one with `htmlFor`). Text sitting next to a checkbox without label association is invisible to screen readers and does not extend the click target. Wrapping in a `Label` makes the whole phrase clickable, which matters more than the control's own size.
+
+The rendered box is 16 px (`size="large"`) or 12 px (`size="small") — well under the 44 px comfortable touch target. The component adds no coarse-pointer expansion layer itself, so rely on the wrapping label for tap area, and give adjacent labels vertical breathing room in dense lists.
+
+Group checkboxes under a visible question. Each item needs its own label; a parent or select-all checkbox needs text that explains what it covers, because the indeterminate mark alone carries no meaning out of context.
+
+Colors come from `--hui-*` theme tokens, so hover, checked, danger, and disabled surfaces adapt to dark mode automatically. Layout uses logical properties, so nothing needs mirroring for right-to-left locales; keep custom indentation symmetric with logical utilities such as `ms-4`.
+
+Long labels wrap inside the `Label`; they never truncate or push the indicator out of line. For multi-line content, use the card layout shown in [Card style](#card-style) instead of cramming prose into a single label line.
 
 ## Installation
 
@@ -80,30 +94,86 @@ import { Checkbox, CheckboxGroup } from "@/components/ui/checkbox";
 <Checkbox />
 ```
 
+A bare `<Checkbox />` has no accessible name. Wrap it in a `Label`, or pass `aria-label` when no visible label fits:
+
 ```tsx
-<CheckboxGroup defaultValue={["next"]}>
-  <Label>
-    <Checkbox value="next" />
-    Next.js
-  </Label>
-  <Label>
-    <Checkbox value="vite" />
-    Vite
-  </Label>
-  <Label>
-    <Checkbox value="astro" />
-    Astro
-  </Label>
-</CheckboxGroup>
+<Label>
+  <Checkbox defaultChecked />
+  Email me about new comments
+</Label>
 ```
+
+Use controlled state (`checked` + `onCheckedChange`) only when the application owns the value; `defaultChecked` covers most forms.
+
+## Don't do this
+
+### Choosing one option from many
+
+```tsx
+// Bad
+<Label><Checkbox value="sm" /> Small</Label>
+<Label><Checkbox value="md" /> Medium</Label>
+<Label><Checkbox value="lg" /> Large</Label>
+```
+
+```tsx
+// Good
+<RadioGroup defaultValue="md">
+  <Label><Radio value="sm" /> Small</Label>
+  <Label><Radio value="md" /> Medium</Label>
+  <Label><Radio value="lg" /> Large</Label>
+</RadioGroup>
+```
+
+Checkboxes promise independence: people expect to tick two sizes or none at all. When options are mutually exclusive, checkboxes invite invalid combinations and hide the constraint until validation fails. A radio group makes "exactly one" part of the interface instead of an error message.
+
+### Label text that isn't connected
+
+```tsx
+// Bad
+<div className="flex items-center gap-2">
+  <Checkbox />
+  <span>Email me about new comments</span>
+</div>
+```
+
+```tsx
+// Good
+<Label>
+  <Checkbox />
+  Email me about new comments
+</Label>
+```
+
+Unassociated text is decoration as far as assistive technology is concerned: the checkbox is announced as an unnamed "checkbox", and tapping the words does nothing. Wrapping both in a `Label` names the control and turns the entire phrase into the click and touch target.
+
+### Controlled state without a handler
+
+```tsx
+// Bad
+<Checkbox checked={subscribed} />
+
+// Good
+<Checkbox
+  checked={subscribed}
+  onCheckedChange={(next) => setSubscribed(next)}
+/>
+
+// Good, if you don't need app state
+<Checkbox defaultChecked={subscribed} />
+```
+
+Passing `checked` without `onCheckedChange` creates a control that ignores every click while looking broken to the person using it. If React state is not required, let the checkbox own its state with `defaultChecked` and read the result from form data.
 
 ## Examples
 
-Examples cover disabled, described, card-style, and form-connected checkboxes.
+Examples cover disabled, described, card-style, and form-connected checkboxes, followed by group patterns including parent and nested-parent selection.
 
 For accessible labeling and validation, use `Field` to connect a checkbox with its label, description, and error. See the [Field examples](/docs/components/field#examples).
 
 ### Disabled
+
+Both unchecked and pre-checked items stay readable but reject interaction.
 
 <ComponentPreview name="checkbox-disabled" />
 
@@ -112,6 +182,8 @@ For accessible labeling and validation, use `Field` to connect a checkbox with i
 <ComponentPreview name="checkbox-with-description" />
 
 ### Card Style
+
+The whole card is one `Label`, so the description extends the tap target too.
 
 <ComponentPreview name="checkbox-card" />
 
@@ -123,9 +195,7 @@ Field provides accessible labeling and validation structure for form controls. U
 
 ## Checkbox Group
 
-Checkbox Group is included in the same component file. Use it when several checkboxes answer the same question or share one submitted value.
-
-For group labeling and validation, use `Field` and `Fieldset` to connect the shared question and error to the checkbox group. See the [Field examples](/docs/components/field#examples).
+Checkbox Group is included in the same component file. It manages a single `string[]` value across its items and lays them out vertically by default; `orientation="horizontal"` wraps items in a row. Pass `allValues` to enable a `parent` checkbox that selects and clears every item, with the indeterminate mark appearing automatically while only some children are selected.
 
 ### Basic Group
 
@@ -137,9 +207,13 @@ For group labeling and validation, use `Field` and `Fieldset` to connect the sha
 
 ### Parent Checkbox
 
+The parent selects all children and reports partial selection with the indeterminate dash.
+
 <ComponentPreview name="checkbox-group-parent" />
 
 ### Nested Parent Checkbox
+
+Parent groups can contain child groups for hierarchical permissions.
 
 <ComponentPreview name="checkbox-group-nested-parent" />
 
@@ -149,6 +223,15 @@ For group labeling and validation, use `Field` and `Fieldset` to connect the sha
 
 ## API reference
 
-`Checkbox` and `CheckboxGroup` forward their matching Base UI props and add Honest UI size and visual-variant styling. Use `checked` with `onCheckedChange` for controlled state or `defaultChecked` for uncontrolled state; an individual checkbox can also represent the indeterminate value.
+`Checkbox` and `CheckboxGroup` forward their matching Base UI props and add Honest UI styling:
+
+| Component | Prop | Values | Default |
+| --- | --- | --- | --- |
+| `Checkbox` | `size` | `large`, `small` | `large` |
+| `CheckboxGroup` | `orientation` | `vertical`, `horizontal` | `vertical` |
+
+On `Checkbox`: use `checked`/`onCheckedChange` or `defaultChecked` for state, `indeterminate` for the mixed visual, `parent` for select-all behavior inside a group, and `name`/`value`/`uncheckedValue` for form submission. An unchecked checkbox submits nothing unless you set `uncheckedValue`. `disabled` removes the item from interaction entirely; `readOnly` blocks changes while keeping the value submittable.
+
+On `CheckboxGroup`: `value`/`onValueChange` hold the selected id array, `defaultValue` seeds it uncontrolled, and `allValues` defines the full set used by parent checkboxes.
 
 See the [Base UI Checkbox API](https://base-ui.com/react/components/checkbox#api-reference) and [Checkbox Group API](https://base-ui.com/react/components/checkbox-group#api-reference).

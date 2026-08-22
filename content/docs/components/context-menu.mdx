@@ -12,23 +12,31 @@ links:
 
 Use Context Menu for secondary actions that relate to a specific surface, document, or selected object. It opens where a person right-clicks or long-presses, keeping the available actions close to the object they affect.
 
-Do not make a context menu the only way to reach an essential action. Many people will not discover it, and some input methods do not provide a familiar context-menu gesture. Keep primary and high-frequency actions visible elsewhere in the interface.
+Do not make a context menu the only way to reach an essential action. Many people will not discover it, some input methods do not provide a familiar context-menu gesture, and actions buried behind an undocumented right-click are invisible during task flows and screen-reader linear navigation. Keep primary and high-frequency actions visible elsewhere; treat the context menu as an accelerant, not a doorway.
 
 ## Anatomy
 
-Context Menu includes a root, trigger region, content, items, optional groups and labels, separators, an empty state, and nested submenus. Every part is defined in the single `context-menu.tsx` file and exported as a named PascalCase component, matching the rest of Honest UI.
+Context Menu includes a root, trigger region, popup, items, optional groups and labels, separators, an empty state for filtered results, and nested submenus. Items accept leading and trailing icons through props, and every part is defined in `context-menu.tsx` and exported as a named PascalCase component, matching the rest of Honest UI.
 
 ## Behavior
 
-The trigger opens the menu on right-click, long-press, or the platform context-menu keyboard command. Items close the menu after selection. Submenus open from a submenu trigger and preserve arrow-key navigation.
+**Opening.** The trigger region opens the menu on right-click or long-press. Unlike a click-opened Menu, arrow keys do not open it — the gesture is inherently pointer- or platform-driven, which is why the keyboard path below matters.
 
-Set `autocomplete` on the root when a genuinely long command list benefits from filtering. In automatic mode, item `value` strings and text labels are matched against the query. Labels and separators are hidden while filtering so the results remain a single navigable list. Use `autocompleteMode="manual"` when your application owns filtering.
+**Navigating and activating.** Once open, behavior matches Menu: arrow keys move the highlight without wrapping (`loopFocus` is fixed off), <kbd>Home</kbd> and <kbd>End</kbd> jump to the ends of the list, typeahead jumps to matching labels, and <kbd>Enter</kbd> or <kbd>Space</kbd> activates the highlighted item. Items close the menu after activation unless `closeOnClick` is false. The opening right-click itself never activates an item underneath the cursor.
+
+**Closing.** <kbd>Escape</kbd> closes the menu, and clicks outside close it too; the right-click that opened the menu cannot immediately dismiss it.
+
+**Submenus.** Pressing <kbd>Arrow Right</kbd> on a highlighted submenu trigger opens the child menu; <kbd>Escape</kbd> closes only that child before it reaches the parent.
+
+**Searchable mode.** Set `autocomplete` on the root when a genuinely long command list benefits from filtering. In automatic mode, item `value` strings — or visible text when no value is set — are matched against the query, and labels, separators, and groups hide while filtering so results stay one navigable list. The popup switches to `role="dialog"` with the search input focused on open; <kbd>Enter</kbd> or <kbd>Arrow Right</kbd> opens the highlighted submenu, and <kbd>Escape</kbd> backs out of the submenu first. Use `autocompleteMode="manual"` when your application owns filtering; `inputValue` and `onInputValueChange` support both controlled and uncontrolled queries.
 
 ## Accessibility
 
-Give a non-interactive trigger region `tabIndex={0}` so keyboard users can focus it and open the menu with Shift+F10 or the Menu key. The same actions must also be available through a visible control when they are required to complete a task.
+The trigger renders a `<div>`, not a button, so give a non-interactive region `tabIndex={0}` and a name describing what it acts on. Keyboard users can then focus it and open the menu with <kbd>Shift</kbd>+<kbd>F10</kbd>, the <kbd>Menu</kbd> key, or their platform's equivalent — the same command the browser already uses on focused elements. Because there is no visual affordance, announce the capability in nearby text or a tooltip, as the examples do.
 
-Use concise action labels and mark unavailable items as disabled instead of removing them when their absence would be confusing. The searchable variant gives its input an explicit accessible label through `searchLabel`; change that label when “Search menu items” is not specific enough. Base UI supplies menu roles, focus management, arrow-key movement, Escape behavior, and long-press handling.
+Long-press covers touch, but its discoverability is worse than right-click's; anything reachable only here will be missed. Mark unavailable items as disabled instead of removing them when their absence would confuse, keep action labels concise and verb-first, and give the searchable variant a specific `searchLabel` when "Search menu items" does not describe the scope.
+
+Base UI supplies the menu roles, focus management, arrow-key movement, typeahead, Escape behavior, and long-press handling. Colors come from theme tokens, so highlights and the destructive variant adapt to dark mode automatically. Item padding uses logical properties and the popup mirrors its offsets in right-to-left locales; long labels wrap inside items rather than widening the popup past the viewport.
 
 ## Installation
 
@@ -106,6 +114,68 @@ import {
 </ContextMenu>
 ```
 
+## Don't do this
+
+### An unfocusable trigger region
+
+```tsx
+// Bad
+<ContextMenuTrigger className="...">
+  {/* canvas surface */}
+</ContextMenuTrigger>
+```
+
+```tsx
+// Good
+<ContextMenuTrigger className="..." tabIndex={0}>
+  Right-click or press Shift+F10 for actions
+</ContextMenuTrigger>
+```
+
+The trigger renders a `<div>`, which sits outside the tab order by default. Without `tabIndex`, keyboard users can never open the menu — no amount of arrow-key support downstream helps if the entry point is unreachable. Focusable regions get a visible ring automatically.
+
+### Actions reachable only by right-click
+
+```tsx
+// Bad
+<div className="toolbar">
+  <Button>Rename</Button>
+  {/* Delete exists only in the context menu */}
+</div>
+```
+
+```tsx
+// Good
+<div className="toolbar">
+  <Button>Rename</Button>
+  <Button variant="destructive-outline">Delete</Button>
+</div>
+```
+
+A hidden right-click path hides the action from everyone who has not been told about it — touch users, screen-reader users working linearly, and anyone who simply never tries. Duplicate essential actions in a visible control and let the context menu shortcut them.
+
+### Destroying data on a single click
+
+```tsx
+// Bad
+<ContextMenuItem variant="destructive" onClick={destroyProject}>
+  Delete project
+</ContextMenuItem>
+```
+
+```tsx
+// Good
+<ContextMenuItem variant="destructive" onClick={() => setConfirmOpen(true)}>
+  Delete project…
+</ContextMenuItem>
+
+<AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+  {/* States what is lost; Cancel starts focused */}
+</AlertDialog>
+```
+
+The destructive variant colors the item red; it does not add safety. A slip from Rename to Delete one row away should not end a project irreversibly. Route irreversible actions through a confirmation Dialog that names the consequence and starts on the safe choice.
+
 ## Examples
 
 The first example shows grouped actions, a nested destination menu, destructive styling, and visible feedback after selection. The second adds inline search for a longer command list.
@@ -116,10 +186,21 @@ The first example shows grouped actions, a nested destination menu, destructive 
 
 ### Searchable commands
 
+Filtering collapses a long command list to matching items; the empty state appears only when nothing matches.
+
 <ComponentPreview name="context-menu-search" />
 
 ## API reference
 
-`ContextMenu` accepts the matching Base UI Context Menu root props plus optional search props: `autocomplete`, `autocompleteMode`, `inputValue`, `defaultInputValue`, and `onInputValueChange`. `ContextMenuContent` accepts popup props, positioning offsets, `searchLabel`, and `searchPlaceholder`.
+`ContextMenu` accepts the matching Base UI Context Menu root props plus optional search props:
 
-Items accept Base UI item props plus `value`, `leadingIcon`, `trailingIcon`, `inset`, and `variant`. The `value` supplies searchable text when it should differ from the visible item label. See the [Base UI Context Menu API](https://base-ui.com/react/components/context-menu#api-reference) for the underlying open-state, event, positioning, and interaction details.
+| Prop | Values | Default |
+| --- | --- | --- |
+| `autocomplete` | boolean | `false` |
+| `autocompleteMode` | `auto`, `manual` | `auto` |
+| `inputValue` / `defaultInputValue` | string | — / `""` |
+| `onInputValueChange` | function | — |
+
+`ContextMenuContent` accepts popup props, positioning shortcuts (`sideOffset`, `align`, `alignOffset`), plus `searchLabel` and `searchPlaceholder` for the filter input's accessible label and placeholder.
+
+Items accept Base UI item props plus `value`, `leadingIcon`, `trailingIcon`, `inset`, and `variant`. The `value` supplies searchable text when it should differ from the visible item label. In automatic filtering mode, non-matching items are removed rather than hidden, so group wrappers and separators disappear with them. See the [Base UI Context Menu API](https://base-ui.com/react/components/context-menu#api-reference) for the underlying open-state, event, positioning, and interaction details.

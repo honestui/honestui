@@ -7,21 +7,29 @@ description: Move through a collection that is split into numbered pages.
 
 ## Overview
 
-Use Pagination when a long list is split into pages.
+Use Pagination when a long collection is split into discrete, addressable pages: search results, tables, audit logs, directories. Numbered pages give people a mental map of the whole set ("128 results, I'm on page 3") and direct access to specific positions — two things infinite scroll cannot provide.
 
-Pagination is useful for tables, search results, audit logs, directories, and other collections where showing every item at once would be slow or hard to scan.
+Build every page link from the real result count and keep the current page both visibly and programmatically marked. See [Don't do this](#dont-do-this) for the mistakes that break that contract.
 
 ## Anatomy
 
-Pagination usually includes previous and next controls, page links, the current page, and sometimes skipped ranges.
+Pagination includes previous and next controls, numbered page links wrapped in list items, an ellipsis for skipped ranges, and the marked current page. It renders a `<nav>` landmark labeled "pagination", so screen-reader users can jump to it directly. `PaginationLink` styles itself as a ghost button and switches to the outline treatment when active; Previous and Next collapse to icon-only buttons on small screens.
 
 ## Usage guidance
 
-Use pagination when pages are stable and users need direct access to specific positions. Use infinite loading only when browsing is more important than precise navigation.
+Prefer links over click handlers: real `href` values mean every page is openable, copyable, shareable, and works before hydration. Show enough neighboring numbers for people to step locally (typically one or two each side) and use `PaginationEllipsis` to compress distant ranges rather than rendering fifty links.
+
+Disable or omit Previous and Next only at the true boundaries of the collection. On the first page there is no previous page; pretending otherwise sends people to a broken state. The component has no built-in disabled styling for these controls — mark boundaries with `aria-disabled` and drop the click handler, as the demo does.
 
 ## Accessibility
 
-Use clear labels for previous and next controls. Mark the current page so screen readers can identify it.
+The wrapper emits `<nav aria-label="pagination">`, and `PaginationLink` sets `aria-current="page"` whenever you pass `isActive`, so assistive technology announces "current page" instead of just reading another number. That attribute is the entire mechanism for communicating position — never fake it with styling alone.
+
+Previous and Next carry built-in accessible names ("Go to previous page", "Go to next page"), which matter most when they collapse to icons on small screens. `PaginationEllipsis` hides its dots from assistive technology and announces "More pages" so skipped ranges are not read as silence.
+
+Links show visible focus rings through their button styling. Colors come from theme tokens, so active, hover, and default states adapt to dark mode automatically. Page-number targets are button-sized; leave extra spacing if pagination is a primary touch control on mobile.
+
+There is no loading state: render your own progress feedback near the collection while new pages fetch.
 
 ## Installation
 
@@ -88,26 +96,87 @@ import {
 </Pagination>
 ```
 
+Pass `render={<Link href="..." />}` to compose with your router while keeping pagination styling. Override the landmark label per instance with `aria-label` when several paginated collections share a view.
+
+## Don't do this
+
+### Paging with onClick buttons
+
+```tsx
+// Bad
+<PaginationLink onClick={() => setPage(2)}>2</PaginationLink>
+```
+
+```tsx
+// Good
+<PaginationLink href="?page=2" onClick={softNavigate}>2</PaginationLink>
+```
+
+Without an `href`, a page number is not a link: it cannot be opened in a new tab, copied, or revisited after refresh, and the URL no longer describes what is on screen. Keep the `href` as the source of truth and intercept the click only to avoid a full reload.
+
+### Omitting the current-page marker
+
+```tsx
+// Bad
+{pages.map((p) => (
+  <PaginationLink key={p} href={`?page=${p}`}>{p}</PaginationLink>
+))}
+```
+
+```tsx
+// Good
+<PaginationLink href={`?page=${page}`} isActive>{page}</PaginationLink>
+```
+
+Styling alone does not travel: without `isActive`, no `aria-current="page"` is emitted and screen-reader users hear an unordered list of identical numbers with no way to know where they are. Mark exactly one link per pagination control.
+
+### Hard-coding the page count
+
+```tsx
+// Bad
+{[1, 2, 3].map((p) => (
+  <PaginationLink key={p} href={`?page=${p}`} isActive={p === page}>
+    {p}
+  </PaginationLink>
+))}
+```
+
+```tsx
+// Good
+{lastPage > 3 && <PaginationEllipsis />}
+{/* Render pages from total count / pageSize */}
+```
+
+A fixed `[1, 2, 3]` breaks silently the day the collection grows past three pages: pages four and beyond become unreachable even though Next keeps promising them. Derive the range from the actual item count, and use the ellipsis once the honest range no longer fits.
+
 ## Examples
 
 ### Results with page position
 
-State which results are visible so people can understand their position in the collection.
+State which slice is visible above the controls so people can orient before choosing a page.
 
 <ComponentPreview name="pagination-results" />
 
 ### Compact controls
 
+Numbered links only, for short collections where Previous and Next add noise.
+
 <ComponentPreview name="pagination-compact" />
 
 ### Previous and next only
 
+For linear browsing where jumping to arbitrary pages has no value.
+
 <ComponentPreview name="pagination-mini" />
-
-## Decision guidance
-
-Pagination does not own the current page or routing. Build every item from the real result count, keep the current page visibly and programmatically marked, and use URLs that can be opened, copied, and revisited. Disable or omit Previous and Next only at the real boundaries.
 
 ## API reference
 
-Pagination parts accept props for their matching native navigation, list, item, link, and span elements. `PaginationLink` adds active-page styling, while Previous and Next provide labeled link patterns. Supply real `href` values and `aria-current="page"` on the active link.
+All parts forward their matching native element props. `Pagination` renders a `<nav aria-label="pagination">`; `PaginationContent` renders a `<ul>`; `PaginationItem` renders an `<li>`; `PaginationEllipsis` renders an `aria-hidden` span with a visually hidden "More pages" label.
+
+| Prop | Component | Values | Default |
+| --- | --- | --- | --- |
+| `isActive` | `PaginationLink` | boolean | `false` |
+| `size` | `PaginationLink` | Button sizes (`icon`, `default`, …) | `"icon"` |
+| `render` | `PaginationLink`, Previous, Next | Base UI `render` element | — |
+
+`PaginationLink` emits `aria-current="page"` and `data-active` when `isActive` is true, and styles itself via Button variants: `ghost` normally, `outline` when active. `PaginationPrevious` and `PaginationNext` are preset links with "Go to previous page" and "Go to next page" labels plus chevron icons; they hide their text below the `sm` breakpoint.

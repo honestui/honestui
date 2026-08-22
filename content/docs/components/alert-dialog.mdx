@@ -1,0 +1,237 @@
+---
+title: Alert Dialog
+description: Interrupt work with a modal decision that must be answered before anything else can continue.
+ 
+links:
+  doc: https://base-ui.com/react/components/alert-dialog#api-reference
+---
+
+<ComponentPreview name="alert-dialog-demo" previewClassName="h-96 sm:h-96" />
+
+## Overview
+
+Use an Alert Dialog when the person must make an explicit decision before the application can continue: deleting data, discarding unsaved changes, acknowledging a blocking error. The popup takes over the screen, and every path back to the task runs through the choice it presents.
+
+Alert Dialog is deliberately more restrictive than [Dialog](/docs/components/dialog). A Dialog is a focused workspace — forms, detail views, short tasks. An Alert Dialog is a checkpoint — a question with consequences. If either button can be clicked without real consequence, or if the content needs inputs, scrolling, or several steps, use a Dialog instead.
+
+## Anatomy
+
+An alert dialog has a trigger, popup, header, title, description, footer, body, and close actions. The title states the decision as a question naming the affected object ("Delete Design workspace?"). The description spells out what is lost and whether it can be undone. The footer holds exactly two kinds of action: the safe choice and the risky one, visually distinguished so they cannot be confused at a glance.
+
+The parts live in `alert.tsx` (re-exported by `alert-dialog.tsx`) because inline Alerts and the modal family share their status tokens.
+
+## Differences from Dialog
+
+Under the hood, Alert Dialog is Base UI's Dialog with the escape hatches removed. Three differences follow from that, each verified in Base UI's source:
+
+- **Always modal.** The regular Dialog accepts a `modal` prop; Alert Dialog does not. Focus is always trapped inside the popup and the page behind it is inert.
+- **Outside clicks do not dismiss.** A regular Dialog closes when you click its backdrop. Alert Dialog hard-codes pointer dismissal off, so clicking outside does nothing — the decision cannot be escaped by accident.
+- **Announced as a decision.** The popup renders `role="alertdialog"` rather than `role="dialog"`, so assistive technology introduces it as something requiring a response.
+
+<kbd>Escape</kbd> still works: closing via keyboard remains available even though pointer dismissal is disabled, so the dialog stays operable without a mouse.
+
+## Behavior
+
+**Opening.** Focus moves into the popup, the backdrop dims the page, and scrolling locks. Place initial focus on the safe action rather than the destructive one using `initialFocus` — see the [Dialog guidance](/docs/components/dialog#behavior), which applies unchanged here.
+
+**While open.** <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> cycle between the two actions only. There is nothing else to explore; that is the point. <kbd>Escape</kbd> activates the safe outcome of leaving without deciding.
+
+**Deciding.** Both buttons close the dialog through `AlertDialogClose`. Wire the consequence to the risky button's own handler. After a destructive action completes, show the new state on the page — a success Alert where the deleted object used to be — so the result is visible without another announcement channel.
+
+Keep these dialogs rare. A product that interrupts constantly teaches people to confirm without reading, which defeats the protection on the one occasion it matters.
+
+## Accessibility
+
+Always provide `AlertDialogTitle`; it names the popup for assistive technology. Add `AlertDialogDescription` when consequences need spelling out — for destructive actions, always spell them out.
+
+Make the two choices unmistakable in words as well as color: "Delete workspace" beats "Confirm", and "Keep workspace" beats "Cancel" when cancel could be misread. Style the risky action with the destructive variant and start focus on the safe one, so <kbd>Enter</kbd> pressed in haste does the least harm.
+
+Because pointer dismissal is off, people who click outside get no accidental outcomes; the only exits are the labeled buttons and <kbd>Escape</kbd>. Focus returns to the trigger when the popup closes.
+
+Colors come from theme tokens, so the backdrop dim and popup surface adapt to dark mode automatically. Titles wrap within the popup instead of overflowing at 200% zoom, and the footer stacks its buttons full-width on small screens so both remain reachable with a thumb.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["alert-dialog"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui-components/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="alert-dialog" title="components/ui/alert-dialog.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+```
+
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger>Delete workspace</AlertDialogTrigger>
+  <AlertDialogPopup>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Delete Design workspace?</AlertDialogTitle>
+      <AlertDialogDescription>
+        This permanently deletes the workspace and its sample data.
+        This action cannot be undone.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogClose render={<Button variant="ghost" />}>
+        Keep workspace
+      </AlertDialogClose>
+      <AlertDialogClose render={<Button variant="destructive" />}>
+        Delete workspace
+      </AlertDialogClose>
+    </AlertDialogFooter>
+  </AlertDialogPopup>
+</AlertDialog>
+```
+
+Both footer buttons use `AlertDialogClose`, which guarantees the popup closes whichever way the decision goes; attach side effects to the rendered button's handler.
+
+## Don't do this
+
+### Focus landing on the destructive button
+
+```tsx
+// Bad
+<AlertDialogPopup>
+  {/* ... */}
+  <AlertDialogFooter>
+    <AlertDialogClose>Cancel</AlertDialogClose>
+    <AlertDialogClose render={<Button variant="destructive" />}>
+      Delete everything
+    </AlertDialogClose>
+  </AlertDialogFooter>
+</AlertDialogPopup>
+```
+
+```tsx
+// Good
+<AlertDialogFooter>
+  <AlertDialogClose render={<Button variant="ghost" ref={safeRef} />}>
+    Keep workspace
+  </AlertDialogClose>
+  <AlertDialogClose render={<Button variant="destructive" />}>
+    Delete workspace
+  </AlertDialogClose>
+</AlertDialogPopup>
+```
+
+Without direction, focus lands on the first tabbable element — often the destructive action itself. One reflexive <kbd>Enter</kbd> confirms an irreversible loss. Start focus on the safe action (`initialFocus={safeRef}` on the popup) so the destructive path requires deliberate movement toward it.
+
+### Using Alert Dialog for information
+
+```tsx
+// Bad
+<AlertDialog open>
+  <AlertDialogPopup>
+    <AlertDialogTitle>Export complete</AlertDialogTitle>
+    <AlertDialogDescription>Your file finished exporting.</AlertDialogDescription>
+    <AlertDialogFooter>
+      <AlertDialogClose>OK</AlertDialogClose>
+    </AlertDialogFooter>
+  </AlertDialogPopup>
+</AlertDialog>
+```
+
+```tsx
+// Good
+toastManager.add({ type: "success", title: "Export complete" });
+```
+
+A modal that announces good news and offers exactly one button steals attention and gives nothing to decide. Match the component to the interaction shape: completion notices are Toasts, conditions needing visibility are inline Alerts, and only genuine blocking decisions earn an Alert Dialog.
+
+### Vague labels on irreversible actions
+
+```tsx
+// Bad
+<AlertDialogFooter>
+  <AlertDialogClose>No</AlertDialogClose>
+  <AlertDialogClose render={<Button variant="destructive" />}>OK</AlertDialogClose>
+</AlertDialogFooter>
+```
+
+```tsx
+// Good
+<AlertDialogFooter>
+  <AlertDialogClose>Keep workspace</AlertDialogClose>
+  <AlertDialogClose render={<Button variant="destructive" />}>
+    Delete workspace
+  </AlertDialogClose>
+</AlertDialogFooter>
+```
+
+"OK" on a red button answers nothing: OK what? Generic pairs like No/OK force people to reread the description under stress and invite wrong-order clicks. Name both buttons after what they do to the affected object.
+
+## Examples
+
+### Destructive confirmation
+
+The full pattern in context: settings page, confirmation naming the object, then a visible success state replacing what was deleted.
+
+<ComponentPreview name="alert-dialog-demo" previewClassName="h-96 sm:h-96" />
+
+### Close confirmation
+
+When closing would discard work, interrupt a process, or hide important state, ask before continuing.
+
+<ComponentPreview name="dialog-close-confirmation" />
+
+## API reference
+
+All parts forward their matching Base UI Alert Dialog props. `AlertDialogOverlay` aliases `AlertDialogBackdrop`, and `AlertDialogContent` aliases `AlertDialogPopup`.
+
+| Part | Renders | Notes |
+| --- | --- | --- |
+| `AlertDialog` | Root | Controlled (`open` / `onOpenChange`) or uncontrolled |
+| `AlertDialogTrigger` | Button | Opens the popup |
+| `AlertDialogPortal` | Portal | Mounts the popup outside the layout tree |
+| `AlertDialogBackdrop` | Div | Dimmed overlay; ignores clicks |
+| `AlertDialogPopup` | `div role="alertdialog"` | The decision surface |
+| `AlertDialogHeader` | Div | Title and description block |
+| `AlertDialogBody` | Div | Description content |
+| `AlertDialogFooter` | Div | Action row; stacks full-width on small screens |
+| `AlertDialogTitle` | Heading | Names the decision for assistive technology |
+| `AlertDialogDescription` | Paragraph | States the consequence |
+| `AlertDialogClose` | Button | Closes the popup regardless of decision |
+
+Unlike Dialog, the root accepts no `modal` prop and no pointer-dismissal override — those behaviors are fixed as described above. The popup still accepts `initialFocus` and `finalFocus`. See the [Base UI Alert Dialog API](https://base-ui.com/react/components/alert-dialog#api-reference).

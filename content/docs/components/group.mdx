@@ -7,21 +7,29 @@ description: Join related controls into one visually connected set.
 
 ## Overview
 
-Use Group to visually connect controls that work together.
+Use Group to visually connect controls that work together on a single object or decision: an input with its copy button, a set of view actions, segmented filter choices. The container draws one shared border, background, and shadow so the children read as one instrument rather than scattered buttons.
 
-Group is useful for segmented inputs, attached buttons, search boxes with actions, and compact control sets.
+The connection is semantic as well as visual. The container renders `role="group"`, so assistive technology announces the children as one related unit — which is exactly why unrelated controls should never be grouped to save space (see [Don't do this](#dont-do-this)).
 
 ## Anatomy
 
-A group wraps multiple controls and adjusts their borders or radius so they read as one unit.
+A group has three parts:
 
-## Usage guidance
+- **Group** is the container: an inline-flex box with a hairline border, shared background, and `overflow-hidden` that clips its children into one rounded shape. When an input inside receives focus, the whole group's border switches to the accent color.
+- **GroupItem** wraps each child. It uses Base UI's `useRender` with a `render` prop, so you render a real control (`<Button />`, `<Input />`) through it. It strips the child's own radius, border, and shadow so edges meet seamlessly.
+- **GroupSeparator** is a vertical separator that stretches the full height of the group, dividing children that should stay visually distinct.
 
-Use Group when controls are part of the same action. Do not group unrelated buttons just to save space.
+Because the container clips overflow, a child's focus ring would be cut off at the edge; GroupItem raises focused children above their neighbors (`z-index: 10`) so the ring stays fully visible.
+
+## Group versus other components
+
+Group only joins visuals. It provides no selection model, no labels, and no keyboard behavior beyond normal tab order — use it when the children already have all of that. Use **Toolbar** for a command set with roving focus, **Fieldset** for grouping one form question with its legend, **InputGroup** when context like a prefix or suffix belongs inside a control's own border, and **ToggleGroup** for pressed-state choices. As a layout primitive, Group itself has no loading, disabled, or destructive states; those belong to the controls inside.
 
 ## Accessibility
 
-Grouped controls still need their own labels or accessible names. Keyboard order should follow the visual order.
+Each control inside keeps its own name and semantics — Group adds nothing except the `role="group"` wrapper. Give icon-only children an accessible name on the rendered element, not on the wrapper (see [Don't do this](#dont-do-this)). DOM order is visual order, so tab order follows what people see.
+
+On touch devices, Buttons normally expand their hit area invisibly; inside a Group that expansion is neutralized so adjacent items stay flush. Leave extra spacing around groups that are primary touch targets. Colors come from theme tokens, so groups adapt to dark mode automatically, and flexbox spacing mirrors in right-to-left locales.
 
 ## Installation
 
@@ -68,24 +76,113 @@ import { Group, GroupItem, GroupSeparator } from "@/components/ui/group";
 
 ```tsx
 <Group>
-  <GroupItem render={<Button />}>Button</GroupItem>
+  <GroupItem render={<Button variant="secondary" />}>Button</GroupItem>
   <GroupSeparator />
-  <GroupItem render={<Button />}>Button</GroupItem>
+  <GroupItem render={<Button variant="secondary" />}>Button</GroupItem>
 </Group>
 ```
 
-## Examples
+## Don't do this
 
-The example shows an input attached to an action.
+### Grouping unrelated actions
+
+```tsx
+// Bad
+<Group>
+  <GroupItem render={<Button variant="secondary" />}>Delete workspace</GroupItem>
+  <GroupItem render={<Button variant="secondary" />}>View docs</GroupItem>
+  <GroupItem render={<Button variant="secondary" />}>Sign out</GroupItem>
+</Group>
+```
+
+```tsx
+// Good
+<div className="flex gap-2">
+  <Button variant="destructive">Delete workspace</Button>
+  <Button variant="ghost" render={<Link href="/docs" />}>View docs</Link>
+</div>
+```
+
+Visually attached controls imply they operate on the same object in the same way, and `role="group"` makes screen readers announce them as one unit. A destructive action sitting flush against navigation teaches people to stop reading group contents carefully. Group only controls that genuinely act together.
+
+### Exclusive filters without a selected state
+
+```tsx
+// Bad
+<Group>
+  <GroupItem render={<Button variant="secondary" />}>Day</GroupItem>
+  <GroupItem render={<Button variant="secondary" />}>Week</GroupItem>
+  <GroupItem render={<Button variant="secondary" />}>Month</GroupItem>
+</Group>
+```
+
+```tsx
+// Good
+<ToggleGroup defaultValue={["week"]} aria-label="Range">
+  <Toggle value="day">Day</Toggle>
+  <Toggle value="week">Week</Toggle>
+  <Toggle value="month">Month</Toggle>
+</ToggleGroup>
+```
+
+Plain buttons cannot express "this one is active", so sighted users see no state change and screen-reader users hear nothing announced at all. An exclusive choice among options is exactly what ToggleGroup's single-selection mode emits `aria-pressed` for. Use Group for actions, not selections.
+
+### Naming the wrapper instead of the control
+
+```tsx
+// Bad
+<Group>
+  <GroupItem aria-label="Copy URL">
+    <Button size="icon">
+      <CopyIcon />
+    </Button>
+  </GroupItem>
+</Group>
+```
+
+```tsx
+// Good
+<Group>
+  <GroupItem render={<Button size="icon" aria-label="Copy URL" />}>
+    <CopyIcon />
+  </GroupItem>
+</Group>
+```
+
+An accessible name belongs to the focusable control, because that is what screen readers and voice-control users interact with. Passing `aria-label` to the wrong layer leaves the button unnamed while adding a stray labelled `<div>`. Render the real control through `render` and label it there.
+
+## Examples
 
 ### With Input
 
+An input joined to the action that consumes its value; focusing the input highlights the whole group's border.
+
 <ComponentPreview name="group-with-input" />
 
-## Decision guidance
+### Segmented filters
 
-Group joins related controls into one visual unit. It does not create a form label, selection model, or keyboard behavior. Use Toolbar for a command set, Fieldset for one form question, and Input Group when context belongs inside a control's border.
+Three related views share one surface. Pair this pattern with ToggleGroup when selection must be announced — see [Don't do this](#exclusive-filters-without-a-selected-state).
+
+<ComponentPreview name="group-segmented-filters" />
+
+### Filter actions
+
+Status filters that trigger the same action with different arguments.
+
+<ComponentPreview name="group-filter-actions" />
+
+### Toolbar actions
+
+Icon-only items stay compact; every one carries an explicit accessible name.
+
+<ComponentPreview name="group-toolbar-actions" />
 
 ## API reference
 
-`Group` accepts native `div` props and layout options exposed by the component. `GroupItem` accepts native element props for a child region, and `GroupSeparator` renders the visual boundary. Interactive children keep their own semantics and focus behavior.
+| Part | Renders | Props |
+| --- | --- | --- |
+| `Group` | `<div role="group">` | Native `div` props plus `className`; children stretch to equal height |
+| `GroupItem` | configurable via `render`, defaults to `<div>` | Base UI `useRender` props including `render`; native element props pass through |
+| `GroupSeparator` | vertical `<div>` (via Separator) | `className` only |
+
+Group applies no behavior to its children beyond layout: interactive children keep their own semantics, focus behavior, and disabled handling.

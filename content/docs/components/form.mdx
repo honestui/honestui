@@ -7,9 +7,9 @@ description: Apply consistent structure to a native HTML form without hiding sub
 
 ## Overview
 
-Form is a thin wrapper around the native HTML `form` element.
+Form is a thin wrapper around the native HTML `form` element — it renders `<form>` and forwards every prop unchanged.
 
-Use it to keep Honest UI form markup consistent while your application continues to own submission, validation, pending state, server errors, and success feedback. Nothing is registered or submitted behind an abstraction.
+Use it to keep Honest UI form markup consistent while your application continues to own submission, validation, pending state, server errors, and success feedback. Nothing is registered or submitted behind an abstraction: because it is a native form, browser constraint validation still runs unless you opt out, values are submitted under each control's `name`, and server actions passed to `action` work as they would on any `<form>`.
 
 ## Anatomy
 
@@ -19,11 +19,15 @@ A form contains one native form root, its fields, and the actions that submit or
 
 `Form` accepts the same props as a native `<form>`, including `action`, `method`, `onSubmit`, and `noValidate`. It does not collect values into an object or distribute server errors. Read values with `FormData`, a server action, or the form library your project already uses.
 
+Because the wrapper is native, Field's submit-time machinery does not run automatically: wire per-field error display through Field's `validationMode`, `validate`, or `invalid` props, and let the browser's own constraint validation handle `required` and types when that is enough. See [Don't do this](#dont-do-this) for the most common way this goes wrong.
+
 Keep entered values in place after an error. Show pending state on the submit action, associate field errors with their controls, and place a visible status message where users can confirm the result.
 
 ## Accessibility
 
-Use a submit button with `type="submit"`; Honest UI buttons otherwise default to `type="button"`. Give every control a visible label, describe validation requirements before submission, and move focus only when users need to correct a specific problem. Announce asynchronous status without replacing the persistent visible message.
+Use a submit button with `type="submit"`; Honest UI buttons otherwise default to `type="button"` and pressing <kbd>Enter</kbd> will not submit anything. Give every control a visible label, describe validation requirements before submission, and move focus only when users need to correct a specific problem — focus the first invalid field after a failed submission rather than restarting the page.
+
+Announce asynchronous status with a persistent visible message plus `aria-live="polite"` (or `role="status"`), so screen reader users hear the outcome without the message disappearing from the screen.
 
 ## Installation
 
@@ -87,14 +91,88 @@ import { Form } from "@/components/ui/form";
 </Form>
 ```
 
+## Don't do this
+
+### Collecting values control by control
+
+```tsx
+// Bad
+const emailRef = React.useRef<HTMLInputElement>(null);
+const nameRef = React.useRef<HTMLInputElement>(null);
+
+<Form onSubmit={() => save(emailRef.current?.value, nameRef.current?.value)}>
+```
+
+```tsx
+// Good
+<Form
+  onSubmit={(event) => {
+    event.preventDefault();
+    const values = new FormData(event.currentTarget);
+    save(values.get("email"), values.get("fullName"));
+  }}
+>
+```
+
+Per-control refs break the moment a field moves, becomes conditional, or gains a wrapper, and they silently drop every field someone adds later without a ref. `FormData` reads exactly what the browser would submit, keyed by `name`, including dynamically added fields.
+
+### Submitting without feedback
+
+```tsx
+// Bad
+<Form onSubmit={(event) => {
+  event.preventDefault();
+  fetch("/api/subscribe", { method: "POST" });
+}}>
+```
+
+```tsx
+// Good
+<Form onSubmit={handleSubscribe}>
+  {/* ...fields... */}
+  <Button type="submit" disabled={pending}>
+    {pending && <LoaderCircleIcon className="animate-spin" aria-hidden="true" />}
+    Subscribe
+  </Button>
+  <p role="status">{status}</p>
+</Form>
+```
+
+A fire-and-forget request leaves people staring at an unchanged form: no confirmation on success, no recovery path on failure, and a button that can be clicked five more times while the first request is still flying. Disable the action while pending, keep its label stable with a spinner, and report the outcome in a live region.
+
 ## Examples
 
 The first example shows native submission with visible, in-page feedback. Zod remains an optional application dependency in the second example; Form does not require or configure it.
 
 ### Using with Zod
 
+Client-side validation mapped back onto named fields.
+
 <ComponentPreview name="form-zod" />
+
+### Newsletter capture
+
+Structure and copy only; your application supplies the submission handler.
+
+<ComponentPreview name="form-newsletter" />
+
+### Server-side error mapping
+
+Errors returned from the server are keyed by field `name` and routed to the matching `Field` through its `invalid` prop, while entered values stay in place.
+
+<ComponentSource name="form-server-error" title="examples/form-server-error.tsx" />
 
 ## API reference
 
 `Form` accepts `React.ComponentProps<"form">` and forwards every prop to the native element. It adds no custom props or submission behavior.
+
+Native props worth reaching for deliberately:
+
+| Prop | Purpose |
+| --- | --- |
+| `onSubmit` | Read `new FormData(event.currentTarget)` and call `preventDefault()` for client-handled submissions |
+| `action` | Pass a server action or endpoint for progressive-enhancement submissions |
+| `noValidate` | Suppress browser constraint bubbles when your fields own all messaging |
+| `method` / `encType` | Match what your endpoint expects for non-JS submissions |
+
+See the [MDN form documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) for everything else the native element supports.

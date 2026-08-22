@@ -11,21 +11,29 @@ links:
 
 ## Overview
 
-Use Tooltip to provide a short hint for an element.
+Use a Tooltip to provide a short hint for an element: what an icon-only button does, the full text behind a truncated label, a keyboard shortcut for a familiar action. The word "nonessential" matters — anything required to complete a task must be visible without hovering or focusing, because touch users cannot hover at all and many people never dwell long enough to trigger the tooltip.
 
-Tooltips are useful for icon-only buttons, truncated labels, unfamiliar controls, and brief extra context. Do not use tooltips for information that is required to complete a task.
+Tooltips are display-only. They close when focus moves on, so they cannot hold buttons, links, or form fields; use a Popover for interactive content opened deliberately.
 
 ## Anatomy
 
-A tooltip has a trigger and popup content. The content should be short, usually one sentence or phrase.
+A tooltip has a trigger and popup content, plus an optional arrow rendered by default. Wrap several tooltips in `TooltipProvider` to share delay behavior across them. Content should be short — one phrase or sentence — because it appears in small type next to the cursor and disappears as soon as attention moves.
 
 ## Behavior
 
-Tooltips appear on hover or focus. They should not contain interactive controls because users may not be able to reach them reliably.
+**Showing.** Tooltips appear on hover after a rest delay (600 ms by default) and on keyboard focus with no delay, so keyboard users get hints immediately upon tabbing. Moving between grouped tooltips inside one `TooltipProvider` skips the wait: once one is visible, adjacent tooltips open instantly, and a closed tooltip reopens instantly if another opens within 400 ms.
+
+**Dismissing.** Hovering away or blurring the trigger closes the tooltip. Pressing <kbd>Escape</kbd> dismisses it too, which matters when a tooltip covers something the person needs to see or click. A tooltip never takes focus itself — it stays purely visual.
+
+**Placement.** `side` (`top` by default), `align`, and `sideOffset` sit on `TooltipPopup`. Set `showArrow={false}` to remove the arrow. The popup flips and shifts to stay in the viewport.
 
 ## Accessibility
 
-The trigger should make sense without the tooltip when possible. For icon-only controls, also provide an accessible name.
+The trigger keeps its own accessible name and state; the popup gets no ARIA role and no automatic description link. That is intentional — Base UI treats tooltip text as supplementary, because screen readers do not reliably announce hover content. The practical consequence: every trigger must make sense without its tooltip. Icon-only controls need an explicit `aria-label`, and the tooltip becomes redundant reinforcement rather than the only source of the name.
+
+Keyboard parity is built in: focusing the trigger shows the same tooltip a mouse user sees, and <kbd>Escape</kbd> dismisses without moving focus. Because the tooltip does not receive focus, nothing about it appears in the tab order.
+
+Text wraps inside a capped width instead of forming a single long line, so hints remain readable near screen edges. Colors come from theme tokens for dark mode, entrance motion respects reduced-motion preferences through the component's transition classes, and placement uses logical sides that respect document direction.
 
 ## Installation
 
@@ -104,16 +112,106 @@ To group multiple tooltips so they appear instantly after the first one is opene
 </TooltipProvider>
 ```
 
+## Don't do this
+
+### Nesting the trigger inside a button
+
+```tsx
+// Bad
+<Button>
+  <TooltipTrigger>Save</TooltipTrigger>
+</Button>
+```
+
+```tsx
+// Good
+<Tooltip>
+  <TooltipTrigger render={<Button variant="secondary" />}>
+    Save
+  </TooltipTrigger>
+  <TooltipPopup>Save changes to this draft</TooltipPopup>
+</Tooltip>
+```
+
+`TooltipTrigger` renders a real `<button>` element, so wrapping one button inside another produces invalid HTML that browsers repair unpredictably — splitting event handling and breaking the accessibility tree. Use the `render` prop to merge the trigger onto the Button itself.
+
+### Hiding essential information behind the tooltip
+
+```tsx
+// Bad
+<Input aria-label="API key" />
+<Tooltip>
+  <TooltipTrigger aria-label="Help"><InfoIcon /></TooltipTrigger>
+  <TooltipPopup>Your API key is shown only once.</TooltipPopup>
+</Tooltip>
+```
+
+```tsx
+// Good
+<Input aria-label="API key" />
+<p className="text-muted-foreground text-xs">
+  Your API key is shown only once.
+</p>
+```
+
+Touch users can never hover, keyboard users lose the message the moment focus moves on, and screen readers may not announce it at all. If acting incorrectly causes data loss or confusion, the warning belongs in permanent, visible text.
+
+### Putting controls inside a tooltip
+
+```tsx
+// Bad
+<TooltipPopup>
+  <p>Draft saved</p>
+  <Button size="sm">Undo</Button>
+</TooltipPopup>
+```
+
+```tsx
+// Good
+<Popover>
+  <PopoverTrigger render={<Button variant="ghost" />}>
+    Draft saved
+  </PopoverTrigger>
+  <PopoverPopup>
+    <PopoverClose render={<Button variant="secondary" />}>Undo</PopoverClose>
+  </PopoverPopup>
+</Popover>
+```
+
+A tooltip closes when focus leaves the trigger, so a control inside it cannot be reached: tabbing toward it dismisses the surface that contains it. Interactive follow-up actions belong in a Popover, which holds focus predictably until dismissed.
+
 ## Examples
 
-The example shows grouped tooltips for related controls.
+### Icon-only button
 
-### Grouped Tooltips
+The `aria-label` names the control; the tooltip repeats it visually for sighted users.
+
+<ComponentPreview name="tooltip-icon-row" />
+
+### Keyboard shortcut hint
+
+Shortcuts are the classic tooltip use: visible context for people who already know the action.
+
+<ComponentPreview name="tooltip-keyboard-hints" />
+
+### Grouped toolbar
+
+Inside one `TooltipProvider`, moving across the toolbar swaps tooltips instantly instead of waiting out the delay each time.
 
 <ComponentPreview name="tooltip-grouped" />
 
 ## API reference
 
-`TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipArrow`, and `TooltipPopup` forward their matching Base UI Tooltip props. `TooltipContent` is an alias of the popup. Configure shared delay behavior on the provider and placement on the popup.
+All parts forward their matching Base UI Tooltip props. Honest UI adds presentation shortcuts on `TooltipPopup`:
 
-The trigger must have its own accessible name; tooltip text does not repair an unlabeled button. See the [Base UI Tooltip API](https://base-ui.com/react/components/tooltip#api-reference).
+| Prop | Values | Default |
+| --- | --- | --- |
+| `side` | `top`, `right`, `bottom`, `left` | `top` |
+| `align` | `start`, `center`, `end` | `center` |
+| `sideOffset` | number | `4` |
+| `showArrow` | boolean | `true` |
+| `arrowClassName` | string | — |
+
+`TooltipProvider` accepts shared `delay`, `closeDelay`, and `timeout` (400 ms by default) that govern grouping behavior for every tooltip beneath it. The root supports controlled `open` / `onOpenChange` and a `disabled` prop. `TooltipContent` aliases `TooltipPopup`.
+
+See the [Base UI Tooltip API](https://base-ui.com/react/components/tooltip#api-reference).

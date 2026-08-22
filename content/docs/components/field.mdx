@@ -10,21 +10,35 @@ links:
 
 ## Overview
 
-Use Field to wrap a form control with a label, description, validation message, and disabled or invalid state.
+Use Field to wrap a form control with a label, description, validation message, and disabled or invalid state. Field owns the wiring that is easy to get wrong by hand: the label is associated with the control automatically, the description and error are attached to the control through `aria-describedby`, and `aria-invalid` is set for you when validation fails.
 
-Field keeps form layout consistent and helps connect supporting text to the control.
+Field keeps form layout consistent and helps connect supporting text to the control. Compose it with any control: an input, textarea, select, checkbox, radio group, slider, switch, combobox, or a custom element passed through the render prop.
 
 ## Anatomy
 
-A field usually includes a label, control, description, and error message. `FieldHelperSlot` lets description and error occupy the same layout space, `FieldGroup` stacks related fields, and `FieldSeparator` divides a long form without creating a new semantic group. The control can be an input, textarea, select, checkbox, radio group, slider, switch, combobox, or custom form element.
+A field usually includes a label, control, description, and error message. `FieldHelperSlot` lets description and error occupy the same layout space, `FieldGroup` stacks related fields, and `FieldSeparator` divides a long form without creating a new semantic group.
+
+The root renders a `div` laid out as a column. The control renders an `input` wrapped in a full-width span; pass the `render` prop to substitute any element, which drops the wrapper span. Descriptions render as paragraphs and errors as divs, both sized down and colored through theme tokens. All field parts receive data attributes for their state — `data-invalid`, `data-disabled`, `data-focused` — so styles react to the field rather than to props you thread by hand.
 
 ## Behavior
 
-Use required, disabled, invalid, and validity states to match the real form state. Validate on submission or after a field has been edited; avoid showing an error before a person has had a chance to act. Keep entered values after failure and write each message as a specific recovery instruction.
+**Validation timing.** `validationMode` defaults to `"onSubmit"`. With Honest UI's native `Form` wrapper there is no Base UI Form context driving submit-time validation, so validation commits happen when the user presses <kbd>Enter</kbd> in the control, on blur when the mode is `"onBlur"`, and on every change when the mode is `"onChange"` (optionally debounced with `validationDebounceTime`). Validate on submission or after a field has been edited; avoid showing an error before a person has had a chance to act.
+
+**Custom rules.** Pass a `validate` function that receives the value and all form values and returns an error string, an array of strings, or `null`. Async functions are supported. Native constraint violations such as `required` or `type="email"` surface their browser messages automatically.
+
+**External ownership.** The `invalid`, `dirty`, and `touched` props let a form library drive state instead. Setting `invalid` colors the control, sets `aria-invalid`, and makes a matching `FieldError` render immediately.
+
+Keep entered values after failure and write each message as a specific recovery instruction.
 
 ## Accessibility
 
-Field connects labels, descriptions, and errors through Base UI. Keep a visible label even when the control has a placeholder. Do not rely on an asterisk alone for required fields, and do not remove the description from the accessibility tree while it still contains instructions needed to fix an error.
+The label is a real `<label>` associated with the control automatically; clicking anywhere in it focuses the control, which gives checkboxes and radios a much larger activation target. You do not need `htmlFor` or matching ids inside a Field.
+
+While a description is rendered, its id is attached to the control's `aria-describedby`. A rendered error joins the same list, and the control receives `aria-invalid="true"`, so screen readers announce the failure state and the instructions together when focus moves to the field. An unrendered `FieldError` contributes nothing to the accessibility tree, which is why errors appear only when they are true.
+
+Keyboard users reach the control with <kbd>Tab</kbd> and edit with normal text keys; pressing <kbd>Enter</kbd> commits validation. The control stands 28 px (`sm`), 32 px (`default`), or 40 px (`lg`) tall, clearing the WCAG 2.2 minimum target size of 24 px; leave extra room around fields that are primary touch targets on mobile.
+
+Colors come from theme tokens, so descriptions, errors, borders, and disabled dimming adapt to dark mode automatically. Control padding uses logical properties, so the layout mirrors in right-to-left locales. The helper slot reserves one space for description and error, so swapping between them does not shift the surrounding form, and its transitions are wrapped in `motion-safe`.
 
 ## Installation
 
@@ -70,62 +84,166 @@ import {
   FieldControl,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldHelperSlot,
   FieldLabel,
-  FieldValidity,
-  FieldSeparator,
 } from "@/components/ui/field";
 ```
 
 ```tsx
 <Field>
   <FieldLabel>Name</FieldLabel>
-  <FieldControl type="text" placeholder="Enter your name" />
+  <FieldControl name="name" placeholder="Enter your name" />
   <FieldHelperSlot>
-    <FieldDescription>Visible on your profile</FieldDescription>
-    <FieldError>Please enter a valid name</FieldError>
+    <FieldDescription>Visible on your public profile.</FieldDescription>
+    <FieldError />
   </FieldHelperSlot>
-  <FieldValidity>
-    {(validity) => (
-      {validity.error && <p>{validity.error}</p>}
-    )}
-  </FieldValidity>
 </Field>
 ```
 
+A bare `<FieldError />` renders the current validation message — from native constraints or your `validate` function — and renders nothing while the field is valid. To show an application-owned message, pass children and set `invalid` yourself, as shown in [Custom validity output](#custom-validity-output).
+
+## Don't do this
+
+### Expecting an error to appear on submit
+
+```tsx
+// Bad
+<Form onSubmit={save}>
+  <Field name="email">
+    <FieldLabel>Email address</FieldLabel>
+    <FieldControl name="email" type="email" required />
+    <FieldError>Enter an email address.</FieldError>
+  </Field>
+</Form>
+```
+
+```tsx
+// Good
+<Form onSubmit={save}>
+  <Field name="email" validationMode="onBlur">
+    <FieldLabel>Email address</FieldLabel>
+    <FieldControl name="email" type="email" required />
+    <FieldError />
+  </Field>
+</Form>
+```
+
+With the default `"onSubmit"` mode and a native `Form`, nothing re-validates when the submit button is clicked — the browser shows its own bubble for native constraints, and custom messages never display. Pick a mode that matches when validation should actually run, or drive the field with the `invalid` prop from your own submission logic.
+
+### Replacing the description with the error
+
+```tsx
+// Bad
+<Field invalid={hasError}>
+  <FieldLabel>Password</FieldLabel>
+  <FieldControl type="password" />
+  {hasError ? (
+    <FieldError>Use at least 12 characters.</FieldError>
+  ) : (
+    <FieldDescription>Use at least 12 characters.</FieldDescription>
+  )}
+</Field>
+```
+
+```tsx
+// Good
+<Field invalid={hasError}>
+  <FieldLabel>Password</FieldLabel>
+  <FieldControl type="password" />
+  <FieldHelperSlot>
+    <FieldDescription>Use at least 12 characters.</FieldDescription>
+    <FieldError>Choose a longer password.</FieldError>
+  </FieldHelperSlot>
+</Field>
+```
+
+Swapping one message for another removes the requirement at the exact moment someone needs to reread it, and the two texts rarely say the same thing. The helper slot keeps both in the accessibility tree's rotation and reserves their shared space, so nothing shifts when the error appears.
+
+### Marking a field required but disabled
+
+```tsx
+// Bad
+<Field>
+  <FieldLabel>VAT number *</FieldLabel>
+  <FieldControl name="vat" required disabled={!isBusiness} />
+</Field>
+```
+
+```tsx
+// Good
+{isBusiness ? (
+  <Field>
+    <FieldLabel>
+      VAT number <span className="text-destructive-foreground">*</span>
+    </FieldLabel>
+    <FieldControl name="vat" required />
+  </Field>
+) : null}
+```
+
+Disabled controls are skipped by keyboard focus, dimmed, and excluded from submission, so a `required` marker on them is either a lie (the form submits fine without it) or a trap (the field cannot be filled). Render the field only when it applies, or leave it enabled with a description explaining when it matters.
+
 ## Examples
 
-The main example demonstrates `FieldGroup`, `FieldSeparator`, and `FieldHelperSlot`. These examples cover the Field states and relationships that are independent of a specific control. For composition with Autocomplete, Checkbox, Combobox, Number Field, Radio Group, Select, Slider, Switch, or Textarea, use that control's page.
+These examples cover the Field states and relationships that are independent of a specific control. For composition with Autocomplete, Checkbox, Combobox, Number Field, Radio Group, Select, Slider, Switch, or Textarea, use that control's page.
 
 ### Required field
+
+The asterisk marks the field visually; the `required` attribute enforces it and announces it.
 
 <ComponentPreview name="field-required" />
 
 ### Disabled field
 
+Disabling the root dims the label and description too, so the whole unit reads as inactive.
+
 <ComponentPreview name="field-disabled" />
 
 ### Native validation error
 
-The example starts with an incomplete address. Choose **Validate email** to run native form validation and show the associated error.
+The example starts with an incomplete address. Pressing <kbd>Enter</kbd> commits validation and shows the associated error; clicking **Validate email** triggers the browser's native message.
 
 <ComponentPreview name="field-error" />
 
 ### Custom validity output
 
+`FieldValidity` hands your render function the raw validity data, useful for debugging or bespoke messaging.
+
 <ComponentPreview name="field-validity" />
 
 ### Password instructions
+
+A description states the rule before anyone types.
 
 <ComponentPreview name="field-password" />
 
 ### Complete form
 
+Fields composed with Select, Checkbox, pending-free submission, and an `aria-live` status line.
+
 <ComponentPreview name="field-complete-form" />
+
+### Custom validate function
+
+Return a string from `validate` to fail the field with your own message; return `null` to pass it.
+
+<ComponentSource name="field-validate" title="examples/field-validate.tsx" />
 
 ## API reference
 
-`Field`, `FieldLabel`, `FieldDescription`, `FieldError`, and `FieldValidity` forward their matching Base UI Field props. `FieldControl` adds `size="sm" | "default" | "lg" | number` and accepts Base UI's `render` prop for a custom control. `FieldHelperSlot`, `FieldGroup`, and `FieldSeparator` accept native `div` props.
+All parts forward their matching Base UI Field props plus the `render` composition prop. `Field` accepts:
 
-See the [Base UI Field API](https://base-ui.com/react/components/field#api-reference) for validation state, control composition, and render props.
+| Prop | Values | Default |
+| --- | --- | --- |
+| `validationMode` | `onSubmit`, `onBlur`, `onChange` | `onSubmit` |
+| `validate` | `(value, formValues) => string \| string[] \| null \| Promise` | — |
+| `validationDebounceTime` | number (ms, applies to `onChange`) | `0` |
+| `disabled` | boolean; takes precedence over the control's own `disabled` | `false` |
+| `name` | string; takes precedence over the control's `name` | — |
+| `invalid` | boolean; drives state when an external library owns validity | — |
+| `dirty` | boolean; overrides the built-in changed-from-initial tracking | — |
+| `touched` | boolean; overrides the built-in touch tracking | — |
+
+`FieldControl` adds Honest UI's `size`: `"sm"` (28 px), `"default"` (32 px), `"lg"` (40 px), or a number of characters. `FieldError` accepts `match`: pass `true` to always render its children, or a `ValidityState` key such as `"typeMismatch"` to gate visibility. `FieldHelperSlot`, `FieldGroup`, and `FieldSeparator` accept native `div` props; only the group and separator change layout, none of them add semantics.
+
+See the [Base UI Field API](https://base-ui.com/react/components/field#api-reference) for validation internals and control composition.

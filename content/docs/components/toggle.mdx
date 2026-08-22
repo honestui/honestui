@@ -1,38 +1,43 @@
 ---
 title: Toggle
 description: Turn a pressed state on or off, alone or within a related group.
-
-links:
-  doc: https://base-ui.com/react/components/toggle#api-reference
 ---
 
 <ComponentPreview name="toggle-demo" />
 
 ## Overview
 
-Use Toggle for a button that can be pressed or not pressed.
+Use Toggle for a button whose on/off state is visible in the surrounding content: text formatting, layer visibility, mute controls, view options. The state is the point — pressing changes something the person can see right where they are.
 
-Toggle is useful for formatting buttons, favorite buttons, compact filters, view options, and controls where the pressed state matters.
-
-Use Toggle Group when several toggles belong to the same control. A group can behave like one shared choice, or it can allow several toggles to be pressed at the same time.
+Use Switch instead when the control reads as a setting that applies elsewhere, and Button for actions that run once. A toggle is a question of state ("is bold on?"), not an order ("do this now").
 
 ## Anatomy
 
-A single toggle has a button, label or icon, pressed state, variant, size, and disabled state.
+A single toggle is a native `<button>` wrapping a content span that carries the pressed surface treatment. Styling reacts to a `data-pressed` attribute, and the underlying Base UI primitive always emits `aria-pressed`, so assistive technology hears "pressed" or "not pressed" without you writing any ARIA yourself.
 
-A toggle group has a wrapper, toggle items, optional separators, shared variant and size values, and a shared pressed state model.
+A toggle group is a container (`role="group"`) holding several toggles plus optional separators. Inside a group, items inherit the group's `variant` and `size` through context and lose their own borders and radius so they read as one segmented control.
 
-## Behavior
+## Pressed state
 
-Use Toggle when the pressed state is visible and meaningful. Use Switch for settings that read as on or off.
+Standalone toggles accept `pressed` / `defaultPressed` and report `onPressedChange(pressed, eventDetails)`. In a group, each item gets a `value`; the group holds an array of currently pressed values and exposes `value` / `defaultValue` / `onValueChange(groupValue, eventDetails)` for controlled use.
 
-Use a single-selection group when the choices are mutually exclusive. Use a multiple-selection group when each toggle can be changed independently but the controls should still look related.
+**Single mode** (the default, `multiple={false}`) keeps at most one item pressed — but empty is allowed. Pressing the pressed item clears it, which makes it a filter, not a radio group.
+
+**Multiple mode** (`multiple`) lets any combination stay pressed independently, like formatting buttons.
+
+## Sizes and variants
+
+Sizes map to the design system's space scale: `"1"` is 12 px tall, `"2"` is 16 px, `"3"` is 20 px, and `"4"` is 24 px. The named aliases are `sm` (matches `"3"` at 20 px) and `default` (24 px) — and `lg` is currently identical in height to `default`, a quirk we document rather than hide, so don't reach for `lg` expecting a bigger control. The `outline` variant swaps the filled surface for a bordered one; inside a group it outlines the whole container instead of each item.
 
 ## Accessibility
 
-Icon-only toggles need accessible names. Make the pressed state visible through more than color when possible.
+Keyboard follows native button behavior: <kbd>Tab</kbd> reaches a standalone toggle and <kbd>Enter</kbd>/<kbd>Space</kbd> press it. Focus rings appear only for keyboard focus.
 
-Each item in a group also needs a clear accessible name. Tooltips can explain icon-only controls, but the toggle should still have an `aria-label`.
+In a group, Base UI implements roving focus: only one item is in the tab order, and <kbd>←</kbd><kbd>→</kbd> (horizontal groups) or <kbd>↑</kbd><kbd>↓</kbd> (vertical, `orientation="vertical"`) move focus between items, looping by default (`loopFocus`). Pressing still uses <kbd>Enter</kbd>/<kbd>Space</kbd>, and each press updates every item's `aria-pressed`.
+
+Icon-only toggles have no text content, so give each one an `aria-label`. Because pressed state is also conveyed visually through background and inset shadow — not color alone — the state survives color-vision differences. Colors come from theme tokens, so dark mode needs no extra work, and inline-flex layout mirrors automatically in right-to-left locales. Long labels grow the button rather than wrap.
+
+Target sizes are honest about their limits: sizes `"1"`–`"3"` render 12–20 px tall, below the WCAG 2.2 minimum target of 24 × 24 px. Reserve them for dense desktop toolbars paired with tooltips; use `default` or larger on touch surfaces.
 
 ## Installation
 
@@ -77,49 +82,134 @@ import { Toggle, ToggleGroup } from "@/components/ui/toggle";
 ```
 
 ```tsx
-<Toggle>Toggle</Toggle>
+<Toggle defaultPressed>Bold</Toggle>
 ```
 
 ```tsx
-<ToggleGroup defaultValue={["bold"]}>
-  <Toggle value="bold" aria-label="Toggle bold">
-    Bold
+<ToggleGroup defaultValue={["bold"]} multiple>
+  <Toggle value="bold" aria-label="Bold">
+    <BoldIcon />
   </Toggle>
-  <Toggle value="italic" aria-label="Toggle italic">
-    Italic
-  </Toggle>
-  <Toggle value="underline" aria-label="Toggle underline">
-    Underline
+  <Toggle value="italic" aria-label="Italic">
+    <ItalicIcon />
   </Toggle>
 </ToggleGroup>
 ```
 
+`ToggleGroupItem` is an alias of `Toggle`, and `toggleVariants` is exported for composing custom toggle-styled elements.
+
+## Don't do this
+
+### Hand-rolling a toggle from a plain button
+
+```tsx
+// Bad
+const [on, setOn] = useState(false);
+<Button variant={on ? "secondary" : "ghost"} onClick={() => setOn(!on)}>
+  Bold
+</Button>
+```
+
+```tsx
+// Good
+<Toggle pressed={on} onPressedChange={setOn}>Bold</Toggle>
+```
+
+The hand-rolled version announces nothing: no `aria-pressed`, no state change for screen readers — people activate it and hear silence. It also loses the disabled-cursor handling and keyboard guarantees the primitive provides. Base UI's Toggle already emits `aria-pressed` on every render; let it.
+
+### Treating a single-selection group as a radio choice
+
+```tsx
+// Bad
+<ToggleGroup value={plan} onValueChange={setPlan} aria-label="Plan">
+  <Toggle value="starter">Starter</Toggle>
+  <Toggle value="pro">Pro</Toggle>
+</ToggleGroup>
+```
+
+```tsx
+// Good
+<RadioGroup value={plan} onValueChange={setPlan} aria-label="Plan">
+  <Radio value="starter">Starter</Radio>
+  <Radio value="pro">Pro</Radio>
+</RadioGroup>
+```
+
+Single mode permits an empty group — clicking the pressed item unpresses it. That is correct for filters ("clear this facet") and wrong for required choices like plan selection, where "no answer" must not be one click away. Use a RadioGroup when exactly one option must always hold.
+
+### Icon-only toggles without names
+
+```tsx
+// Bad
+<Toggle value="bold"><BoldIcon /></Toggle>
+```
+
+```tsx
+// Good
+<Toggle value="bold" aria-label="Bold">
+  <BoldIcon aria-hidden="true" />
+</Toggle>
+```
+
+An unnamed icon-only toggle reads as just "toggle button, not pressed" — which button? Voice-control users have nothing meaningful to say, and screen-reader users guess from position alone. Name every icon-only toggle; mark its icon decorative.
+
 ## Examples
 
-The main example compares standalone sizes, pressed and disabled states, and a multiple-selection group. The examples below focus on group behavior that is difficult to understand from a static matrix.
+### View mode switcher
 
-### Single-selection group
+A single-selection group where exactly one view can be active. Remember the empty-selection caveat: if an unpressed group would break your grid, enforce a value in `onValueChange`.
 
-<ComponentPreview name="toggle-group-demo" />
+<ComponentPreview name="toggle-view-mode" />
 
-### Group with separators
+### Multiple selection
+
+Independent pressed values, like formatting controls.
+
+<ComponentPreview name="toggle-group-multiple" />
+
+### Outline variant with separators
+
+The outline style draws one border around the whole group; separators divide items that need visual distinction.
 
 <ComponentPreview name="toggle-group-outline-with-separator" />
 
 ### One disabled item
 
+A group where one choice is temporarily unavailable; the rest keep working.
+
 <ComponentPreview name="toggle-group-with-disabled-item" />
 
-### Multiple selection
-
-<ComponentPreview name="toggle-group-multiple" />
-
 ### Icon labels with tooltips
+
+Tooltips explain icon-only toggles on hover and focus, while `aria-label` remains the accessible name.
 
 <ComponentPreview name="tooltip-grouped" />
 
 ## API reference
 
-`Toggle` forwards Base UI Toggle props and adds `variant="default" | "outline"` plus `size="1" | "2" | "3" | "4" | "sm" | "default" | "lg"`. `ToggleGroup` forwards Base UI Toggle Group props, shares `variant` and `size` with its children, and accepts `multiple` for independent pressed values. `ToggleGroupItem` is an alias of `Toggle`; `ToggleGroupSeparator` renders a visual separator.
+`Toggle` accepts Base UI Toggle props plus Honest UI additions:
 
-See the [Base UI Toggle API](https://base-ui.com/react/components/toggle#api-reference) and [Toggle Group API](https://base-ui.com/react/components/toggle-group#api-reference) for controlled state and keyboard behavior.
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` | `default`, `outline` | `default` |
+| `size` | `1`, `2`, `3`, `4`, `sm`, `default`, `lg` | `default` |
+| `pressed` / `defaultPressed` | boolean | `false` |
+| `onPressedChange` | `(pressed: boolean, eventDetails) => void` | — |
+| `value` | string (identity inside a group) | — |
+| `disabled` | boolean | `false` |
+
+Disabled toggles intentionally keep `pointer-events: auto` so hovering shows a not-allowed cursor even though clicks do nothing. The rendered element is a native `<button>`; `type` cannot be changed, and the component never participates in form validation.
+
+`ToggleGroup` accepts Base UI Toggle Group props:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` / `size` | same values as `Toggle`, shared with children | `default` |
+| `value` / `defaultValue` | array of pressed item values | `[]` |
+| `onValueChange` | `(groupValue: any[], eventDetails) => void` | — |
+| `multiple` | boolean — `false` allows at most one pressed item | `false` |
+| `orientation` | `horizontal`, `vertical` | `horizontal` |
+| `loopFocus` | boolean — wrap arrow-key focus | `true` |
+| `disabled` | boolean — disables every item | `false` |
+
+`ToggleGroupSeparator` renders a vertical separator between items. See the [Base UI Toggle API](https://base-ui.com/react/components/toggle#api-reference) and [Toggle Group API](https://base-ui.com/react/components/toggle-group#api-reference).

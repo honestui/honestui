@@ -7,21 +7,33 @@ description: Place related content inside a bounded media or interface frame.
 
 ## Overview
 
-Use Frame when you need a simple bordered surface around related content.
+Use Frame when you need a simple bordered surface around related content: previews, examples, media, code-adjacent output, and small grouped regions that do not need full card structure.
 
-Frame is lighter than Card. It works well for previews, examples, media, code-adjacent content, and small grouped regions that do not need card header or footer structure.
+Frame is lighter than Card. It draws one boundary around its children and gets out of the way; it has no selection model, no loading state, and no actions of its own. If the content needs header actions or footer buttons, Card is usually the better fit — see [Frame versus Card](#frame-versus-card).
 
 ## Anatomy
 
-A frame is mainly a container. It gives content a boundary without adding a full card layout.
+A Frame is a rounded muted tray (`rounded-2xl` on a `bg-muted` background) that stacks its parts vertically. Inside it:
 
-## Usage guidance
+- **FrameHeader** renders a real `<header>` element and holds the title row.
+- **FrameTitle** is a semibold label naming what the frame contains.
+- **FrameDescription** is a muted line under the title.
+- **FramePanel** is the inner card surface where the actual content sits.
+- **FrameFooter** renders a real `<footer>` element for timestamps, sources, or captions.
 
-Use Frame for visual grouping. Use Card when the content needs a title, description, content area, and actions.
+FramePanel is table-aware: when it contains a Table, it removes its own padding, border, background, and shadow so the table's edges align with the panel. See [Framed table](#framed-table).
+
+## Frame versus Card
+
+Reach for Frame when the boundary itself is the point: showing output next to code, isolating a device mockup, boxing an embedded tool. Reach for Card when people need to act on the content — Card gives you a title, description, content area, action slots, and interaction conventions that Frame deliberately lacks. A frame around something with three action buttons usually means you wanted a Card.
+
+Because Frame is purely presentational, it has no states to manage: no loading, disabled, destructive, or error variants exist, and none should be faked with styling. Any state belongs to the components you place inside it.
 
 ## Accessibility
 
-Frame does not add meaning by itself. Use headings, labels, and semantic HTML inside it when the grouped content needs structure.
+Frame adds no meaning by itself. It renders `<div>`s (plus semantic `<header>` and `<footer>` elements), so screen readers announce nothing about the grouping unless you provide structure. Put a real heading element inside FrameHeader when the framed content needs one — see [Don't do this](#dont-do-this) — and use `figure`/`figcaption` or a labelled `role="region"` when assistive technology users need to navigate to it.
+
+Nothing in a Frame receives focus by default; keyboard behavior comes entirely from the interactive elements you place inside. Colors come from theme tokens (`bg-muted`, `bg-card`, border tokens), so frames adapt to dark mode automatically, and padding uses logical properties so layouts mirror in right-to-left locales. Long content wraps normally; the frame grows rather than clipping.
 
 ## Installation
 
@@ -77,24 +89,103 @@ import {
 </Frame>
 ```
 
+## Don't do this
+
+### Making the whole frame clickable
+
+```tsx
+// Bad
+<div onClick={() => router.push("/reports/traffic")}>
+  <Frame>…report contents…</Frame>
+</div>
+```
+
+```tsx
+// Good
+<Frame>
+  <FrameHeader>
+    <FrameTitle>Traffic report</FrameTitle>
+  </FrameHeader>
+  <FramePanel>…report contents…</FramePanel>
+  <FrameFooter>
+    <Button render={<Link href="/reports/traffic" />}>Open report</Button>
+  </FrameFooter>
+</Frame>
+```
+
+A click handler on a wrapper div produces a huge cursor-target that no keyboard user can reach, no assistive technology will announce, and no browser treats as a link — middle-click, <kbd>Cmd</kbd>-click, and copy-link all break. Decide which single element is the action, make it a real link or button, and let the rest of the frame stay inert.
+
+### Treating FrameTitle as a heading
+
+```tsx
+// Bad
+<FrameHeader>
+  <FrameTitle>Billing summary</FrameTitle>
+</FrameHeader>
+```
+
+```tsx
+// Good
+<FrameHeader>
+  <h3 className="text-sm font-semibold">Billing summary</h3>
+</FrameHeader>
+```
+
+FrameTitle renders a styled `<div>`, so screen-reader users navigating by headings will never find the section even though it looks like one visually. When the framed region belongs in the page outline, render a real `h2`–`h6` with the same styles instead.
+
+### Framing by decoration instead of meaning
+
+```tsx
+// Bad
+<Frame><p>Welcome to the dashboard.</p></Frame>
+<Frame><p>Your storage is 62% full.</p></Frame>
+```
+
+```tsx
+// Good
+<p>Welcome to the dashboard.</p>
+<Card title="Storage">Your storage is 62% full.</Card>
+```
+
+Frames read as bounded objects: previews, outputs, embeddable regions. Wrapping ordinary prose in them teaches people that boxes mean artifacts, and soon every box competes with every other box. Keep running text unframed and reserve Frame for content that genuinely sits outside the document flow.
+
 ## Examples
 
 ### Device preview
+
+A narrow frame isolates a mobile mockup from the surrounding page.
 
 <ComponentPreview name="frame-device-preview" />
 
 ### Code output
 
+Build logs and command output read as artifacts when they sit in a frame with a timestamped footer.
+
 <ComponentPreview name="frame-code-output" />
 
 ### Analytics panel
 
+Metrics keep their own boundary without inheriting card actions.
+
 <ComponentPreview name="frame-analytics-panel" />
 
-## Decision guidance
+### Framed table
 
-Frame is a visual container for previews, code output, media, or embedded tools. It does not add landmark, figure, or region semantics. Add a heading, `figure`/`figcaption`, or an accessible region label when the framed content needs one.
+When FramePanel contains only a Table, it drops its own chrome so the table's borders do the work.
+
+<ComponentPreview name="table-framed" />
 
 ## API reference
 
-`Frame` accepts native `div` props plus the component's visual variant. `FramePanel`, `FrameHeader`, `FrameTitle`, `FrameDescription`, and `FrameFooter` accept native `div` props. Choose the semantic elements inside them based on the content.
+All parts accept the native props of their underlying element plus `className`. No part adds custom props.
+
+| Part | Renders | Purpose |
+| --- | --- | --- |
+| `Frame` | `<div>` | Root tray; rounded muted surface, vertical flex stack |
+| `FrameHeader` | `<header>` | Title row above the panel |
+| `FrameTitle` | `<div>` | Semibold label for the frame's contents |
+| `FrameDescription` | `<div>` | Muted supporting line under the title |
+| `FramePanel` | `<div>` | Inner card surface; adapts automatically when it contains a table |
+| `FrameFooter` | `<footer>` | Caption, timestamp, or source line below the panel |
+
+Frame introduces no Base UI primitive, no state, and no data attributes. Choose the semantic elements inside each slot based on the content.

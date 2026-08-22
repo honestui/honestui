@@ -10,28 +10,42 @@ links:
 
 ## Overview
 
-Use Toast for short feedback that appears after an action.
+Use Toast for short feedback that appears after an action completes or a background event fires: saves, copies, uploads, syncs, and lightweight errors. A toast confirms something happened. It must not carry information people need later — anything that changes what they should do next belongs on the page, near the content it affects.
 
-Toasts are useful for saves, copies, uploads, background tasks, and lightweight errors. They should not contain information the user must act on later.
+Honest UI includes two toast styles driven by one API:
 
-Honest UI includes two toast styles:
+- **Toast:** a quiet, utilitarian notification built on Base UI. Use it for most product feedback.
+- **Gooey Toast:** an animated notification with morphing transitions (`variant: "gooey"`). Use it sparingly, when the notification is part of an expressive product moment such as a celebratory save or upload completion.
 
-- **Toast:** a standard, quiet notification built on Base UI.
-- **Gooey Toast:** an animated notification with morphing transitions and more expressive motion.
+Both styles render from the same `toastManager` and share status types, actions, positions, durations, and promise helpers.
 
 ## Anatomy
 
-A toast has a title or message, optional description, status, optional action, and duration. A provider or toaster renders the stack of active toasts.
+A toast has a title, optional description, an optional status icon, an optional action button, and a dismiss button. The `ToastProvider` mounts the viewport that renders the stack of active toasts, so it stays installed once near the application root while pages call `toastManager.add` from anywhere.
+
+The stack collapses behind the frontmost toast: older notifications peek out underneath until you hover or move focus to the viewport, which expands the stack so every toast is reachable.
 
 ## Behavior
 
-Use status to match the result. Use promise helpers when an async action has loading, success, and error states.
+**Statuses.** Pass `type` to match the result: `success`, `error`, `warning`, `info`, or `loading`. The icon and its color follow automatically. Use promise helpers when an async action moves through loading, success, and error — see the [promise example](#promise).
 
-Use the standard Toast when the interface should feel calm and utilitarian. Use Gooey Toast when the notification is part of a more animated product moment, such as uploads, saves, confirmations, and async progress.
+**Timers.** By default a toast auto-dismisses after 5 seconds (gooey after 6). The timer pauses while you point at the stack, while keyboard focus is inside it, and while the browser window is unfocused, then resumes where it left off. Set `timeout: 0` (standard) or `duration: null` (gooey) to keep a toast until dismissed.
+
+**Stack limits.** The provider keeps at most 3 toasts (`limit`). When the limit is reached, the oldest toast is removed to make room — one more reason critical information does not belong here.
+
+**Swipe.** Swiping dismisses a toast. The allowed directions follow the position automatically: edge positions swipe toward their nearest edge, centered positions swipe up (top) or down (bottom).
+
+Choose the standard style when the interface should feel calm. Choose gooey when motion carries meaning for the moment; everything else about the API stays the same.
 
 ## Accessibility
 
-Keep messages short and clear. Important errors should also appear near the affected form or content, not only in a toast.
+The viewport is a region with an implicit polite live region: new toasts are announced by screen readers without stealing focus from the current task. For messages that must interrupt — a failed background job, for instance — set `priority: "high"`; the toast is then additionally mirrored into a visually hidden `role="alert"` container, which assistive technology announces urgently.
+
+Keyboard users can reach toasts without hunting: pressing <kbd>F6</kbd> anywhere moves focus into the viewport and pauses all timers, <kbd>Tab</kbd> reaches each toast's action and dismiss buttons, and <kbd>Escape</kbd> closes the focused toast.
+
+Keep titles short and put recovery detail in the description. Because timers pause on hover and focus rather than resetting, reading time extends naturally — but never rely on that for long content.
+
+A toast is supplemental feedback. Errors that affect form content must also appear inline near the field or section they belong to, in dark mode and light, since the toast may expire before anyone acts on it. Messages use theme tokens and wrap rather than truncate; localized descriptions longer than two lines are a signal to shorten them.
 
 ## Installation
 
@@ -130,25 +144,25 @@ toastManager.add({
 });
 ```
 
-By default, toasts appear in the **bottom-right** corner. You can change this by setting the `position` prop on the `ToastProvider`.
-
-Allowed values: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`. For example:
+By default, standard toasts appear in the **bottom-right** corner and gooey toasts in the **top-right**. Change either per provider:
 
 ```tsx
 <ToastProvider position="top-center">{children}</ToastProvider>
 ```
 
-Use the `variant` option to show the animated gooey variation from the same toast API:
+Allowed values for both: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`. A single call can also override the position with its own `position` option.
+
+Add a status with `type`:
 
 ```tsx
 toastManager.add({
-  variant: "gooey",
-  title: "Event has been created",
-  description: "Monday, January 3rd at 6:00pm",
+  type: "success",
+  title: "Saved",
+  description: "Your changes are live.",
 });
 ```
 
-You can combine `variant: "gooey"` with status types, actions, position, duration, and promise helpers.
+Use `variant: "gooey"` for the animated style from the same API. It combines with statuses, actions, positions, durations, and promise helpers:
 
 ```tsx
 toastManager.add({
@@ -160,130 +174,163 @@ toastManager.add({
 });
 ```
 
-## Examples
+## Don't do this
 
-Examples cover status, loading, actions, promise state, and varied toast heights.
+### Critical errors that require action
+
+```tsx
+// Bad
+toastManager.add({
+  type: "error",
+  title: "Payment failed",
+  description: "Your card was declined.",
+});
+```
+
+```tsx
+// Good
+<Alert variant="error">
+  <AlertTitle>Payment failed</AlertTitle>
+  <AlertDescription>Your card was declined.</AlertDescription>
+  <AlertAction>
+    <Button>Update payment method</Button>
+  </AlertAction>
+</Alert>
+```
+
+Toasts vanish — after five seconds the decline no longer exists anywhere on screen, yet checkout cannot continue without a response. When the message demands action or blocks progress, put it inline next to the affected content, or use Alert Dialog when work must stop until the person decides.
+
+### Auto-dismissing before the message is read
+
+```tsx
+// Bad
+toastManager.add({ title: error.message, timeout: 1200 });
+toastManager.add({ title: "Syncing…", timeout: 0 });
+```
+
+```tsx
+// Good
+toastManager.add({ title: "Invitation not sent", type: "error", timeout: 8000 });
+toastManager.add({ title: "Sync complete", description: "All records backed up." });
+```
+
+A 1.2-second toast is gone before anyone finishes reading it, and errors deserve extra time because people reread them. The inverse mistake is just as real: pinning everything with `timeout: 0` floods the three-slot stack and silently evicts older toasts. Give errors roughly eight seconds, let routine confirmations take the default, and reserve sticky toasts for genuinely ongoing states like uploads.
+
+### Confirming destruction without undo
+
+```tsx
+// Bad
+await deleteFile(id);
+toastManager.add({ title: "File deleted" });
+```
+
+```tsx
+// Good
+await deleteFile(id);
+toastManager.add({
+  title: "File deleted",
+  description: "Moved to trash.",
+  actionProps: {
+    children: "Undo",
+    onClick: () => restoreFile(id),
+  },
+});
+```
+
+A fire-and-forget "Deleted!" tells people the loss is permanent the instant it happens. If the operation can be soft-deleted or reversed within a window, surface that escape hatch directly on the toast so recovery takes one click instead of a search through documentation.
+
+## Examples
 
 ### With Status
 
+Success, error, info, warning, and loading icons driven by `type`.
+
 <ComponentPreview name="toast-with-status" />
 
+### Loading
+
+An in-progress toast with the spinner icon.
+
+<ComponentPreview name="toast-loading" />
+
 ### With Action
+
+An Undo button on the toast itself; activating it closes the toast and reports the reversal.
 
 <ComponentPreview name="toast-with-action" />
 
 ### Promise
 
+One call drives loading, success, and error states from a single promise.
+
 <ComponentPreview name="toast-promise" />
 
-### With Varying Heights
+### Varying Heights
+
+Stacking behavior when descriptions differ in length; the collapsed stack expands on hover or focus.
 
 <ComponentPreview name="toast-heights" />
 
-## Gooey Toast Usage
-
-Gooey Toast is a variation of the Toast component. You do not install or render a separate provider.
-
-By default, standard toasts appear in the **bottom-right** corner. Gooey toasts appear in the **top-right** corner unless you pass a `position` option.
-
-Allowed values: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`.
-
-```tsx
-toastManager.add({
-  variant: "gooey",
-  position: "bottom-center",
-  title: "Synced",
-  description: "All records are up to date.",
-});
-```
-
-## Gooey Toast Examples
-
-Examples cover the animated toast style, state variants, promise handling, action buttons, and placement.
-
 ### Gooey States
 
-Gooey Toast supports success, error, warning, info, and action states.
+The animated style across success, error, warning, info, and action states.
 
 <ComponentPreview name="gooey-toast-states" />
 
 ### Gooey Promise
 
-Drive gooey toast states from promises for async operations.
+Promise-driven state transitions in the animated style.
 
 <ComponentPreview name="gooey-toast-promise" />
 
 ### Gooey With Action Button
 
-Add an interactive button to a gooey toast.
+A restorable delete with the action button rendered inside the morphing pill.
 
 <ComponentPreview name="gooey-toast-with-button" />
 
 ### Gooey Position
 
-Control where gooey toasts appear on the screen.
+The animated style placed from any screen edge.
 
 <ComponentPreview name="gooey-toast-position" />
 
-## Gooey Toast API Reference
-
-### `toastManager.add`
-
-The same `toastManager.add` method shows both standard and gooey toasts.
-
-Use no variant for a standard toast:
-
-```tsx
-toastManager.add({
-  title: "Saved",
-  description: "Your changes are live.",
-});
-```
-
-Use `variant: "gooey"` for the animated variation:
-
-```tsx
-toastManager.add({
-  variant: "gooey",
-  type: "success",
-  title: "Saved",
-  description: "Your changes are live.",
-});
-```
-
-### Gooey Options
-
-```typescript
-interface GooeyOptions {
-  variant?: "gooey";
-  title?: string;
-  description?: ReactNode | string;
-  position?: GooeyPosition;
-  duration?: number | null;
-  icon?: ReactNode | null;
-  styles?: GooeyStyles;
-  fill?: string;
-  roundness?: number;
-  autopilot?: boolean | { expand?: number; collapse?: number };
-  button?: {
-    title: string;
-    onClick: () => void;
-  };
-}
-```
-
-### Toast Provider Props
-
-```typescript
-interface ToastProviderProps {
-  position?: ToastPosition; // Standard toast position
-  gooeyPosition?: ToastPosition; // Default position for gooey toasts
-  gooeyOptions?: Partial<GooeyOptions>;
-}
-```
-
 ## API reference
 
-`ToastProvider` installs the viewport and accepts the documented position. `toastManager` exposes the creation, update, dismissal, promise, and action methods shown in the examples; each toast accepts a status variant and visible content. Keep the provider mounted once near the application root.
+### `ToastProvider`
 
-Toasts are supplemental feedback. Persist errors or results that users may need after the timeout, and do not use a toast as the only confirmation of a destructive action.
+Installs the viewport once near the application root.
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `position` | `top-left` … `bottom-right` | `bottom-right` |
+| `gooeyPosition` | `top-left` … `bottom-right` | `top-right` |
+| `gooeyOptions` | Partial `GooeyOptions` | — |
+| `timeout` | ms; `0` disables auto-dismiss | `5000` |
+| `limit` | number | `3` |
+
+### `toastManager`
+
+| Method | Signature |
+| --- | --- |
+| `add` | `(options: ToastOptions) => string` (returns the toast id) |
+| `close` | `(id: string)` |
+| `update` | `(id: string, options: ToastUpdateOptions)` |
+| `promise` | `(promise, { loading, success, error }) => Promise` |
+
+### Toast options
+
+| Option | Values | Notes |
+| --- | --- | --- |
+| `title` | ReactNode | Required in practice; keep to one line |
+| `description` | ReactNode | Wraps to multiple lines |
+| `type` | `success`, `error`, `warning`, `info`, `loading` | Sets icon and color |
+| `timeout` | ms | `0` keeps the toast until dismissed |
+| `priority` | `"low"`, `"high"` | `high` announces urgently via `role="alert"` |
+| `actionProps` | `{ children, onClick }` | Renders the action button |
+| `variant` | `"default"`, `"standard"`, `"gooey"` | `"gooey"` uses the animated toaster |
+| `position` | six corner/edge values | Overrides the provider position |
+
+Gooey-only options: `duration` (number or `null`; `null` never auto-dismisses, default `6000`), `icon`, `styles`, `fill`, `roundness`, `autopilot` (`boolean` or `{ expand?, collapse? }` timing in ms), `button` (`{ title, onClick }`), and `state` to force a gooey state directly.
+
+Keep the provider mounted once near the application root. Toasts are supplemental feedback: persist errors or results people may need after the timeout elsewhere, and never use a toast as the only confirmation of a destructive action.

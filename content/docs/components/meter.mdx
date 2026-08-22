@@ -10,21 +10,27 @@ links:
 
 ## Overview
 
-Use Meter to show a known numeric value within a known range.
-
-Meter is useful for storage usage, quota, health, score, strength, capacity, and other measured values. Use Progress instead when a task is actively moving toward completion.
+Use Meter to display a known numeric value within a known range: storage used against quota, budget spent against budget, signal strength, password strength, capacity, a score. The value is a measurement of the current state, not a task advancing toward an end. For work in motion — uploads, imports, installs — use [Progress](/docs/components/progress) instead.
 
 ## Anatomy
 
-A meter has a value, minimum, maximum, optional label, optional formatted value, and visual bar.
+A meter has a root carrying the value semantics, an optional label naming what is measured, an optional formatted value, and a visual bar or ring. With no children, `Meter` renders the matching track for its variant plus a centered value automatically.
+
+## Progress vs Meter
+
+The two components look alike and differ in meaning, and that difference is exposed to assistive technology through their roles: `Meter` emits `role="meter"` while `Progress` emits `role="progressbar"`. A screen-reader user hearing "progressbar" expects a value that grows and a moment when it finishes; "meter" promises a reading that can go either way and never completes.
+
+Ask one question: does this number end? An import at 72% will hit 100% — Progress. Storage sitting at 72% of quota is just storage — Meter. Quota consumption does creep upward over weeks, but it is not a *task*, there is no completion event, and nobody benefits from a component that implies one.
 
 ## Usage guidance
 
-Use a label and value when the number matters. Use range styling when different portions of the range have meaning, such as low, normal, and high.
+Always give the meter a visible label and, when precision matters, render `MeterValue` or format the announced text yourself — "14.2 GB of 20 GB used" carries more meaning than a bar and "72". When different portions of the range have different meanings (low, normal, high), change the indicator color per band but pair it with wording such as "Weak signal" or "Strong signal"; color alone excludes too many people.
 
 ## Accessibility
 
-Expose the value in text when precision matters. Do not rely only on bar length or color.
+The root emits `role="meter"` with `aria-valuemin`, `aria-valuemax`, and `aria-valuenow`. Screen readers announce the accessible name plus the current value against the range. Connect `MeterLabel` for the name, and use `format`, `locale`, or `getAriaValueText(formattedValue, value)` when the default percentage is less informative than real units. Render the value as text for sighted users too — bar length is a poor instrument for comparing 68% against 74%.
+
+Meters have no indeterminate or loading state by design: a measurement is either known or it isn't. While the underlying value is being fetched, show a [Skeleton](/docs/components/skeleton) rather than a zeroed meter, which would falsely read as empty. Value changes animate with a short transition that is skipped under reduced-motion preferences. Colors come from theme tokens and adapt to dark mode automatically.
 
 ## Installation
 
@@ -94,11 +100,75 @@ import {
 </Meter>
 ```
 
+Non-zero minimums work: `<Meter min={20} max={80} value={65} />` maps 65 into the correct fraction of the bar.
+
+## Don't do this
+
+### A task pretending to be a measurement
+
+```tsx
+// Bad
+<Meter value={uploadedBytes / totalBytes * 100}>
+  <MeterLabel>Uploading photos</MeterLabel>
+</Meter>
+```
+
+```tsx
+// Good
+<Progress value={uploadedBytes / totalBytes * 100}>
+  <ProgressLabel>Uploading photos</ProgressLabel>
+</Progress>
+```
+
+`role="meter"` tells assistive technology this is a static reading, so users will not wait for completion feedback that never arrives — and the UI has no natural way to say "done". Anything with an endpoint belongs to Progress.
+
+### Thresholds conveyed by color only
+
+```tsx
+// Bad
+<Meter value={95} className="[&_[data-slot=meter-indicator]]:bg-red-500">
+  <MeterLabel>CPU</MeterLabel>
+</Meter>
+```
+
+```tsx
+// Good
+<div>
+  <p className="text-sm font-medium">CPU — critical load</p>
+  <Meter value={95}>...</Meter>
+</div>
+```
+
+Red at 95% is invisible to colorblind users, washed out in forced-colors mode, and silent to screen readers. Keep the color if you like it, but state the verdict in words where everyone can get it.
+
+### A bare number without units
+
+```tsx
+// Bad
+<Meter value={72} />
+```
+
+```tsx
+// Good
+<Meter value={72} format={{ style: "unit", unit: "percent" }}>
+  <MeterLabel>Storage used</MeterLabel>
+  <MeterValue />
+</Meter>
+```
+
+An unlabeled bar with no value text answers no question: 72 of what, out of how much, measured when? Name the measurement and show its units; use `format` or `getAriaValueText` so the announcement matches what sighted users see.
+
 ## Examples
 
-The main example compares the built-in linear and circular layouts. The examples below cover custom children, formatted values, non-zero ranges, circular sizing, and semantic states.
+### Storage quota
+
+Real units on both sides of the comparison.
+
+<ComponentPreview name="meter-storage-quota" />
 
 ### Without Label and Value
+
+The automatic layout with only the root's children generated.
 
 <ComponentPreview name="meter-simple" />
 
@@ -107,6 +177,8 @@ The main example compares the built-in linear and circular layouts. The examples
 <ComponentPreview name="meter-with-formatted-value" />
 
 ### With Range
+
+A non-zero minimum and maximum mapping values into a partial band.
 
 <ComponentPreview name="meter-with-range" />
 
@@ -124,6 +196,16 @@ You can change the circular indicator stroke with a semantic color token. Pair t
 
 ## API reference
 
-`Meter` accepts Base UI Meter root props plus `variant="linear" | "circular"`. Its defaults are `min={0}` and `max={100}`. When it has no children, it renders the matching track and value automatically. The label, track, indicator, and value parts forward Base UI props; `MeterCircularTrack` accepts native SVG props and the `--hui-meter-size` and `--hui-meter-track-size` CSS variables.
+`Meter` accepts all Base UI Meter root props plus Honest UI's `variant`:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` | `linear`, `circular` | `linear` |
+| `value` | number (required) | — |
+| `min` / `max` | number | `0` / `100` |
+
+Unlike Progress, `value` must be a number — there is no indeterminate state. The root carries `role="meter"` with `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and `aria-valuetext`; `format` (Intl options), `locale`, and `getAriaValueText(formattedValue, value)` control the announced text. Computed percentages are clamped to 0–100.
+
+Parts: `MeterLabel`, `MeterTrack`, `MeterIndicator`, and `MeterValue` forward their Base UI props; `MeterCircularTrack` accepts native SVG props plus the `--hui-meter-size` and `--hui-meter-track-size` CSS variables.
 
 See the [Base UI Meter API](https://base-ui.com/react/components/meter#api-reference) for value formatting and state details.

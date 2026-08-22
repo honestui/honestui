@@ -7,21 +7,29 @@ description: Group related information and actions in a distinct surface.
 
 ## Overview
 
-Use a card to group related content and actions inside a clear surface.
-
-Cards work well for dashboards, settings groups, pricing items, summaries, and repeated list items. Avoid nesting cards inside cards unless each layer has a clear job.
+Use a card to group related content and actions inside a clear surface: a metric with its trend, a billing plan, a team member, a settings group. Cards earn their borders by containing one coherent thing. If a card has three unrelated jobs, split it; if every section of the page becomes a card, the page loses its hierarchy and nothing stands out anymore.
 
 ## Anatomy
 
-A card usually has a container, header, title, description, panel, footer, and optional action. `CardAction` shares the header grid with the title and description. Not every card needs every part; omit empty regions instead of preserving a template shape.
+A card is a container with an optional header, title, description, action, panel, and footer. `CardHeader` is a CSS grid: title and description stack in the first column, and `CardAction` occupies a second column spanning both rows, so a header button aligns with the title without absolute positioning. Not every card needs every part — omit empty regions instead of preserving a template shape.
 
-## Usage guidance
+## Visual variants
 
-Use cards for repeated items or self-contained content groups. For broad page sections, prefer normal page layout instead of turning every section into a card. The four visual variants change emphasis, not meaning, so choose one hierarchy and use it consistently.
+Variants change emphasis, not meaning. `default` carries a shadow and ring for primary surfaces; `soft` uses a muted fill for passive grouping; `mixed` adds a border to the muted fill; `outline` is a quiet ring-only surface for secondary content. Pick one hierarchy per view — one `default`-weight card group, softer cards around it — rather than mixing all four at random.
+
+## Composition
+
+Keep one idea per card and let the parts carry structure: title names the object, description qualifies it, panel holds the body, footer holds actions. Cards are layout, not behavior. The component renders no interactivity of its own, so any affordance comes from the controls you place inside — see [Accessibility](#accessibility) before making a card itself look clickable.
 
 ## Accessibility
 
-Use real headings when the card introduces a section; `CardTitle` is a `div`, so compose or wrap it with the appropriate heading level. Avoid nested interactive targets. If the whole card leads somewhere, use one real link with a clear label instead of a click handler on the container.
+`CardTitle` renders a `div`, not a heading. Screen-reader users navigating by headings will skip right past your cards unless you supply the semantics yourself — put the appropriate heading level inside it, as shown in [Don't do this](#dont-do-this). The same applies to `CardDescription`; it is styled text, not a formal description mechanism.
+
+Avoid nesting interactive targets. A card whose entire area is clickable *and* contains buttons produces mis-taps and ambiguous focus orders. If the card leads somewhere, place one real link with a clear label; if rows of cards are selectable, expose that through a checkbox or radio with its own label instead of a click handler on the container.
+
+Cards have no built-in loading, error, or empty behavior — compose them from other components when needed: a [Skeleton](/docs/components/skeleton) inside `CardPanel` while data loads, an [Empty](/docs/components/empty) state when there is nothing to show yet.
+
+Surfaces, shadows, and text colors come from theme tokens, so cards adapt to dark mode automatically. Content reflows normally at high zoom because the card is plain flexbox with logical padding; very long titles and descriptions wrap rather than truncate.
 
 ## Installation
 
@@ -78,24 +86,126 @@ import {
 </Card>
 ```
 
+`CardContent` remains available as an alias of `CardPanel` for compatibility with existing code.
+
+## Don't do this
+
+### Titles without heading semantics
+
+```tsx
+// Bad
+<Card>
+  <CardHeader>
+    <CardTitle>Team plan</CardTitle>
+  </CardHeader>
+</Card>
+```
+
+```tsx
+// Good
+<Card>
+  <CardHeader>
+    <CardTitle>
+      <h2>Team plan</h2>
+    </CardTitle>
+  </CardHeader>
+</Card>
+```
+
+The bad version looks like a heading but is a `div`, so people navigating a page by headings hear nothing about the card. Nesting a real `h1`–`h6` inside keeps the visual design and puts the title on the page's heading map. Pick the level that fits the surrounding document, not the font size.
+
+### Whole-card click handlers
+
+```tsx
+// Bad
+<Card onClick={() => router.push(`/projects/${id}`)}>
+  <CardHeader>
+    <CardTitle>{name}</CardTitle>
+  </CardHeader>
+  <CardFooter>
+    <Button>Open</Button>
+  </CardFooter>
+</Card>
+```
+
+```tsx
+// Good
+<Card>
+  <CardHeader>
+    <CardAction>
+      <Button render={<Link href={`/projects/${id}`} />}>Open</Button>
+    </CardAction>
+  </CardHeader>
+</Card>
+```
+
+A clickable container is invisible to keyboard users (nothing to focus except the inner button, which now does something different from the rest of the card), breaks middle-click and touch scrolling habits, and fails WCAG's target-size expectations once cards sit close together. One explicit link or button says what happens and where.
+
+### Cards inside cards
+
+```tsx
+// Bad
+<Card>
+  <CardHeader>
+    <CardTitle>Billing</CardTitle>
+  </CardHeader>
+  <CardPanel>
+    <Card variant="outline">
+      <CardPanel>$29 / seat</CardPanel>
+    </Card>
+  </CardPanel>
+</Card>
+```
+
+```tsx
+// Good
+<Card>
+  <CardHeader>
+    <CardTitle>Billing</CardTitle>
+    <CardDescription>Team plan · $29 / seat</CardDescription>
+  </CardHeader>
+  <CardPanel>{/* billing details */}</CardPanel>
+</Card>
+```
+
+Nesting adds a second border, shadow, and padding scale that compete instead of reinforcing each other, and the reading order gets harder to follow. Flatten the content into the parent card's own regions.
+
 ## Examples
 
-Use the example closest to your content structure, then remove any regions you do not need.
+### Billing plan
 
-The main example includes `CardAction`, a form panel, a footer, and visible submission feedback. The examples below show content-driven structures rather than additional decorative variants.
+Variant, pricing panel, and a full-width footer action.
+
+<ComponentPreview name="card-billing-plan" />
 
 ### Metric summary
+
+A number, a period, and a delta — the smallest useful dashboard card.
 
 <ComponentPreview name="card-metric-summary" />
 
 ### Team member
 
+Avatar, role badges, and two footer actions composed in one surface.
+
 <ComponentPreview name="card-team-member" />
 
 ### Resource link
 
+One clear destination exposed as a real labeled link.
+
 <ComponentPreview name="card-resource-link" />
+
+### Help link
+
+<ComponentPreview name="card-help-link" />
 
 ## API reference
 
-`Card` accepts native `div` props and a `variant` of `default`, `soft`, `mixed`, or `outline`. `CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardPanel`, and `CardFooter` accept native `div` props. `CardContent` is an alias of `CardPanel` for compatibility.
+`Card` accepts native `div` props plus:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` | `default`, `soft`, `mixed`, `outline` | `default` |
+
+All parts accept native `div` props: `CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardPanel`, and `CardFooter`. `CardContent` is an alias of `CardPanel`. None of the parts add semantics beyond their markup — supply headings, labels, and landmarks where the content needs them.

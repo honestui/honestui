@@ -10,21 +10,43 @@ links:
 
 ## Overview
 
-Use Sheet for a panel that slides in from the edge of the screen.
+Use Sheet for a panel that slides in from the edge of the screen while the current page stays visible behind a dimmed backdrop. Sheets suit details panels, filters, quick edit forms, carts, checkout summaries, and secondary workflows where the person needs context from the page but should not wander off it.
 
-Sheets are useful for details panels, filters, side navigation, quick edit forms, carts, and secondary workflows that should keep the current page visible.
+Choose between Sheet and Dialog by shape of attention: a Dialog centers attention on one short decision, while a Sheet keeps a wider working surface anchored to an edge so people can still see what they were doing. If the content is a single question with two buttons, use Dialog or Alert Dialog instead — see [Don't do this](#dont-do-this). If the content deserves its own URL and back-button behavior, give it a route.
 
 ## Anatomy
 
-A sheet has a trigger, content panel, header, title, description, body, footer, and close action. It is based on the dialog pattern.
+A sheet has a trigger, popup panel, header, title, description, body content, footer, and a built-in close button. It is built on the Base UI Dialog primitives, so everything about focus, modality, and dismissal behaves like a Dialog — only the position and animation differ.
+
+The header holds the title and description. The body scrolls independently when content exceeds the viewport height. The footer sits at the bottom of the panel regardless of body height, which keeps primary actions reachable without scrolling.
+
+## Sides and sizing
+
+The `side` prop on `SheetPopup` accepts `"top"`, `"right"`, `"bottom"`, or `"left"` and defaults to `"right"`.
+
+Right-side sheets work well for details and editing because they start where the eye finishes reading in left-to-right locales. Left-side sheets suit navigation drawers. Bottom sheets work well for compact pickers on small screens. Top sheets are rare; reserve them for notifications or global search.
+
+On phones, right and left sheets span the full width minus a small gutter. From `sm` upward they cap at a comfortable reading width, so a wide screen never produces a panel stretched across it.
 
 ## Behavior
 
-Choose the side based on the workflow. Right-side sheets work well for details and editing. Left-side sheets work well for navigation. Bottom sheets can work well on smaller screens.
+**Opening.** When the sheet opens, focus moves into the panel, the backdrop dims the page, and scrolling behind is locked. The slide-in animation respects motion preferences through transition utilities rather than JavaScript timers.
+
+**While open.** <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> cycle inside the panel only. <kbd>Escape</kbd> closes it, and clicking the backdrop closes it too. Use the `showCloseButton={false}` prop on `SheetPopup` to remove the built-in dismiss button when you provide your own `SheetClose` control.
+
+**Closing.** Focus returns to the trigger so keyboard users continue where they left off. Because sheets often contain forms, intercept accidental dismissal with controlled state when discarding input would lose work — the same pattern shown in the [Dialog close confirmation](/docs/components/dialog#close-confirmation) example applies unchanged.
 
 ## Accessibility
 
-Provide a title, keep focus inside while open, and make sure focus returns to the trigger when closed.
+Always provide a `SheetTitle`; it gives the panel its accessible name, so screen-reader users know what opened. Add `SheetDescription` when the task needs context. Without a title the panel is announced as an unlabeled dialog.
+
+The built-in close button carries a visually hidden "Close" label and grows to at least 44 × 44 px on touch devices, so it stays easy to hit even though it looks small. Keep your own controls inside the panel at least that large when they are primary touch targets.
+
+Place initial focus deliberately with `initialFocus` on `SheetPopup` when the first tabbable element is not the right starting point — for example, focusing the first form field instead of the close button.
+
+Colors come from theme tokens, so the panel and backdrop adapt to dark mode automatically. The close button is positioned with the logical `end` property, so it mirrors correctly in right-to-left locales. The four sides themselves are physical positions, though: `side="right"` stays on the physical right under `dir="rtl"`. Pick the side deliberately for localized layouts rather than assuming mirroring.
+
+Long titles and descriptions wrap inside the panel instead of overflowing it. At 200% zoom the body scrolls while the footer actions stay pinned, so the task remains completable.
 
 ## Installation
 
@@ -77,29 +99,151 @@ import {
 
 ```tsx
 <Sheet>
-  <SheetTrigger>Open</SheetTrigger>
+  <SheetTrigger>Edit profile</SheetTrigger>
   <SheetPopup>
     <SheetHeader>
-      <SheetTitle>Are you absolutely sure?</SheetTitle>
+      <SheetTitle>Edit profile</SheetTitle>
       <SheetDescription>
-        This action cannot be undone. This will permanently delete your account
-        and remove your data from our servers.
+        Changes are visible to other workspace members immediately.
       </SheetDescription>
     </SheetHeader>
+    {/* Body fields */}
   </SheetPopup>
 </Sheet>
 ```
 
+`SheetContent` is an alias for `SheetPopup`, and `SheetOverlay` aliases `SheetBackdrop`, so either naming style works.
+
+## Don't do this
+
+### A confirmation belongs in a dialog
+
+```tsx
+// Bad
+<Sheet>
+  <SheetTrigger>Delete workspace</SheetTrigger>
+  <SheetPopup>
+    <SheetHeader>
+      <SheetTitle>Delete workspace?</SheetTitle>
+    </SheetHeader>
+    <SheetFooter>
+      <Button variant="destructive">Delete</Button>
+    </SheetFooter>
+  </SheetPopup>
+</Sheet>
+```
+
+```tsx
+// Good
+<AlertDialog>
+  <AlertDialogTrigger>Delete workspace</AlertDialogTrigger>
+  <AlertDialogPopup>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Delete workspace?</AlertDialogTitle>
+    </AlertDialogHeader>
+    <AlertDialogBody>
+      <AlertDialogDescription>
+        This permanently deletes the workspace and its data.
+      </AlertDialogDescription>
+    </AlertDialogBody>
+    <AlertDialogFooter>
+      <AlertDialogClose>Cancel</AlertDialogClose>
+      <AlertDialogClose render={<Button variant="destructive" />}>
+        Delete workspace
+      </AlertDialogClose>
+    </AlertDialogFooter>
+  </AlertDialogPopup>
+</AlertDialog>
+```
+
+A sheet sliding in from the edge signals "working surface," not "stop and decide." Short confirmations land faster in a centered dialog, where the backdrop and compact size make the decision the only thing on screen. Reserve sheets for tasks with real content to read or fill in.
+
+### Panels without a title
+
+```tsx
+// Bad
+<SheetPopup showCloseButton>
+  {/* filters */}
+</SheetPopup>
+```
+
+```tsx
+// Good
+<SheetPopup>
+  <SheetHeader>
+    <SheetTitle>Filters</SheetTitle>
+  </SheetHeader>
+  {/* filters */}
+</SheetPopup>
+```
+
+The accessible name comes from the title. Without it, assistive technology announces an unlabeled dialog, and people cannot tell what opened or why focus moved. Even a visually minimal panel gets a `SheetTitle` — hide it visually only if the surrounding design truly replaces it.
+
+### Full workflows hidden in a panel
+
+```tsx
+// Bad
+<Sheet>
+  <SheetTrigger>Checkout</SheetTrigger>
+  <SheetPopup>
+    {/* Address, payment, review, confirmation — four steps */}
+  </SheetPopup>
+</Sheet>
+```
+
+```tsx
+// Good — give multi-step flows a route
+<Link href="/checkout">Checkout</Link>
+```
+
+Sheets tempt you to stack several steps into one panel because opening them is cheap. But a multi-step flow in a panel has no URL to resume or share, browser Back closes the whole flow at once, and reload discards progress mid-panel. Once content scrolls past a screen or represents navigation, it deserves a page.
+
 ## Examples
 
-The example shows sheet placement from different screen edges.
+### Quick edit form
 
-### Side sheets
+Fields stay labeled and the footer actions remain visible while the form area scrolls.
+
+<ComponentPreview name="sheet-profile-editor" />
+
+### Order summary
+
+A compact summary panel with a single pinned action — the shape carts and checkout overviews take.
+
+<ComponentPreview name="sheet-checkout-summary" />
+
+### Form with description and close
+
+<ComponentPreview name="sheet-demo" />
+
+### Side placement
+
+The same panel opened from each edge, including a top sheet with its built-in close button removed via `showCloseButton={false}`.
 
 <ComponentPreview name="sheet-position" />
 
 ## API reference
 
-Sheet exports root, trigger, portal, close, backdrop, popup, header, footer, title, and description parts. They forward their matching Dialog-style Base UI props; Overlay and Content are aliases for Backdrop and Popup. The popup adds the documented side or position option.
+All Sheet parts forward their matching Base UI Dialog props. `SheetOverlay` aliases `SheetBackdrop` and `SheetContent` aliases `SheetPopup`.
 
-Treat Sheet as a modal dialog: provide a title, restore focus on close, and keep essential actions reachable at zoom. See the [Base UI Dialog API](https://base-ui.com/react/components/dialog#api-reference).
+| Part | Renders | Notes |
+| --- | --- | --- |
+| `Sheet` | Root | Controlled (`open` / `onOpenChange`) or uncontrolled open state |
+| `SheetTrigger` | Button | Opens the panel; accepts Base UI `render` composition |
+| `SheetPortal` | Portal | Mounts the panel outside the layout tree |
+| `SheetBackdrop` | Div | Dimmed, blurred overlay; click dismisses |
+| `SheetPopup` | Div | The panel itself |
+| `SheetHeader` | Div | Title and description block |
+| `SheetFooter` | Div | Pinned to the panel bottom; buttons stack full-width on small screens |
+| `SheetTitle` | Heading | Names the panel for assistive technology |
+| `SheetDescription` | Paragraph | States context or consequence |
+| `SheetClose` | Button | Explicit dismissal control |
+
+`SheetPopup` adds:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `side` | `top`, `right`, `bottom`, `left` | `right` |
+| `showCloseButton` | boolean | `true` |
+
+It also accepts `initialFocus` and `finalFocus` to direct focus when the panel opens and closes. Treat the sheet as a modal dialog: provide a title, restore focus on close, and keep essential actions reachable at zoom. See the [Base UI Dialog API](https://base-ui.com/react/components/dialog#api-reference).

@@ -1,30 +1,40 @@
 ---
 title: Preview Card
 description: Preview a linked destination on hover or focus without changing the link's behavior.
-
-links:
-  doc: https://base-ui.com/react/components/preview-card#api-reference
 ---
 
 <ComponentPreview name="preview-card-demo" />
 
 ## Overview
 
-Use Preview Card to show a small preview when a user hovers or focuses a link.
+Use Preview Card to show a small summary when someone hovers or focuses a link: profiles, repositories, documents, issues, plans. The preview helps people decide whether the destination is worth opening — it never replaces the destination itself.
 
-Preview cards are useful for profiles, documents, issues, pages, and references where a quick summary helps users decide whether to open the link.
+The component is honest about its role: the trigger is a real link and works exactly as it would without the card. Touch devices have no hover, so their users simply navigate; the preview is a progressive enhancement for pointer and keyboard contexts.
 
 ## Anatomy
 
-A preview card has a trigger link and popup content. The popup usually includes a title, short description, metadata, and sometimes media.
+A preview card has two visible parts plus positioning internals:
 
-## Usage guidance
+- **PreviewCardTrigger** renders an `<a>` element — your link — and manages the hover/focus timing.
+- **PreviewCardPopup** portals a positioned surface next to the trigger. It accepts `side` (`bottom` by default), `align` (`center`), and `sideOffset` (4 px), forwarding them to Base UI's positioner.
+- **PreviewCardArrow** optionally connects the popup visually to its trigger.
+- **PreviewCardViewport** is only needed when several triggers share one popup whose content swaps with an animated transition between them.
 
-Keep preview content brief. It should help users understand the destination, not replace the destination page.
+Inside the popup, content is yours: title, description, metadata, media. Keep it brief enough to scan in the moment before deciding to click.
+
+## Timing and interaction
+
+The trigger waits 600 ms of continuous hover before opening (`delay`) and 300 ms after the pointer leaves before closing (`closeDelay`). The closeDelay lets people move from the link into the popup to read or copy text without it vanishing. Keyboard focus also waits for `delay`, so if you shorten it, remember you're shortening it for keyboard users too. <kbd>Escape</kbd> dismisses an open card, as does clicking elsewhere.
+
+Both delays are tunable per trigger. Resist tuning the delay to zero: see [Don't do this](#dont-do-this).
 
 ## Accessibility
 
-The link must still work without the preview. Do not put essential actions only inside hover-only content.
+Because the trigger is a genuine anchor, everything about links holds: it is reachable by <kbd>Tab</kbd>, announced by its text, activatable with <kbd>Enter</kbd>, and supports middle-click, context menus, and copy-link. Opening the card changes none of that — treat the popup as supplementary information layered over navigation.
+
+The popup appears on focus too, so keyboard users get the same summary pointer users see (after the shared delay). Content inside the popup should be readable but nonessential: nothing there may be the only place a fact or action exists, because touch users and people who click straight through will never see it.
+
+Colors come from theme tokens, so popups adapt to dark mode automatically. Positioning supports logical sides (`inline-start`, `inline-end`) alongside physical ones, and the arrow mirrors accordingly, so cards work in right-to-left locales. Long titles wrap inside the fixed-width popup rather than overflowing it.
 
 ## Installation
 
@@ -65,7 +75,6 @@ npm install @base-ui/react
 ## Usage
 
 ```tsx
-import { Button } from "@/components/ui/button";
 import {
   PreviewCard,
   PreviewCardPopup,
@@ -75,33 +84,104 @@ import {
 
 ```tsx
 <PreviewCard>
-  <PreviewCardTrigger>View project details</PreviewCardTrigger>
+  <PreviewCardTrigger href="/projects/atlas">Atlas</PreviewCardTrigger>
   <PreviewCardPopup>
-    Project status, owner, and recent activity
+    Status, owner, and recent activity for Atlas
   </PreviewCardPopup>
 </PreviewCard>
 ```
+
+Give the trigger a real `href`; the preview is decoration on top of working navigation. `HoverCard`, `HoverCardTrigger`, and `HoverCardContent` remain available as aliases during migration.
+
+## Don't do this
+
+### Hiding essential actions inside the popup
+
+```tsx
+// Bad
+<PreviewCardPopup>
+  <p>Aurora website</p>
+  <Button onClick={deploy}>Deploy</Button>
+</PreviewCardPopup>
+```
+
+```tsx
+// Good
+<PreviewCardPopup>
+  <p>Last deployed 2 hours ago · production</p>
+</PreviewCardPopup>
+```
+
+Touch users can't hover, hasty users click through before the popup renders, and the card closes while they're mid-task — so a Deploy button that lives only here will be missed, half-seen, or fired accidentally. Put facts and actions where the task lives; the popup carries context only.
+
+### A preview trigger that doesn't navigate
+
+```tsx
+// Bad
+<PreviewCardTrigger onClick={(e) => e.preventDefault()}>
+  Atlas project
+</PreviewCardTrigger>
+```
+
+```tsx
+// Good
+<PreviewCardTrigger href="/projects/atlas">
+  Atlas project
+</PreviewCardTrigger>
+```
+
+Once the trigger stops being a link, the whole contract breaks: keyboard users open a popup and then have nowhere to go, middle-click and copy-link stop working, and screen readers announce a dead end. If there's no destination worth linking, you wanted a Tooltip or Popover, not a Preview Card.
+
+### Removing the hover delay in dense lists
+
+```tsx
+// Bad
+{rows.map((row) => (
+  <PreviewCardTrigger key={row.id} href={row.href} delay={0}>
+    {row.name}
+  </PreviewCardTrigger>
+))}
+```
+
+```tsx
+// Good
+<PreviewCardTrigger href={row.href} delay={600}>
+  {row.name}
+</PreviewCardTrigger>
+```
+
+Scanning a list means the pointer passes over many triggers. With no delay, every pass fires a popup and the page flickers through content nobody asked for — visual noise for pointer users and a barrage of announcements for screen-reader users sweeping the list. Keep the default delay wherever multiple previews sit near each other.
 
 ## Examples
 
 ### Repository preview
 
+Name, one-line description, and star count — enough to decide whether to open the repo.
+
 <ComponentPreview name="preview-card-repository" />
 
 ### Profile preview
+
+An avatar and role attached to a person's name anywhere it appears.
 
 <ComponentPreview name="preview-card-profile" />
 
 ### Product preview
 
+Plan details surfaced next to the link that leads to billing.
+
 <ComponentPreview name="preview-card-product" />
-
-## Decision guidance
-
-Use Preview Card for optional supporting context that appears after intentional hover or keyboard focus. The trigger should still work without the preview, and important facts or actions must remain available on the destination page. Use Popover when people must interact with the floating content.
 
 ## API reference
 
-Preview Card parts forward their matching Base UI Preview Card props. The `HoverCard` names are aliases for compatibility. Use the viewport when coordinating popup size and the arrow only when it helps connect the popup to its trigger.
+| Part | Renders | Notes |
+| --- | --- | --- |
+| `PreviewCard` | none (context root) | Base UI Root props: `open`/`defaultOpen`, `onOpenChange`, `actionsRef`, `handle` |
+| `PreviewCardTrigger` | `<a>` | `href` plus native anchor props; `delay` (600 ms) and `closeDelay` (300 ms) |
+| `PreviewCardPopup` | positioned `<div>` via portal | Adds `side` (`"bottom"`), `align` (`"center"`), `sideOffset` (`4`) forwarded to the positioner |
+| `PreviewCardArrow` | SVG arrow | Optional; mirrors for logical sides |
+| `PreviewCardViewport` | `<div>` | Only for multiple triggers sharing one animated popup |
+
+The trigger's payload prop and the root's render-function children let one shared popup render different summaries per trigger — pair that with `PreviewCardViewport`. `HoverCard*` names are aliases for compatibility.
 
 See the [Base UI Preview Card API](https://base-ui.com/react/components/preview-card#api-reference).

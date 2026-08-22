@@ -7,21 +7,27 @@ description: Explain why a section is empty and help people take the next useful
 
 ## Overview
 
-Use Empty when a section has no content to show yet.
-
-Empty states should explain what is missing and give the user a useful next action. They are common in dashboards, tables, lists, search results, inboxes, and setup flows.
+Use Empty when a section has nothing to show yet: a dashboard before its first project, an inbox at zero, search results that matched nothing, an upload queue waiting for files. An empty state is a conversation, not a dead end — it should say what is missing, why, and what to do next if there is anything to do.
 
 ## Anatomy
 
-An empty state can include media, a title, description, content, and actions. Keep the title short and use the description to explain why the state exists or how to move forward.
+An empty state can include media, a title, a description, and content such as actions or a supporting input. `EmptyHeader` centers the media, title, and description as one block; `EmptyContent` holds whatever comes next. Omit regions you don't need — some states need no action (`Inbox zero`) and some need no illustration.
+
+The container renders a rounded dashed outline by default, which suits drop targets and placeholders; add `border` alongside it for full dashed borders, as the examples do, or remove both for a plain centered layout.
 
 ## Usage guidance
 
-Write empty states for the real cause. `No projects yet` is better than `Nothing here`. Add an action when the user can create, import, clear filters, or retry.
+Write the title for the real cause. "No projects yet" tells people the space works and awaits input; "Nothing here" could mean a bug, a filter, or an outage. Match the action to the cause: create when the space is new, clear filters when a query came up empty, retry when data failed to arrive, and offer no button when there is genuinely nothing to do — celebrating an empty inbox beats inventing work for it.
+
+Never show an empty state while content is still loading (use [Skeleton](/docs/components/skeleton)) or when a request failed (show the error and a retry instead). Each of those three situations needs its own message; collapsing them into one "No data" state hides whether the problem will resolve on its own.
 
 ## Accessibility
 
-Use normal headings and buttons. Do not rely on illustration alone to explain the state.
+`EmptyTitle` renders a styled `div`, so put a real heading level inside it for people navigating by headings — the same pattern as [Card](/docs/components/card). Keep the description as real text; do not bake the explanation into the illustration.
+
+Treat `EmptyMedia` as decoration: pass `aria-hidden="true"` on decorative icons so screen readers skip straight to the title. The component's stacked backdrop tiles are already hidden from assistive technology. Actions inside `EmptyContent` are ordinary buttons and links — give them specific labels ("Reset filters", not just "OK") because they may be the only controls announced in the region.
+
+Colors come from theme tokens, and the layout reflows cleanly at high zoom; the centered column keeps reading order natural for screen readers top to bottom.
 
 ## Installation
 
@@ -81,100 +87,70 @@ import {
 </Empty>
 ```
 
-## API Reference
+## Don't do this
 
-### Empty
-
-The main component of the empty state. Wraps the `EmptyHeader` and `EmptyContent` components.
-
-| Prop        | Type     | Default |
-| ----------- | -------- | ------- |
-| `className` | `string` |         |
+### Dead ends
 
 ```tsx
+// Bad
 <Empty>
-  <EmptyHeader />
-  <EmptyContent />
+  <EmptyHeader>
+    <EmptyTitle>Nothing here</EmptyTitle>
+  </EmptyHeader>
 </Empty>
 ```
 
-### EmptyHeader
+```tsx
+// Good
+<Empty className="border">
+  <EmptyHeader>
+    <EmptyMedia variant="icon"><SearchXIcon aria-hidden="true" /></EmptyMedia>
+    <EmptyTitle><h2>No matching filters</h2></EmptyTitle>
+    <EmptyDescription>Try clearing a status or date filter.</EmptyDescription>
+  </EmptyHeader>
+  <EmptyContent>
+    <Button variant="secondary" size="sm">Reset filters</Button>
+  </EmptyContent>
+</Empty>
+```
 
-The `EmptyHeader` component wraps the empty media, title, and description.
+"Nothing here" leaves every question open: is this a bug, my filters, my permissions, or an empty database? And with no action offered, the only way out is the back button. Name the cause and hand over the next step whenever one exists.
 
-| Prop        | Type     | Default |
-| ----------- | -------- | ------- |
-| `className` | `string` |         |
+### Blaming the user
 
 ```tsx
+// Bad
+<EmptyTitle>You broke it!</EmptyTitle>
+<EmptyDescription>This page crashed because of your filters.</EmptyDescription>
+```
+
+```tsx
+// Good
+<EmptyTitle><h2>No results</h2></EmptyTitle>
+<EmptyDescription>No transactions match these filters right now.</EmptyDescription>
+```
+
+Accusatory copy turns a routine state into an indictment — and it's usually inaccurate, since empty states most often reflect normal circumstances, not user error. Describe the situation neutrally and keep the door open: "no results *yet*", "right now", "with these filters".
+
+### Meaning carried by the picture alone
+
+```tsx
+// Bad
 <EmptyHeader>
-  <EmptyMedia />
-  <EmptyTitle />
-  <EmptyDescription />
+  <EmptyMedia variant="icon"><FolderIcon /></EmptyMedia>
 </EmptyHeader>
 ```
 
-### EmptyMedia
-
-Use the `EmptyMedia` component to display the media of the empty state such as an icon or an image. You can also use it to display other components such as an avatar.
-
-| Prop        | Type                  | Default   |
-| ----------- | --------------------- | --------- |
-| `variant`   | `"default" \| "icon"` | `default` |
-| `className` | `string`              |           |
-
 ```tsx
-<EmptyMedia variant="icon">
-  <Icon />
-</EmptyMedia>
+// Good
+<EmptyHeader>
+  <EmptyMedia variant="icon"><FolderIcon aria-hidden="true" /></EmptyMedia>
+  <EmptyTitle><h2>No projects yet</h2></EmptyTitle>
+  <EmptyDescription>Create your first project to get started.</EmptyDescription>
+</EmptyHeader>
 ```
 
-```tsx
-<EmptyMedia>
-  <Avatar>
-    <AvatarImage src="..." />
-    <AvatarFallback>CL</AvatarFallback>
-  </Avatar>
-</EmptyMedia>
-```
-
-### EmptyTitle
-
-Use the `EmptyTitle` component to display the title of the empty state.
-
-| Prop        | Type     | Default |
-| ----------- | -------- | ------- |
-| `className` | `string` |         |
-
-```tsx
-<EmptyTitle>No projects yet</EmptyTitle>
-```
-
-### EmptyDescription
-
-Use the `EmptyDescription` component to display the description of the empty state.
-
-| Prop        | Type     | Default |
-| ----------- | -------- | ------- |
-| `className` | `string` |         |
-
-```tsx
-<EmptyDescription>You do not have any notifications.</EmptyDescription>
-```
-
-### EmptyContent
-
-Use the `EmptyContent` component to display the content of the empty state such as a button, input or a link.
-
-| Prop        | Type     | Default |
-| ----------- | -------- | ------- |
-| `className` | `string` |         |
-
-```tsx
-<EmptyContent>
-  <Button>Create project</Button>
-</EmptyContent>
-```
+An unexplained folder icon says something different to everyone and nothing to screen readers. The icon sets tone; the title and description carry the actual message. Mark the media decorative and make the text self-sufficient.
 
 ## Examples
 
@@ -182,12 +158,33 @@ Match the message and recovery action to the reason the content is empty.
 
 ### No matching results
 
+A filter problem with a one-click way back.
+
 <ComponentPreview name="empty-filtered-results" />
 
 ### Empty inbox
 
+A genuine achievement with no action attached.
+
 <ComponentPreview name="empty-inbox-zero" />
 
-### Empty upload queue
+### Upload queue
+
+A drop-target state inviting the next file.
 
 <ComponentPreview name="empty-upload-queue" />
+
+## API reference
+
+All parts accept native `div` props plus the following:
+
+| Part | Prop | Values | Default |
+| --- | --- | --- | --- |
+| `Empty` | — | — | — |
+| `EmptyHeader` | — | — | — |
+| `EmptyMedia` | `variant` | `default`, `icon` | `default` |
+| `EmptyTitle` | — | — | — |
+| `EmptyDescription` | — | — | — |
+| `EmptyContent` | — | — | — |
+
+`Empty` provides the centered, dashed-border container. `EmptyHeader` wraps media, title, and description with constrained width and centering. With `variant="icon"`, `EmptyMedia` draws a bordered icon tile flanked by two rotated, `aria-hidden` backdrop tiles. `EmptyTitle` and `EmptyDescription` provide styling only — supply your own heading semantics inside the title. `EmptyContent` constrains actions to a readable measure.

@@ -10,21 +10,37 @@ links:
 
 ## Overview
 
-Use Radio Group when the user must choose one option from a set.
+Use a radio group when the person must pick exactly one option from a small set and every option deserves to be seen before choosing: plans, visibility levels, shipping speeds, sort order. Showing all options at once lets people compare them, which is why radios beat a Select for short lists — reserve Select for long lists or when space is genuinely tight.
 
-Radio groups are useful for plans, visibility, shipping speed, sort order, and settings where choices are mutually exclusive.
+Unlike a checkbox, a selection cannot be removed by clicking again. If "none" is a valid answer, it needs its own option; see [Don't do this](#dont-do-this).
 
 ## Anatomy
 
-A radio group has a group label, radio items, item labels, optional descriptions, and selection state.
+A group has a container (`role="radiogroup"`), radio items, item labels, optional descriptions, and one shared selection state. The group label names the question ("Shipping speed"); each radio's label names one answer. The labels carry the meaning, because screen readers announce the checked item by its label, not by position.
+
+`RadioGroupItem` is an alias of `Radio`, so both names appear in older code.
 
 ## Behavior
 
-Show all important options when the list is short. Use Select when the list is long or when space is limited.
+**Selection.** Clicking a radio checks it and unchecks its siblings. One radio in a group can also start preselected with `defaultValue`; leave everything unselected when the choice must be deliberate, such as legal or destructive decisions.
+
+**Keyboard.** <kbd>Tab</kbd> moves focus into the checked (or first) radio in the group. Once inside, <kbd>Arrow</kbd> keys move selection through the options, and <kbd>Home</kbd>/<kbd>End</kbd> jump to the first or last item. Arrow keys select as they move, matching native radio behavior.
+
+**Disabled.** `disabled` on the group disables every item; `disabled` on an individual `Radio` removes just that option from interaction while leaving it visible. Disabled items are skipped by keyboard focus and submit no value.
+
+**Invalid.** Setting `aria-invalid="true"` on a `Radio` turns its border toward the danger color, with stronger treatment on keyboard focus so the invalid control remains findable. See the [error state](#error-state) example for the full wiring.
 
 ## Accessibility
 
-Group radio items with a clear label. Each item should have its own label, and keyboard users should be able to move through options with arrow keys.
+Each radio renders a span with `role="radio"` plus a visually hidden native input; the group renders a container with `role="radiogroup"`. The keyboard model above follows the WAI-ARIA radiogroup pattern: one tab stop per group rather than one per option, so long forms stay quick to navigate.
+
+Give the group an accessible name. Wrap it in a `Fieldset` with a `FieldsetLegend`, connect an external heading with `aria-labelledby`, or pass `aria-label` when no visible title exists. Without a group name, screen-reader users hear a list of unrelated choices with no question attached.
+
+Every radio needs a `Label` wrapping it (or linked via `htmlFor`). The rendered circle is 16 px — under comfortable touch-target size — but the wrapping label makes the entire phrase tappable, which is what actually saves touch accuracy.
+
+Colors come from theme tokens, including the dark-mode-specific unchecked fill and shadow adjustments already built into the component. Spacing uses logical flexbox layout, so groups mirror correctly in right-to-left locales.
+
+Long labels wrap within their `Label` instead of pushing siblings out of alignment. Keep each option scannable; move consequences into a description below the group rather than into the label itself.
 
 ## Installation
 
@@ -83,11 +99,78 @@ import { Radio, RadioGroup } from "@/components/ui/radio-group";
 </RadioGroup>
 ```
 
+For group labeling and validation, wrap the whole question in `Field` rendered as a `Fieldset` so the legend, error, and description are connected. See the [Field examples](/docs/components/field#examples).
+
+## Don't do this
+
+### Expecting people to deselect
+
+```tsx
+// Bad
+<RadioGroup value={size} onValueChange={setSize}>
+  <Label><Radio value="sm" /> Small</Label>
+  <Label><Radio value="lg" /> Large</Label>
+</RadioGroup>
+// ...and elsewhere: onClick={() => setSize(null)} to "clear" the choice
+```
+
+```tsx
+// Good
+<RadioGroup value={size} onValueChange={setSize}>
+  <Label><Radio value="sm" /> Small</Label>
+  <Label><Radio value="lg" /> Large</Label>
+  <Label><Radio value="any" /> No preference</Label>
+</RadioGroup>
+```
+
+Once a radio is checked, clicking again does nothing — that is how the control communicates "exactly one". Trying to clear a selection from code fights the semantics and leaves keyboard users stranded, because there is no key that deselects either. Make "none of these" an explicit, labeled option instead.
+
+### A group without a question
+
+```tsx
+// Bad
+<RadioGroup defaultValue="next">
+  <Label><Radio value="next" /> Next.js</Label>
+  ...
+</RadioGroup>
+
+// Good
+<Fieldset>
+  <FieldsetLegend>Preferred framework</FieldsetLegend>
+  <RadioGroup defaultValue="next">
+    <Label><Radio value="next" /> Next.js</Label>
+    ...
+  </RadioGroup>
+</Fieldset>
+```
+
+Without a group name, assistive technology announces each radio out of context: "Next.js, radio checked" answers no question the user ever heard. Sighted users infer the question from page layout; screen-reader users need it spoken, which is exactly what a legend provides.
+
+### Independent toggles inside a radio group
+
+```tsx
+// Bad
+<RadioGroup defaultValue="standard">
+  <Label><Radio value="standard" /> Standard shipping</Label>
+  <Label><Radio value="express" /> Express shipping</Label>
+  <Label><Checkbox /> Add gift wrapping</Label>
+</RadioGroup>
+
+// Good
+<RadioGroup defaultValue="standard">
+  <Label><Radio value="standard" /> Standard shipping</Label>
+  <Label><Radio value="express" /> Express shipping</Label>
+</RadioGroup>
+<Label className="mt-3">
+  <Checkbox /> Add gift wrapping
+</Label>
+```
+
+Mixing controls breaks both contracts at once: arrow keys land on the checkbox as if it were an option, and the checkbox appears to participate in a mutual exclusion it ignores. Selection sets and independent toggles belong in separate structures, visually and semantically.
+
 ## Examples
 
-Examples cover disabled, described, card-style, and form-connected radio groups.
-
-For group labeling and validation, use `Field` and `Fieldset` to connect the question and error to the radio group. See the [Field examples](/docs/components/field#examples).
+Examples cover disabled items, descriptions, card-style layouts, required-choice errors, and form-connected groups.
 
 ### Disabled
 
@@ -101,12 +184,20 @@ For group labeling and validation, use `Field` and `Fieldset` to connect the que
 
 <ComponentPreview name="radio-group-card" />
 
+### Error State
+
+Submitting without a choice flags every radio with `aria-invalid`, announces the message via `role="alert"`, and clears the error as soon as an option is picked.
+
+<ComponentPreview name="radio-group-error" />
+
 ### Form Integration
 
 <ComponentPreview name="radio-group-form" />
 
 ## API reference
 
-`RadioGroup` and `Radio` forward their matching Base UI Radio props; `RadioGroupItem` is an alias of `Radio`. Put the shared `name`, controlled or default value, orientation, and disabled state on the group. Give the group a legend or accessible label, and label every radio.
+`RadioGroup` and `Radio` forward their matching Base UI props. There is no `orientation` prop: put the shared `name`, controlled `value` + `onValueChange` (or `defaultValue`), and `disabled` on the group; put `value`, `disabled`, and validation attributes such as `aria-invalid` on each `Radio`. Give the group a legend or accessible label, and wrap every radio in a `Label`. `RadioGroupItem` is exported as an alias of `Radio`.
+
+The group lays items out vertically with a fixed gap; apply your own layout classes for horizontal rows.
 
 See the [Base UI Radio API](https://base-ui.com/react/components/radio#api-reference).

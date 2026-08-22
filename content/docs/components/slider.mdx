@@ -10,21 +10,37 @@ links:
 
 ## Overview
 
-Use Slider when users choose a value from a range.
+Use a Slider when people adjust a value on a bounded scale and seeing the range helps: volume, opacity, price bounds, thresholds, percentages. Dragging to an approximate position is faster than typing when precision matters less than direction — "a bit louder", "somewhere between $20 and $40".
 
-Sliders are useful for volume, opacity, price range, thresholds, percentages, and settings where approximate adjustment is faster than typing.
+When the exact number is the point, use Number Field instead, or pair it with a slider so each input style covers the other's weakness. A slider with no visible value hides the one thing keyboard users cannot verify, so show the number whenever it would be read.
 
 ## Anatomy
 
-A slider has a track, range, thumb, value, minimum, maximum, step, and optional label. Range sliders have more than one thumb.
+A slider has a track, a filled indicator, thumbs, an optional value display, and the scale defined by `min`, `max`, and `step`. The thumb is a ridged pill (24 × 20 px in the default `size="large"`) that scales up and lifts while dragged or pressed; `size="small"` renders a slimmer round grip for dense layouts.
+
+The component renders the track, indicator, and one thumb per value automatically — pass two values for a range slider and it renders two thumbs without extra markup. The root also sets `data-variant="range"` or `"single"`, which styling can target.
 
 ## Behavior
 
-Use a number field when exact numeric input is more important than quick adjustment. Use a slider when users benefit from seeing the range visually.
+**Values and steps.** `min` defaults to 0 and `max` to 100; `step` defaults to 1 and supports decimals. Keyboard movement snaps to multiples of `step` measured from `min`, and <kbd>Page Up</kbd>/<kbd>Page Down</kbd> or <kbd>Shift</kbd>+arrows jump by `largeStep` (10 by default). Keep `(max − min)` divisible by `step` so the ends of the track are reachable exactly.
+
+**Range sliders.** Two thumbs bound a range. `minStepsBetweenValues` keeps them apart by a minimum distance, and `thumbCollisionBehavior` decides what happens when they meet: `push` (default) shoves the neighbor, `swap` exchanges their places, `none` blocks the move.
+
+**Commit timing.** `onValueChange` fires continuously while dragging; `onValueCommitted` fires on release. Do expensive work — network requests, filtering large lists — on commit, not on every intermediate value.
+
+**Disabled.** `disabled` dims the whole control to half opacity and ignores pointer events. Disabled sliders keep their last value visible, so they suit locked settings better than hidden ones.
 
 ## Accessibility
 
-Provide a label and visible value when the number matters. Keep keyboard controls working for each thumb.
+Each thumb renders a hidden native range input, so assistive technology announces it as a slider with its current value, minimum, maximum, and step. Focus lands directly on the active thumb, and the focus ring draws around the thumb visual only for keyboard focus.
+
+Full keyboard support per thumb: <kbd>Arrow</kbd> keys step by `step` (<kbd>Shift</kbd>+<kbd>Arrow</kbd> steps by `largeStep`), <kbd>Page Up</kbd>/<kbd>Page Down</kbd> step by `largeStep`, and <kbd>Home</kbd>/<kbd>End</kbd> jump to the extremes (respecting the neighboring thumb's position in ranges). In vertical orientation <kbd>Arrow Up</kbd> increases; horizontal arrows also work in both orientations.
+
+Name the slider through a connected `Label` and pair it with `SliderValue`, which renders the formatted numbers inside a semantic `<output>` element. Without a visible value, sighted users squint at thumb positions and screen-reader users must trust the announced number alone.
+
+The interactive area is forgiving: the control region is 28 px tall around the track and stretches the full width, so imprecise pointer presses still land on the control even though the visual thumb is smaller. Vertical sliders need an explicit height (`h-full` inside a sized container); give them at least 80 px of travel.
+
+Colors come from `--hui-*` tokens, so the track, indicator, thumb, and value bubble adapt to dark mode automatically. The layout uses logical properties and Base UI handles right-to-left dragging, mirroring the mapping between arrow keys and direction. Long labels sit above the track and wrap normally; the floating value bubble stays on one line and never clips mid-drag.
 
 ## Installation
 
@@ -69,12 +85,75 @@ import { Slider, SliderValue } from "@/components/ui/slider";
 ```
 
 ```tsx
-<Slider />
+<Slider defaultValue={50} />
 ```
+
+With no children, the slider renders just the track and thumbs. Pass children to add a label row above:
+
+```tsx
+<Slider defaultValue={50}>
+  <div className="mb-2 flex items-center justify-between gap-1">
+    <Label className="text-sm font-medium">Opacity</Label>
+    <SliderValue />
+  </div>
+</Slider>
+```
+
+Set `showValue` on the root instead to float a formatted value bubble above each thumb, visible whenever the slider renders.
+
+## Don't do this
+
+### Choosing a precise quantity by drag
+
+```tsx
+// Bad
+<Slider min={0} max={9999} defaultValue={100} />
+
+// Good
+<NumberField min={0} max={9999} defaultValue={100} />
+```
+
+Four significant digits cannot be hit reliably by dragging, and every keyboard adjustment crawls through thousands of steps. When the exact number matters more than the gesture — quantities, ports, prices — a typeable field with steppers does the job the slider cannot.
+
+### A slider that never shows its value
+
+```tsx
+// Bad
+<Label htmlFor={id}>Opacity</Label>
+<Slider id={id} defaultValue={0.4} />
+
+// Good
+<Slider defaultValue={0.4} format={{ style: "percent" }}>
+  <div className="mb-2 flex items-center justify-between gap-1">
+    <Label className="text-sm font-medium">Opacity</Label>
+    <SliderValue />
+  </div>
+</Slider>
+```
+
+Thumb position communicates relative magnitude only: nobody can tell 38% from 42% by eye. The missing value also breaks review workflows — someone returning to the form later cannot read back what was chosen. Show `SliderValue` whenever the number could be recorded, compared, or reproduced, and connect the label through `Field` when the slider needs a programmatic name.
+
+### Doing heavy work on every pixel of drag
+
+```tsx
+// Bad
+<Slider
+  defaultValue={[0, 100]}
+  onValueChange={(range) => refetchResults(range)}
+/>
+
+// Good
+<Slider
+  defaultValue={[0, 100]}
+  onValueCommitted={(range) => refetchResults(range)}
+/>
+```
+
+`onValueChange` fires for every intermediate value during a drag, so network calls pile up and results flash uselessly. Filter optimistically if it is cheap; otherwise wait for `onValueCommitted`, which fires once when the pointer or key interaction ends.
 
 ## Examples
 
-Our examples cover labeled values, range selection, vertical orientation, and form integration.
+Examples cover labeled values, range selection, disabled state, vertical orientation, and form integration.
 
 For accessible labeling and validation, use `Field` to connect the slider with its label, value, description, and error. See the [Field examples](/docs/components/field#examples).
 
@@ -86,6 +165,12 @@ For accessible labeling and validation, use `Field` to connect the slider with i
 
 <ComponentPreview name="slider-range" />
 
+### Disabled
+
+A disabled slider freezes at its current value but stays readable — useful for locked settings that should remain visible.
+
+<ComponentPreview name="slider-disabled" />
+
 ### Vertical
 
 <ComponentPreview name="slider-vertical" />
@@ -96,6 +181,13 @@ For accessible labeling and validation, use `Field` to connect the slider with i
 
 ## API reference
 
-`Slider` forwards Base UI Slider root props and renders the track, indicator, and thumbs from the current value. `SliderValue` forwards Base UI value props for formatted output. Put minimum, maximum, step, orientation, controlled value, and disabled state on the root.
+`Slider` accepts Base UI Slider root props plus Honest UI additions:
 
-Provide a visible label and text value when precision matters. See the [Base UI Slider API](https://base-ui.com/react/components/slider#api-reference).
+| Prop | Values | Default |
+| --- | --- | --- |
+| `size` | `large`, `small` | `large` |
+| `showValue` | boolean | `false` |
+
+Root props such as `min` (0), `max` (100), `step` (1), `largeStep` (10), `orientation`, `disabled`, `format`, `locale`, `value`/`onValueChange`, and `onValueCommitted` go on the root; `thumbAlignment` is preset to `center`. One thumb renders per value, so an array value produces a range slider automatically. `SliderValue` forwards Base UI value props and renders formatted output inside a `<output>` element.
+
+See the [Base UI Slider API](https://base-ui.com/react/components/slider#api-reference).

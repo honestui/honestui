@@ -10,21 +10,39 @@ links:
 
 ## Overview
 
-Use Input for short free-form text, numbers, email addresses, URLs, search terms, and file selection.
-
-Input is a low-level control. In forms, wrap it with Field so users get a label, description, error, and disabled state in a consistent layout.
+Use Input for short free-form text, numbers, email addresses, URLs, search terms, and file selection. Input is a low-level control: in forms, wrap it with Field so every input gets a label, description, error, and disabled state in a consistent layout.
 
 ## Anatomy
 
-An input has a value, placeholder, type, size, disabled state, and optional surrounding controls. The placeholder should never replace a real label.
+An input has a value, an optional placeholder, a type, a size, and a state. The visible label names what belongs in the field; the placeholder only shows an example and disappears at first keystroke. A placeholder is never a substitute for a label.
 
-## Usage guidance
+## Sizes and types
 
-Choose the native input type that matches the data. Use `email` for email, `search` for search, `file` for files, and so on. Use Textarea for longer multi-line text.
+Sizes are `sm` (24 px tall), `default` (32 px), and `lg` (40 px). Use `default` inside forms, `sm` in dense toolbars and table rows, and `lg` for hero search or single-field pages.
+
+Choose the native `type` that matches the data: `email`, `tel`, `url`, `search`, `number`, `date`, and `file` each bring the right keyboard on touch devices and built-in validation. For values that look numeric but are identifiers rather than quantities, such as card numbers, verification codes, or phone numbers, use `type="text"` with `inputMode="numeric"` or the matching `type`. See [Don't do this](#dont-do-this) for why.
+
+The `borderless` variant removes the surrounding border and shows a focus ring instead, which suits inputs embedded in toolbars or command bars.
+
+## States
+
+**Disabled** inputs are skipped by keyboard focus, excluded from form submission, dimmed, and show a not-allowed cursor. Use them when the field never applies in the current state.
+
+**Read-only** inputs keep their value selectable and copyable and still submit with the form, but cannot be edited. Prefer read-only over disabled when you are showing data that exists and matters, such as a generated slug or a computed price.
+
+**Invalid.** Setting `aria-invalid="true"` switches the border to the danger color, so validation state is exposed to assistive technology as well as visually. Pair it with a FieldError that states what to fix.
 
 ## Accessibility
 
-Always provide a label. Use clear validation messages and keep focus styles visible.
+Every input needs a label connected through `htmlFor`/`id` or a Field wrapper. Focus moves into the input with <kbd>Tab</kbd>, and standard text-editing keys work as they do natively. The focus indicator is a border and background change on the wrapper; the borderless variant shows a visible ring instead.
+
+The default height of 32 px clears the WCAG 2.2 minimum target size of 24 px, but leave extra spacing around inputs used as primary touch targets on mobile.
+
+Placeholder text uses the muted foreground token, which adapts to dark mode automatically. Test browser autofill in dark themes: some browsers paint autofilled fields with their own light backgrounds unless overridden.
+
+In right-to-left layouts the input mirrors correctly because its padding uses logical properties. Mixed-direction content such as a URL typed into an Arabic page follows the browser's own bidirectional rules.
+
+Long values scroll horizontally inside the control; they never wrap or grow the field. If people need to see the whole value at once, use Textarea.
 
 ## Installation
 
@@ -69,45 +87,93 @@ import { Input } from "@/components/ui/input";
 ```
 
 ```tsx
-<Input />
+<Input name="email" type="email" />
 ```
+
+For accessible labeling and validation, connect the input to a label with `Label` and `htmlFor`/`id`, or use Field and FieldControl. See the [Field examples](/docs/components/field).
+
+## Don't do this
+
+### Placeholder as label
+
+```tsx
+// Bad
+<Input placeholder="Email address" name="email" type="email" />
+```
+
+```tsx
+// Good
+<Label htmlFor={id}>Email address</Label>
+<Input id={id} placeholder="you@example.com" name="email" type="email" />
+```
+
+A placeholder disappears the moment someone starts typing, so anyone reviewing or correcting the form can no longer see which field holds what. Placeholders also commonly fail contrast requirements and are not reliably announced by screen readers as a field's name. Keep the label permanent; let the placeholder show format, like `you@example.com`.
+
+### Number inputs for identifiers
+
+```tsx
+// Bad
+<Input name="card" type="number" placeholder="Card number" />
+```
+
+```tsx
+// Good
+<Label htmlFor={cardId}>Card number</Label>
+<Input
+  id={cardId}
+  name="card"
+  type="text"
+  inputMode="numeric"
+  autoComplete="cc-number"
+  maxLength={19}
+/>
+```
+
+A card number is not a quantity. `type="number"` attaches increment arrows that corrupt the value with a stray click, silently rejects leading zeros, and accepts exponent notation. Identifiers should be text fields with a numeric touch keyboard (`inputMode`) and the matching `autoComplete` token.
 
 ## Examples
 
-Examples cover sizes, disabled state, file input, labels, attached buttons, and form usage.
+### Sizes
 
-For accessible labeling and validation, use `Field` and `FieldControl` to connect the input with its label, description, and error. See the [Field examples](/docs/components/field).
+<ComponentPreview name="input-sizes" />
 
-### Small Size
+### Disabled and read-only
 
-<ComponentPreview name="input-sm" />
+Read-only keeps the value selectable and submitted; disabled removes the field from interaction entirely.
 
-### Large Size
+<ComponentPreview name="input-states" />
 
-<ComponentPreview name="input-lg" />
-
-### Disabled
-
-<ComponentPreview name="input-disabled" />
-
-### File
+### File selection
 
 <ComponentPreview name="input-file" />
 
-### With Label
+### Long values
 
-<ComponentPreview name="input-with-label" />
+Values longer than the field scroll horizontally instead of wrapping.
 
-### With Button
+<ComponentPreview name="input-long-text" />
+
+### Right-to-left languages
+
+<ComponentPreview name="input-rtl" />
+
+### With attached button
 
 <ComponentPreview name="input-with-button" />
 
-### Form Integration
+### Form integration
 
 <ComponentPreview name="form-demo" />
 
 ## API reference
 
-`Input` accepts Base UI Input props and Honest UI's `size` option. Native attributes such as `type`, `name`, `required`, `disabled`, `autoComplete`, `inputMode`, `minLength`, and `pattern` pass through to the underlying input.
+`Input` accepts all Base UI Input props plus Honest UI additions:
 
-Use controlled state only when the application needs it; native uncontrolled inputs work well with `FormData`. See the [Base UI Input API](https://base-ui.com/react/components/input#api-reference).
+| Prop | Values | Default |
+| --- | --- | --- |
+| `size` | `"sm"`, `"default"`, `"lg"`, or a number of characters | `"default"` |
+| `variant` | `"default"`, `"borderless"` | `"default"` |
+
+Native attributes such as `type`, `name`, `required`, `disabled`, `readOnly`, `autoComplete`, `inputMode`, `minLength`, and `pattern` pass straight through to the underlying `<input>`. Validation state is driven by `aria-invalid`. Use controlled state only when the application needs it; uncontrolled inputs work well with `FormData`.
+
+See the [Base UI Input API](https://base-ui.com/react/components/input#api-reference).

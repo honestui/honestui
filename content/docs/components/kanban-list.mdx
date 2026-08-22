@@ -11,25 +11,33 @@ description: Reorder items within and between keyboard- and pointer-operable lis
 
 ## Overview
 
-Use Kanban List to organize items into stages and reorder them with drag and drop.
+Use Kanban List to organize items into stages and reorder them with drag and drop — or entirely with the keyboard. Moving items never depends on a pointer, so no one is locked out of the board.
 
-Kanban lists work well for project tasks, editorial workflows, support queues, hiring pipelines, and other processes where items move through a sequence.
+Kanban lists work well for project tasks, editorial workflows, support queues, hiring pipelines, and other processes where items move through a sequence. The component ships with a fixed five-stage sales pipeline (To call → Called → Trial booked → Signed → Dropped); see [Stages and data](#stages-and-data) before adopting it outside that domain.
 
 ## Anatomy
 
-A kanban list has stage panels, stage headers, item counts, items, and a drag preview. Kanban view places stages side by side. List view stacks the same stages vertically.
+A kanban list has stage panels, stage headers with icons and rolling item counts, item cards, a floating drag overlay, edge fades over scrollable regions, and hidden instructions plus a live region. Kanban view places stages side by side in a horizontally scrolling board; list view stacks the same stages vertically as compact rows.
 
-## Usage guidance
+## Stages and data
 
-Use kanban view when users need to scan stages and move items spatially. Use list view when density and vertical scanning matter more.
+The stage set is built in: `to-call`, `called`, `trial`, `signed`, and `dropped`, each with a fixed name, color, and icon. Use `columns` to show a subset — useful in compact surfaces like the two-column demo above — but you cannot rename stages or add your own through props.
 
-Keep stage names short and preserve the same item order when switching views. Use `columns` to limit the stages shown in a compact surface.
+An item is `{ id, name, stage, action, note, age, booked? }`. The component is uncontrolled: `defaultItems` seeds state once when it mounts, and later changes to the prop are ignored. Persist the array you receive in `onItemsChange` if moves must survive a reload.
+
+## Behavior
+
+**Dragging.** Pointer movement past a small threshold picks up a card into an overlay that tilts with throw velocity. A gap opens at the drop position while dragging; hovering near a board edge auto-scrolls. Dropping onto Signed plays a check-mark flourish; dropping onto Dropped lands slightly slower to make disposal feel deliberate.
+
+**Keyboard.** Focus a card and use <kbd>←</kbd>/<kbd>→</kbd> to move it between adjacent stages and <kbd>↑</kbd>/<kbd>↓</kbd> to reorder within its stage. Cross-stage moves append to the end of the target stage — keyboard cannot insert at an arbitrary cross-stage position, only pointer drags can. Focus follows the card after each move.
+
+**Reduced motion.** With reduced motion requested, transitions collapse to instant placement and the tilt effect is disabled entirely.
 
 ## Accessibility
 
-Each item is a focusable button with its current stage in the accessible name. Left and right arrow keys move an item between stages. Up and down arrow keys reorder it within the current stage.
+Each item is a focusable button whose accessible name includes its current stage, e.g. "Ava Rodriguez, To call. Use arrow keys to move." Hidden instructions attached via `aria-describedby` explain the arrow-key model on first focus. Pickup and every completed move are announced through a polite live region ("… moved to Called, position 2."). Stage headers label their columns, and counts carry their own labels.
 
-Use `ariaLabel` to give the collection a name that matches its content. Reordering is announced through a live region, and reduced-motion preferences are respected.
+Colors come from paired light/dark CSS variables, so boards render correctly in dark mode. Note two honest limits: cards are `<button>`s whose activation does nothing besides participate in moving — they are drag handles, not detail triggers, so put any "open item" affordance elsewhere. And the board scales its dimensions from container width, so very narrow containers shrink text below comfortable reading size; prefer list view with `columns` there. Arrow keys map physically rather than logically, so verify left/right feel in right-to-left locales before shipping one.
 
 ## Installation
 
@@ -80,7 +88,81 @@ import { KanbanList } from "@/components/ui/kanban-list";
 />
 ```
 
+`onItemsChange` fires after every committed move — by pointer or keyboard — with the full reordered array.
+
+## Don't do this
+
+### Shipping drag without a keyboard route
+
+```tsx
+// Bad
+<div
+  className="board-card"
+  onPointerDown={startCustomDrag}
+  role="listitem"
+>
+  {item.name}
+</div>
+```
+
+```tsx
+// Good
+<KanbanList defaultItems={items} onItemsChange={setItems} />
+```
+
+Pointer-only reordering makes the entire workflow unusable for keyboard and screen-reader users — they can neither reach nor move items. KanbanList already pairs every drag with focusable cards and arrow-key moves announced through a live region; don't strip that out or rebuild a board from raw pointer handlers. If you need custom drag behavior, keep the keyboard path first-class.
+
+### Treating defaultItems as controlled
+
+```tsx
+// Bad
+const { data } = useLeads();
+return <KanbanList defaultItems={data} />;
+```
+
+```tsx
+// Good
+const { data, refetch } = useLeads();
+return (
+  <KanbanList
+    key={data.version}
+    defaultItems={data.items}
+    onItemsChange={(items) => save(items).then(refetch)}
+  />
+);
+```
+
+`defaultItems` is read exactly once when the component mounts. Refetching leads and passing a fresh array will silently do nothing — the board keeps showing stale positions. Remount with a changed `key` when server state replaces local state, or treat the board as the owner of order and persist `onItemsChange`.
+
+### Using the kanban view in narrow surfaces
+
+```tsx
+// Bad
+<div className="w-64">
+  <KanbanList defaultItems={items} />
+</div>
+```
+
+```tsx
+// Good
+<div className="h-[480px]">
+  <KanbanList view="list" defaultItems={items} />
+</div>
+```
+
+The board sizes itself from container width, so a 264-pixel column compresses cards until names and notes are unreadable. In sidebars, mobile sheets, and split panes, switch to `view="list"` and give the region a height so its internal scrolling works.
+
 ## Examples
+
+### Kanban view
+
+Two of the five stages, shown side by side in a compact surface via `columns`.
+
+<ComponentPreview
+  name="kanban-list-kanban-demo"
+  title="kanban-list"
+  containerClassName="-mx-2 sm:-mx-20"
+/>
 
 ### List view
 
@@ -92,25 +174,15 @@ Set `view="list"` to stack the stages vertically. The preview keeps a fixed heig
   containerClassName="-mx-2 sm:-mx-20"
 />
 
-## API Reference
+## API reference
 
-<ApiTable>
-  <ApiRow name="view" type='"kanban" | "list"' default='"kanban"'>
-    Sets the collection layout.
-  </ApiRow>
-  <ApiRow name="defaultItems" type="KanbanListItem[]">
-    Sets the initial items.
-  </ApiRow>
-  <ApiRow name="onItemsChange" type="(items: KanbanListItem[]) => void">
-    Runs after an item is moved.
-  </ApiRow>
-  <ApiRow name="columns" type="KanbanListStage[]">
-    Limits the stages shown.
-  </ApiRow>
-  <ApiRow name="className" type="string">
-    Adds a class name to the root element.
-  </ApiRow>
-  <ApiRow name="ariaLabel" type="string" default="Kanban list">
-    Sets the accessible name for the collection.
-  </ApiRow>
-</ApiTable>
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `view` | `"kanban" \| "list"` | `"kanban"` | Sets the collection layout. |
+| `defaultItems` | `KanbanListItem[]` | built-in sample pipeline | Seeds initial state once at mount; later prop changes are ignored. |
+| `onItemsChange` | `(items: KanbanListItem[]) => void` | — | Runs after an item is moved, by pointer or keyboard. |
+| `columns` | `KanbanListStage[]` | all five stages | Limits the stages shown. |
+| `ariaLabel` | `string` | `"Kanban list"` | Accessible name for the whole collection. |
+| `className` | `string` | — | Adds classes to the root element. |
+
+`KanbanListItem` is `{ id, name, stage, action, note, age, booked? }`, where `stage` is one of `"to-call" | "called" | "trial" | "signed" | "dropped"`. Both types are exported from the module.

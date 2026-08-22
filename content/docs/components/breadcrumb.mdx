@@ -7,21 +7,35 @@ description: Show the current page's position and provide links to its parent le
 
 ## Overview
 
-Use breadcrumbs to show where the current page sits in a hierarchy.
+Use breadcrumbs to show where the current page sits in a hierarchy and to let people jump up one or more levels: documentation, settings, nested admin sections, folders, product categories. They answer "where am I?" — they do not replace main navigation, which should already expose the top levels of the site.
 
-Breadcrumbs work best for nested products, documentation, settings, folders, and admin sections. They should not replace the main navigation. They help users understand context and move up one or more levels.
+Keep them honest: every level shown should reflect the real structure people navigated through, not a flattened marketing path. See [Don't do this](#dont-do-this) for the two ways this component most often breaks.
 
 ## Anatomy
 
-A breadcrumb has a list, items, links, separators, and a current page item. Earlier items are usually links. The current item is plain text with `aria-current="page"`. `BreadcrumbIcon` aligns an icon with a label, while dropdown parts let a Menu hold levels that do not fit.
+A breadcrumb has a navigation landmark, an ordered list, items, links for ancestor levels, separators, and the current page. Earlier items are links rendered as anchors; the current item is plain text marked with `aria-current="page"` so assistive technology can tell location from destinations. `BreadcrumbIcon` aligns an icon with a label, and the dropdown parts (`BreadcrumbDropdownTrigger`, `BreadcrumbDropdownItem`) let a Menu hold levels that do not fit.
+
+`BreadcrumbSeparator` defaults to a chevron and accepts any child, such as a bullet or slash. It renders as a list item hidden from assistive technology, so custom separators stay purely visual.
 
 ## Usage guidance
 
-Keep labels short and preserve the real hierarchy. Start with the highest useful parent, not automatically the site root. On narrow screens, collapse middle levels into a menu instead of truncating the current page. Use custom separators only when they still read clearly between items.
+Start at the highest useful parent, not automatically the site root; in deep apps the workspace or section name beats "Home". On narrow screens collapse middle levels into the ellipsis menu instead of truncating the current page — the current page is the only level that cannot be clicked elsewhere, so it must never be sacrificed first.
+
+Labels are short nouns because they sit between separators on one line: `Docs / Components / Breadcrumb`, not full page titles. The root offers `size="small"` for dense surfaces like headers and cards.
 
 ## Accessibility
 
-`Breadcrumb` renders a navigation landmark labeled “breadcrumb.” Mark the current page so assistive technology can distinguish it from links. Give an icon-only dropdown trigger an accessible name, keep separators hidden from assistive technology, and make every hidden level available by keyboard.
+`Breadcrumb` renders a `<nav>` landmark labeled "breadcrumb", so screen-reader users can jump straight to it and hear the trail announced as a list. Key behaviors:
+
+- `BreadcrumbPage` carries `aria-current="page"`, which is what makes the current position distinguishable from the clickable ancestors.
+- Separators are `aria-hidden` and `role="presentation"`; they are decoration, not content.
+- `BreadcrumbEllipsis` includes a visually hidden "More" label so the collapsed levels are announced rather than read as nothing.
+- Give an icon-only dropdown trigger an `aria-label` (for example, "Show hidden breadcrumb levels") — it has no text of its own.
+- Every hidden level inside the dropdown menu stays keyboard reachable through normal menu navigation.
+
+Links show a visible focus ring via `focus-visible`. Colors come from theme tokens, so link, hover, and current-page colors adapt to dark mode automatically.
+
+Two things need manual care. Labels use `white-space: nowrap`, so very long localized names overflow instead of wrapping — shorten labels or collapse levels before they collide. The default chevron separator points right and does not flip automatically under `dir="rtl"`; either flip it with a utility like `rtl:rotate-180` on the separator's child or choose a direction-neutral separator.
 
 ## Installation
 
@@ -88,18 +102,101 @@ import {
 </Breadcrumb>
 ```
 
-## Examples
+Pass `render={<Link href="..." />}` to `BreadcrumbLink` to compose with your router while keeping breadcrumb styling. `BreadcrumbPage` is not a link; render it once, at the end, for the page the person is on.
 
-The main example includes an icon, a responsive overflow menu, links, separators, and the current page. The example below changes the separator while keeping the same semantic structure.
+## Don't do this
+
+### Navigating with onClick buttons
+
+```tsx
+// Bad
+<BreadcrumbItem>
+  <Button onClick={() => router.push("/docs")}>Home</Button>
+</BreadcrumbItem>
+```
+
+```tsx
+// Good
+<BreadcrumbItem>
+  <BreadcrumbLink href="/docs">Home</BreadcrumbLink>
+</BreadcrumbItem>
+```
+
+A button cannot be opened in a new tab with middle-click or <kbd>Cmd</kbd> click, shows no URL on hover, and is announced as a button, so screen-reader users navigating the landmarks expect an action instead of a destination. Breadcrumbs are navigation; render real anchors, composing with your router through the `render` prop when needed.
+
+### Marking the wrong item as current
+
+```tsx
+// Bad
+<BreadcrumbItem>
+  <BreadcrumbLink href="/docs/settings">Settings</BreadcrumbLink>
+</BreadcrumbItem>
+<BreadcrumbSeparator />
+
+<BreadcrumbItem>
+  <BreadcrumbLink href="/docs/settings/members" aria-current="page">
+    Members
+  </BreadcrumbLink>
+</BreadcrumbItem>
+```
+
+```tsx
+// Good
+<BreadcrumbItem>
+  <BreadcrumbPage>Members</BreadcrumbPage>
+</BreadcrumbItem>
+```
+
+The current-page marker tells assistive technology where the person *is*. Leaving it off — or putting `aria-current` on another link, or styling the current page as a clickable link — makes the whole trail ambiguous about which level is active. Exactly one item exists, it uses `BreadcrumbPage`, and it sits last.
+
+## Examples
 
 ### With custom separator
 
+Any small element works as a separator as long as it still reads as "between": slashes, bullets, dashes. Structure and accessibility are unchanged.
+
 <ComponentPreview name="breadcrumb-custom-separator" />
 
-### Compact size
+### With collapsed levels
+
+When the hierarchy is deep, hide middle levels behind the ellipsis and keep both ends of the trail visible.
+
+<ComponentPreview name="breadcrumb-with-ellipsis" />
+
+### Workspace path
+
+Small size and compact spacing suit app chrome, above content or inside a header row.
 
 <ComponentPreview name="breadcrumb-workspace-path" />
 
+### Compact size
+
+`text-xs` plus short labels for tight layouts where even `small` would crowd.
+
+<ComponentPreview name="breadcrumb-compact-path" />
+
+### Bullet separator
+
+A quieter dot reads well when chevrons feel heavy at small sizes.
+
+<ComponentPreview name="breadcrumb-bullet-separator" />
+
+### Inside a Card
+
+Framing a breadcrumb in card chrome keeps context visible without adding a full header.
+
+<ComponentPreview name="breadcrumb-card" />
+
 ## API reference
 
-`Breadcrumb` accepts native `nav` props and a `size` of `small` or `medium`. The list, item, page, separator, ellipsis, and icon parts accept their matching native element props. `BreadcrumbLink`, `BreadcrumbDropdownTrigger`, and `BreadcrumbDropdownItem` also accept Base UI `render` props so they can compose with your router and menu components.
+`Breadcrumb` accepts native `<nav>` props and adds:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `size` | `"small"`, `"medium"` | `"medium"` |
+
+The list renders an `<ol>`, items render `<li>` elements, and each part forwards its matching native element props. `BreadcrumbPage` renders a `<span>` with `role="link"`, `aria-current="page"`, and `aria-disabled="true"`, expressing "this is where you are, not somewhere you can go." `BreadcrumbSeparator` renders a `role="presentation"`, `aria-hidden` list item containing a chevron by default. `BreadcrumbEllipsis` hides its icon and announces "More".
+
+`BreadcrumbLink`, `BreadcrumbDropdownTrigger`, and `BreadcrumbDropdownItem` accept Base UI `render` props so they can compose with your router and menu components.
+
+There is no loading or error state; a breadcrumb is static structure derived from the current route.

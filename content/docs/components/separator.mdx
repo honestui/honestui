@@ -10,21 +10,29 @@ links:
 
 ## Overview
 
-Use Separator to divide related content or controls.
+Use Separator to mark a boundary between related regions: sections of a settings page, groups inside a toolbar or menu, stats in a row, entries in a timeline. The line says "these things belong together, but they are not the same thing" — it reinforces structure that spacing and headings have already established.
 
-Separators are useful in menus, toolbars, cards, settings pages, and layouts where a visual break makes scanning easier.
+Separators work best sparingly. If a page needs a line between every pair of elements, the real problem is usually missing hierarchy, and no amount of rules will fix it. See [Don't do this](#dont-do-this).
 
 ## Anatomy
 
-A separator is a horizontal or vertical line. It can be decorative or semantic depending on how it is used.
+A separator is a single 1 px line, horizontal by default. The Honest UI wrapper adds two props on top of Base UI: `size` controls how far the line extends (`small` for a fixed stub, `half` for half the container, `full` to span it), and `variant` picks an emphasis from the border tokens (`primary`, `secondary`, `tertiary`), so separators recede or advance with the surrounding content instead of fighting it.
 
 ## Usage guidance
 
-Use separators sparingly. Spacing and headings should do most of the grouping work. Add a separator when the visual boundary improves clarity.
+Reach for whitespace and headings first; add a separator only when the boundary genuinely improves scanning. Use a container border instead when the division belongs to an edge, such as a card's bottom edge. A vertical separator needs a flex row or another container with height to render against, because a bare vertical line has no intrinsic height.
+
+Because emphasis is a choice, prefer `secondary` or `tertiary` variants for quiet divisions inside dense surfaces and reserve `primary` for major section breaks.
 
 ## Accessibility
 
-If the separator communicates structure, keep it accessible. If it is only decorative, hide it from assistive technology.
+The component renders `<div role="separator">`, which assistive technology announces as a divider — it is semantic, not decorative. That makes it useful for marking real section boundaries in long forms and menus, where hearing "separator" helps people orient.
+
+It renders as a plain `<div>` rather than `<hr>`, so it inherits theme colors and works anywhere without user-agent style resets. It never receives keyboard focus and has no interactive states.
+
+If a separator is purely decorative — one visual device among several in a layout whose structure is already conveyed by headings — you can silence an individual instance with `role="presentation"` to reduce screen-reader noise. Make that call per instance; the default keeps the semantics.
+
+There is no loading, disabled, or error state — a separator has none by nature, and the component honestly offers nothing more. Colors come from border theme tokens, so every variant adapts to dark mode automatically, and orientation uses logical properties, so lines mirror correctly in right-to-left layouts.
 
 ## Installation
 
@@ -72,26 +80,84 @@ import { Separator } from "@/components/ui/separator";
 <Separator />
 ```
 
+Set `orientation="vertical"` inside a flex row, and reach for `size` when a full-width rule feels heavier than the division deserves.
+
+## Don't do this
+
+### Separator as spacing
+
+```tsx
+// Bad
+<div>
+  <p>First paragraph</p>
+  <Separator className="my-4" />
+  <p>Second paragraph</p>
+  <Separator className="my-4" />
+</div>
+```
+
+```tsx
+// Good
+<div className="space-y-4">
+  <p>First paragraph</p>
+  <p>Second paragraph</p>
+</div>
+```
+
+Rules between everything add visual noise without adding meaning: screen readers now hear "separator" between paragraphs that were never separate sections, and sighted users scan lines instead of content. Margin and padding group through emptiness; save separators for boundaries that carry structure.
+
+### Vertical separator without height
+
+```tsx
+// Bad
+<div>
+  <span>12 files</span>
+  <Separator orientation="vertical" />
+  <span>4.8 MB</span>
+</div>
+```
+
+```tsx
+// Good
+<div className="flex items-center gap-4">
+  <span>12 files</span>
+  <Separator orientation="vertical" />
+  <span>4.8 MB</span>
+</div>
+```
+
+A vertical line is 1 px wide and zero pixels tall until something stretches it, so outside a flex container it silently disappears — the division vanishes exactly where people expected it. Give the parent a flex context (and items-center alignment) so the line spans the row.
+
 ## Examples
 
 ### Section label
+
+A heading, a rule, then supporting text: the quiet way to open a settings block.
 
 <ComponentPreview name="separator-section-label" />
 
 ### Vertical stack
 
+Stats in a row separated by vertical rules, each with its own breathing room.
+
 <ComponentPreview name="separator-vertical-stack" />
 
 ### Timeline
 
+Stages of a process where vertical rules mark progression without implying navigation.
+
 <ComponentPreview name="separator-timeline" />
-
-## Decision guidance
-
-Separator marks a visual boundary between related regions. It should reinforce spacing and headings, not repair an unclear hierarchy. Use a border when the boundary belongs to a container edge, and use whitespace alone when the relationship is already obvious.
 
 ## API reference
 
-`Separator` forwards Base UI Separator props. Set `orientation="horizontal"` or `"vertical"` to match the visible line. Decorative separators remain outside the accessibility tree; use a heading or landmark when the division needs a semantic name.
+`Separator` forwards Base UI Separator props (`orientation`, plus native `<div>` props) and adds:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `orientation` | `"horizontal"`, `"vertical"` | `"horizontal"` |
+| `size` | `"small"`, `"half"`, `"full"` | `"full"` |
+| `variant` | `"primary"`, `"secondary"`, `"tertiary"` | `"primary"` |
+
+The component renders a `<div role="separator">` with `data-size` and `data-variant` attributes for targeted styling. Decorative instances can opt out of the accessibility tree individually by overriding `role`. Use a heading or landmark instead when the division itself needs a semantic name.
 
 See the [Base UI Separator API](https://base-ui.com/react/components/separator#api-reference).

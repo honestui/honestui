@@ -10,21 +10,37 @@ links:
 
 ## Overview
 
-Use Switch for an on/off setting that takes effect immediately or changes a persistent preference.
+Use Switch for a single on/off setting whose state is worth showing at a glance: feature flags, notification preferences, privacy modes. The control communicates current state first and invites change second, which makes it the right choice when the setting is already configured and people just adjust it.
 
-Switches are useful for feature settings, notifications, privacy choices, and simple enabled or disabled states. Use Checkbox when the option is part of a form submission or a list of independent choices.
+Use Checkbox instead when the option is one of several independent choices gathered for a form submission, and use Button when the action runs once rather than flipping a persistent state. If you cannot say what the switch's "on" means in a short label, the setting probably needs its own page, not a toggle.
 
 ## Anatomy
 
-A switch has a track, thumb, label, optional description, and checked state.
+A switch has a track, a thumb, a label, an optional description, and a checked state. The track is 30 × 18 px; the thumb slides to the right end when checked and stretches slightly while pressed so the interaction feels physical even before the state changes.
+
+The label names the setting, not the action: `Marketing emails` works because it reads as a thing that can be on or off. Labels like `Enable` or `On` fail because they describe the click, and the sentence "On: enabled" tells nobody anything.
 
 ## Behavior
 
-Use clear labels that describe the enabled state. Avoid labels like `On` or `Enable` without context.
+**Immediate effect.** A switch should apply its change as soon as it flips — that is the mental model people bring to toggles. If the change only takes effect after pressing Save, the switch shows a state that is not real; use a checkbox in a form for that case.
+
+**Pending changes.** When the flip triggers server work, keep the requested position visible, block further clicks while the request runs, and report the outcome nearby. See [async save](#async-save) for the pattern. If the request fails, return the switch to its previous position and say so in text.
+
+**Form submission.** Like a native checkbox, the switch submits its `name`/`value` only while checked. Set `uncheckedValue` when the server needs to distinguish "absent from the form" from "explicitly off".
+
+**Disabled and read-only.** `disabled` dims the switch, blocks pointer input, and removes it from keyboard focus. `readOnly` keeps the switch focusable and submittable but ignores clicks — useful when the value is managed elsewhere but must stay visible.
 
 ## Accessibility
 
-Connect the switch to a label. If changing the switch has a delayed effect, show feedback so users know the update worked.
+The switch renders a span with `role="switch"` plus a visually hidden native input, wrapped in a `Label`. <kbd>Space</kbd> toggles it; <kbd>Enter</kbd> also activates it through Base UI's button-style key handling. Focus moves with <kbd>Tab</kbd>, and the ring appears only for keyboard focus (`focus-visible`) with an offset against the page background.
+
+The visible label association matters more than usual here because the control itself has no text: screen readers announce "switch, on" or "switch, off" followed by the label, so an unlabeled switch announces nothing usable. Wrapping in a `Label` also makes the words clickable, which compensates for the small target.
+
+The rendered track is 18 px tall — far under the 44 px comfortable touch target, and this component adds no coarse-pointer expansion layer. Rely on the wrapping label for tap area, or add padding around the whole label row in settings lists.
+
+Colors come from theme tokens: the checked track uses the primary token and the unchecked track uses the input token, both of which adapt to dark mode along with the thumb and inset shadow. The thumb position uses a fixed physical translation rather than logical properties, so it travels the same visual direction in right-to-left locales; the label row around it mirrors normally through flexbox.
+
+There is no error or invalid styling on this component; validation feedback belongs in surrounding text via Field if a switch participates in a validated form.
 
 ## Installation
 
@@ -69,12 +85,76 @@ import { Switch } from "@/components/ui/switch";
 ```
 
 ```tsx
-<Switch />
+<Label>
+  <Switch defaultChecked />
+  Marketing emails
+</Label>
 ```
+
+A bare `<Switch />` has no accessible name. Wrap it in a `Label`, or pass `aria-label` when no visible label fits. Use controlled state (`checked` + `onCheckedChange`) only when the application owns the value.
+
+## Don't do this
+
+### Labeling the action instead of the setting
+
+```tsx
+// Bad
+<Label>
+  <Switch />
+  Enable notifications
+</Label>
+```
+
+```tsx
+// Good
+<Label>
+  <Switch />
+  Notifications
+</Label>
+```
+
+A switch displays whether something is on, so `Enable notifications` reads backwards when off: is enabling disabled? Settings written as nouns survive screen-reader announcements ("Notifications, switch, off") and translation better than verb phrases, which assume a state the reader cannot see yet.
+
+### Assuming an unchecked switch submits a value
+
+```tsx
+// Bad
+const enabled = formData.get("marketing") === "on";
+// An unchecked switch never sends "marketing", so this branch never sees false.
+
+// Good
+<Switch name="marketing" uncheckedValue="off" />
+const enabled = formData.get("marketing") !== "off";
+```
+
+Like a native checkbox, an unchecked switch contributes nothing to the form data, so absence must mean "off". That inference breaks the moment another field could be missing or a proxy drops values. `uncheckedValue` makes both states explicit in the submission.
+
+### Flipping silently while the work happens
+
+```tsx
+// Bad
+<Switch
+  checked={checked}
+  onCheckedChange={async (next) => {
+    await saveSetting(next);
+    setChecked(next);
+  }}
+/>
+
+// Good
+<Switch
+  checked={checked}
+  disabled={pending}
+  onCheckedChange={(next) => void update(next)}
+/>
+<p role="status">{pending ? "Saving…" : error ? "Couldn't save. Try again." : ""}</p>
+```
+
+The bad version leaves the switch interactive during the request, so double-clicks fire two saves, and if the request fails there is no signal that reality diverges from the picture. Disable while pending, revert on failure, and narrate the outcome in text next to the control — the full pattern is in [Async save](#async-save).
 
 ## Examples
 
-Examples cover disabled, described, card-style, and form-connected switches.
+Examples cover disabled, described, card-style, async saving, and form-connected switches.
 
 For accessible labeling and validation, use `Field` to connect the switch with its label, description, and error. See the [Field examples](/docs/components/field#examples).
 
@@ -90,12 +170,28 @@ For accessible labeling and validation, use `Field` to connect the switch with i
 
 <ComponentPreview name="switch-card" />
 
+### Async Save
+
+While the preference saves, the switch disables and a spinner plus status text report progress. Turning it off simulates a failed request: the switch returns to its previous position and the failure is announced.
+
+<ComponentPreview name="switch-pending" />
+
 ### Form Integration
 
 <ComponentPreview name="switch-form" />
 
 ## API reference
 
-`Switch` forwards Base UI Switch props and adds Honest UI size and visual-variant styling. Use `checked` with `onCheckedChange` for controlled state or `defaultChecked` for uncontrolled state. The component submits its `name` and `value` only while checked.
+`Switch` forwards Base UI Switch root props:
 
-The visible label should describe the setting, not the action of clicking it. See the [Base UI Switch API](https://base-ui.com/react/components/switch#api-reference).
+| Prop | Type | Default |
+| --- | --- | --- |
+| `checked` / `defaultChecked` + `onCheckedChange` | boolean, callback | uncontrolled |
+| `name` / `value` / `uncheckedValue` | string | — |
+| `disabled` | boolean | `false` |
+| `readOnly` | boolean | `false` |
+| `required` | boolean | `false` |
+
+Controlled state uses `checked` with `onCheckedChange`; uncontrolled uses `defaultChecked`. The hidden native input submits `name` and `value` only while checked unless `uncheckedValue` provides the off-state value. `inputRef` reaches the hidden input when a form library needs direct access.
+
+See the [Base UI Switch API](https://base-ui.com/react/components/switch#api-reference).

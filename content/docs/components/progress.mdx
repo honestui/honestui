@@ -10,21 +10,25 @@ links:
 
 ## Overview
 
-Use Progress to show how far a task has advanced.
-
-Progress is useful for uploads, imports, onboarding steps, generation, installation, and long-running actions. Use Meter for static values like quota or capacity.
+Use Progress to show how far an active task has advanced: uploads, imports, onboarding steps, generation, installation. The defining property of a progress bar is that its endpoint moves — the value climbs while work runs and stops when the task finishes. For quantities that simply *are* a certain amount right now, such as storage used or budget spent, use [Meter](/docs/components/meter) instead.
 
 ## Anatomy
 
-A progress indicator has a value, maximum, optional label, optional formatted value, and visual bar.
+A progress indicator has a root carrying the value semantics, an optional label naming the operation, an optional formatted value, and a visual bar or ring. With no children, `Progress` renders the matching track for its variant automatically; circular layouts also center `ProgressValue` inside the ring for you.
 
 ## Behavior
 
-Use determinate progress when you know the percentage. Pass `value={null}` for indeterminate work, and replace it with a number as soon as the application can estimate progress. Do not show a made-up percentage simply to make an operation feel active.
+Pass a number as soon as the application can genuinely estimate progress, and pass `value={null}` only when it cannot — an indeterminate bar says "working, duration unknown", which is honest. Switching from indeterminate to determinate mid-task is fine and often ideal: show the spinner-like state during connection, then real percentages once bytes are counted.
+
+Never animate a made-up percentage just so the interface feels alive. A bar that creeps to 90% and sits there teaches people your numbers mean nothing. If the estimate stalls, say so in surrounding text rather than faking motion.
 
 ## Accessibility
 
-Name the operation with `ProgressLabel` or `aria-label`. Show text when the value matters. Do not communicate progress only through animation or color, and keep completion feedback visible after the indicator disappears. Honest UI limits indeterminate animation when reduced motion is requested.
+The root emits `role="progressbar"` with `aria-valuemin`, `aria-valuemax`, and `aria-valuenow`. Screen readers announce the accessible name plus the current value against the range — for example "Importing contacts, 40%". Give the operation its name through `ProgressLabel` (wired to the root automatically) or `aria-label` when space is tight.
+
+When the raw percentage is unclear, use `getAriaValueText` or `format` to control what gets announced — "2.1 of 4 GB transferred" beats "40" for uploads. Render `ProgressValue` when sighted users also need the number; do not make anyone derive meaning from bar length alone.
+
+Indeterminate animation runs only when motion is safe: under reduced-motion preferences the linear bar becomes a static, dimmed partial fill and the ring holds still, so nothing spins uncontrollably. Colors come from theme tokens for both themes. When the task completes, report it in surrounding content — a status line, a toast, new content appearing — because the bar itself disappears and proves nothing.
 
 ## Installation
 
@@ -78,9 +82,76 @@ import {
 
 Note: If you render children inside `Progress`, you must also include `ProgressTrack` and `ProgressIndicator` inside it. Without them, the bar will not display. When no children are provided, a default track and indicator are rendered for you.
 
+## Don't do this
+
+### Fake progress
+
+```tsx
+// Bad
+const [value, setValue] = useState(0);
+useEffect(() => {
+  const t = setInterval(() => setValue((v) => Math.min(v + 5, 95)), 500);
+  return () => clearInterval(t);
+}, []);
+return <Progress value={value} />;
+```
+
+```tsx
+// Good
+<Progress value={uploadProgress ?? null} />
+// uploadProgress comes from real transfer events; null while unknown
+```
+
+An invented ticker produces the worst possible outcome: a bar that reaches 90% on a task that then fails, or completes instantly after crawling. People learn to ignore the component entirely. Use `value={null}` while the outcome is genuinely unknown and switch to real numbers when events arrive.
+
+### An unnamed bar
+
+```tsx
+// Bad
+<Progress value={40} />
+```
+
+```tsx
+// Good
+<Progress value={40}>
+  <div className="flex justify-between">
+    <ProgressLabel>Importing contacts</ProgressLabel>
+    <ProgressValue />
+  </div>
+  <ProgressTrack>
+    <ProgressIndicator />
+  </ProgressTrack>
+</Progress>
+```
+
+Without a label, assistive technology announces "40%" with no idea what it belongs to — on a page with two operations running, that announces nothing useful. Name every progress bar, even single ones; screens change.
+
+### Progress where Meter belongs
+
+```tsx
+// Bad
+<Progress value={72}>
+  <ProgressLabel>Storage used</ProgressLabel>
+</Progress>
+```
+
+```tsx
+// Good
+<Meter value={72}>
+  <MeterLabel>Storage used</MeterLabel>
+  <MeterValue />
+</Meter>
+```
+
+Storage does not advance toward completion; it sits at a measured level within a capacity. Announcing `role="progressbar"` invites screen-reader users to wait for a finish that never comes. Reserve Progress for tasks that end.
+
 ## Examples
 
-The first example is an interactive, determinate task with reset behavior. The next example compares linear, circular, and indeterminate layouts. The final example changes how the value is announced and displayed.
+### Onboarding steps
+
+A labeled determinate bar tracking multi-step setup.
+
+<ComponentPreview name="progress-onboarding" />
 
 ### With Label and Value
 
@@ -88,10 +159,22 @@ The first example is an interactive, determinate task with reset behavior. The n
 
 ### With Formatted Value
 
+Custom units and precision via the formatting props.
+
 <ComponentPreview name="progress-with-formatted-value" />
 
 ## API reference
 
-`Progress` accepts Base UI Progress root props plus `variant="linear" | "circular"`. Its defaults are `min={0}` and `max={100}`; pass `null` as the value for indeterminate progress. When it has no children, it renders the matching track automatically. The label, track, indicator, and value parts forward Base UI props; `ProgressCircularTrack` accepts native SVG props.
+`Progress` accepts all Base UI Progress root props plus Honest UI's `variant`:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `variant` | `linear`, `circular` | `linear` |
+| `value` | number or `null` (indeterminate) | required |
+| `min` / `max` | number | `0` / `100` |
+
+The root carries `role="progressbar"` with `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and `aria-valuetext`; `format` (Intl options), `locale`, and `getAriaValueText(formattedValue, value)` control the announced text. Current status (`indeterminate`, `progressing`, `complete`) is exposed as data attributes for styling. Computed percentages are clamped to 0–100.
+
+Parts: `ProgressLabel`, `ProgressTrack`, `ProgressIndicator`, and `ProgressValue` forward their Base UI props; `ProgressCircularTrack` accepts native SVG props.
 
 See the [Base UI Progress API](https://base-ui.com/react/components/progress#api-reference) for value formatting and state details.
