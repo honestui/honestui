@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "honestui/icons";
 
 import { SharedLayoutBg } from "@/registry/default/animated/shared-layout-bg";
 

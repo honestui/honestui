@@ -1,5 +1,5 @@
 ---
-title: Honest UI Developer Resources
+title: Developer Resources
 description: Choose the Honest UI CLI, REST API, MCP server, and agent documentation for your development task.
 ---
 
@@ -49,6 +49,26 @@ Use the Streamable HTTP transport. The server implements MCP protocol version `2
 
 Use `list_registry_items` when an agent needs valid Honest UI component names. Its optional `query` argument filters names by a case-insensitive substring. Then call `get_registry_item` with an exact returned name to retrieve the shadcn-compatible source files and dependencies. Both tools are read-only and idempotent. If `get_registry_item` reports that a name is missing, call `list_registry_items` instead of guessing another name.
 
+MCP clients can also discover the connection without manual configuration:
+
+- [AI Catalog](/.well-known/ai-catalog.json) — the domain-level discovery document that lists Honest UI MCP servers.
+- [MCP Server Card](/mcp/server-card) — the SEP-2127 card describing identity, transport, and supported protocol versions, served as `application/mcp-server-card+json`.
+
+## Fair use and rate limits
+
+The REST API is free and read-only, and clients are expected to keep request rates reasonable. Responses from `/api/v1` carry rate-limit headers describing the documented fair-use window:
+
+| Header | Meaning |
+| --- | --- |
+| `RateLimit-Limit` | Maximum requests per client per window (600). |
+| `RateLimit-Remaining` | Requests left in the current window. |
+| `RateLimit-Reset` | Unix timestamp in seconds when the window resets. |
+| `RateLimit-Policy` | The published quota expression: `600;w=60`. |
+
+The window is one minute per client address. When a client exceeds it, the API responds with `429` using the standard problem-details body, code `RATE_LIMIT_EXCEEDED`, and a `Retry-After` header giving the number of seconds to wait.
+
+Enforcement is best-effort and applied per serving instance on horizontally scaled hosts, so a busy client may see `RateLimit-Remaining` reset early or never reach zero before receiving a `429`. Treat the headers as advisory pacing guidance rather than a hard guarantee, and back off whenever `Retry-After` is present.
+
 ## JSON error responses
 
 Versioned API errors follow [RFC 9457 Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457) and use `Content-Type: application/problem+json`. Every problem includes the standard `type`, `title`, `status`, `detail`, and `instance` members plus stable `code`, `message`, and `resolution` extensions.
@@ -88,6 +108,10 @@ Clients should branch on the HTTP status and `code`, not parse the human-readabl
 
 `API_METHOD_NOT_ALLOWED` uses HTTP 405 when a client sends a modifying method to a read-only resource. The response includes `Allow: GET, HEAD`.
 
+### Rate limit exceeded
+
+`RATE_LIMIT_EXCEEDED` uses HTTP 429 when a client exceeds the documented fair-use window. Read the `Retry-After` header, wait that many seconds, and resume at the pace published in `RateLimit-Policy`. See [Fair use and rate limits](#fair-use-and-rate-limits).
+
 ## Versioning and compatibility
 
 Honest UI versions the REST API in the URL path. The current major version is `v1`. Additive fields and endpoints may be introduced within `v1`; clients should ignore JSON object members they do not recognize. A change that removes or renames a documented field or changes its meaning requires a new major path such as `/api/v2`.
@@ -100,13 +124,17 @@ No `/api/v1` endpoint is currently deprecated or scheduled for retirement.
 
 Every versioned API response links to this policy with `Link: <https://www.honestui.com/docs/developers#deprecation-policy>; rel="deprecation"; type="text/html"`. When an endpoint is scheduled for deprecation, Honest UI will add the RFC 9745 `Deprecation` header using its Structured Field date syntax and publish a migration guide with the replacement and effective date.
 
-If a deprecated endpoint is scheduled to stop responding, Honest UI will also send the RFC 8594 `Sunset` header with that retirement date. A Sunset date will never be earlier than its Deprecation date. Until those headers and dates are published, clients should not infer a retirement date.
+Honest UI commits to a minimum notice period: a deprecation will be announced, and the `Deprecation` header published, at least **180 days** before the endpoint's documented retirement date. If a deprecated endpoint is scheduled to stop responding, Honest UI will also send the RFC 8594 `Sunset` header with that retirement date. A Sunset date will never be earlier than its Deprecation date, and never earlier than the end of that 180-day notice period.
+
+Until those headers and dates are published, clients should not infer a retirement date.
 
 ## Agent-readable resources
 
 - [Honest UI developer resource index](/developers)
 - [OpenAPI specification](/openapi.json)
 - [MCP Streamable HTTP endpoint](/mcp)
+- [MCP Server Card](/mcp/server-card)
+- [AI Catalog](/.well-known/ai-catalog.json)
 - [Documentation index](/llms.txt)
 - [Full documentation snapshot](/llms-full.txt)
 - [Honest UI agent skill](/skill.md)

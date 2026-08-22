@@ -158,10 +158,17 @@ const structuredData = {
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "technical support",
+        email: "connor@connorlove.com",
         url: absoluteUrl("/contact"),
         availableLanguage: ["English"],
       },
       contactPage: absoluteUrl("/contact"),
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Columbus",
+        addressRegion: "OH",
+        addressCountry: "US",
+      },
       founder: {
         "@type": "Person",
         name: "Connor Love",

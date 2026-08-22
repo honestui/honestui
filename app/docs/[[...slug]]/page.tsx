@@ -7,7 +7,7 @@ import { mdxComponents } from "@/components/docs/mdx";
 import { processMdxForLLMs } from "@/lib/llm";
 import { notFound } from "next/navigation";
 import { absoluteUrl, SITE_URL } from "@/lib/utils";
-import { LinkIcon } from "lucide-react";
+import { Link as LinkIcon } from "honestui/icons";
 import { source } from "@/lib/source";
 import type { Metadata } from "next";
 

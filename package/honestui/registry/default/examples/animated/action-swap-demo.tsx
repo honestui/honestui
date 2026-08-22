@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BellOff, Volume2 } from "lucide-react";
+import { Bell, BellOff, Volume2 } from "honestui/icons";
 
 import { ActionSwapButton } from "@/registry/default/animated/action-swap";
 

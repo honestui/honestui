@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <PublicContentLayout
+      centerFooterLinks
       description="Honest UI is an MIT-licensed React component project created and maintained by Connor Love. It publishes editable application components alongside package-based charts, icons, logos, vectors, and shaders."
-      eyebrow="About the project"
       title="About Honest UI"
     >
       <ContentSection id="about-purpose" title="Why Honest UI exists">

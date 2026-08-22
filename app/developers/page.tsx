@@ -10,7 +10,7 @@ const linkClass =
   "rounded-[var(--hui-radius-1)] underline underline-offset-4 outline-none focus-visible:[outline:var(--hui-focus-ring)]"
 
 export const metadata: Metadata = {
-  title: "Honest UI Developer Resources",
+  title: "Developer Resources",
   description:
     "Find the Honest UI CLI, npm package, REST API v1, OpenAPI specification, MCP server, Markdown documentation, and agent instructions.",
   alternates: { canonical: "/developers" },
@@ -20,8 +20,7 @@ export default function DevelopersPage() {
   return (
     <PublicContentLayout
       description="Use this index to choose the Honest UI integration surface that matches your task: copy component source with the CLI, import maintained collections from npm, or inspect public registry data through the versioned read-only API."
-      eyebrow="CLI, API, and agent documentation"
-      title="Honest UI Developer Resources"
+      title="Developer Resources"
     >
       <ContentSection id="developer-cli" title="Use the Honest UI CLI for copied source">
         <p>

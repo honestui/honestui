@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "honestui/icons";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -27,9 +27,9 @@ export const MDXNavigation = ({ type, title, url, description }: MDXNavigationPr
         </div>
         <div className="group-hover:text-primary flex items-center duration-200 sm:px-2">
           {type === "previous" ? (
-            <ChevronLeft strokeWidth="1.5" className="size-5" />
+            <ChevronLeft strokeWidth={1.5} className="size-5" />
           ) : (
-            <ChevronRight strokeWidth="1.5" className="size-5" />
+            <ChevronRight strokeWidth={1.5} className="size-5" />
           )}
         </div>
       </div>

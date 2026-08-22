@@ -63,11 +63,13 @@ Honest UI is a React component library. Copy components into your project, chang
 
 ## Machine-readable resources
 
-- [Honest UI developer resources](${absoluteUrl("/docs/developers.md")})
+- [Developer Resources](${absoluteUrl("/docs/developers.md")})
 - [Developer resource index](${absoluteUrl("/developers")})
 - [REST API v1](${absoluteUrl("/api/v1")})
 - [OpenAPI specification](${absoluteUrl("/openapi.json")})
 - [MCP Streamable HTTP server](${absoluteUrl("/mcp")})
+- [MCP Server Card (SEP-2127)](${absoluteUrl("/mcp/server-card")})
+- [AI Catalog of Honest UI MCP servers](${absoluteUrl("/.well-known/ai-catalog.json")})
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
 - [Agent skill](${absoluteUrl("/skill.md")})
 - [XML sitemap](${absoluteUrl("/sitemap.xml")})
@@ -92,12 +94,14 @@ export function generateLlmsTxt() {
 
 > Honest UI provides copied React components and package-based charts, icons, logos, vectors, and shaders. The documentation explains what you own, what remains a dependency, and what your application still needs to verify.
 
-## Honest UI Developer Resources
+## Developer Resources
 - [Developer resource index](${absoluteUrl("/developers")}) - Choose the Honest UI CLI, npm package, REST API, OpenAPI specification, or agent documentation.
 - [Developer guide, authentication, and REST API policy](${absoluteUrl("/docs/developers.md")}) - Confirm the public API's access model, integrate with its resources, parse errors, and plan for version changes.
 - [REST API v1](${absoluteUrl("/api/v1")}) - Discover current public API resources.
 - [OpenAPI 3.1 specification](${absoluteUrl("/openapi.json")}) - Read the machine-readable HTTP contract.
 - [MCP Streamable HTTP server](${absoluteUrl("/mcp")}) - Discover exact registry names and retrieve component source with typed, read-only tools.
+- [MCP Server Card (SEP-2127)](${absoluteUrl("/mcp/server-card")}) - Auto-configure an MCP client from the published connection metadata.
+- [AI Catalog](${absoluteUrl("/.well-known/ai-catalog.json")}) - Discover Honest UI MCP servers at the domain level.
 - [Official honestui package](https://www.npmjs.com/package/honestui) - Run the published CLI or import package-backed collections.
 
 ## When to use Honest UI
@@ -134,9 +138,12 @@ ${renderLinks(animated)}
 ${renderLinks(shaders)}
 
 ## Agent Resources
-- [Honest UI developer resources](${absoluteUrl("/docs/developers.md")})
+- [Developer Resources](${absoluteUrl("/docs/developers.md")})
 - [OpenAPI specification](${absoluteUrl("/openapi.json")})
 - [MCP Streamable HTTP server](${absoluteUrl("/mcp")})
+- [MCP Server Card (SEP-2127)](${absoluteUrl("/mcp/server-card")})
+- [AI Catalog](${absoluteUrl("/.well-known/ai-catalog.json")})
+- [Agent Skills discovery index](${absoluteUrl("/.well-known/agent-skills/index.json")})
 - [Full documentation snapshot](${absoluteUrl("/llms-full.txt")})
 - [Agent skill](${absoluteUrl("/skill.md")})
 `;
@@ -180,7 +187,17 @@ metadata:
 
 # Honest UI
 
-Use this skill when a user wants to install, add, customize, or debug Honest UI components, charts, icons, assets, animated components, or shaders.
+## When to use this skill
+
+Use this skill when a task involves Honest UI in a React project, specifically when the user wants to:
+
+- Install Honest UI and choose between copied component source and package-backed collections.
+- Add a specific component, chart, icon, logo, vector, animated component, or shader to a page or route.
+- Customize or restyle an installed component while keeping its accessibility behavior.
+- Debug an installed Honest UI component that renders incorrectly or fails verification.
+- Decide whether the CLI, the npm package, the REST API, or the MCP server is the right integration surface for a task.
+
+Do not use this skill as generic React styling guidance; it documents Honest UI's own components, tokens, and delivery models.
 
 ## Workflow
 
@@ -189,6 +206,8 @@ Use this skill when a user wants to install, add, customize, or debug Honest UI 
 3. Copy UI and animated component source with the Honest UI CLI.
 4. Install the \`honestui\` package for charts, icons, logos, vectors, or shaders.
 5. Follow the relevant accessibility, styling, fallback, and verification guidance before presenting the work as production-ready.
+
+To call Honest UI from code instead of installing it, start at \`https://www.honestui.com/api/v1\` (REST) or \`https://www.honestui.com/mcp\` (MCP over Streamable HTTP). Both are public and read-only; no credential is required.
 
 ## Constraints
 

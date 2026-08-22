@@ -1,4 +1,4 @@
-import { Bell, CreditCard, ShieldCheck } from "lucide-react";
+import { Bell, CreditCard, ShieldCheck } from "honestui/icons";
 
 import { BouncyAccordion } from "@/registry/default/animated/bouncy-accordion";
 

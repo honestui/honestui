@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Home, Search, Settings } from "lucide-react";
+import { Bell, House as Home, Search, Settings } from "honestui/icons";
 import { useState } from "react";
 
 import { Dock, DockItem, DockSeparator } from "@/registry/default/animated/dock";

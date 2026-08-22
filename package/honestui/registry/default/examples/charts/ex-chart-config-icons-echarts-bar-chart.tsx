@@ -1,7 +1,7 @@
 "use client";
 
 import { BarChart, type ChartConfig } from "@/registry/default/charts/bar-chart";
-import { CircleCheck, Search } from "lucide-react";
+import { CircleCheck, Search } from "honestui/icons";
 
 // Scenario: Incident outcomes
 const data = [

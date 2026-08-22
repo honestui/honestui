@@ -265,7 +265,7 @@ test("developer resources have a recognizable docs navigation icon", async ({
   await page.goto("/docs/contributing");
 
   const developerResources = page.getByRole("link", {
-    name: "Honest UI Developer Resources",
+    name: "Developer Resources",
     exact: true,
   });
   await expect(developerResources).toBeVisible();

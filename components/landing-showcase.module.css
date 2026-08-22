@@ -222,6 +222,89 @@
   border-color: var(--hui-color-border-accent-emphasis);
 }
 
+.previewCard {
+  width: 23.5rem;
+  gap: var(--hui-space-5);
+  border-radius: var(--hui-radius-5);
+  background: var(--hui-color-background-base-primary);
+  padding-top: var(--hui-space-5);
+  padding-bottom: var(--hui-space-5);
+  box-shadow:
+    var(--hui-shadow-lifted),
+    0 0 0 0.5px var(--hui-color-border-base-primary);
+}
+
+.paymentOption {
+  display: flex;
+  min-height: 5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hui-space-2);
+  border-radius: var(--hui-radius-3);
+  border: 0.5px solid var(--hui-color-border-base-primary);
+  background: var(--hui-color-background-base-primary);
+  font-size: var(--hui-font-size-small);
+  font-weight: var(--hui-font-weight-medium);
+  outline: none;
+  transition: var(--hui-transition-interactive);
+}
+
+.paymentOption:hover {
+  background: var(--hui-color-background-base-primary-hover);
+}
+
+.paymentOption:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+.paymentOption[aria-pressed="true"] {
+  border-color: var(--hui-color-border-accent-emphasis);
+  background: var(--hui-color-background-accent-primary);
+}
+
+.sizeOption {
+  display: flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--hui-radius-2);
+  border: 0.5px solid var(--hui-color-border-base-primary);
+  font-size: var(--hui-font-size-small);
+  outline: none;
+}
+
+.sizeOption:hover {
+  background: var(--hui-color-background-base-primary-hover);
+}
+
+.sizeOption:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+.sizeOption[aria-pressed="true"] {
+  border-color: var(--hui-color-border-accent-emphasis);
+  background: var(--hui-color-background-accent-primary);
+}
+
+.inlineLink {
+  color: inherit;
+  border-radius: var(--hui-radius-1);
+  text-decoration: underline;
+  text-decoration-color: var(--hui-color-border-base-tertiary);
+  text-underline-offset: 4px;
+  outline: none;
+}
+
+.inlineLink:hover {
+  text-decoration-color: currentColor;
+}
+
+.inlineLink:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
 .tabs {
   display: flex;
   width: 100%;

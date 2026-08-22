@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "honestui/icons";
 
 import { TiltCard } from "@/registry/default/animated/tilt-card";
 

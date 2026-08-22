@@ -3,14 +3,14 @@ import Link from "next/link"
 import { BrandWordmark } from "@/components/brand-wordmark"
 
 export function PublicContentLayout({
+  centerFooterLinks = false,
   children,
   description,
-  eyebrow,
   title,
 }: {
+  centerFooterLinks?: boolean
   children: React.ReactNode
   description: React.ReactNode
-  eyebrow: string
   title: string
 }) {
   return (
@@ -47,9 +47,6 @@ export function PublicContentLayout({
         id="main-content"
         tabIndex={-1}
       >
-        <p className="text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
-          {eyebrow}
-        </p>
         <h1 className="mt-3 text-4xl font-medium tracking-tight sm:text-5xl">
           {title}
         </h1>
@@ -65,7 +62,7 @@ export function PublicContentLayout({
       <footer className="border-t border-[var(--hui-color-border-base-primary)]">
         <nav
           aria-label="Project information"
-          className="mx-auto flex max-w-5xl flex-wrap gap-x-5 gap-y-3 px-5 py-8 text-sm text-[var(--hui-color-foreground-base-secondary)] sm:px-8"
+          className={`mx-auto flex max-w-5xl flex-wrap gap-x-5 gap-y-3 px-5 py-8 text-sm text-[var(--hui-color-foreground-base-secondary)] sm:px-8 ${centerFooterLinks ? "justify-center text-center" : ""}`}
         >
           <Link className="hover:underline" href="/about">About Honest UI</Link>
           <Link className="hover:underline" href="/contact">Contact</Link>

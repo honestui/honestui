@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "honestui/icons";
 import { notFound } from "next/navigation";
 
 import { mdxComponents } from "@/components/docs/mdx";

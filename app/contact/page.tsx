@@ -19,7 +19,6 @@ export default function ContactPage() {
   return (
     <PublicContentLayout
       description="Use the public repository for product, package, and documentation questions. Security vulnerabilities have a separate private reporting path."
-      eyebrow="Support and reporting"
       title="Contact Honest UI"
     >
       <ContentSection id="contact-public" title="Bugs, documentation, and questions">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "honestui/icons";
 
 import { Button } from "@/components/ui/button";
 import { getPublishedComparisons } from "@/lib/comparisons";

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-import { LinkIcon } from "lucide-react";
+import { Link as LinkIcon } from "honestui/icons";
 import { cn } from "@/lib/utils";
 
 export const A = ({ className, ...props }: React.ComponentProps<"a">) => (

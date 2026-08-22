@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCw } from "lucide-react";
+import { RotateCw } from "honestui/icons";
 import * as React from "react";
 
 import { ComponentPreviewSourceProvider } from "@/components/docs/component/component-preview-source-context";

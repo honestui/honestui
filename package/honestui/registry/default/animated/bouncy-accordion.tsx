@@ -5,7 +5,7 @@ import {
   useReducedMotion,
   type Transition,
 } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "honestui/icons";
 import {
   useCallback,
   useId,

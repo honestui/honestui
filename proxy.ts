@@ -4,6 +4,12 @@ import {
   NEGOTIATED_VARY_HEADER,
   negotiatePageRepresentation,
 } from "@/lib/content-negotiation";
+import { SITE_URL } from "@/lib/utils";
+import {
+  RATE_LIMIT_MAX,
+  RATE_LIMIT_POLICY,
+  checkRateLimit,
+} from "@/lib/rate-limit";
 
 const knownPublicPrefixes = [
   "/.well-known/",
@@ -29,6 +35,8 @@ const knownPublicPaths = new Set([
   "/llms-full.txt",
   "/llms.txt",
   "/llm",
+  "/mcp",
+  "/mcp/server-card",
   "/openapi.json",
   "/privacy",
   "/robots.txt",
@@ -49,7 +57,53 @@ function isKnownPublicPath(pathname: string) {
   );
 }
 
+function rateLimitedResponse(request: NextRequest, retryAfter: number) {
+  const headers = new Headers({
+    "content-type": "application/problem+json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-api-version": "1",
+    "link": `<${SITE_URL}/docs/developers#deprecation-policy>; rel="deprecation"; type="text/html"`,
+    "ratelimit-limit": String(RATE_LIMIT_MAX),
+    "ratelimit-remaining": "0",
+    "ratelimit-policy": RATE_LIMIT_POLICY,
+    "retry-after": String(retryAfter),
+  });
+
+  return NextResponse.json(
+    {
+      type: `${SITE_URL}/docs/developers#rate-limit-exceeded`,
+      title: "Too many requests",
+      status: 429,
+      detail:
+        "The client exceeded the documented fair-use window for the Honest UI REST API.",
+      instance: request.nextUrl.href,
+      code: "RATE_LIMIT_EXCEEDED",
+      message: "Too many requests",
+      resolution:
+        "Wait for the window in Retry-After to elapse, then resume at the published RateLimit-Policy pace.",
+    },
+    {
+      status: 429,
+      headers,
+    },
+  );
+}
+
 export function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/api/v1")) {
+    const decision = checkRateLimit(request);
+    const response = decision.allowed
+      ? NextResponse.next()
+      : rateLimitedResponse(request, decision.retryAfter);
+
+    response.headers.set("ratelimit-limit", decision.limit);
+    response.headers.set("ratelimit-remaining", decision.remaining);
+    response.headers.set("ratelimit-reset", decision.reset);
+    response.headers.set("ratelimit-policy", decision.policy);
+
+    return response;
+  }
+
   if (
     (request.method !== "GET" && request.method !== "HEAD") ||
     request.headers.get("accept")?.includes("text/x-component")

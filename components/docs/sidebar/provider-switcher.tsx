@@ -24,7 +24,7 @@ import {
 } from "@/assets/icons";
 import { usePathname, useRouter } from "next/navigation";
 import { CaretDown } from "@carbon/icons-react";
-import { PanelsTopLeft } from "lucide-react";
+import { PanelsTopLeft } from "honestui/icons";
 import { cn } from "@/lib/utils";
 
 export type ProductArea =

@@ -4,7 +4,7 @@ import * as React from "react"
 import { mergeProps } from "@base-ui-components/react/merge-props"
 import { useRender } from "@base-ui-components/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
+import { PanelLeft as PanelLeftIcon } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"

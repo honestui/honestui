@@ -6,6 +6,27 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "lucide-react",
+              message: 'Use "honestui/icons" or "honestui/logos" instead.',
+            },
+          ],
+          patterns: [
+            {
+              group: ["lucide-react/*"],
+              message: 'Use "honestui/icons" or "honestui/logos" instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ["registry/default/examples/**/*.{ts,tsx}"],
     rules: {
       "@next/next/no-img-element": "off",

@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   Star,
-} from "lucide-react"
+} from "honestui/icons"
 
 import { GithubIcon } from "@/assets/icons"
 import { LandingAccountTabs } from "@/components/landing-account-tabs"
@@ -25,8 +25,7 @@ import {
 import { Label } from "@/components/ui/label"
 import styles from "@/components/landing-showcase.module.css"
 
-const previewCardClass =
-  "w-[23.5rem] gap-5 rounded-[var(--hui-radius-5)] bg-[var(--hui-color-background-base-primary)] py-5 shadow-[var(--hui-shadow-lifted)] ring-[0.5px] ring-[var(--hui-color-border-base-primary)]"
+const previewCardClass = styles.previewCard
 
 const previewLabelClass =
   "text-sm font-medium text-[var(--hui-color-foreground-base-primary)]"
@@ -284,7 +283,7 @@ function PaymentCard() {
               key={label}
               type="button"
               aria-pressed={index === 0}
-              className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-sm font-medium outline-none transition-colors hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] aria-pressed:border-[var(--hui-color-border-accent-emphasis)] aria-pressed:bg-[var(--hui-color-background-accent-primary)]"
+              className={styles.paymentOption}
             >
               <Icon aria-hidden="true" className="size-5" />
               {label}
@@ -337,7 +336,7 @@ function EcommerceCard() {
                 key={size}
                 type="button"
                 aria-pressed={index === 2}
-                className="flex size-9 items-center justify-center rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] text-sm outline-none hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] aria-pressed:border-[var(--hui-color-border-accent-emphasis)] aria-pressed:bg-[var(--hui-color-background-accent-primary)]"
+                className={styles.sizeOption}
               >
                 {size}
               </button>
@@ -582,8 +581,9 @@ export function LandingShowcase() {
 
       <section
         aria-labelledby="honest-ui-ownership"
-        className="border-t border-[var(--hui-color-border-base-primary)] px-5 py-16 sm:px-8 sm:py-20"
+        className="sr-only focus-within:not-sr-only"
       >
+        <div className="border-t border-[var(--hui-color-border-base-primary)] px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-5xl">
           <div className="max-w-3xl">
             <p className="text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
@@ -642,6 +642,84 @@ export function LandingShowcase() {
               Review accessibility guidance
             </Link>
           </div>
+        </div>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby="honest-ui-developer-resources"
+        className="sr-only focus-within:not-sr-only"
+      >
+        <div className="border-t border-[var(--hui-color-border-base-primary)] px-5 py-16 sm:px-8 sm:py-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="max-w-3xl">
+            <p className="text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
+              For developers and agents
+            </p>
+            <h2
+              className="mt-3 text-3xl font-medium tracking-tight sm:text-4xl"
+              id="honest-ui-developer-resources"
+            >
+              <span className="sr-only">Honest UI </span>
+              Developer Resources
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--hui-color-foreground-base-secondary)]">
+              Everything an integration needs is published at a stable URL and documented as machine-readable data. The REST API and MCP server are read-only and require no account or credential, so you can inspect the registry before writing any code.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-10 md:grid-cols-2">
+            <article>
+              <h3 className="text-xl font-medium">Honest UI REST API v1 and OpenAPI specification</h3>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                The <Link className={styles.inlineLink} href="/api/v1">Honest UI REST API v1</Link> exposes the registry catalog, item index, individual items, base colors, and initialization presets as JSON with problem-details errors and versioned lifecycle headers. Generate a typed client from the <Link className={styles.inlineLink} href="/openapi.json">Honest UI OpenAPI 3.1 specification</Link>, which documents every operation ID, parameter description, response schema, error code, and the deprecation policy.
+              </p>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Public GET endpoints: <code>/api/v1/registry</code> for the full catalog, <code>/api/v1/registry/index</code> for valid item names, <code>/api/v1/registry/&#123;name&#125;</code> for one item&rsquo;s source files, <code>/api/v1/colors/&#123;name&#125;</code> for a base color scale, and <code>/api/v1/init</code> for an initialization preset. Responses carry <code>X-Api-Version</code>, <code>RateLimit-Policy: 600;w=60</code> fair-use headers, and a Link to the deprecation policy. The API is versioned in the URL path; any future retirement is announced with RFC 9745 <code>Deprecation</code> and RFC 8594 <code>Sunset</code> headers at least 180 days in advance.
+              </p>
+            </article>
+            <article>
+              <h3 className="text-xl font-medium">Honest UI MCP server for AI agents</h3>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Connect an MCP client to the <Link className={styles.inlineLink} href="/mcp">Honest UI MCP server</Link> over Streamable HTTP to call typed, read-only tools: <code>list_registry_items</code> takes an optional case-insensitive <code>query</code> substring and returns valid component names with their registry types, and <code>get_registry_item</code> takes an exact returned name and retrieves that item&rsquo;s source files and dependencies. Call <code>list_registry_items</code> first whenever the name is unknown rather than guessing.
+              </p>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Agents can discover the connection details without manual configuration from the <Link className={styles.inlineLink} href="/mcp/server-card">MCP Server Card</Link> (SEP-2127) or the domain-level <Link className={styles.inlineLink} href="/.well-known/ai-catalog.json">AI Catalog</Link>. Both documents are public JSON describing the Streamable HTTP endpoint and its supported protocol versions.
+              </p>
+            </article>
+            <article>
+              <h3 className="text-xl font-medium">The honestui CLI and npm package</h3>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Run <code>npx honestui@latest init</code> to configure a React project, then <code>npx honestui@latest add button</code> to copy a component into your repository with a reviewable file plan and dry-run support. Registry responses follow the shadcn schema, so each item already names its files, npm dependencies, and CSS variables. The <a className={styles.inlineLink} href="https://www.npmjs.com/package/honestui">honestui package on npm</a> also ships maintained imports for charts, icons, logos, vectors, and shaders.
+              </p>
+            </article>
+            <article>
+              <h3 className="text-xl font-medium">Agent-readable documentation</h3>
+              <p className="mt-3 leading-7 text-[var(--hui-color-foreground-base-secondary)]">
+                Point an agent at <Link className={styles.inlineLink} href="/llms.txt">llms.txt</Link> for the curated documentation index, or load the full snapshot from <Link className={styles.inlineLink} href="/llms-full.txt">llms-full.txt</Link>. Every guide is also available as Markdown by appending <code>.md</code> to its URL, and the <Link className={styles.inlineLink} href="/skill.md">Honest UI agent skill</Link> describes when and how to install, customize, and verify components. One fetch of the OpenAPI document reveals every machine-readable surface, including the Agent Skills index and the MCP Server Card location.
+              </p>
+            </article>
+          </div>
+
+          <div className="mt-12 flex flex-wrap gap-3">
+            <Link
+              className={previewButtonClass({ size: "large" })}
+              href="/developers"
+            >
+              Browse all developer resources
+              <ArrowRight aria-hidden="true" />
+            </Link>
+            <Link
+              className={previewButtonClass({
+                size: "large",
+                variant: "outline",
+              })}
+              href="/docs/developers"
+            >
+              Read the API guide
+            </Link>
+          </div>
+        </div>
         </div>
       </section>
     </main>

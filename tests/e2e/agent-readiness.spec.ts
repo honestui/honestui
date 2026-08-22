@@ -50,8 +50,12 @@ test("renders substantial, structured homepage content in raw HTML", async ({
   expect(html).toMatch(/<h1(?:\s|>)[\s\S]*?Honest UI:/);
   expect(html).toMatch(/<h2(?:\s|>)[\s\S]*?Honest UI component previews/);
   expect(html).toMatch(/<h2(?:\s|>)[\s\S]*?Own the interface you ship/);
+  expect(
+    html,
+    "developer resources must be named from the homepage",
+  ).toMatch(/<h2(?:\s|>)[\s\S]*?Developer Resources/);
   expect(html).toMatch(/<h3(?:\s|>)[\s\S]*?Sign up/);
-  expect(html.match(/<h3(?:\s|>)/g)?.length).toBeGreaterThanOrEqual(8);
+  expect(html.match(/<h3(?:\s|>)/g)?.length).toBeGreaterThanOrEqual(12);
 
   const visibleText = html
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
@@ -62,7 +66,22 @@ test("renders substantial, structured homepage content in raw HTML", async ({
     .trim();
 
   expect(visibleText.length).toBeGreaterThan(500);
+
+  // Content efficiency: readable text should be at least 5% of the document
+  // so agents fetching raw HTML are not paying for markup alone.
+  expect(visibleText.length / html.length).toBeGreaterThanOrEqual(0.05);
+
   expect(html).toContain("Own the interface you ship");
+  for (const marker of [
+    'href="/api/v1"',
+    'href="/openapi.json"',
+    'href="/mcp"',
+    "npmjs.com/package/honestui",
+    'href="/llms.txt"',
+    'href="/skill.md"',
+  ]) {
+    expect(html, marker).toContain(marker);
+  }
 });
 
 test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
@@ -76,7 +95,7 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
     openapi: "3.1.1",
     info: {
       title: "Honest UI Registry API",
-      version: "1.2.0",
+      version: "1.3.0",
     },
     servers: [
       { url: expect.stringMatching(/^https:\/\/(?:www\.)?honestui\.com$/) },
@@ -89,6 +108,8 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
   expect(document.paths).toHaveProperty("/api/v1/registry/{name}");
   expect(document.paths["/r/{name}.json"]).toBeDefined();
   expect(document.paths["/.well-known/agent-skills/index.json"]).toBeDefined();
+  expect(document.paths["/mcp/server-card"]).toBeDefined();
+  expect(document.paths["/.well-known/ai-catalog.json"]).toBeDefined();
   expect(document.components.schemas.ApiError.required).toEqual([
     "error",
     "code",
@@ -105,6 +126,21 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
     "message",
     "resolution",
   ]);
+  expect(
+    document.components.schemas.ApiProblem.properties.code.enum,
+  ).toContain("RATE_LIMIT_EXCEEDED");
+  for (const headerName of [
+    "RateLimitLimit",
+    "RateLimitRemaining",
+    "RateLimitReset",
+    "RateLimitPolicy",
+    "RetryAfter",
+  ]) {
+    expect(
+      document.components.headers[headerName],
+      headerName,
+    ).toBeDefined();
+  }
   expect(document.info["x-api-versioning"]).toMatchObject({
     strategy: "URL path",
     currentMajorVersion: "v1",
@@ -116,6 +152,8 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
     protocolVersion: "2026-07-28",
     authentication: "none",
     tools: ["list_registry_items", "get_registry_item"],
+    serverCard: expect.stringContaining("/mcp/server-card"),
+    aiCatalog: expect.stringContaining("ai-catalog.json"),
   });
 
   const pathItems = Object.values(document.paths) as Array<
@@ -128,11 +166,23 @@ test("publishes a discoverable OpenAPI 3.1 document", async ({ request }) => {
       ),
   ) as Array<{
     operationId: string;
+    description?: string;
+    parameters?: Array<Record<string, unknown>>;
     responses: Record<string, { content?: Record<string, { schema?: Record<string, unknown> }> }>;
   }>;
 
-  expect(operations).toHaveLength(13);
+  expect(operations).toHaveLength(15);
   for (const operation of operations) {
+    expect(
+      operation.description,
+      `${operation.operationId} must describe when to use the operation`,
+    ).toEqual(expect.stringMatching(/\w+/));
+    for (const parameter of operation.parameters ?? []) {
+      expect(
+        parameter.description,
+        `${operation.operationId} parameter ${String(parameter.name)}`,
+      ).toEqual(expect.stringMatching(/\w+/));
+    }
     expect(
       Object.keys(operation.responses).some((status) => /^4\d\d$/.test(status)),
       `${operation.operationId} must document a client-error response`,
@@ -163,6 +213,14 @@ test("publishes an explicit, versioned API entry point", async ({ request }) => 
   expect(response.headers().link).toContain(
     "/docs/developers#deprecation-policy",
   );
+  expect(response.headers()["ratelimit-limit"]).toBe("600");
+  expect(response.headers()["ratelimit-policy"]).toBe("600;w=60");
+  expect(Number(response.headers()["ratelimit-remaining"])).toBeLessThanOrEqual(
+    599,
+  );
+  expect(Number.isFinite(Number(response.headers()["ratelimit-reset"]))).toBe(
+    true,
+  );
   expect(response.headers().deprecation).toBeUndefined();
   expect(response.headers().sunset).toBeUndefined();
 
@@ -183,6 +241,7 @@ test("publishes an explicit, versioned API entry point", async ({ request }) => 
   expect(options.headers().allow).toBe("GET, HEAD, OPTIONS");
   expect(options.headers()["x-api-version"]).toBe("1");
   expect(options.headers().link).toContain('rel="deprecation"');
+  expect(options.headers()["ratelimit-policy"]).toBe("600;w=60");
 });
 
 test("returns RFC 9457 problem details from versioned API failures", async ({
@@ -236,6 +295,102 @@ test("returns RFC 9457 problem details from versioned API failures", async ({
   });
 });
 
+test("returns rate-limit headers and a 429 problem when the window is exceeded", async ({
+  request,
+}) => {
+  test.setTimeout(180_000);
+
+  // A unique forwarded-for value isolates this test's fair-use window from
+  // the other parallel API tests.
+  const bucketIp = `10.220.${Math.floor(Math.random() * 250)}.${
+    Math.floor(Math.random() * 250) + 1
+  }`;
+  const headers = { "x-forwarded-for": bucketIp };
+
+  let limited: Awaited<ReturnType<typeof request.get>> | undefined;
+  for (let batch = 0; batch < 24 && !limited; batch += 1) {
+    const responses = await Promise.all(
+      Array.from({ length: 40 }, () => request.get("/api/v1", { headers })),
+    );
+    limited = responses.find((response) => response.status() === 429);
+
+    if (!limited) {
+      for (const response of responses.slice(0, 3)) {
+        expect(response.status(), "pre-limit responses").toBe(200);
+        expect(response.headers()["ratelimit-limit"]).toBe("600");
+        expect(response.headers()["ratelimit-remaining"]).toMatch(/^\d+$/);
+      }
+    }
+  }
+
+  expect(limited, "expected a 429 within 960 requests").toBeDefined();
+  expect(limited!.headers()["ratelimit-remaining"]).toBe("0");
+  expect(Number(limited!.headers()["retry-after"])).toBeGreaterThanOrEqual(1);
+  expect(limited!.headers()["content-type"]).toContain(
+    "application/problem+json",
+  );
+  await expect(limited!.json()).resolves.toMatchObject({
+    type: expect.stringContaining("/docs/developers#rate-limit-exceeded"),
+    title: "Too many requests",
+    status: 429,
+    code: "RATE_LIMIT_EXCEEDED",
+    resolution: expect.stringContaining("Retry-After"),
+  });
+});
+
+test("publishes the MCP Server Card and AI Catalog discovery documents", async ({
+  request,
+}) => {
+  const card = await request.get("/mcp/server-card");
+  expect(card.status()).toBe(200);
+  expect(card.headers()["content-type"]).toContain(
+    "application/mcp-server-card+json",
+  );
+  expect(card.headers()["access-control-allow-origin"]).toBe("*");
+  expect(card.headers()["cache-control"]).toContain("max-age=3600");
+  const etag = card.headers().etag;
+  expect(etag).toMatch(/^".+"$/);
+
+  const document = (await card.json()) as Record<string, unknown>;
+  expect(document).toMatchObject({
+    $schema:
+      "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+    name: "com.honestui/honest-ui",
+    version: "1.0.0",
+    remotes: [
+      {
+        type: "streamable-http",
+        url: expect.stringMatching(/\/mcp$/),
+        supportedProtocolVersions: ["2026-07-28"],
+      },
+    ],
+  });
+  expect(String(document.description).length).toBeLessThanOrEqual(100);
+  expect(document).not.toHaveProperty("tools");
+
+  const notModified = await request.fetch("/mcp/server-card", {
+    headers: { "if-none-match": etag },
+  });
+  expect(notModified.status()).toBe(304);
+
+  const catalog = await request.get("/.well-known/ai-catalog.json");
+  expect(catalog.status()).toBe(200);
+  expect(catalog.headers()["content-type"]).toContain(
+    "application/ai-catalog+json",
+  );
+  expect(catalog.headers()["access-control-allow-origin"]).toBe("*");
+  await expect(catalog.json()).resolves.toMatchObject({
+    specVersion: "1.0",
+    entries: [
+      {
+        identifier: "urn:air:honestui.com:mcp:honest-ui",
+        type: "application/mcp-server-card+json",
+        url: expect.stringContaining("/mcp/server-card"),
+      },
+    ],
+  });
+});
+
 test("returns actionable JSON errors without breaking the legacy error field", async ({
   request,
 }) => {
@@ -266,7 +421,7 @@ test("returns actionable JSON errors without breaking the legacy error field", a
   });
 });
 
-test("makes Honest UI developer resources discoverable by name", async ({
+test("makes Developer Resources discoverable by name", async ({
   request,
 }) => {
   const guide = await request.get("/docs/developers");
@@ -274,7 +429,7 @@ test("makes Honest UI developer resources discoverable by name", async ({
   expect(guide.headers()["content-type"]).toContain("text/html");
 
   const html = await guide.text();
-  expect(html).toContain("Honest UI Developer Resources");
+  expect(html).toContain("Developer Resources");
   expect(html).toContain("Choose the right starting point");
   expect(html).toContain("Honest UI REST API v1");
   expect(html).toContain("Deprecation policy");
@@ -285,7 +440,7 @@ test("makes Honest UI developer resources discoverable by name", async ({
   const index = await request.get("/developers");
   expect(index.status()).toBe(200);
   const indexHtml = await index.text();
-  expect(indexHtml).toContain("Honest UI Developer Resources");
+  expect(indexHtml).toContain("Developer Resources");
   expect(indexHtml).toContain("Honest UI CLI");
   expect(indexHtml).toContain("Honest UI REST API v1");
   expect(indexHtml).toContain("https://www.npmjs.com/package/honestui");
@@ -295,12 +450,18 @@ test("makes Honest UI developer resources discoverable by name", async ({
   expect(markdownGuide.status()).toBe(200);
   expect(markdownGuide.headers()["content-type"]).toContain("text/markdown");
   const markdownGuideBody = await markdownGuide.text();
-  expect(markdownGuideBody).toContain("# Honest UI Developer Resources");
+  expect(markdownGuideBody).toContain("# Developer Resources");
   expect(markdownGuideBody).toContain("## Choose the right starting point");
+  expect(markdownGuideBody).toContain("## Fair use and rate limits");
+  expect(markdownGuideBody).toContain("RateLimit-Policy");
+  expect(markdownGuideBody).toContain("RATE_LIMIT_EXCEEDED");
+  expect(markdownGuideBody).toContain("at least **180 days**");
+  expect(markdownGuideBody).toContain("/mcp/server-card");
+  expect(markdownGuideBody).toContain("/.well-known/ai-catalog.json");
 
   const llms = await request.get("/llms.txt");
   const llmsBody = await llms.text();
-  expect(llmsBody).toContain("## Honest UI Developer Resources");
+  expect(llmsBody).toContain("## Developer Resources");
   expect(llmsBody).toContain("## When to use Honest UI");
   expect(llmsBody).toContain("## How to use Honest UI");
   expect(llmsBody).toContain("/developers");
@@ -308,8 +469,25 @@ test("makes Honest UI developer resources discoverable by name", async ({
   expect(llmsBody).toContain("/api/v1");
   expect(llmsBody).toContain("/openapi.json");
   expect(llmsBody).toContain("/mcp");
+  expect(llmsBody).toContain("/mcp/server-card");
+  expect(llmsBody).toContain("/.well-known/ai-catalog.json");
   expect(llmsBody).toContain("list_registry_items");
   expect(llmsBody).toContain("authentication, and REST API policy");
+
+  const skill = await request.get("/skill.md");
+  expect(skill.status()).toBe(200);
+  const skillBody = await skill.text();
+  expect(skillBody).toContain("## When to use this skill");
+  expect(skillBody).toMatch(
+    /Use this skill when[\s\S]{0,400}?(Install|Add|Customize|Debug)/,
+  );
+
+  // The well-known skill copy must match the served one.
+  const wellKnownSkill = await request.get(
+    "/.well-known/agent-skills/honest-ui/SKILL.md",
+  );
+  expect(wellKnownSkill.status()).toBe(200);
+  expect(await wellKnownSkill.text()).toBe(skillBody);
 
   const sitemap = await request.get("/sitemap.xml");
   expect(await sitemap.text()).toContain("/docs/developers");
@@ -460,11 +638,17 @@ test("publishes only verified organization contact data", async ({ page }) => {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "technical support",
+      email: "connor@connorlove.com",
       url: expect.stringContaining("/contact"),
       availableLanguage: ["English"],
     },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Columbus",
+      addressRegion: "OH",
+      addressCountry: "US",
+    },
   });
-  expect(organization.address).toBeUndefined();
 
   const website = graph["@graph"].find(
     (entry: Record<string, unknown>) => entry["@type"] === "WebSite",
