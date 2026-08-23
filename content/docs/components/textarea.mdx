@@ -7,21 +7,33 @@ description: Collect text that may span more than one line.
 
 ## Overview
 
-Use Textarea for multi-line text.
+Textarea collects free-form text that can outgrow one line: descriptions, messages, notes, code snippets. It is the multi-line sibling of Input and shares its contract — a permanent label above, placeholder showing format only, native attributes passed straight through.
 
-Textareas are useful for comments, descriptions, notes, feedback, support messages, and any field where the answer may be longer than one line.
+Use it when people will type more than roughly a sentence. For anything shorter, an Input respects their time; a tall empty box implies an essay is expected.
 
 ## Anatomy
 
-A textarea has a value, placeholder, size, disabled state, and optional validation state. It should usually be wrapped in Field.
+A textarea has a value, optional placeholder, size, variant, and state. Unlike Input there is no `type` — but `maxLength`, `minLength`, `required`, `disabled`, `readOnly`, and `name` all pass through natively.
 
-## Usage guidance
+## Behavior
 
-Use Input for short single-line values. Use Textarea when users need space to write. Set a sensible minimum height so the field does not feel cramped.
+**Growth.** The box starts at a fixed height and scrolls once content exceeds it; it does not grow automatically. If watching all of their text matters (short comments), size it generously up front rather than promising auto-grow the component does not do.
+
+**Resize.** The browser's resize handle stays available. Constrain it with `resize` classes if the layout truly cannot flex — but a textarea nobody may enlarge is usually a layout bug wearing a component.
+
+**Line handling.** Enter inserts newlines; text wraps within the box. Values include those newline characters, so trim and normalize on submit where your backend cares.
+
+## States
+
+**Disabled** skips focus, blocks editing, and excludes the value from submission. **Read-only** keeps the content selectable and copyable while still submitting — prefer it for computed or imported text that must travel with the form. **Invalid** follows `aria-invalid`: danger border plus an error message linked through Field or `aria-describedby` that says what to fix.
+
+Placeholder styling matches Input: muted foreground tokens that adapt to dark mode automatically.
 
 ## Accessibility
 
-Always provide a label. Add helper text when users need to know expected length, format, or privacy context.
+The visible label names the field (`Label` + `htmlFor`). Standard textarea keys apply — arrows move within the text, <kbd>Enter</kbd> adds lines, <kbd>Tab</kbd> leaves (it does not insert a tab character). Focus shows as a border change using accent tokens.
+
+Height clears comfortable touch sizing, and the resize handle gives pointer users another way to fit their content. Long values scroll vertically rather than truncating; nothing a person typed is ever visually cut off without a way to reach it. RTL text mirrors correctly because padding uses logical properties.
 
 ## Installation
 
@@ -62,39 +74,70 @@ npm install @base-ui-components/react
 ## Usage
 
 ```tsx
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 ```
 
 ```tsx
-<Textarea />
+<Label htmlFor={id}>Release notes</Label>
+<Textarea id={id} name="notes" rows={4} maxLength={500} />
 ```
+
+## Don't do this
+
+### Counting characters only after they are lost
+
+```tsx
+// Bad
+<Textarea maxLength={200} />
+// no counter anywhere
+```
+
+```tsx
+// Good
+<Textarea maxLength={200} aria-describedby="count" />
+<p id="count" aria-live="polite">
+  {200 - value.length} characters left
+</p>
+```
+
+A silent `maxLength` eats keystrokes: past the limit, typing does nothing and the person concludes the keyboard broke. Announce remaining characters politely so the wall arrives before they hit it — and let the counter say what still fits, not just that they failed.
+
+### Disabling spellcheck by default
+
+```tsx
+// Bad
+<Textarea spellCheck={false} />
+```
+
+```tsx
+// Good
+<Textarea /> // browser default: spellcheck on for prose
+```
+
+Prose fields benefit from underlines pointing at typos; turning them off wholesale assumes every entry is a URL. Opt out per-field for identifiers and code, not for every description box on the page.
 
 ## Examples
 
-Examples cover sizes, disabled state, labels, and form integration.
-
-For accessible labeling and validation, use `Field` to connect the textarea with its label, description, and error. See the [Field examples](/docs/components/field#examples).
-
-### Small Size
-
-<ComponentPreview name="textarea-sm" />
-
-### Large Size
-
-<ComponentPreview name="textarea-lg" />
-
-### Disabled
+### Disabled and read-only states
 
 <ComponentPreview name="textarea-disabled" />
 
-### With Label
-
-<ComponentPreview name="textarea-with-label" />
-
-### Form Integration
+### Inside a form
 
 <ComponentPreview name="textarea-form" />
 
+### With label
+
+<ComponentPreview name="textarea-with-label" />
+
 ## API reference
 
-`Textarea` accepts native textarea props plus Honest UI's `size` option. Native attributes such as `name`, `required`, `disabled`, `rows`, `minLength`, and `maxLength` pass through. Use controlled state only when the application needs live value logic; otherwise read the submitted value with `FormData`.
+Accepts all native `<textarea>` props. Honest UI additions:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `size` | `"sm"`, `"small"`, `"default"`, `"lg"`, `"large"`, or number | `"large"` |
+| `variant` | `"default"`, `"borderless"` | `"default"` |
+
+Validation state follows `aria-invalid`; disabled and read-only use the native attributes.

@@ -7,19 +7,47 @@ description: Choose a precise color, opacity, and output format.
 
 ## Overview
 
-Use Color Picker when users need to choose a precise color rather than select from a fixed palette. It supports HEX, RGB, HSL, and OKLCH output while keeping the picker state in OKLCH.
+ColorPicker is a precision tool for people who need an exact color — theme builders, design settings, data-viz configuration, brand customization. It works internally in OKLCH, a perceptual color space where "a bit lighter" is the same size change everywhere on the gradient, and outputs hex, HSL, RGB, or OKLCH strings.
+
+Use it when the person must get a specific value right. For choosing among known options (plan colors, status tints), render swatches as buttons instead — free-form picking is more power, and more surface for mistakes, than that job needs.
 
 ## Anatomy
 
-The component is composed from a root, two-dimensional color area, hue slider, optional alpha slider, formatted input, and mode selector. Include only the controls your interface needs.
+The picker composes from parts, so you can ship exactly the control each context needs:
+
+- `ColorPicker` — the root; owns value, mode, and clamping.
+- `ColorPickerArea` — the 2-D gradient field (lightness × chroma in OKLCH mode, saturation × lightness in HSL mode).
+- `ColorPickerHue` — hue slider.
+- `ColorPickerAlpha` — transparency slider.
+- `ColorPickerInput` — text entry for the current output string.
+- `ColorPickerMode` — format switcher between `hex`, `hsl`, `rgb`, and `oklch`.
 
 ## Behavior
 
-The area changes saturation and brightness in standard output modes, and chroma and lightness in OKLCH mode. The hue and alpha controls can be dragged, while the area also supports arrow keys for precise adjustment.
+**Perceptual space.** The area operates in OKLCH by default. Moving diagonally changes perceived lightness uniformly — unlike HSL fields, where dragging through yellow suddenly looks far brighter. Switch to HSL when someone needs to think in the classic saturation/lightness model.
+
+**Gamut honesty.** OKLCH can describe colors wider-gamut displays can show but ordinary sRGB screens cannot. The component keeps your raw OKLCH value intact and only *displays* the sRGB-clamped version. What you store is what you asked for; what you see is what fits the screen. If exact on-screen reproduction matters, read back the displayed value rather than assuming identity.
+
+**Modes.** The output string follows the active mode, and switching modes converts without drift. Alpha is included where the format supports it (`#RRGGBBAA`, `hsla()`, `rgba()`, `oklch(… / α)`).
+
+## Keyboard interaction
+
+The area, hue, and alpha are slider primitives:
+
+| Key | Result |
+| --- | --- |
+| <kbd>ArrowLeft</kbd> / <kbd>ArrowDown</kbd> | Decrease the controlled axis |
+| <kbd>ArrowRight</kbd> / <kbd>ArrowUp</kbd> | Increase it |
+
+Each arrow step moves the area by a fixed perceptual increment, so keyboard adjustment is usable rather than a crawl; there is no large-step modifier. For exact values or big jumps, type into `ColorPickerInput` — parsing accepts any CSS color string culori understands.
 
 ## Accessibility
 
-Keep a visible text value alongside the visual controls. The color area and sliders expose keyboard-operable range controls, and the mode selector uses the Select component's native keyboard behavior.
+Every part is reachable with <kbd>Tab</kbd> and operable with arrows; sliders expose their current axis value to screen readers via the underlying slider role. The text input is the precision path — always include it. A picker used without any textual representation excludes people who cannot discriminate fine color differences, and makes matching an existing brand value impossible.
+
+Never let the picked color alone carry meaning. A chosen red means nothing without adjacent text saying "danger" or "error"; color-vision deficiencies and forced-colors mode strip exactly that channel.
+
+All surfaces come from tokens except the color being edited itself, which is inherently user content — check that surrounding labels stay legible against both themes. Layout mirrors in RTL because the parts stack with logical spacing; slider arrows keep their geometric meaning rather than flipping, which matches how color axes are conventionally drawn.
 
 ## Installation
 
@@ -42,16 +70,17 @@ Keep a visible text value alongside the visual controls. The color area and slid
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react culori
+npm install @base-ui-components/react
+npm install culori
 ```
-
-<Step>Install the Input and Select registry dependencies:</Step>
-
-<CliBlock commands={["input", "select"]} />
 
 <Step>Copy and paste the following code into your project.</Step>
 
 <ComponentSource name="color-picker" title="components/ui/color-picker.tsx" />
+
+<Step>Make sure these primitives are installed:</Step>
+
+<CliBlock commands={["input", "select"]} />
 
 <Step>Update the import paths to match your project setup.</Step>
 
@@ -64,57 +93,87 @@ npm install @base-ui-components/react culori
 ## Usage
 
 ```tsx
-"use client";
-
-import { ColorPicker } from "@/components/ui/color-picker";
+import {
+  ColorPicker,
+  ColorPickerAlpha,
+  ColorPickerArea,
+  ColorPickerHue,
+  ColorPickerInput,
+  ColorPickerMode,
+} from "@/components/ui/color-picker";
 ```
 
 ```tsx
-<ColorPicker defaultValue="#3E63DD">
-  <ColorPicker.Area />
-  <ColorPicker.Hue />
-  <ColorPicker.Alpha />
-  <div className="flex items-center gap-3">
-    <ColorPicker.Input copyable />
-    <ColorPicker.Mode />
+<ColorPicker defaultValue="#7C3AED">
+  <ColorPickerArea />
+  <ColorPickerHue />
+  <ColorPickerAlpha />
+  <div className="flex gap-2">
+    <ColorPickerInput />
+    <ColorPickerMode />
   </div>
 </ColorPicker>
 ```
 
-## Examples
+The value is a controlled or uncontrolled string in the active mode's format.
 
-### Controlled Value
+## Don't do this
 
-Use `value` and `onValueChange` when the selected color needs to drive another part of the interface.
-
-<ComponentPreview name="color-picker-controlled" />
-
-### OKLCH Output
-
-Set `defaultMode="oklch"` to begin with perceptual lightness, chroma, and hue controls.
+### Swatch-only pickers with no way to type
 
 ```tsx
-<ColorPicker defaultValue="oklch(0.62 0.18 265)" defaultMode="oklch">
-  <ColorPicker.Area />
-  <ColorPicker.Hue />
-  <ColorPicker.Input />
-  <ColorPicker.Mode />
+// Bad
+<ColorPicker>
+  <ColorPickerArea />
+  <ColorPickerHue />
 </ColorPicker>
 ```
 
-## API
+```tsx
+// Good
+<ColorPicker>
+  <ColorPickerArea />
+  <ColorPickerHue />
+  <ColorPickerInput />
+</ColorPicker>
+```
 
-### ColorPicker
+Without text entry there is no way to enter `#0F52BA` exactly, match a value from another tool, or adjust color at all without fine visual-motor control. The input is not an extra — it is the accessible, precise path, and drag-only interfaces fail both screen-reader users and anyone who knows the value they want.
 
-- `value` and `defaultValue` accept any color string supported by Culori.
-- `onValueChange(value, mode)` runs whenever a color control changes.
-- `mode` and `defaultMode` control the output format.
-- `onModeChange(mode)` runs when the format selector changes.
+### Letting the picked color carry the meaning
 
-### Parts
+```tsx
+// Bad
+<div style={{ background: picked }} aria-label={picked} />
+```
 
-- `ColorPicker.Area` renders the two-dimensional color surface.
-- `ColorPicker.Hue` renders the hue slider.
-- `ColorPicker.Alpha` renders the opacity slider.
-- `ColorPicker.Input` renders the formatted, read-only value and supports `copyable`.
-- `ColorPicker.Mode` renders the format selector and supports a custom `options` array.
+```tsx
+// Good
+<span className="inline-flex items-center gap-2">
+  <span style={{ background: picked }} aria-hidden="true" className="size-4 rounded-full border" />
+  {colorName ?? picked}
+</span>
+```
+
+A color chip labeled only with its own hex value announces gibberish ("four two four two four two") and conveys nothing to color-blind readers. Whatever the color signifies — category, status, team — say it in text next to the swatch.
+
+## Examples
+
+### Controlled with mode switching
+
+<ComponentPreview name="color-picker-controlled" />
+
+### Full picker
+
+<ComponentPreview name="color-picker-demo" />
+
+## API reference
+
+| Part | Prop | Type |
+| --- | --- | --- |
+| `ColorPicker` | `value` / `defaultValue` | `string` (any supported format) |
+| `ColorPicker` | `onValueChange` | `(value: string, mode: ModeType) => void` |
+| `ColorPicker` | `mode` / `defaultMode` | `"hex" \| "hsl" \| "rgb" \| "oklch"` |
+| `ColorPickerMode` | `onModeChange` | `(mode: ModeType) => void` |
+
+Out-of-sRGB-range OKLCH values round-trip unchanged; the rendered preview shows the clamped equivalent. Parsing uses [culori](https://culorijs.org/), so any valid CSS color string is accepted as input.

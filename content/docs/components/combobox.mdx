@@ -10,21 +10,48 @@ links:
 
 ## Overview
 
-Use a combobox when users choose one or more values from a list and search or filtering helps them find the right option.
+Combobox is a select whose list you can search. Type to filter, pick one value — or several, rendered as removable chips — from a list that can run into the hundreds.
 
-Combobox is useful for large lists, people pickers, labels, projects, countries, commands, and multi-select workflows.
+Where it sits among the value controls:
+
+- **Short closed list** — Select or Radio Group; opening a filterable popup for six options adds steps, not clarity.
+- **Long or growing list** — Combobox. This component.
+- **Input that may not exist on any list** — Autocomplete (free text with suggestions) or Tags Input (collect many free values).
+- **Running commands** — Command. A combobox commits values; it never performs actions.
 
 ## Anatomy
 
-A combobox has a trigger or input, popup, list, items, and selection state. Single-selection comboboxes store one value. Multiple-selection comboboxes store a list of values.
+The field combines an input (which both filters and displays the selection), a popup of filtered options, and in multiple mode a chip per selected value with its own remove control. Optional parts cover everything real lists need: `ComboboxGroup`/`ComboboxGroupLabel` for structure, `ComboboxEmpty` for zero matches, `ComboboxStatus` for result counts, `ComboboxClear` for one-click reset, and `ComboboxTrigger` when the field should open like a select rather than type-first.
 
 ## Behavior
 
-Use single selection when one value is allowed. Use multiple selection for tags, filters, permissions, or categories. Use clear buttons when users often reset the value.
+**Keyboard.**
+
+| Key | Result |
+| --- | --- |
+| Character keys | Type to filter the options |
+| <kbd>ArrowDown</kbd> / <kbd>ArrowUp</kbd> | Move through matching options |
+| <kbd>Enter</kbd> | Choose the highlighted option |
+| <kbd>Escape</kbd> | Close the popup (and clear the filter text first) |
+| <kbd>Backspace</kbd> | In multiple mode, removes the last chip |
+
+Filtering matches against option labels as you type. When nothing matches, `ComboboxEmpty` states that plainly — an empty popup with no message reads as breakage.
+
+**Multiple mode.** Set `multiple` and every choice becomes a chip instead of replacing the input's text. Chips are individually removable without reopening the popup, and the input keeps filtering for the next pick. Selections survive further searching because they are held by reference, not by what the input currently shows.
+
+**Result status.** With async data, `ComboboxStatus` reports how many options matched — the difference between "3 results" and a silently shorter list.
+
+## States
+
+**Disabled** fields skip focus and submission. **Invalid** state follows `aria-invalid` with a danger border, announced to assistive technology; pair it with a FieldError explaining what to do. While options load asynchronously, keep the previous list visible and show loading via `ComboboxStatus` rather than blanking the popup — a flash of "no matches" during fetch teaches people their data is gone.
+
+Long labels wrap inside the popup; chips truncate with ellipsis and expose their full label through `aria-label`. Colors come from tokens; layout mirrors in RTL because the popup anchors logically.
 
 ## Accessibility
 
-Give the combobox a label and keep keyboard navigation intact. Users should be able to open the popup, move through options, select items, clear values, and close the popup without a mouse.
+The input carries its accessible name from your visible label. The filtered list is a proper listbox: screen readers announce option count as you type, which option is highlighted, and each chip's name for removal ("Remove Riya Patel"). Nothing depends on color or position — selected options are marked by state, not styling alone.
+
+Typeahead plus count announcements make large lists workable non-visually, but option copy still matters: put distinguishing words first ("Invoice INV-2042", not "INV-2042 — an invoice").
 
 ## Installation
 
@@ -34,7 +61,6 @@ Give the combobox a label and keep keyboard navigation intact. Users should be a
   <TabsTab value="cli">CLI</TabsTab>
   <TabsTab value="manual">Manual</TabsTab>
 </TabsList>
-
 <TabsPanel value="cli">
 
 <CliBlock commands={["combobox"]} />
@@ -65,8 +91,6 @@ npm install @base-ui-components/react
 
 ## Usage
 
-### Single Selection
-
 ```tsx
 import {
   Combobox,
@@ -79,113 +103,83 @@ import {
 ```
 
 ```tsx
-const items = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "orange", label: "Orange" },
-  { value: "grape", label: "Grape" },
-]
-
-<Combobox items={items}>
-  <ComboboxInput placeholder="Select an item..." />
+<Combobox items={teammates}>
   <ComboboxPopup>
-    <ComboboxEmpty>No results found.</ComboboxEmpty>
+    <ComboboxInput placeholder="Search teammates…" />
     <ComboboxList>
-      {(item) => <ComboboxItem key={item.value} value={item}>{item.label}</ComboboxItem>}
-    </ComboboxList>
-  </ComboboxPopup>
-</Combobox>
-```
-
-### Multiple Selection
-
-```tsx
-import {
-  Combobox,
-  ComboboxChip,
-  ComboboxChips,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxPopup,
-  ComboboxValue,
-} from "@/components/ui/combobox";
-```
-
-```tsx
-const items = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "orange", label: "Orange" },
-  { value: "grape", label: "Grape" },
-]
-
-<Combobox items={items} multiple>
-  <ComboboxChips>
-    <ComboboxValue>
-      {(value: { value: string; label: string }[]) => (
-        <>
-          {value?.map((item) => (
-            <ComboboxChip key={item.value} aria-label={item.value}>
-              {item.label}
-            </ComboboxChip>
-          ))}
-          <ComboboxInput
-            placeholder={value.length > 0 ? undefined : "Select an item…"}
-            aria-label="Select an item"
-          />
-        </>
+      {(item) => (
+        <ComboboxItem key={item.value} value={item}>
+          {item.label}
+        </ComboboxItem>
       )}
-    </ComboboxValue>
-  </ComboboxChips>
-  <ComboboxPopup>
-    <ComboboxEmpty>No results found.</ComboboxEmpty>
-    <ComboboxList>
-      {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
     </ComboboxList>
+    <ComboboxEmpty>No teammates match.</ComboboxEmpty>
   </ComboboxPopup>
 </Combobox>
 ```
 
-## API Reference
+## Don't do this
 
-The `ComboboxInput` component extends the original Base UI component with a few extra props:
+### A closed set behind an open-texture control
 
-| Prop          | Type                        | Default     | Description                                                                                      |
-| ------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
-| `size`        | `"sm" \| "default" \| "lg"` | `"default"` | The size variant of the input field.                                                             |
-| `showTrigger` | `boolean`                   | `true`      | Whether to display a trigger button (chevron icon) on the right side of the input.               |
-| `showClear`   | `boolean`                   | `false`     | Whether to display a clear button (X icon) on the right side of the input when there is a value. |
+```tsx
+// Bad
+<Combobox items={[{ label: "Small" }, { label: "Medium" }, { label: "Large" }]} />
+```
+
+```tsx
+// Good
+<Select items={sizes} />
+```
+
+When the whole list fits under a thumb, search is ceremony: people must type to see what they could have scanned instantly. Filtering pays off only when scanning costs more than typing — dozens of options, or ones people already know by name.
+
+### Silently empty while loading
+
+```tsx
+// Bad
+<ComboboxPopup>
+  {loading ? null : <ComboboxList>…</ComboboxList>}
+  {/* shows an empty popup mid-fetch */}
+</ComboboxPopup>
+```
+
+```tsx
+// Good
+<ComboboxPopup>
+  <ComboboxStatus>{loading ? "Loading…" : `${matches.length} results`}</ComboboxStatus>
+  <ComboboxList>…</ComboboxList>
+</ComboboxPopup>
+```
+
+An unexplained blank list mid-fetch announces "no such person exists", and users conclude the feature is broken before the network answers. Say what is happening where the results would appear.
 
 ## Examples
 
-The main example establishes single selection. The examples below cover the behaviors that change how choices are found, represented, or submitted; size and disabled state are covered by the `ComboboxInput` API.
-
-### Automatic highlight
-
-<ComponentPreview name="combobox-autohighlight" />
-
-### Clearable selection
-
-<ComponentPreview name="combobox-with-clear" />
-
-### Grouped choices
-
-<ComponentPreview name="combobox-grouped" />
-
-### Multiple selection with removable chips
+### Multiple selection with chips
 
 <ComponentPreview name="combobox-multiple" />
 
-### Input inside the popup
+### Grouped options
 
-<ComponentPreview name="combobox-with-inner-input" />
+<ComponentPreview name="combobox-grouped" />
 
-### Single-value form submission
+### Clearable
+
+<ComponentPreview name="combobox-with-clear" />
+
+### In a form
 
 <ComponentPreview name="combobox-form" />
 
-### Multiple-value form submission
+## API reference
 
-<ComponentPreview name="combobox-multiple-form" />
+| Prop | Values | Default |
+| --- | --- | --- |
+| `items` | `{ label: string; value: unknown }[]` | — |
+| `multiple` | boolean | `false` |
+| `value` / `defaultValue` | item or item[] | — |
+
+Parts: `ComboboxInput`, `ComboboxTrigger`, `ComboboxPopup`, `ComboboxList`, `ComboboxItem`, `ComboboxChip(s)`, `ComboboxGroup(Label)`, `ComboboxEmpty`, `ComboboxStatus`, `ComboboxClear`, `ComboboxValue`.
+
+See the [Base UI Combobox API](https://base-ui.com/react/components/combobox#api-reference).

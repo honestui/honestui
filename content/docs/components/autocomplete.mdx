@@ -10,21 +10,49 @@ links:
 
 ## Overview
 
-Use autocomplete when users type into an input and need suggestions from a list.
+Autocomplete speeds up typing that has a known shape but not a closed list: addresses, cities, job titles, internal page names. The person can always type something no suggestion anticipated — the list advises, it does not decide.
 
-Autocomplete is useful for search, people pickers, command-style inputs, tags, addresses, and large option sets. It keeps typing as the main action while making valid choices easier to find.
+That is the boundary with Combobox:
+
+- **The value must be one of your options** — Combobox. It rejects anything else by design.
+- **Free text, helped along** — Autocomplete. This component.
+- **Many free-form values in one field** — Tags Input.
+
+If you find yourself validating that autocomplete input "matches one of the options", you wanted a combobox; if you find yourself fighting a combobox to accept custom values, you wanted this.
 
 ## Anatomy
 
-Autocomplete includes an input, popup, list, items, and optional clear or trigger controls. The input owns the typed value. The popup shows matching suggestions. Each item should have clear display text and a stable value.
+The field is an input plus a popup of suggestions. Parts mirror the combobox family: `AutocompleteInput`, `AutocompletePopup`, `AutocompleteList`, `AutocompleteItem`, `AutocompleteEmpty`, `AutocompleteGroup(Label)`, `AutocompleteStatus` for loading and result counts, `AutocompleteClear`, and `AutocompleteTrigger` when it should open on click like a select.
 
 ## Behavior
 
-Use local filtering for small lists. Use async search for remote data. Add a limit when the full list is large. Auto-highlight can speed up keyboard selection, but it should not surprise users by choosing an item before they confirm.
+**Keyboard.**
+
+| Key | Result |
+| --- | --- |
+| Character keys | Type freely; the list filters as suggestions |
+| <kbd>ArrowDown</kbd> / <kbd>ArrowUp</kbd> | Highlight a suggestion |
+| <kbd>Enter</kbd> | Accept the highlighted suggestion |
+| <kbd>Escape</kbd> | Dismiss the popup — typed text stays |
+| <kbd>Tab</kbd> | Leave the field as typed |
+
+The critical difference from select-family controls: dismissing never destroys the typed value. Suggestions accelerate input; they are never a gate on it.
+
+**Async suggestions.** Fetch on change, keep the previous results visible while new ones load, and report state through `AutocompleteStatus`. Debounce on your side; the component re-renders cheaply but your API is not free.
+
+**Grouping.** Group suggestions when they mix kinds — recent searches next to full results, or cities grouped by country. Group labels are announced by screen readers.
+
+## States
+
+While loading, say so via `AutocompleteStatus`; while empty, `AutocompleteEmpty` should distinguish "nothing matches" from "still fetching" whenever you can. Invalid state follows `aria-invalid` with the danger border and pairs with an error message via Field. Disabled skips focus and submission entirely.
+
+Long suggestions wrap inside the popup; long *typed* values scroll horizontally in the input as any text input does. Tokens handle dark mode and RTL mirroring automatically.
 
 ## Accessibility
 
-Provide a label through Field or another visible label. Keep keyboard navigation intact, including arrow keys, Enter, Escape, and focus return. Make empty and loading states clear when suggestions come from a server.
+The visible label names the input. The popup is a real listbox: screen-reader users hear how many suggestions matched, which is highlighted, and can ignore the popup entirely without losing their typed text. Because the field's whole model is "typed text is the truth", nothing in the suggestion UI overwrites input silently — acceptance happens only through explicit selection.
+
+Suggestion copy matters more than usual here: people scan fragments mid-typing. Put the distinguishing part of each label first, and include enough context ("Springfield, Illinois") that similar entries are tellable apart.
 
 ## Installation
 
@@ -34,7 +62,6 @@ Provide a label through Field or another visible label. Keep keyboard navigation
   <TabsTab value="cli">CLI</TabsTab>
   <TabsTab value="manual">Manual</TabsTab>
 </TabsList>
-
 <TabsPanel value="cli">
 
 <CliBlock commands={["autocomplete"]} />
@@ -77,70 +104,82 @@ import {
 ```
 
 ```tsx
-const items = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "orange", label: "Orange" },
-  { value: "grape", label: "Grape" },
-]
-
-<Autocomplete items={items}>
-  <AutocompleteInput placeholder="Search..." />
+<Autocomplete items={cities}>
   <AutocompletePopup>
-    <AutocompleteEmpty>No results found.</AutocompleteEmpty>
+    <AutocompleteInput placeholder="Your city" />
     <AutocompleteList>
-      {(item) => <AutocompleteItem key={item.value} value={item}>{item.label}</AutocompleteItem>}
+      {(item) => (
+        <AutocompleteItem key={item.value} value={item}>
+          {item.label}
+        </AutocompleteItem>
+      )}
     </AutocompleteList>
+    <AutocompleteEmpty>No matches — you can still use your city.</AutocompleteEmpty>
   </AutocompletePopup>
 </Autocomplete>
 ```
 
-## API Reference
+## Don't do this
 
-The `AutocompleteInput` component extends the original Base UI component with a few extra props:
+### Gatekeeping free text
 
-| Prop          | Type                        | Default     | Description                                                                                      |
-| ------------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
-| `size`        | `"sm" \| "default" \| "lg"` | `"default"` | The size variant of the input field.                                                             |
-| `showTrigger` | `boolean`                   | `false`     | Whether to display a trigger button (chevron icon) on the right side of the input.               |
-| `showClear`   | `boolean`                   | `false`     | Whether to display a clear button (X icon) on the right side of the input when there is a value. |
+```tsx
+// Bad
+// rejecting submit unless the typed value equals some suggestion
+if (!options.includes(input)) setError("Choose one of the listed options");
+```
+
+```tsx
+// Good
+<Combobox items={options} /> // closed list, honestly enforced
+```
+
+An autocomplete that refuses non-suggested values is a combobox with worse UX — the person fought the field to enter something legitimate (a new store location) and lost. If the set is truly closed, use the control whose contract says so; if it is open, let typed values through and validate on meaning.
+
+### Blank popups during fetches
+
+```tsx
+// Bad
+{results.length > 0 && <AutocompleteList>…</AutocompleteList>}
+// the whole list vanishes mid-load
+```
+
+```tsx
+// Good
+<AutocompleteStatus>
+  {loading ? "Searching…" : `${results.length} matches`}
+</AutocompleteStatus>
+```
+
+When suggestions disappear without explanation, people stop typing to wait or assume their query found nothing and rephrase it. Status text at the top of the popup keeps the feedback loop honest during fetches.
 
 ## Examples
 
-The main example establishes the basic editable-suggestion pattern. The examples below focus on behaviors that change selection, filtering, data loading, or submission; size and disabled state are covered by the `AutocompleteInput` API.
-
-### Inline completion
-
-Inline mode fills the input with the highlighted suggestion while arrow keys move through the list.
-
-<ComponentPreview name="autocomplete-inline" />
-
-### Automatic highlight
-
-Use automatic highlighting only when accepting the first result is usually safe and reversible.
-
-<ComponentPreview name="autocomplete-autohighlight" />
-
-### Browse and clear controls
-
-The trigger lets people browse without typing; the clear action removes the current text.
-
-<ComponentPreview name="autocomplete-with-trigger-clear" />
-
-### Grouped suggestions
-
-<ComponentPreview name="autocomplete-grouped" />
-
-### Limited results
-
-<ComponentPreview name="autocomplete-limit" />
-
-### Asynchronous suggestions
-
-Search for `will_error` to inspect the deterministic failure state. Preserve the typed query while loading or after failure.
+### Async suggestions
 
 <ComponentPreview name="autocomplete-async" />
 
-### Form submission
+### Grouped results
+
+<ComponentPreview name="autocomplete-grouped" />
+
+### With clear button
+
+<ComponentPreview name="autocomplete-with-clear" />
+
+### In a form
 
 <ComponentPreview name="autocomplete-form" />
+
+## API reference
+
+`Autocomplete` accepts Base UI Autocomplete props:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `items` | `{ label: string; value: unknown }[]` | — |
+| `value` / `defaultValue` | item | — |
+
+Parts: `AutocompleteInput`, `AutocompleteTrigger`, `AutocompletePopup`, `AutocompleteList`, `AutocompleteItem`, `AutocompleteGroup(Label)`, `AutocompleteEmpty`, `AutocompleteStatus`, `AutocompleteClear`, `AutocompleteValue`.
+
+See the [Base UI Autocomplete API](https://base-ui.com/react/components/autocomplete#api-reference).

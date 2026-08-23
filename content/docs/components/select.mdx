@@ -10,21 +10,57 @@ links:
 
 ## Overview
 
-Use Select when users choose from a predefined list.
+Select lets people choose exactly one value from a closed list without spending page space showing every option. The trigger shows the current choice; the popup holds the full set.
 
-Select is best for known options such as status, role, country, visibility, sort order, and compact settings. Use Combobox when search is important.
+Choosing between the value controls is a real decision, so here is the whole map:
+
+- **2–5 options where seeing all of them helps** — use Radio Group. Radio buttons show every choice at once and make the current state visible without interaction.
+- **One value from a short-to-medium closed list** — Select. This component.
+- **A long or searchable list** — Combobox. It filters as people type.
+- **Values that do not exist on any list yet** — Tags Input or Autocomplete. A select only ever accepts what you gave it.
+- **Running commands** (open, delete, navigate) — Menu, not Select. A select chooses values; it does not perform actions.
+- **On/off states** — Switch. "Enabled / Disabled" as two select options forces an extra click to learn what is already knowable.
 
 ## Anatomy
 
-A select has a trigger, value display, popup, items, optional groups, and selection state. Multiple selection is available when the user can choose more than one item.
+A select has a trigger (the closed control showing the current value), a popup listing options, and optionally grouped options with labels. The trigger's label belongs above it as static text; see [Don't do this](#dont-do-this).
+
+The trigger sizes itself to its content, so long values widen it deliberately rather than truncating silently — give it a `className` width when it lives in a fixed layout.
 
 ## Behavior
 
-Keep option labels short and unique. Use groups when a long list has meaningful categories.
+**Keyboard.**
+
+| Key | Result |
+| --- | --- |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> / <kbd>ArrowDown</kbd> | Open the popup |
+| <kbd>ArrowUp</kbd> / <kbd>ArrowDown</kbd> | Move between options |
+| Character keys | Typeahead — jump to options starting with those letters |
+| <kbd>Enter</kbd> | Choose the highlighted option and close |
+| <kbd>Escape</kbd> | Close without changing the value |
+| <kbd>Tab</kbd> | Close the popup and leave the control |
+
+**Opening never commits.** Browsing options with the keyboard changes the highlight, not the value. The value changes only on explicit selection — someone can open the popup to look, press <kbd>Escape</kbd>, and their original setting is intact.
+
+**Grouping.** Use `SelectGroup` with `SelectGroupLabel` past about ten options. Group labels are announced by screen readers, giving structure that a flat list of twenty items lacks.
+
+**Multiple values.** Select handles a multiple mode for compact tag-style choices; for anything user-facing where each selection deserves visibility, prefer MultiSelect from the Product family.
+
+## States
+
+**Disabled** selects are skipped by keyboard focus and excluded from submission. **Read-only data that must submit** has no place in a select at all — render text instead; a control that cannot be changed should not look changeable.
+
+**Invalid.** Setting `aria-invalid="true"` switches the trigger border to the danger color and announces the state to assistive technology. Pair it with an error message tied via `aria-describedby` that says what to choose and why.
+
+**Empty.** An unchosen required select shows its placeholder ("Choose a region…"). That placeholder disappears the moment a value exists — which is correct for a trigger, and exactly why it cannot replace a label.
 
 ## Accessibility
 
-Give the select a label and keep keyboard navigation intact. Users should be able to open, move, select, and close without a mouse.
+The trigger carries its accessible name from your visible label (`Label` + `htmlFor`, or a Field wrapper). Options are announced with their selected/checked state and group labels. The popup implements the standard listbox keyboard model shown above; focus returns to the trigger when it closes.
+
+Typeahead matches from the start of option labels, so option copy matters for keyboard speed: "United States" is findable under U, "US-based customers" is not.
+
+Colors come from tokens and adapt to both themes automatically — trigger, popup, and highlighted-option states included. The popup positions with collision handling and mirrors correctly in RTL, including typeahead matching against the option text as written. Option rows are sized for touch through the same spacing scale as other controls; very long option labels wrap inside the popup rather than overflowing.
 
 ## Installation
 
@@ -47,7 +83,7 @@ Give the select a label and keep keyboard navigation intact. Users should be abl
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui/react
+npm install @base-ui-components/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -65,6 +101,7 @@ npm install @base-ui/react
 ## Usage
 
 ```tsx
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectItem,
@@ -75,63 +112,101 @@ import {
 ```
 
 ```tsx
-const items = [
-  { label: "Select framework", value: null },
-  { label: "Next.js", value: "next" },
-  { label: "Vite", value: "vite" },
-  { label: "Astro", value: "astro" },
-]
-
-<Select items={items}>
-  <SelectTrigger>
+<Select items={regions} defaultValue={null}>
+  <SelectTrigger className="w-full">
     <SelectValue />
   </SelectTrigger>
   <SelectPopup>
-    {items.map((item) => (
-      <SelectItem key={item.value} value={item.value}>
-        {item.label}
+    {regions.map((region) => (
+      <SelectItem key={region.value} value={region.value}>
+        {region.label}
       </SelectItem>
     ))}
   </SelectPopup>
 </Select>
 ```
 
+## Don't do this
+
+### A binary choice behind a popup
+
+```tsx
+// Bad
+<Select items={[{ label: "Enabled", value: "on" }, { label: "Disabled", value: "off" }]} />
+```
+
+```tsx
+// Good
+<Switch defaultChecked /> Notifications
+```
+
+Two options do not need opening anything. A switch shows its state from across the room; a collapsed select hides the answer until clicked, costs two interactions to change, and reads like there might be more options hiding in there.
+
+### The placeholder doing the label's job
+
+```tsx
+// Bad
+<Select items={sizes} defaultValue={null} />
+// trigger shows "Choose size…" — until it doesn't
+```
+
+```tsx
+// Good
+<Label htmlFor={id}>Size</Label>
+<Select id-linked items={sizes} defaultValue={null} />
+```
+
+Once someone chooses, the trigger shows the value and "Choose size…" is gone forever. Anyone returning to the form — or filling in the third similar field in a row — can no longer tell what the control asks for. Screen readers also may not announce a placeholder as the field's name. Keep a permanent label.
+
+### Actions dressed up as values
+
+```tsx
+// Bad
+<Select items={[
+  { label: "Duplicate project", value: "duplicate" },
+  { label: "Delete project…", value: "delete" },
+]} onChange={(value) => runAction(value)} />
+```
+
+```tsx
+// Good
+<Menu>
+  <MenuTrigger render={<Button variant="outline" />}>Project actions</MenuTrigger>
+  <MenuPopup>{/* Duplicate, Delete… */}</MenuPopup>
+</Menu>
+```
+
+A select answers "which value does this field hold?" — after choosing Delete, the field would claim to *hold* deletion, which is nonsense. Menus run commands and close; selects commit state. People also expect a select's popup to reopen showing their "choice", and an action breaks that model mid-flow.
+
 ## Examples
 
-Examples cover sizes, disabled state, alignment, groups, multiple selection, and form integration.
+### Groups, alignment, and sizes
 
-For accessible labeling and validation, use `Field` to connect the Select with its label, description, and error. See the [Field examples](/docs/components/field#examples).
-
-### Small Size
-
-<ComponentPreview name="select-sm" />
-
-### Large Size
-
-<ComponentPreview name="select-lg" />
+<ComponentPreview name="select-with-groups" />
 
 ### Disabled
 
 <ComponentPreview name="select-disabled" />
 
-### Without Item Alignment
+### In a form
 
-<ComponentPreview name="select-without-alignment" />
-
-### With Groups
-
-<ComponentPreview name="select-with-groups" />
-
-### Multiple Selection
-
-<ComponentPreview name="select-multiple" />
-
-### Form Integration
+Validation wiring comes from Field — the select reports invalid state automatically.
 
 <ComponentPreview name="select-form" />
 
+### Multiple values
+
+<ComponentPreview name="select-multiple" />
+
 ## API reference
 
-Select exports root, trigger, value, content, popup, item, group, group label, and separator parts. Each forwards its matching Base UI Select props; Honest UI adds size and alignment options documented in the examples. Put the item collection and controlled or default value on the root.
+`Select` accepts Base UI Select props plus Honest UI additions:
 
-Use `multiple` only when users can review and remove every selected value. See the [Base UI Select API](https://base-ui.com/react/components/select#api-reference).
+| Prop | Values | Default |
+| --- | --- | --- |
+| `items` | `{ label: string; value: unknown }[]` | — |
+| `multiple` | boolean | `false` |
+
+Parts: `SelectTrigger`, `SelectValue`, `SelectPopup`, `SelectItem`, `SelectGroup`, `SelectGroupLabel`. Native attributes such as `disabled`, `required`, and `name` pass through; validation state follows `aria-invalid`.
+
+See the [Base UI Select API](https://base-ui.com/react/components/select#api-reference).

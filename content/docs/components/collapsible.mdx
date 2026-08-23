@@ -10,21 +10,40 @@ links:
 
 ## Overview
 
-Use a collapsible when one piece of content can be shown or hidden by a single control.
+Collapsible hides content that is real but secondary: advanced settings, a long explanation, details most visits do not need. One trigger, one panel, one decision.
 
-Collapsible is simpler than accordion. It is a good fit for optional details, advanced settings, helper text, or a single expandable section.
+Choose deliberately between hiding and shortening:
+
+- **Content most people never need** — Collapsible. This component.
+- **Several related sections where opening one closes others** — Accordion. It coordinates what Collapsible leaves independent.
+- **Content people must not miss** — nothing hidden. Collapsing required information does not make it optional; it makes it invisible.
 
 ## Anatomy
 
-A collapsible has a root, trigger, and content. The trigger controls whether the content is visible. The content should be directly related to the trigger.
+A collapsible has a trigger (a real button) and a panel whose visibility it controls. The panel mounts expanded or collapsed per the root's state, with height animation handled by the primitive.
 
 ## Behavior
 
-Use collapsible when there is only one expandable region. If you have several related expandable regions, use Accordion instead.
+**Keyboard.**
+
+| Key | Result |
+| --- | --- |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Toggle the panel |
+| <kbd>Tab</kbd> | Move to the next control — inside the panel when open, past both when closed |
+
+The trigger is a native button, so it arrives in the natural tab order and announces its expanded state. Screen readers hear "collapsed"/"expanded" without extra ARIA on your part.
+
+**Independence.** Each Collapsible stands alone. Toggling one never touches another — that coordination is exactly what you are choosing when you pick Accordion instead.
+
+**State.** Controlled (`open` / `onOpenChange`) or uncontrolled. Controlled state is how you implement "expand all" or reopen a section after validation fails — see [Don't do this](#dont-do-this).
 
 ## Accessibility
 
-The trigger should be a real button with clear text. Keep focus visible and make sure the expanded state is communicated by the primitive.
+The trigger exposes `aria-expanded` and controls the panel through the primitive's wiring; the panel's content is simply present or absent to assistive technology, matching what sighted users get. Trigger copy should preview what is inside ("Shipping options") rather than narrate the mechanism ("Click to expand").
+
+Hidden panels keep out of the tab order while closed — focus skips genuinely unavailable controls instead of landing on ghosts.
+
+Tokens handle dark mode and RTL mirroring automatically; the chevron rotates rather than swapping icons so reduced-motion users still get a state cue from geometry.
 
 ## Installation
 
@@ -74,29 +93,58 @@ import {
 
 ```tsx
 <Collapsible>
-  <CollapsibleTrigger>Show command options</CollapsibleTrigger>
-  <CollapsiblePanel>
-    Add `--dry-run` to preview changes without writing files.
-  </CollapsiblePanel>
+  <CollapsibleTrigger>Shipping options</CollapsibleTrigger>
+  <CollapsiblePanel>{/* rates, delivery estimates */}</CollapsiblePanel>
 </Collapsible>
 ```
 
+## Don't do this
+
+### Hiding errors and required fields
+
+```tsx
+// Bad
+<Collapsible defaultClosed>
+  <CollapsibleTrigger>Billing address</CollapsibleTrigger>
+  <CollapsiblePanel>{/* required fields */}</CollapsiblePanel>
+</Collapsible>
+```
+
+Required input behind a closed panel fails invisibly: submit produces an error pointing at a field the person can see nowhere. If validation can fail inside a panel, open that panel programmatically when the error lands — controlled state exists precisely for this — or accept that this content does not belong in a collapsible at all.
+
+### Burying the summary in the panel
+
+```tsx
+// Bad
+<CollapsibleTrigger>Details</CollapsibleTrigger>
+```
+
+```tsx
+// Good
+<CollapsibleTrigger>Refund policy · 30 days, no questions</CollapsibleTrigger>
+```
+
+"Details", "More", and "Advanced" make every collapsed section identical and cost a click just to tell apart. Put the one fact that helps someone decide whether to open — the policy's headline, the count of advanced options — into the trigger itself.
+
 ## Examples
 
-### Command help
-
-Reveal optional command details without interrupting the main instructions.
-
-<ComponentPreview name="collapsible-command-help" />
-
-### Release notes
-
-Let readers expand a longer set of secondary details.
+### Advanced settings pattern
 
 <ComponentPreview name="collapsible-release-notes" />
 
+### Command help pattern
+
+<ComponentPreview name="collapsible-command-help" />
+
 ## API reference
 
-`Collapsible`, `CollapsibleTrigger`, and `CollapsiblePanel` forward their matching Base UI Collapsible props. `CollapsibleContent` is an alias of the panel. Use `open` and `onOpenChange` for controlled state or `defaultOpen` for uncontrolled state.
+`Collapsible` accepts Base UI Collapsible props:
 
-The trigger owns disclosure behavior and keyboard handling; do not add a second click handler to the panel. See the [Base UI Collapsible API](https://base-ui.com/react/components/collapsible#api-reference).
+| Prop | Values | Default |
+| --- | --- | --- |
+| `open` / `onOpenChange` | boolean, callback | uncontrolled |
+| `defaultOpen` | boolean | `false` |
+
+Parts: `CollapsibleTrigger`, `CollapsiblePanel`.
+
+See the [Base UI Collapsible API](https://base-ui.com/react/components/collapsible#api-reference).
