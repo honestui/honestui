@@ -153,8 +153,8 @@ export async function generateLlmsFullTxt() {
   const pages = getAgentDocPages();
   const sections = await Promise.all(
     pages.map(async (page) => {
-      const raw = await page.data.getText("raw");
-      const content = processMdxForLLMs(raw).trim();
+      const processed = await page.data.getText("processed");
+      const content = processMdxForLLMs(processed).trim();
       const summary = getPageSummary(page);
       const description = summary.description ? `\n\n> ${summary.description}` : "";
 

@@ -5,6 +5,9 @@ import { z } from "zod";
 export const docs = defineDocs({
   dir: "content/docs",
   docs: {
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
     schema: pageSchema.extend({
       image: z.string().optional(),
       links: z.record(z.string(), z.string()).optional(),

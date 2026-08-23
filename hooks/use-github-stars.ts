@@ -6,7 +6,7 @@ export const getGithubStars = async (): Promise<number | null> => {
         "X-GitHub-Api-Version": "2022-11-28",
       },
       next: {
-        revalidate: 3600,
+        revalidate: 86400,
       },
     });
 

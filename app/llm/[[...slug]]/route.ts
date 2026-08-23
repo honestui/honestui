@@ -37,13 +37,13 @@ No Honest UI documentation page exists at this URL.
     });
   }
 
-  const raw = await page.data.getText("raw");
+  const processed = await page.data.getText("processed");
   const description = page.data.description ? `\n\n> ${page.data.description}` : "";
   const markdown = `# ${page.data.title}${description}
 
 Source: ${absoluteUrl(page.url)}
 
-${processMdxForLLMs(raw).trim()}
+${processMdxForLLMs(processed).trim()}
 `;
 
   return new Response(markdown, {

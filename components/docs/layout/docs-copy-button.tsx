@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { CaretDown } from "@carbon/icons-react";
 import { useClipboard } from "@mantine/hooks";
 import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
 
 export function DocsCopyButton({
   value,
@@ -167,8 +168,57 @@ const menuItems = {
   ),
 };
 
-export function DocsCopyPage({ mdx, url, path }: { mdx: string; url: string; path: string }) {
-  const { copy, copied } = useClipboard();
+type CopyPageState = "idle" | "loading" | "copied" | "error";
+
+const copyPageLabels: Record<CopyPageState, string> = {
+  idle: "Copy Page",
+  loading: "Loading…",
+  copied: "Copied",
+  error: "Copy failed — retry",
+};
+
+export function DocsCopyPage({ url, path }: { url: string; path: string }) {
+  const [copyState, setCopyState] = useState<CopyPageState>("idle");
+  const resetTimerRef = useRef<number | null>(null);
+  const requestRef = useRef<AbortController | null>(null);
+
+  useEffect(
+    () => () => {
+      requestRef.current?.abort();
+      window.clearTimeout(resetTimerRef.current ?? undefined);
+    },
+    [],
+  );
+
+  async function copyPage() {
+    requestRef.current?.abort();
+    window.clearTimeout(resetTimerRef.current ?? undefined);
+
+    const request = new AbortController();
+    requestRef.current = request;
+    setCopyState("loading");
+
+    try {
+      const response = await fetch(`${path}.md`, {
+        headers: { accept: "text/markdown" },
+        signal: request.signal,
+      });
+      const contentType = response.headers.get("content-type") ?? "";
+
+      if (!response.ok || !/^text\/(?:markdown|plain)\b/i.test(contentType)) {
+        throw new Error(`Markdown request failed with status ${response.status}`);
+      }
+
+      await navigator.clipboard.writeText(await response.text());
+      setCopyState("copied");
+      resetTimerRef.current = window.setTimeout(() => setCopyState("idle"), 2000);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setCopyState("error");
+    } finally {
+      if (requestRef.current === request) requestRef.current = null;
+    }
+  }
 
   const trigger = (
     <Button
@@ -186,16 +236,23 @@ export function DocsCopyPage({ mdx, url, path }: { mdx: string; url: string; pat
       <div className="group/buttons relative flex overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] select-none *:data-[slot=button]:focus-visible:relative *:data-[slot=button]:focus-visible:z-10">
         <PopoverAnchor />
         <Button
-          aria-label="Copy page"
+          aria-busy={copyState === "loading"}
+          disabled={copyState === "loading"}
           variant="secondary"
           size="sm"
           className="text-muted-foreground hover:text-foreground h-8 rounded-none border-0 bg-transparent px-2! text-xs duration-0 hover:bg-[var(--hui-color-background-base-primary-hover)]"
-          onClick={() => copy(mdx)}
+          onClick={copyPage}
         >
-          {copied ? <CheckIcon /> : <CopyIcon />}
-          <span className={cn(copied && "opacity-0")}>Copy Page</span>
-          <span className={cn("absolute opacity-0", copied && "opacity-100")}>Copied</span>
+          {copyState === "copied" ? <CheckIcon /> : <CopyIcon />}
+          <span>{copyPageLabels[copyState]}</span>
         </Button>
+        <span className="sr-only" role="status">
+          {copyState === "copied"
+            ? "Page copied to the clipboard."
+            : copyState === "error"
+              ? "The page could not be copied. Try again."
+              : ""}
+        </span>
         <DropdownMenu>
           <DropdownMenuTrigger render={trigger} />
           <DropdownMenuContent align="end" className="bg-background rounded-lg">

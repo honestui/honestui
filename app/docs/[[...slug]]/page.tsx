@@ -4,7 +4,6 @@ import { DocsThemeCustomizer } from "@/components/docs/layout/docs-theme-customi
 import { DocsCopyPage } from "@/components/docs/layout/docs-copy-button";
 import { findNeighbour } from "fumadocs-core/page-tree";
 import { mdxComponents } from "@/components/docs/mdx";
-import { processMdxForLLMs } from "@/lib/llm";
 import { notFound } from "next/navigation";
 import { absoluteUrl, SITE_URL } from "@/lib/utils";
 import { Link as LinkIcon } from "honestui/icons";
@@ -138,11 +137,6 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const links = doc.links;
   const neighbours = findNeighbour(source.pageTree, page.url);
 
-  const raw = await page.data.getText("raw");
-
-  // Getting MDX with components replaced code for LLMs friendly :3
-  const mdx = processMdxForLLMs(raw);
-
   return (
     <div className="relative mt-10 flex sm:mt-0">
       <Script
@@ -179,13 +173,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
             )}
           </div>
           <div className="flex items-center gap-2">
-            {raw && (
-              <DocsCopyPage
-                mdx={mdx}
-                url={absoluteUrl(page.url)}
-                path={page.url}
-              />
-            )}
+            <DocsCopyPage url={absoluteUrl(page.url)} path={page.url} />
             {page.slugs[0] === "components" && <DocsThemeCustomizer />}
           </div>
         </div>

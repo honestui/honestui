@@ -186,6 +186,72 @@ test("docs header external links are single interactive elements", async ({
   ).toHaveCount(1);
 });
 
+test("copy page loads Markdown on demand and recovers from failure", async ({
+  page,
+}) => {
+  let markdownRequests = 0;
+
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (value: string) => {
+          (
+            window as typeof window & { __honestUiCopiedMarkdown?: string }
+          ).__honestUiCopiedMarkdown = value;
+        },
+      },
+    });
+  });
+  await page.route("**/docs/components/badge.md", async (route) => {
+    markdownRequests += 1;
+
+    if (markdownRequests === 1) {
+      await route.fulfill({
+        body: "Markdown is temporarily unavailable.",
+        contentType: "text/plain",
+        status: 503,
+      });
+      return;
+    }
+
+    await route.fulfill({
+      body: "# Badge\n\nCopyable documentation.",
+      contentType: "text/markdown",
+      status: 200,
+    });
+  });
+
+  await page.goto("/docs/components/badge");
+  expect(markdownRequests).toBe(0);
+
+  await page.getByRole("button", { name: "Copy Page" }).click();
+  await expect(
+    page.getByRole("button", { name: "Copy failed — retry" }),
+  ).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText(
+    "The page could not be copied. Try again.",
+  );
+  expect(markdownRequests).toBe(1);
+
+  await page.getByRole("button", { name: "Copy failed — retry" }).click();
+  await expect(page.getByRole("button", { name: "Copied" })).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText(
+    "Page copied to the clipboard.",
+  );
+  expect(markdownRequests).toBe(2);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as typeof window & { __honestUiCopiedMarkdown?: string }
+          ).__honestUiCopiedMarkdown,
+      ),
+    )
+    .toBe("# Badge\n\nCopyable documentation.");
+});
+
 test("public pages have no detectable WCAG A or AA violations", async ({
   page,
 }) => {
