@@ -157,6 +157,26 @@ Without text entry there is no way to enter `#0F52BA` exactly, match a value fro
 
 A color chip labeled only with its own hex value announces gibberish ("four two four two four two") and conveys nothing to color-blind readers. Whatever the color signifies — category, status, team — say it in text next to the swatch.
 
+### Letting picked colors pick unreadable text
+
+```tsx
+// Bad
+<div style={{ background: picked }}>
+  <span>Save</span> // white text on a lemon-yellow pick
+</div>
+```
+
+```tsx
+// Good
+const foreground = isDark(picked) ? "#FFFFFF" : "#1A1A1A";
+
+<div style={{ background: picked, color: foreground }}>
+  <span>Save</span>
+</div>
+```
+
+Once a person can choose any background, text placed on it inherits every possible contrast failure. Compute the foreground from the chosen value's lightness instead of hard-coding it — OKLCH lightness makes that check a threshold, not a judgment call.
+
 ## Examples
 
 ### Controlled with mode switching
