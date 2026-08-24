@@ -88,9 +88,6 @@ export const metadata: Metadata = {
   creator: "Connor Love",
   publisher: "Honest UI",
   category: "technology",
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     locale: "en_US",

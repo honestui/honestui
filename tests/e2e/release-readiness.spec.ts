@@ -186,6 +186,20 @@ test("docs header external links are single interactive elements", async ({
   ).toHaveCount(1);
 });
 
+test("alert dialog has a recognizable docs navigation icon", async ({
+  page,
+}) => {
+  await page.goto("/docs/components/alert-dialog");
+
+  const alertDialogLink = page.getByRole("link", {
+    exact: true,
+    name: "Alert Dialog",
+  });
+
+  await expect(alertDialogLink).toBeVisible();
+  await expect(alertDialogLink.locator("svg")).toHaveCount(1);
+});
+
 test("copy page loads Markdown on demand and recovers from failure", async ({
   page,
 }) => {

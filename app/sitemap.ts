@@ -1,3 +1,6 @@
+import { execFileSync } from "node:child_process";
+import { existsSync, statSync } from "node:fs";
+import path from "node:path";
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/utils";
 import { source } from "@/lib/source";
@@ -16,44 +19,54 @@ function comparisonLastModified(updatedAt: string) {
   return new Date(`${updatedAt}T00:00:00Z`);
 }
 
+function contentLastmod(file: string | undefined): Date | undefined {
+  if (!file) return undefined;
+  const filePath = path.join(process.cwd(), "content", "docs", file);
+  if (!existsSync(filePath)) return undefined;
+  try {
+    const committedAt = execFileSync(
+      "git",
+      ["log", "-1", "--format=%aI", "--", path.join("content", "docs", file)],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+    ).trim();
+    if (committedAt) return new Date(committedAt);
+  } catch {
+    // Git history unavailable; fall through to the file mtime.
+  }
+  return statSync(filePath).mtime;
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
   const publishedComparisons = getPublishedComparisons();
 
   const staticEntries: MetadataRoute.Sitemap = [
     {
       url: absoluteUrl(""),
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 1,
     },
     {
       url: absoluteUrl("/docs"),
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: absoluteUrl("/developers"),
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: absoluteUrl("/about"),
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.4,
     },
     {
       url: absoluteUrl("/contact"),
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.4,
     },
     {
       url: absoluteUrl("/privacy"),
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.3,
     },
@@ -65,7 +78,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     return {
       url: absoluteUrl(page.url),
-      lastModified: now,
+      lastModified: contentLastmod(page.path),
       changeFrequency: "weekly",
       priority,
     };
@@ -73,14 +86,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const exampleEntries: MetadataRoute.Sitemap = HONEST_UI_EXAMPLES.map((example) => ({
     url: absoluteUrl(example.previewHref),
-    lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));
 
   const iconCategoryEntries: MetadataRoute.Sitemap = ICON_CATEGORIES.map((category) => ({
     url: absoluteUrl(`/docs/icons/categories/${category.slug}`),
-    lastModified: now,
     changeFrequency: "weekly",
     priority: 0.7,
   }));
@@ -92,13 +103,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       return [
         {
           url: absoluteUrl(`/docs/icons/${collection}`),
-          lastModified: now,
           changeFrequency: "weekly" as const,
           priority: 0.8,
         },
         ...categories.map((category) => ({
           url: absoluteUrl(`/docs/icons/${collection}/categories/${category.slug}`),
-          lastModified: now,
           changeFrequency: "weekly" as const,
           priority: 0.7,
         })),

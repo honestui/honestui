@@ -9,6 +9,7 @@ import {
 import {
   ActivitySparkIcon,
   Alert02Icon,
+  AlertSquareIcon,
   ArrangeByNumbersOneNineIcon,
   ArrowDataTransferHorizontalIcon,
   BadgeIcon,
@@ -70,6 +71,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 const COMPONENT_ICONS = {
   accordion: Menu01Icon,
   alert: Alert02Icon,
+  "alert-dialog": AlertSquareIcon,
   autocomplete: MagicWand01Icon,
   avatar: UserCircleIcon,
   badge: BadgeIcon,

@@ -1,7 +1,10 @@
 import { processMdxForLLMs } from "@/lib/llm";
 import { absoluteUrl } from "@/lib/utils";
 import { source } from "@/lib/source";
-import { NEGOTIATED_VARY_HEADER } from "@/lib/content-negotiation";
+import {
+  NEGOTIATED_VARY_HEADER,
+  NON_HTML_ROBOTS_HEADER,
+} from "@/lib/content-negotiation";
 
 export const dynamic = "force-static";
 export const revalidate = false;
@@ -33,6 +36,7 @@ No Honest UI documentation page exists at this URL.
         "content-type": "text/markdown; charset=utf-8",
         "vary": NEGOTIATED_VARY_HEADER,
         "x-content-type-options": "nosniff",
+        ...NON_HTML_ROBOTS_HEADER,
       },
     });
   }
@@ -51,6 +55,7 @@ ${processMdxForLLMs(processed).trim()}
       "content-type": "text/markdown; charset=utf-8",
       "vary": NEGOTIATED_VARY_HEADER,
       "x-content-type-options": "nosniff",
+      ...NON_HTML_ROBOTS_HEADER,
     },
   });
 }

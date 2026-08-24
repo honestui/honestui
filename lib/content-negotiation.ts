@@ -1,5 +1,9 @@
 export const NEGOTIATED_VARY_HEADER = "Accept, Accept-Encoding";
 
+// Markdown and plain-text representations duplicate the HTML pages and are
+// meant for agents, not search results.
+export const NON_HTML_ROBOTS_HEADER = { "x-robots-tag": "noindex" } as const;
+
 type Representation = "html" | "markdown" | "not-acceptable";
 
 type MediaRange = {
