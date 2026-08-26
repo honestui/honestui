@@ -1,0 +1,46 @@
+---
+title: Product components
+description: Install Honest UI components with the controls and states needed for one application task.
+---
+
+Product components package related controls and state handling in one copied component. Data Table, for example, adds search, filters, row selection, loading states, and pagination to a native HTML table.
+
+The CLI copies each product component into your project, so you can change its source directly.
+
+## Page structure
+
+Product component pages include:
+
+- What the component does and when a smaller UI component is enough.
+- How its parts and states work.
+- Which accessibility behavior the component supplies and what your application must supply.
+- How to install it with the CLI or by copying its source files.
+- A small usage example followed by examples for important states.
+
+## Available components
+
+| Component | Use it for |
+| --- | --- |
+| [Data Table](/docs/product/data-table) | Searching, filtering, sorting, selecting, and paginating application data |
+
+## Choosing a table
+
+Use [Table](/docs/components/table) to present rows and columns without search, filters, selection, or pagination. Use [Data Table](/docs/product/data-table) when people need those controls to find records and act on them.
+
+A read-only pricing comparison may only need Table. An invoice queue that spans hundreds of records needs Data Table's search, status filters, row actions, and pagination.
+
+## Copying examples
+
+Examples include the behavior needed for the task. When you copy one:
+
+1. Replace the sample columns and rows with your application's data.
+2. Rewrite accessible names, row labels, and state messages for the records in your table.
+3. Keep every loading, empty, no-results, or error state that users can reach.
+4. Decide whether the browser or server handles sorting, filtering, and pagination.
+5. Test the result with a keyboard and the assistive technologies your product supports.
+
+## Customizing product components
+
+Product components use the same theme tokens as other Honest UI components. You can rearrange their exported parts, change the styles, add cells and actions for your application, or wrap the component in your own API.
+
+Keep the states and labels attached to each control. Search needs a no-results state. Selection checkboxes need names that identify their rows. Server pagination needs the total row count to report the right page range.

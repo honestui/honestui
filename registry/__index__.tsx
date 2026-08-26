@@ -125,6 +125,14 @@ import context_menu_demo from "./default/examples/context-menu-demo";
 import context_menu_search from "./default/examples/context-menu-search";
 import color_picker_controlled from "./default/examples/color-picker-controlled";
 import color_picker_demo from "./default/examples/color-picker-demo";
+import data_table_custom_cells from "./default/examples/data-table-custom-cells";
+import data_table_demo from "./default/examples/data-table-demo";
+import data_table_empty from "./default/examples/data-table-empty";
+import data_table_error from "./default/examples/data-table-error";
+import data_table_loading from "./default/examples/data-table-loading";
+import data_table_search_filters from "./default/examples/data-table-search-filters";
+import data_table_selection from "./default/examples/data-table-selection";
+import data_table_server from "./default/examples/data-table-server";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -575,6 +583,14 @@ export const Index: Record<string, { component: ComponentType }> = {
   "context-menu-search": { component: context_menu_search },
   "color-picker-controlled": { component: color_picker_controlled },
   "color-picker-demo": { component: color_picker_demo },
+  "data-table-custom-cells": { component: data_table_custom_cells },
+  "data-table-demo": { component: data_table_demo },
+  "data-table-empty": { component: data_table_empty },
+  "data-table-error": { component: data_table_error },
+  "data-table-loading": { component: data_table_loading },
+  "data-table-search-filters": { component: data_table_search_filters },
+  "data-table-selection": { component: data_table_selection },
+  "data-table-server": { component: data_table_server },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },

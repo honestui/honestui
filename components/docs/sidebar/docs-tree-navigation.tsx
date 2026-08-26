@@ -42,6 +42,7 @@ const OVERVIEW_ICONS: Record<string, ReactNode> = {
 const NEW_PAGE_URLS = new Set([
   "/docs/components/command",
   "/docs/components/context-menu",
+  "/docs/product/data-table",
   "/docs/shaders/chromatic-image",
   "/docs/shaders/dither",
 ]);
@@ -106,6 +107,7 @@ export function DocsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
           page.url === "/docs/charts" ||
           page.url === "/docs/icons" ||
           page.url === "/docs/animated" ||
+          page.url === "/docs/product" ||
           page.url === "/docs/shaders" ||
           page.url === "/docs/examples"
         )
@@ -161,6 +163,16 @@ export function AnimatedTreeNavigation({ tree }: { tree: PageTreeRoot }) {
           page.url.startsWith("/docs/animated/") &&
           page.url !== "/docs/animated/installation",
       ),
+    [pages],
+  );
+
+  return <PageGroup label="Components" pages={componentPages} />;
+}
+
+export function ProductTreeNavigation({ tree }: { tree: PageTreeRoot }) {
+  const pages = useMemo(() => flattenTree(tree.children), [tree.children]);
+  const componentPages = useMemo(
+    () => pages.filter((page) => page.url.startsWith("/docs/product/")),
     [pages],
   );
 

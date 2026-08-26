@@ -8,16 +8,23 @@ export async function ComponentSource({
   name,
   title,
   language,
+  file,
   collapsible = true,
   className,
 }: ComponentProps<"div"> & {
   name: string;
   title?: string;
   language?: string;
+  file?: string;
   collapsible?: boolean;
 }) {
   const item = await getRegistryItem(name);
-  const code = item?.files?.[0]?.content;
+  const selectedFile = file
+    ? item?.files?.find((candidate) =>
+        candidate.path.replace(/\\/g, "/").endsWith(file),
+      )
+    : item?.files?.[0];
+  const code = selectedFile?.content;
 
   if (!code) {
     return null;

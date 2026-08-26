@@ -79,6 +79,8 @@ function buildDocsJsonLd(page: DocsPage) {
       name: "Components",
       url: absoluteUrl("/docs/component-guide"),
     });
+  } else if (section === "product" && page.url !== "/docs/product") {
+    crumbs.push({ name: "Product", url: absoluteUrl("/docs/product") });
   } else if (section === "icons" && page.url !== "/docs/icons") {
     crumbs.push({ name: "Icons", url: absoluteUrl("/docs/icons") });
   } else if (section === "animated" && page.url !== "/docs/animated") {

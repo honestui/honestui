@@ -23,12 +23,13 @@ import {
   ShaderIcon,
 } from "@/assets/icons";
 import { usePathname, useRouter } from "next/navigation";
-import { CaretDown } from "@carbon/icons-react";
+import { CaretDown, Product as ProductIcon } from "@carbon/icons-react";
 import { PanelsTopLeft } from "honestui/icons";
 import { cn } from "@/lib/utils";
 
 export type ProductArea =
   | "components"
+  | "product"
   | "charts"
   | "icons"
   | "animated"
@@ -53,6 +54,15 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     icon: ComponentBlocksIcon,
     tint:
       "text-[#E43861] group-focus/dropdown-menu-item:text-[#E43861]!",
+  },
+  {
+    id: "product",
+    name: "Product Components",
+    tagline: "Composed application patterns",
+    href: "/docs/product",
+    icon: ProductIcon,
+    tint:
+      "text-[var(--hui-color-foreground-accent-primary)] group-focus/dropdown-menu-item:text-[var(--hui-color-foreground-accent-primary)]!",
   },
   {
     id: "charts",
@@ -102,6 +112,10 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
 ];
 
 export function areaFromPathname(pathname: string): ProductArea {
+  if (pathname === "/docs/product" || pathname.startsWith("/docs/product/")) {
+    return "product";
+  }
+
   if (
     pathname === "/docs/charts" ||
     pathname.startsWith("/docs/chart-") ||

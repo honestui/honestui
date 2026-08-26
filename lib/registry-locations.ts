@@ -17,6 +17,12 @@ export function getRegistryLocations() {
       includeInCatalog: true,
     },
     {
+      path: path.join(process.cwd(), "registry/default/product"),
+      type: "registry:component" as const,
+      includeInCatalog: true,
+      directoriesAsItems: true,
+    },
+    {
       path: path.join(process.cwd(), "registry/default/examples"),
       type: "registry:example" as const,
     },
@@ -75,7 +81,9 @@ export async function getRegistryCatalog(): Promise<Registry> {
   };
 }
 
-async function collectRegistryItems(locations: ReturnType<typeof getRegistryLocations>) {
+async function collectRegistryItems(
+  locations: ReturnType<typeof getRegistryLocations>,
+) {
   const itemsByName = new Map<
     string,
     {
@@ -84,18 +92,36 @@ async function collectRegistryItems(locations: ReturnType<typeof getRegistryLoca
     }
   >();
 
+  const addItem = (
+    name: string,
+    type: ReturnType<typeof getRegistryLocations>[number]["type"],
+  ) => {
+    if (!itemsByName.has(name)) {
+      itemsByName.set(name, { name, type });
+    }
+  };
+
   for (const location of locations) {
     const entries = await fs.readdir(location.path, { withFileTypes: true });
 
     for (const entry of entries) {
+      if (entry.isDirectory() && location.directoriesAsItems) {
+        const hasEntryFile = await fs
+          .access(path.join(location.path, entry.name, `${entry.name}.tsx`))
+          .then(() => true)
+          .catch(() => false);
+
+        if (hasEntryFile) {
+          addItem(entry.name, location.type);
+        }
+        continue;
+      }
+
       if (!entry.isFile() || !/\.(?:css|ts|tsx)$/.test(entry.name)) {
         continue;
       }
 
-      const name = entry.name.replace(/\.(?:css|ts|tsx)$/, "");
-      if (!itemsByName.has(name)) {
-        itemsByName.set(name, { name, type: location.type });
-      }
+      addItem(entry.name.replace(/\.(?:css|ts|tsx)$/, ""), location.type);
     }
   }
 

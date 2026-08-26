@@ -1,0 +1,245 @@
+---
+title: Data Table
+description: Search, filter, sort, select, and act on rows of application data.
+---
+
+<ComponentPreview name="data-table-demo" previewClassName="h-auto" />
+
+## Overview
+
+Use Data Table for records that people need to find and act on. Invoice queues and customer directories often need search, status filters, row selection, and pagination. Data Table adds those controls to [Table](/docs/components/table).
+
+Use Table when you only need to present rows and columns. Add Data Table when users need to narrow the records, change which columns they see, or select rows for an action.
+
+## Anatomy
+
+```text
+DataTable
+├── Toolbar: search, filters, columns, actions
+├── Content: header row, data rows, states
+└── Footer: selection summary, pagination
+```
+
+`DataTable` renders all three regions. Data Table also exports each part separately: `DataTableToolbar`, `DataTableSearch`, `DataTableFilter`, `DataTableViewOptions`, `DataTableContent`, `DataTableFooter`, `DataTableSelectionSummary`, and `DataTablePagination`. Use the separate parts to change their order or add controls.
+
+The rows render in a native HTML table with `<thead>`, `<th scope="col">`, and `<tbody>` elements. Column headers stay visible during vertical scrolling. Wide tables scroll horizontally instead of turning each row into a card.
+
+## Behavior
+
+Data Table handles sorting, filters, column visibility, selection, and pagination in the browser by default. To handle one of these on your server, pass its controlled state and callback. Set `manualSorting`, `manualFiltering`, or `manualPagination` for the matching task.
+
+Keep each task in one place. If the server paginates 10,000 records, it must also sort them. Sorting the ten rows in the browser only sorts the current page and gives the wrong result.
+
+Search updates on every change unless you set `debounceMs`. A filter can include several values from the same column. The Columns menu lists columns that TanStack Table allows users to hide. When users select rows, the footer reports the count and provides a Clear action.
+
+## Accessibility
+
+Use `caption` to name the table. Screen readers announce this name before the cells. Sortable headers render as buttons with names such as "Sort by Customer." The `<th>` element reports the current direction through `aria-sort`.
+
+Use `getRowLabel` to name each selection checkbox. Return a phrase such as "Select Olivia Rhye" instead of a row number. The pagination range uses `aria-live`. Page controls report their state through `aria-current` and `aria-disabled`.
+
+Do not use color as the only status cue. A green status badge should also say "Paid."
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["data-table"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the required dependency:</Step>
+
+```bash
+npm install @tanstack/react-table
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="data-table" title="components/ui/data-table/data-table.tsx" file="data-table.tsx" />
+
+<ComponentSource name="data-table" title="components/ui/data-table/data-table-column-header.tsx" file="data-table-column-header.tsx" />
+
+<ComponentSource name="data-table" title="components/ui/data-table/data-table-context.tsx" file="data-table-context.tsx" />
+
+<ComponentSource name="data-table" title="components/ui/data-table/data-table-filter.tsx" file="data-table-filter.tsx" />
+
+<ComponentSource name="data-table" title="components/ui/data-table/data-table-pagination.tsx" file="data-table-pagination.tsx" />
+
+<ComponentSource name="data-table" title="components/ui/data-table/data-table-toolbar.tsx" file="data-table-toolbar.tsx" />
+
+<ComponentSource name="data-table" title="components/ui/data-table/data-table-view-options.tsx" file="data-table-view-options.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Pass the columns and rows. Then turn on search, selection, or pagination as needed:
+
+```tsx
+import { DataTable } from "@/components/ui/data-table/data-table"
+
+const columns = [
+  { accessorKey: "name", header: "Customer" },
+  { accessorKey: "email", header: "Email" },
+  {
+    accessorKey: "spent",
+    header: "Spent",
+    meta: { align: "right" },
+  },
+]
+
+<DataTable
+  columns={columns}
+  data={customers}
+  caption="Customers"
+  search={{ placeholder: "Search customers..." }}
+  selectable
+  pagination={{ pageSizeOptions: [10, 20, 50] }}
+/>
+```
+
+Columns use TanStack Table's `ColumnDef` format. A cell can contain any React content, including a link, badge, menu, or formatted number. Set `meta.align: "right"` on numeric columns so the digits line up.
+
+### Server-side mode
+
+When rows come from an API, keep search, sorting, filters, and pagination state in your application. Pass that state to Data Table and use each callback to request new rows. Set the matching `manual*` flags and pass `rowCount`. Pass `pageCount` too if the server already calculates it.
+
+This example handles search, sorting, and pagination on the server:
+
+```tsx
+<DataTable
+  columns={columns}
+  data={query.data.rows}
+  rowCount={query.data.total}
+  loading={query.isFetching}
+  search={{ placeholder: "Search orders...", debounceMs: 250 }}
+  manualSorting
+  manualFiltering
+  manualPagination
+  sorting={sorting}
+  onSortingChange={setSorting}
+  globalFilter={globalFilter}
+  onGlobalFilterChange={setGlobalFilter}
+  pagination={pagination}
+  onPaginationChange={setPagination}
+/>
+```
+
+## Don't do this
+
+### Treating no results as no data
+
+```tsx
+// Bad. This hides the recovery path.
+{rows.length === 0 ? <p>Nothing here yet</p> : null}
+```
+
+```tsx
+// Good. Each state has its own message.
+<DataTable
+  columns={columns}
+  data={rows}
+  emptyState={<EmptyAddCustomer />}
+  // No-results state offers Clear filters automatically
+/>
+```
+
+An empty dataset has no records. A no-results state still has records, but the current search or filters exclude them. Use separate messages so users know whether to add a record or clear the current view.
+
+## Examples
+
+### Search and filters
+
+Search across the table or filter by status. The Filters button reports how many filters are active and includes a Clear all action. Choose filters that exclude every row to see the no-results state.
+
+<ComponentPreview name="data-table-search-filters" previewClassName="h-auto" />
+
+### Selection and bulk actions
+
+Select one row or all rows on the page. The footer reports the selection count and clears it. The example connects selected rows to bulk actions and gives each row an actions menu.
+
+<ComponentPreview name="data-table-selection" previewClassName="h-auto" />
+
+### Custom cells
+
+Render React content inside cells. This example uses avatars, status badges, right-aligned currency, and formatted dates.
+
+<ComponentPreview name="data-table-custom-cells" previewClassName="h-auto" />
+
+### Loading
+
+Skeleton rows replace the table body while data loads. The toolbar, header, and footer stay in place.
+
+<ComponentPreview name="data-table-loading" previewClassName="h-auto" />
+
+### Error
+
+When a request fails, the table shows the error and a Try again action instead of a no-results message.
+
+<ComponentPreview name="data-table-error" previewClassName="h-auto" />
+
+### Empty data
+
+Use `emptyState` when the dataset has no records. Its message should explain how to add the first one.
+
+<ComponentPreview name="data-table-empty" previewClassName="h-auto" />
+
+### Controlled server table
+
+This example sends search, sorting, filters, and pagination changes to the server. It debounces search input and shows a loading state during each request.
+
+<ComponentPreview name="data-table-server" previewClassName="h-[40rem] sm:h-[40rem]" />
+
+## API reference
+
+### DataTable
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `columns` | `ColumnDef<TData>[]` | required | TanStack Table column definitions. |
+| `data` | `TData[]` | required | Row data for the current request or full dataset. |
+| `table` | `Table<TData>` | None | Uses this TanStack Table instance instead of creating one. |
+| `caption` | string | None | Names the table for screen readers. |
+| `search` | boolean \| `{ placeholder?, debounceMs?, ariaLabel? }` | `false` | Global search in the toolbar. |
+| `filters` | `DataTableFilterConfig[]` | None | Adds filters to the Filters menu. |
+| `selectable` | boolean | `false` | Adds the selection checkbox column and summary. |
+| `pagination` | boolean \| `{ pageSizeOptions? }` \| `PaginationState` | `false` | Footer pagination. Pass a `{ pageIndex, pageSize }` object to control it. |
+| `pageSizeOptions` | number[] | `[10, 20, 50, 100]` | Page-size choices for the footer select. |
+| `toolbarActions` | ReactNode | None | Right-aligned slot for actions such as Export. |
+| `density` | `"default"` \| `"compact"` | `"default"` | Compact reduces row padding for logs and admin screens. |
+| `framed` | boolean | `true` | Draws the outer border. Disable when the layout already frames the table. |
+| `getRowId` | `(row, index) => string` | None | Stable row identity. Use it with selection. |
+| `getRowLabel` | `(row) => string` | None | Returns the accessible label for each row checkbox. |
+| `loading` | boolean | `false` | Replaces the table body with skeleton rows. |
+| `error` | string \| null | `null` | Shows an error row with a Try again action. |
+| `onRetry` | () => void | None | Runs when the user chooses Try again. |
+| `rowCount` | number | filtered count | Server-known total used in the result range. |
+| `pageCount` | number | computed | Server-known page count for manual pagination. |
+| `emptyState` / `noResultsState` | ReactNode | built-in | Replace either empty variant. |
+| `manualSorting` / `manualFiltering` / `manualPagination` | boolean | `false` | Makes the server responsible for the matching task. |
+
+Controlled state follows TanStack Table's value and callback convention. The pairs are `sorting` and `onSortingChange`, `globalFilter` and `onGlobalFilterChange`, `columnFilters` and `onColumnFiltersChange`, `columnVisibility` and `onColumnVisibilityChange`, and `rowSelection` and `onRowSelectionChange`. Pagination uses `pagination` with `onPaginationChange`. If you omit a controlled value, Data Table manages that state.
+
+### Column metadata
+
+| Meta key | Values | Description |
+| --- | --- | --- |
+| `align` | `"left"` \| `"right"` \| `"center"` | Cell and header alignment; use `"right"` for numbers. |
+| `label` | string | Header text used by sort buttons and the Columns menu when the header is not a string. |

@@ -26,6 +26,25 @@ export async function getRegistryItem(name: string) {
       type: location.type,
     })),
   );
+  const productCandidate = {
+    path: path.join(
+      process.cwd(),
+      "registry",
+      "default",
+      "product",
+      name,
+      `${name}.tsx`,
+    ),
+    type: "registry:component" as const,
+  };
+  const hasProductEntry = await fs
+    .access(productCandidate.path)
+    .then(() => true)
+    .catch(() => false);
+
+  if (hasProductEntry) {
+    candidates.unshift(productCandidate);
+  }
 
   let registryFile: (typeof candidates)[number] | undefined;
 
@@ -52,13 +71,18 @@ export async function getRegistryItem(name: string) {
   const shaderFiles = isShaderComponent
     ? await getShaderFiles(registryFile.path)
     : null;
+  const productFiles = registryFile.path.includes(
+    `${path.sep}registry${path.sep}default${path.sep}product${path.sep}`,
+  )
+    ? await getProductItemFiles(registryFile.path)
+    : null;
 
   const typedItem = {
     name,
     type: registryFile.type,
     files:
       shaderFiles ??
-      [
+      productFiles ?? [
         {
           path: registryFile.path,
           type: registryFile.type,
@@ -107,6 +131,30 @@ export async function getRegistryItem(name: string) {
     }),
     files: finalFiles,
   };
+}
+
+async function getProductItemFiles(registryFilePath: string) {
+  const itemName = path.basename(path.dirname(registryFilePath));
+  const directory = path.dirname(registryFilePath);
+
+  const entries = await fs.readdir(directory, { withFileTypes: true });
+  const files = entries
+    .filter((entry) => entry.isFile() && /\.(?:ts|tsx)$/.test(entry.name))
+    .map((entry) => entry.name)
+    .sort();
+
+  // Keep the entry file first so docs render the main component source.
+  const entryFileName = `${itemName}.tsx`;
+  if (files.includes(entryFileName)) {
+    files.splice(files.indexOf(entryFileName), 1);
+    files.unshift(entryFileName);
+  }
+
+  return files.map((fileName) => ({
+    path: path.join(directory, fileName),
+    type: "registry:component" as const,
+    target: `components/ui/${itemName}/${fileName}`,
+  }));
 }
 
 async function getShaderFiles(registryFilePath: string) {
@@ -325,7 +373,10 @@ export function fixImport(content: string) {
 
   return content
     .replace(regex, replacement)
-    .replaceAll("@/lib/hooks/", "@/hooks/");
+    .replaceAll("@/lib/hooks/", "@/hooks/")
+    // Product items install into `components/ui/<item>/`, so their imports are
+    // rewritten after the general alias pass (which does not handle nested dirs).
+    .replaceAll("@/registry/default/product/", "@/components/ui/");
 }
 
 type FileTree = {

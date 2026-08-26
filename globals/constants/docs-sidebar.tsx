@@ -96,6 +96,14 @@ export const AnimatedStartedOptions: SidebarOption[] = [
   },
 ];
 
+export const ProductStartedOptions: SidebarOption[] = [
+  {
+    name: "Overview",
+    url: "/docs/product",
+    icon: <HouseIcon />,
+  },
+];
+
 export const ShaderStartedOptions: SidebarOption[] = [
   {
     name: "Overview",

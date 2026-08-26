@@ -8,12 +8,14 @@ import {
   ExampleOptions,
   IconStartedOptions,
   AnimatedStartedOptions,
+  ProductStartedOptions,
   ShaderStartedOptions,
 } from "@/globals/constants/docs-sidebar";
 import { RenderDefaultOptions } from "./render-default-options";
 import {
   AnimatedTreeNavigation,
   DocsTreeNavigation,
+  ProductTreeNavigation,
   ShaderTreeNavigation,
 } from "./docs-tree-navigation";
 import { areaFromPathname, ProviderSwitcher } from "./provider-switcher";
@@ -40,6 +42,11 @@ export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
 
       {activeArea === "components" ? (
         <DocsTreeNavigation tree={tree} />
+      ) : activeArea === "product" ? (
+        <>
+          <RenderDefaultOptions label="Get Started" options={ProductStartedOptions} />
+          <ProductTreeNavigation tree={tree} />
+        </>
       ) : activeArea === "charts" ? (
         <>
           <RenderDefaultOptions label="Get Started" options={ChartStartedOptions} />
