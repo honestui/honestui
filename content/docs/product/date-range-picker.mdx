@@ -1,0 +1,288 @@
+---
+title: Date Range Picker
+description: Pick start and end dates for forms, filters, bookings, and reporting windows.
+---
+
+<ComponentPreview name="date-range-picker-demo" previewClassName="h-auto" />
+
+## Overview
+
+Use Date Range Picker when people need to set two dates together. Expense reports, booking searches, analytics windows, and invoice lists all reduce to the same job: pick a start, pick an end, move on. The trigger shows the current range as text, quick ranges can shorten the task to two clicks, and the whole flow works with a keyboard alone.
+
+The component stays out of the way until a calendar is needed. Opened empty, it focuses today. Opened with a saved range, it lands on that range so both endpoints are visible before any change happens. Closing always returns focus to the trigger.
+
+HonestUI does not ship a standalone Calendar yet. The month grids live inside this component and are built on [react-day-picker](https://daypicker.dev), so grid behavior, keyboard movement, and gridcell semantics come from a maintained library rather than hand-rolled date math. If a public Calendar appears later, the shared parts will move there.
+
+Use [Field](/docs/components/field) when the picker belongs to a labeled form. Use plain [Button](/docs/components/button) and text markup when you only need to show dates.
+
+## Anatomy
+
+<Anatomy title="DateRangePicker">
+  <AnatomyItem
+    name="Trigger"
+    description="Calendar icon, current range or placeholder text, and clear action"
+  />
+  <AnatomyItem name="Popover" description="One panel holding every editing control">
+    <AnatomyItem
+      name="Presets"
+      description="Optional quick ranges such as Last 7 days"
+    />
+    <AnatomyItem
+      name="Calendars"
+      description="Previous and next month buttons plus up to three month grids"
+    />
+    <AnatomyItem
+      name="Footer"
+      description="Clear, Cancel, and Apply in confirm mode"
+    />
+  </AnatomyItem>
+</Anatomy>
+
+`DateRangePicker` renders all regions. It also exports `DateRangePresets` and the internal `DateRangeCalendar`, so a team that needs a pinned filter bar can reuse them, though most applications install the single root component and stop there.
+
+The trigger is a real button, not an input styled to look clickable. Screen readers get complete names: pressing Enter announces nothing new, activating a preset commits its dates, and the clear control is named "Clear date range."
+
+## Behavior
+
+Selection takes at most three actions: open, choose the start, choose the end. Choosing a preset drops it to two. Three details keep those actions forgiving:
+
+1. A second click earlier than the first swaps the two days into the right order. Picking May 20 then May 12 stores May 12 through May 20, no error shown.
+2. Clicking the same day twice creates a one-day range, which counts as valid everywhere a longer range does.
+3. When a complete range exists, the next click starts a fresh one at that date. Nobody has to press Clear between reports.
+
+Without `confirmMode`, a completed range or preset commits immediately and closes the popover, which keeps common work fast. With `confirmMode`, edits land in a temporary value. Apply commits it, Cancel restores the last committed range, and closing by Escape or an outside click cancels exactly like Cancel does. Expensive queries stay untouched by abandoned drafts.
+
+Clear lives in two places on purpose. The trigger icon clears without opening anything, hidden when the value is empty, clearing is disabled, or the field is required. Inside confirm mode a footer Clear empties the draft while staying open, so building a replacement never loses your place.
+
+Month navigation respects hard limits. Previous stops at `minDate`'s month and Next stops at `maxDate`'s month; unavailable years are unreachable instead of browsable. Dates outside limits, weekends blackouts, or anything `isDateDisabled` rejects render muted, cannot take clicks, and are skipped by keyboard selection attempts.
+
+On screens under roughly 48rem wide the picker drops to a single month and moves presets above the calendars instead of squeezing two grids into a phone.
+
+## Accessibility
+
+Keyboard work mirrors pointer work point for point:
+
+| Key | Action |
+| --- | --- |
+| Enter or Space | Open the picker, select the focused date |
+| Arrow keys | Move one day, or one week for Up and Down |
+| Home / End | First or last day of the visible week |
+| Page Up / Page Down | Previous or next month |
+| Tab | Move between presets, buttons, and the grid |
+| Escape | Close and return focus to the trigger |
+
+Grid cells use a roving tab stop, so Tab crosses to presets and footers without stepping through sixty-two buttons. Each cell reads as its full date plus role: "Tuesday, May 12, 2026, start of range," "today" gets spoken by label overrides, and unavailable cells announce nothing beyond their muted look because they refuse activation.
+
+Give the trigger an accessible name through your `Field` label: put `id="report-period"` on the picker and reference it with `<FieldLabel htmlFor="report-period">`. Applications without a visible label can pass `aria-label` directly.
+
+State changes announce through a polite live region: "Start date selected, May 12, 2026. Choose an end date." followed by "Date range selected, May 12 through May 25, 2026." Override every string through `labels` when the English defaults do not fit.
+
+Color never carries status alone. Selection pairs solid accent fills with font-weight changes and spoke roles, disabled dates keep readable text rather than vanishing, and the popover honors reduced-motion settings by fading instead of scaling.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["date-range-picker"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the calendar and date utility packages:</Step>
+
+```bash
+npm install react-day-picker date-fns
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-picker.tsx" file="date-range-picker.tsx" />
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-calendar.tsx" file="date-range-calendar.tsx" />
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-presets.tsx" file="date-range-presets.tsx" />
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-utils.ts" file="date-range-utils.ts" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+The value shape names its ends so call sites read cleanly:
+
+```tsx
+import { DateRangePicker } from "@/components/ui/date-range-picker/date-range-picker"
+
+<DateRangePicker />
+```
+
+Uncontrolled use starts here. Add a controlled value the moment an application needs to reset or inspect the range:
+
+```tsx
+const [range, setRange] = useState<DateRange>()
+
+<DateRangePicker value={range} onValueChange={setRange} />
+```
+
+`onValueChange` fires only with complete ranges, and passes undefined when cleared. Combine both guarantees when reading:
+
+```tsx
+if (range?.from && range.to) {
+  fetchReport(range.from, range.to)
+}
+```
+
+### In a form
+
+Wrap the picker in `Field` for label, description, and error slots. Setting `required` hides the clear action; `invalid` draws the danger border while FieldError explains recovery.
+
+```tsx
+<Field>
+  <FieldLabel htmlFor="renewal-window">Renewal window</FieldLabel>
+  <DateRangePicker id="renewal-window" required invalid />
+  <FieldHelperSlot>
+    <FieldError>Choose renewal dates on or after today.</FieldError>
+  </FieldHelperSlot>
+</Field>
+```
+
+## Don't do this
+
+### Treating the first pick as committed
+
+```tsx
+// Bad. An incomplete range reaches neither branch reliably.
+onValueChange={(range) => {
+  const from = range?.from ?? range?.to
+  applyFilter(from)
+}}
+```
+
+```tsx
+// Good. Only complete ranges mean anything downstream.
+onValueChange={(range) => {
+  if (range?.from && range.to) {
+    applyFilter(range.from, range.to)
+  }
+}}
+```
+
+A person who opens the picker, taps one day, then presses Escape produces no callback at all. Code assuming immediate commits fires either too early or never.
+
+### Querying on every edit instead of using confirm mode
+
+Live dashboards with slow aggregation endpoints should enable `confirmMode`. Outside clicks cancel there, so users who change their mind cost nothing; without it, every stray tap refetches the report.
+
+## Examples
+
+### Default
+
+Two months, hover preview while the end date is pending, automatic close on completion, and a readout below showing the exact value committed.
+
+<ComponentPreview name="date-range-picker-default" previewClassName="h-auto" />
+
+### Quick ranges
+
+Optional presets sit beside the calendars. Selecting one commits immediately and matches itself against the current value, highlighted whenever they agree.
+
+<ComponentPreview name="date-range-picker-presets" previewClassName="h-auto" />
+
+### Confirm before applying
+
+Edits stay temporary across navigations and preset picks. Cancel, Escape, and outside clicks restore the committed window; Apply is disabled until both endpoints exist.
+
+<ComponentPreview name="date-range-picker-confirm" previewClassName="h-auto" />
+
+### Min, max, and disabled dates
+
+Navigation clamps to reachable months, weekend blackout dates mute themselves, and crossing an unavailable date resets selection back to your last click.
+
+<ComponentPreview name="date-range-picker-limits" previewClassName="h-auto" />
+
+### Controlled state
+
+The parent owns the value and sees every commit, including clears.
+
+<ComponentPreview name="date-range-picker-controlled" previewClassName="h-auto" />
+
+### Form fields and states
+
+Required with a description, invalid with a recovery message, and a read-only period that displays without opening the calendar.
+
+<ComponentPreview name="date-range-picker-form" previewClassName="h-auto" />
+
+### Single month
+
+One grid for toolbars and side panels, identical behavior otherwise. Narrow viewports fall back to this automatically.
+
+<ComponentPreview name="date-range-picker-single-month" previewClassName="h-auto" />
+
+## API reference
+
+### DateRangePicker
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `DateRange \| undefined` | None | Controlled range. |
+| `defaultValue` | `DateRange` | None | Initial uncontrolled range. |
+| `onValueChange` | `(range: DateRange \| undefined) => void` | None | Called when the committed range changes, including clears. |
+| `open` | boolean | None | Controlled popover state. |
+| `defaultOpen` | boolean | `false` | Initial popover state. |
+| `onOpenChange` | `(open: boolean) => void` | None | Popover open-state callback. |
+| `minDate` | Date | None | Earliest selectable date; bounds navigation. |
+| `maxDate` | Date | None | Latest selectable date; bounds navigation. |
+| `isDateDisabled` | `(date: Date) => boolean` | None | Extra unavailable-day logic. |
+| `numberOfMonths` | number | `2` | Visible months. Narrows to 1 under 48rem viewports. |
+| `locale` | date-fns `Locale` | app locale | Formats trigger text, captions, weekday heads, and day names. |
+| `weekStartsOn` | `0`–`6` | locale value | Overrides the first day of the week. |
+| `showOutsideDays` | boolean | `true` | Shows adjacent-month dates. |
+| `presets` | `DateRangePreset[]` | None | Quick ranges rendered beside the calendars. |
+| `confirmMode` | boolean | `false` | Requires Apply before committing. |
+| `clearable` | boolean | `true` | Enables the clear action. |
+| `disabled` | boolean | `false` | Blocks opening and selecting. |
+| `readOnly` | boolean | `false` | Displays the value without editing. |
+| `required` | boolean | `false` | Hides the clear action. |
+| `invalid` | boolean | `false` | Applies the danger border treatment. |
+| `placeholder` | string | `"Select date range"` | Trigger text when empty. |
+| `formatRange` | `(range: DateRange) => string` | locale formatter | Replaces visible formatting for complete ranges. |
+| `labels` | Partial labels object | English defaults | Overrides strings listed below. |
+
+Any other button prop (`id`, `aria-label`, `className`) forwards to the trigger.
+
+`DateRange` holds `from?: Date` and `to?: Date`; missing ends only ever appear in draft UI, never in committed callbacks.
+
+### DateRangePreset
+
+| Member | Type | Description |
+| --- | --- | --- |
+| `label` | string | Text shown in the preset column. |
+| `getValue` | `() => DateRange` | Runs at selection so relative ranges stay correct overnight. |
+
+`getDateRangePresets()` returns Today, Yesterday, Last 7 days, Last 30 days, This month, and Last month as a starting list. Map over it to translate labels or replace entries; nothing preset-shaped is baked into the component.
+
+### Labels
+
+| Key | Default | Used for |
+| --- | --- | --- |
+| `clearAction` | Clear date range | Accessible name of the trigger clear button |
+| `selectEndDate` | Select end date | Placeholder half of a partial trigger |
+| `previousMonth` / `nextMonth` | Previous month / Next month | Navigation button names |
+| `presetsGroup` | Quick ranges | Group label around presets |
+| `startSelected` / `rangeSelected` / `cleared` | formatted functions | Live-region announcements |
+
+Formatting helpers exported alongside: `formatDateLabel(date, locale?)` matches the built-in trigger style when applications print the same range elsewhere.

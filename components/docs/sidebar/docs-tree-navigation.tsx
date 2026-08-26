@@ -39,14 +39,33 @@ const OVERVIEW_ICONS: Record<string, ReactNode> = {
   "/docs/developers": <BookIcon aria-hidden="true" data-icon="book" />,
 };
 
-const NEW_PAGE_URLS = new Set([
-  "/docs/components/command",
-  "/docs/components/context-menu",
-  "/docs/product/data-grid",
-  "/docs/product/data-table",
-  "/docs/shaders/chromatic-image",
-  "/docs/shaders/dither",
-]);
+/**
+ * Pages currently carrying the "New" badge. Keep this list ADDITIVE ONLY:
+ * each entry carries the date the page launched, and the badge disappears
+ * by itself once the entry is older than two weeks. Expired rows can stay;
+ * nothing ever needs manual pruning.
+ */
+const NEW_PAGES: readonly { url: string; releasedOn: string }[] = [
+  { url: "/docs/components/command", releasedOn: "2026-08-18" },
+  { url: "/docs/components/context-menu", releasedOn: "2026-08-18" },
+  { url: "/docs/product/data-grid", releasedOn: "2026-08-26" },
+  { url: "/docs/product/data-table", releasedOn: "2026-08-25" },
+  { url: "/docs/product/date-range-picker", releasedOn: "2026-08-26" },
+  { url: "/docs/shaders/chromatic-image", releasedOn: "2026-08-18" },
+  { url: "/docs/shaders/dither", releasedOn: "2026-08-18" },
+];
+
+const NEW_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+
+const NEW_PAGE_DATES = new Map(NEW_PAGES.map((page) => [page.url, page.releasedOn]));
+
+function isRecentlyReleased(url: string): boolean {
+  const releasedOn = NEW_PAGE_DATES.get(url);
+  if (!releasedOn) {
+    return false;
+  }
+  return Date.now() - Date.parse(releasedOn) < NEW_WINDOW_MS;
+}
 
 function PageGroup({ label, pages }: { label: string; pages: PageItem[] }) {
   const pathname = usePathname();
@@ -60,7 +79,7 @@ function PageGroup({ label, pages }: { label: string; pages: PageItem[] }) {
       <SidebarMenu>
         {pages.map((page) => {
           const isActive = pathname === page.url;
-          const isNew = NEW_PAGE_URLS.has(page.url);
+          const isNew = isRecentlyReleased(page.url);
           const icon = page.icon ?? OVERVIEW_ICONS[page.url] ?? getNavItemIcon(page.url);
 
           return (

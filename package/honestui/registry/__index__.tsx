@@ -142,6 +142,14 @@ import data_table_loading from "./default/examples/data-table-loading";
 import data_table_search_filters from "./default/examples/data-table-search-filters";
 import data_table_selection from "./default/examples/data-table-selection";
 import data_table_server from "./default/examples/data-table-server";
+import date_range_picker_confirm from "./default/examples/date-range-picker-confirm";
+import date_range_picker_controlled from "./default/examples/date-range-picker-controlled";
+import date_range_picker_default from "./default/examples/date-range-picker-default";
+import date_range_picker_demo from "./default/examples/date-range-picker-demo";
+import date_range_picker_form from "./default/examples/date-range-picker-form";
+import date_range_picker_limits from "./default/examples/date-range-picker-limits";
+import date_range_picker_presets from "./default/examples/date-range-picker-presets";
+import date_range_picker_single_month from "./default/examples/date-range-picker-single-month";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -609,6 +617,14 @@ export const Index: Record<string, { component: ComponentType }> = {
   "data-table-search-filters": { component: data_table_search_filters },
   "data-table-selection": { component: data_table_selection },
   "data-table-server": { component: data_table_server },
+  "date-range-picker-confirm": { component: date_range_picker_confirm },
+  "date-range-picker-controlled": { component: date_range_picker_controlled },
+  "date-range-picker-default": { component: date_range_picker_default },
+  "date-range-picker-demo": { component: date_range_picker_demo },
+  "date-range-picker-form": { component: date_range_picker_form },
+  "date-range-picker-limits": { component: date_range_picker_limits },
+  "date-range-picker-presets": { component: date_range_picker_presets },
+  "date-range-picker-single-month": { component: date_range_picker_single_month },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },
