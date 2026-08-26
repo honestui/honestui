@@ -25,6 +25,7 @@ const CopyButton = ({
       )}
       variant="ghost"
       size="icon"
+      aria-label={copied ? "Copied" : "Copy code"}
       onClick={() => copy(code)}
     >
       {copied ? <CheckIcon /> : <CopyIcon />}

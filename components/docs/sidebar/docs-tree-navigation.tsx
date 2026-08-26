@@ -42,6 +42,7 @@ const OVERVIEW_ICONS: Record<string, ReactNode> = {
 const NEW_PAGE_URLS = new Set([
   "/docs/components/command",
   "/docs/components/context-menu",
+  "/docs/product/data-grid",
   "/docs/product/data-table",
   "/docs/shaders/chromatic-image",
   "/docs/shaders/dither",

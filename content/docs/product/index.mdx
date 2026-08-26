@@ -3,7 +3,7 @@ title: Product components
 description: Install Honest UI components with the controls and states needed for one application task.
 ---
 
-Product components package related controls and state handling in one copied component. Data Table, for example, adds search, filters, row selection, loading states, and pagination to a native HTML table.
+Product components package related controls and state handling in one copied component. Data Table adds common record controls to a native HTML table. Data Grid adds column customization, typed filters, editing, server-managed state, and row virtualization for larger datasets.
 
 The CLI copies each product component into your project, so you can change its source directly.
 
@@ -22,12 +22,13 @@ Product component pages include:
 | Component | Use it for |
 | --- | --- |
 | [Data Table](/docs/product/data-table) | Searching, filtering, sorting, selecting, and paginating application data |
+| [Data Grid](/docs/product/data-grid) | Working with large datasets, advanced filters, bulk actions, and customizable columns |
 
-## Choosing a table
+## Choosing a table or grid
 
-Use [Table](/docs/components/table) to present rows and columns without search, filters, selection, or pagination. Use [Data Table](/docs/product/data-table) when people need those controls to find records and act on them.
+Use [Table](/docs/components/table) to present rows and columns without search, filters, selection, or pagination. Use [Data Table](/docs/product/data-table) when people need those common controls to find records and act on them. Use [Data Grid](/docs/product/data-grid) when people also need to resize, reorder, pin, hide, edit, or virtualize columns and rows.
 
-A read-only pricing comparison may only need Table. An invoice queue that spans hundreds of records needs Data Table's search, status filters, row actions, and pagination.
+A read-only pricing comparison may only need Table. An invoice queue that spans hundreds of records often fits Data Table. An operations workspace with many columns, bulk changes, server sorting, and tens of thousands of records fits Data Grid.
 
 ## Copying examples
 

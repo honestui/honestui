@@ -13,12 +13,20 @@ Use Table when you only need to present rows and columns. Add Data Table when us
 
 ## Anatomy
 
-```text
-DataTable
-├── Toolbar: search, filters, columns, actions
-├── Content: header row, data rows, states
-└── Footer: selection summary, pagination
-```
+<Anatomy title="DataTable">
+  <AnatomyItem
+    name="Toolbar"
+    description="Search, filters, column controls, and application actions"
+  />
+  <AnatomyItem
+    name="Content"
+    description="Column headers, data rows, loading, empty, and error states"
+  />
+  <AnatomyItem
+    name="Footer"
+    description="Selection summary, page range, and pagination"
+  />
+</Anatomy>
 
 `DataTable` renders all three regions. Data Table also exports each part separately: `DataTableToolbar`, `DataTableSearch`, `DataTableFilter`, `DataTableViewOptions`, `DataTableContent`, `DataTableFooter`, `DataTableSelectionSummary`, and `DataTablePagination`. Use the separate parts to change their order or add controls.
 

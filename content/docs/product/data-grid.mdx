@@ -1,0 +1,325 @@
+---
+title: Data Grid
+description: Work with large datasets using filters, selection, column controls, editing, and server-managed state.
+---
+
+<ComponentPreview name="data-grid-demo" previewClassName="h-auto" />
+
+## Overview
+
+Use Data Grid when the dataset is a main part of the application. It handles advanced filters, page-scoped selection, resizable and reorderable columns, pinned columns, editable cells, server-managed state, and virtualized rows.
+
+Data Grid does not try to copy a spreadsheet. It keeps the native table structure and HonestUI's quiet row styling, then adds controls when someone asks for them. The default view is still a toolbar, column names, rows, and a footer.
+
+Use [Table](/docs/components/table) for static rows and columns. Use [Data Table](/docs/product/data-table) for search, simple filters, sorting, selection, and pagination on a smaller record set. Choose Data Grid when people need to customize the columns or work through thousands of records.
+
+## Anatomy
+
+<Anatomy title="DataGrid">
+  <AnatomyItem
+    name="Toolbar"
+    description="Search, active filters, column controls, and application actions"
+  />
+  <AnatomyItem name="Frame" description="One boundary for rows and footer controls">
+    <AnatomyItem
+      name="Viewport"
+      description="Horizontal and vertical scrolling with an optional sticky header"
+    />
+    <AnatomyItem
+      name="Table"
+      description="Column headers, optional inline filters, data rows, and states"
+    />
+    <AnatomyItem
+      name="Footer"
+      description="Selection actions, page range, and pagination"
+    />
+  </AnatomyItem>
+  <AnatomyItem
+    name="Overlays"
+    description="Filter builder, column menu, and row action menus"
+  />
+</Anatomy>
+
+The default `DataGrid` composes those parts from feature props. It also exports each part and attaches them to `DataGrid`, so `DataGrid.Toolbar`, `DataGrid.Viewport`, and `DataGrid.Pagination` can be rearranged without replacing the state model.
+
+Columns use TanStack Table definitions plus Data Grid options such as `filter`, `type`, `align`, `editable`, and `hideBelow`. Cell renderers can use any React content. Avatar, Badge, Menu, and Progress remain application choices rather than grid-specific APIs.
+
+## Behavior
+
+Sorting cycles through ascending, descending, and unsorted. Hold Shift while choosing another header to build a multi-column sort. The small number beside a sorted header reports its priority.
+
+The filter builder chooses its input from the column's filter type. Applied filters stay visible in the toolbar and return pagination to the first page. Inline header filters are optional because they add weight to every column.
+
+The header checkbox selects eligible rows on the current page. It never claims to select records that the browser has not loaded. Pass a row predicate to `selection` when only some rows can be selected.
+
+Column headers support pointer reordering. The same menu includes Move left and Move right, so dragging is not the only path. Resize handles accept a pointer, double-click to reset, and Left or Right Arrow in 8px steps. Pinned columns stay inside the scrolling frame.
+
+## Accessibility
+
+Pass `caption` to name the table. Data Grid renders a native `<table>` with column headers and body rows. Sort direction uses `aria-sort`. Selection checkboxes expose checked and indeterminate state through HonestUI Checkbox.
+
+When virtualization is enabled, the table exposes the complete row count and each rendered row's position with `aria-rowcount` and `aria-rowindex`. These values include header rows. Pass `rowCount` when the server knows about rows that are not loaded in the browser.
+
+Use `getRowLabel` to name each row checkbox with the record itself, such as "Select Sarah Chen." The built-in fallback uses a row number, which is less useful when rows move after sorting.
+
+When a row cannot be selected, return a short explanation from `getRowSelectionDisabledReason`. The grid adds it to the disabled checkbox name, so the reason is available without relying on a tooltip.
+
+Set `keyboardNavigation` when people need cell movement. Arrow keys move between cells. Home and End move across a row. Ctrl+Home and Ctrl+End move to the first or last grid cell. Enter starts editing or moves into an interactive control. Tab saves an edit and moves to the next cell. Shift+Tab saves and moves to the previous cell. Space toggles row selection. Inputs, selects, menus, and other controls keep their own keyboard behavior.
+
+Wide grids scroll inside `DataGridViewport`. This is a valid two-dimensional data region, but the toolbar and surrounding page must still reflow at zoom. Test the finished grid with keyboard input, 200% and 400% zoom, a supported screen reader, forced colors, and long translated values.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+
+<TabsPanel value="cli">
+
+<CliBlock commands={["data-grid"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the behavior and virtualization packages.</Step>
+
+```bash
+npm install @tanstack/react-table @tanstack/react-virtual
+```
+
+<Step>Copy the Data Grid files into your project.</Step>
+
+<ComponentSource name="data-grid" title="components/ui/data-grid/data-grid.tsx" file="data-grid.tsx" />
+
+<ComponentSource name="data-grid" title="components/ui/data-grid/data-grid-column-header.tsx" file="data-grid-column-header.tsx" />
+
+<ComponentSource name="data-grid" title="components/ui/data-grid/data-grid-context.tsx" file="data-grid-context.tsx" />
+
+<ComponentSource name="data-grid" title="components/ui/data-grid/data-grid-pagination.tsx" file="data-grid-pagination.tsx" />
+
+<ComponentSource name="data-grid" title="components/ui/data-grid/data-grid-toolbar.tsx" file="data-grid-toolbar.tsx" />
+
+<ComponentSource name="data-grid" title="components/ui/data-grid/data-grid-utils.ts" file="data-grid-utils.ts" />
+
+<Step>Update the import paths to match your project.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Start with columns and rows, then enable the controls the task needs.
+
+```tsx
+import {
+  DataGrid,
+  type DataGridColumn,
+} from "@/components/ui/data-grid/data-grid"
+
+const columns: DataGridColumn<User>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+    size: 220,
+    minSize: 160,
+    filter: { type: "text" },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    filter: {
+      type: "enum",
+      options: ["Active", "Pending", "Inactive"],
+    },
+  },
+  {
+    accessorKey: "revenue",
+    header: "Revenue",
+    type: "currency",
+    align: "right",
+  },
+]
+
+<DataGrid
+  data={users}
+  columns={columns}
+  caption="Users"
+  search={{ placeholder: "Search users..." }}
+  filters
+  sorting
+  selection
+  columnVisibility
+  pagination
+/>
+```
+
+### Compose the shell
+
+Pass children when the default order does not fit the page. The same table instance is available to every part through context.
+
+```tsx
+<DataGrid data={users} columns={columns} selection pagination>
+  <DataGrid.Toolbar>
+    <DataGrid.Search placeholder="Search users..." />
+    <DataGrid.ToolbarSpacer />
+    <DataGrid.ColumnVisibility />
+  </DataGrid.Toolbar>
+
+  <DataGrid.Frame>
+    <DataGrid.Viewport>
+      <DataGrid.Table />
+    </DataGrid.Viewport>
+    <DataGrid.Footer>
+      <DataGrid.SelectionStatus>{bulkActions}</DataGrid.SelectionStatus>
+      <DataGrid.Pagination />
+    </DataGrid.Footer>
+  </DataGrid.Frame>
+</DataGrid>
+```
+
+### Control server state
+
+For server data, pass the rows from the current response, the total row count, controlled state, and matching callbacks. Set each `manual*` prop for work the server owns.
+
+```tsx
+<DataGrid
+  data={query.data.rows}
+  columns={columns}
+  rowCount={query.data.total}
+  pageCount={query.data.pageCount}
+  search={{ placeholder: "Search orders...", debounceMs: 250 }}
+  globalSearch={globalSearch}
+  onGlobalSearchChange={setGlobalSearch}
+  sorting={sorting}
+  onSortingChange={setSorting}
+  pagination={pagination}
+  onPaginationChange={setPagination}
+  manualSorting
+  manualFiltering
+  manualPagination
+/>
+```
+
+The grid reports intent. Your application owns the request, cancellation, stale response handling, and error message. Data Grid does not require a fetching library.
+
+## Do not do this
+
+Do not sort only the loaded server page. Ten rows may appear sorted while the other 9,990 records stay in the wrong order.
+
+Do not place a visible control in the toolbar unless it works. Pass `toolbar.refresh` only when there is a refresh callback. The built-in CSV action exports the filtered rows available to the table and treats formula-prefixed string values as text. For a complete server export, pass `toolbar.export.onExport`, let the server build the file, and apply equivalent spreadsheet-injection protection there.
+
+Do not replace wide rows with cards on a narrow screen. Keep the column relationships and contain horizontal scrolling inside the viewport. Hide a lower-priority column with `hideBelow` only when the application can remove that information safely.
+
+## Examples
+
+### Filters
+
+The filter builder and inline header filters use text, enum, number, currency, date, and boolean column types. Active filters remain above the rows.
+
+<ComponentPreview name="data-grid-filters" previewClassName="h-auto" />
+
+### Selection and bulk actions
+
+Select eligible rows on the current page. The footer keeps the count and actions in a stable position.
+
+<ComponentPreview name="data-grid-selection" previewClassName="h-auto" />
+
+### Column controls
+
+Resize a column from its right edge. Drag a header to reorder it, use the menu as a keyboard alternative, or pin a column while the viewport scrolls.
+
+<ComponentPreview name="data-grid-columns" previewClassName="h-auto" />
+
+### Cell editing
+
+Double-click an editable cell or focus it and press Enter. The application receives the row, column, previous value, and new value. A custom editor can use Select or another HonestUI control.
+
+<ComponentPreview name="data-grid-editing" previewClassName="h-auto" />
+
+### Loading, empty, and error states
+
+Switch between the states to inspect the stable header, row skeletons, empty message, and retry action.
+
+<ComponentPreview name="data-grid-states" previewClassName="h-auto" />
+
+### Externally controlled data
+
+This example keeps search, sorting, and pagination outside the grid. It applies those values to a local dataset so the state contract is visible without pretending to make a network request.
+
+<ComponentPreview name="data-grid-controlled" previewClassName="h-auto" />
+
+### Virtualized rows
+
+The log grid contains 10,000 rows. TanStack Virtual renders the visible range and a small overscan buffer inside a fixed-height viewport.
+
+<ComponentPreview name="data-grid-virtualized" previewClassName="h-[34rem] sm:h-[34rem]" />
+
+### Density
+
+Compact uses 44px rows. Default uses 56px. Comfortable uses 64px for cells with more content.
+
+<ComponentPreview name="data-grid-density" previewClassName="h-auto" />
+
+## API reference
+
+### DataGrid
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `columns` | `DataGridColumn<TData>[]` | required | TanStack column definitions plus Data Grid options. |
+| `data` | `TData[]` | required | Full client dataset or rows from the current server response. |
+| `caption` | `string` | None | Accessible table name. |
+| `getRowLabel` | `(row) => string` | Row number | Names a row selection checkbox with record-specific text. |
+| `getRowSelectionDisabledReason` | `(row) => string \| undefined` | None | Explains why an ineligible row cannot be selected. |
+| `search` | `boolean \| { placeholder?, debounceMs?, ariaLabel? }` | `false` | Adds global search. |
+| `sorting` | `boolean \| SortingState` | `true` | Enables sorting or supplies controlled sort state. |
+| `filters` | `boolean \| ColumnFiltersState` | `false` | Adds the filter builder or supplies controlled filter state. |
+| `inlineFilters` | `boolean` | `false` | Adds a filter row under the headers. |
+| `pagination` | `boolean \| PaginationState \| { defaultPageSize?, pageSizeOptions? }` | `false` | Adds client or controlled pagination. |
+| `selection` | `boolean \| RowSelectionState \| (row) => boolean` | `false` | Adds page-scoped row selection. |
+| `columnVisibility` | `boolean \| VisibilityState` | `false` | Adds the Columns menu or supplies controlled visibility. |
+| `columnResize` | `boolean` | `false` | Adds pointer and keyboard resize handles. |
+| `columnReorder` | `boolean` | `false` | Adds drag reorder plus menu commands. |
+| `columnPinning` | `boolean \| ColumnPinningState` | `false` | Enables sticky left and right columns. |
+| `stickyHeader` | `boolean` | `false` | Keeps headers visible in the grid viewport. |
+| `keyboardNavigation` | `boolean` | `false` | Adds roving cell focus and arrow-key movement. |
+| `virtualize` | `boolean \| { estimateSize?, overscan? }` | `false` | Virtualizes rows with TanStack Virtual. |
+| `density` | `"compact" \| "default" \| "comfortable"` | `"default"` | Sets 44px, 56px, or 64px rows. |
+| `maxHeight` | `number \| string` | None | Constrains the scrolling viewport. |
+| `toolbar` | `{ export?, refresh?, actions? }` | None | Adds working toolbar actions. |
+| `loading` / `refreshing` | `boolean` | `false` | Distinguishes initial row loading from background refresh. |
+| `error` | `string \| null` | `null` | Replaces the body with a recoverable error state. |
+| `onRetry` | `() => void` | None | Handles the error state's Try again action. |
+| `rowCount` / `pageCount` | `number` | computed | Supplies server-known totals. |
+| `manualSorting` / `manualFiltering` / `manualPagination` | `boolean` | `false` | Makes the application responsible for the matching operation. |
+| `onCellEdit` | `(event) => void \| Promise<void>` | None | Saves an editable cell. A rejected promise keeps the editor open and shows the message. |
+
+Controlled state pairs use one convention. Pass `globalSearch` with `onGlobalSearchChange`, `sorting` with `onSortingChange`, `filters` with `onFiltersChange`, `pagination` with `onPaginationChange`, and `selection` with `onSelectionChange`. Column state uses `columnVisibility`, `columnOrder`, `columnSizing`, and `columnPinning` with their matching callbacks. Every state also has a `default*` prop for uncontrolled setup.
+
+### Column options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | `"text" \| "number" \| "currency" \| "date" \| "enum" \| "boolean"` | `"text"` | Sets alignment and default editor or filter behavior. |
+| `filter` | `{ type, options? }` | None | Adds the column to filter controls. |
+| `align` | `"left" \| "center" \| "right"` | type-based | Aligns the header and cells. |
+| `size` / `minSize` / `maxSize` | `number` | TanStack defaults | Sets resize boundaries in pixels. |
+| `sortable` / `filterable` / `hideable` | `boolean` | sensible per feature | Controls available commands. |
+| `resizable` / `reorderable` / `pinnable` | `boolean` | `true` | Controls column customization. |
+| `editable` | `boolean` | `false` | Allows Enter or double-click to open an editor. |
+| `edit` | `(editorProps) => ReactNode` | Input | Supplies a custom editor. |
+| `hideBelow` | `"sm" \| "md" \| "lg"` | None | Hides a lower-priority column below a breakpoint. |
+| `cell` | TanStack cell renderer | value | Renders custom React content in the cell. |
+
+### Exported parts
+
+`DataGridRoot`, `DataGridToolbar`, `DataGridToolbarSpacer`, `DataGridSearch`, `DataGridActiveFilters`, `DataGridFilterTrigger`, `DataGridColumnVisibility`, `DataGridExport`, `DataGridRefresh`, `DataGridFrame`, `DataGridViewport`, `DataGridTable`, `DataGridFooter`, `DataGridSelectionStatus`, `DataGridPagination`, and `DataGridRowActions` are available as named exports. The same parts are attached to `DataGrid` for the compound form.

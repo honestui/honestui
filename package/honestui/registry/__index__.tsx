@@ -125,6 +125,15 @@ import context_menu_demo from "./default/examples/context-menu-demo";
 import context_menu_search from "./default/examples/context-menu-search";
 import color_picker_controlled from "./default/examples/color-picker-controlled";
 import color_picker_demo from "./default/examples/color-picker-demo";
+import data_grid_columns from "./default/examples/data-grid-columns";
+import data_grid_controlled from "./default/examples/data-grid-controlled";
+import data_grid_demo from "./default/examples/data-grid-demo";
+import data_grid_density from "./default/examples/data-grid-density";
+import data_grid_editing from "./default/examples/data-grid-editing";
+import data_grid_filters from "./default/examples/data-grid-filters";
+import data_grid_selection from "./default/examples/data-grid-selection";
+import data_grid_states from "./default/examples/data-grid-states";
+import data_grid_virtualized from "./default/examples/data-grid-virtualized";
 import data_table_custom_cells from "./default/examples/data-table-custom-cells";
 import data_table_demo from "./default/examples/data-table-demo";
 import data_table_empty from "./default/examples/data-table-empty";
@@ -583,6 +592,15 @@ export const Index: Record<string, { component: ComponentType }> = {
   "context-menu-search": { component: context_menu_search },
   "color-picker-controlled": { component: color_picker_controlled },
   "color-picker-demo": { component: color_picker_demo },
+  "data-grid-columns": { component: data_grid_columns },
+  "data-grid-controlled": { component: data_grid_controlled },
+  "data-grid-demo": { component: data_grid_demo },
+  "data-grid-density": { component: data_grid_density },
+  "data-grid-editing": { component: data_grid_editing },
+  "data-grid-filters": { component: data_grid_filters },
+  "data-grid-selection": { component: data_grid_selection },
+  "data-grid-states": { component: data_grid_states },
+  "data-grid-virtualized": { component: data_grid_virtualized },
   "data-table-custom-cells": { component: data_table_custom_cells },
   "data-table-demo": { component: data_table_demo },
   "data-table-empty": { component: data_table_empty },
