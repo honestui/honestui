@@ -150,6 +150,16 @@ import date_range_picker_form from "./default/examples/date-range-picker-form";
 import date_range_picker_limits from "./default/examples/date-range-picker-limits";
 import date_range_picker_presets from "./default/examples/date-range-picker-presets";
 import date_range_picker_single_month from "./default/examples/date-range-picker-single-month";
+import filter_bar_demo from "./default/examples/filter-bar-demo";
+import filter_bar_searchable from "./default/examples/filter-bar-searchable";
+import filter_bar_number_range from "./default/examples/filter-bar-number-range";
+import filter_bar_date_range from "./default/examples/filter-bar-date-range";
+import filter_bar_text from "./default/examples/filter-bar-text";
+import filter_bar_apply from "./default/examples/filter-bar-apply";
+import filter_bar_async from "./default/examples/filter-bar-async";
+import filter_bar_custom from "./default/examples/filter-bar-custom";
+import filter_bar_controlled from "./default/examples/filter-bar-controlled";
+import filter_bar_data_table from "./default/examples/filter-bar-data-table";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -625,6 +635,16 @@ export const Index: Record<string, { component: ComponentType }> = {
   "date-range-picker-limits": { component: date_range_picker_limits },
   "date-range-picker-presets": { component: date_range_picker_presets },
   "date-range-picker-single-month": { component: date_range_picker_single_month },
+  "filter-bar-demo": { component: filter_bar_demo },
+  "filter-bar-searchable": { component: filter_bar_searchable },
+  "filter-bar-number-range": { component: filter_bar_number_range },
+  "filter-bar-date-range": { component: filter_bar_date_range },
+  "filter-bar-text": { component: filter_bar_text },
+  "filter-bar-apply": { component: filter_bar_apply },
+  "filter-bar-async": { component: filter_bar_async },
+  "filter-bar-custom": { component: filter_bar_custom },
+  "filter-bar-controlled": { component: filter_bar_controlled },
+  "filter-bar-data-table": { component: filter_bar_data_table },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },

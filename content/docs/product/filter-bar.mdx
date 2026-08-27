@@ -1,0 +1,328 @@
+---
+title: Filter Bar
+description: Add, view, edit, and clear filters above any collection in one consistent row.
+---
+
+<ComponentPreview name="filter-bar-demo" previewClassName="h-auto" />
+
+## Overview
+
+Filter Bar answers a question that shows up on nearly every admin screen: how does someone narrow this list? Status pickers, category checkboxes, price ranges, date windows, customer searches. The component gives all of them one place to live, one shape for their values, and one way to disappear when nobody is using them.
+
+The bar stays visually quiet until filters are active. With nothing applied you see a single Filter button. Once someone picks three filters the button gains a count, chips appear beside it naming exactly what is narrowing the view, and a Clear all action shows up at the end. Nothing renders just to fill space: no zero badge, no empty chips, no dead Clear action.
+
+Filter Bar owns filter presentation and filter values. It never filters rows itself, never calls your API, and never builds a query string. You pass an array of definitions plus the current value, and you receive changes back through one callback. That boundary is why it sits as comfortably over local TanStack Table state as over a server request. [Data Table](/docs/product/data-table) stays responsible for its own rows; see the integration example below.
+
+When one small facet is enough, a menu or a handful of checkboxes already solves it. Reach for Filter Bar once several filter types need to coexist, which is where hand-built toolbars usually start disagreeing with themselves.
+
+## Anatomy
+
+<Anatomy title="FilterBar">
+  <AnatomyItem name="Trigger" description="Filter button, active count badge, rotating chevron" />
+  <AnatomyItem name="Values" description="One removable chip per active filter, collapsing to +N" />
+  <AnatomyItem name="Clear all" description="Quiet text action for committed filters" />
+  <AnatomyItem name="Panel" description="Header, groups grid, footer inside a Popover or Sheet">
+    <AnatomyItem name="Group" description="Label, optional selection count, one filter control" />
+    <AnatomyItem name="Footer" description="Cancel and Apply filters in apply mode" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing the root component covers everything above. Parts export separately too: `FilterBarToolbar`, `FilterBarTrigger`, `FilterBarValues`, `FilterBarValue`, `FilterBarClear`, `FilterBarContent`, `FilterBarHeader`, `FilterBarTitle`, `FilterBarGroups`, `FilterBarGroup`, `FilterBarGroupLabel`, `FilterBarFooter`, `FilterBarApply`, and `FilterBarCancel`. The data-driven API runs these same parts internally, so composed layouts get identical behavior rather than a second implementation.
+
+Each filter field is built on an HonestUI control: `Input` for text, `Select` for short known choices, checkbox rows for multi-select, `NumberField` for amounts, `RadioGroup` for preset dates and booleans, `Switch` where one toggle fits better than three states, and `Field` semantics connecting labels to controls. Custom ranges reuse the shared [Date Range Picker](/docs/product/date-range-picker) instead of growing a second calendar here.
+
+## Behavior
+
+### Modes
+
+`mode="instant"` commits on every change. Local filtering, cheap queries, anything where users benefit from watching results move right away. The panel simply ends after the groups; there is nothing to confirm.
+
+`mode="apply"` holds edits in a draft while the panel is open. Apply filters commits the draft and closes. Cancel discards it. Escape and clicking outside discard too, because silently applying unfinished work behind someone's back is worse than losing a click. The header shows Clear all filters only while a draft exists, and it empties the draft without closing so users can rebuild from scratch. This is deliberately different from the Clear all in the bar, which clears committed filters immediately even mid-draft.
+
+### Counts
+
+Two different numbers matter, and the component keeps them apart. The trigger badge counts active filter fields: Status with Active and Pending selected counts as one. It would be confusing if adding a second value inside a multi-select inflated the count. Group headings show the opposite number: selections inside that group.
+
+### Chips
+
+Chips print what humans asked for, never internal shapes: `Status: Active, Pending`, `Amount: $100 to $500`, `Created: Last 30 days`. Values that match a configured date preset show the preset name; others fall back to compact dates like Aug 1 to Aug 26. A definition can pass `formatValue` for anything the defaults phrase awkwardly.
+
+Long values truncate inside a capped chip width, and the full text lives in the accessible name plus the native tooltip, so nothing important hides. When the row runs out of room, collapse mode trims the tail into one `+N` control that reopens the panel. Set `valuesDisplay="wrap"` when your layout has room for every chip.
+
+Clicking a chip body reopens the panel scrolled to that group. The cross removes the filter immediately.
+
+### Options, search, and loading
+
+Multi-select lists grow a search input past `searchableThreshold` entries (ten by default), and `searchable: true` forces it either way. Search is case-insensitive and only changes visibility; selected values stay selected and stay listed even when filtered out of view.
+
+Pass `loadOptions` for server-backed choices. Requests debounce by 250 milliseconds, previous results remain visible while a newer query loads, and empty responses show No results match instead of a blank list. When a request fails the field says so, keeps whatever was committed, and offers Try again; unrelated filters keep working.
+
+Result counts next to option labels are display data you supply, rendered muted with tabular numerals. `showOptionCounts` turns rendering off globally without touching definitions. Filter Bar never calculates facets itself.
+
+### Dependent and disabled filters
+
+Country depending on Region is application logic: update State's options in your state handler and drop its entry when a new Country invalidates the old value. Keep the disabled filter visible with a `disabledReason`; hiding it makes the jump in the layout and leaves the dependency undiscoverable.
+
+## Accessibility
+
+The trigger announces as Filter, followed by N active filters whenever the count is positive. Panels carry the heading Filters. Every group has a visible label connected to its controls, remove actions say Remove Status filter rather than a bare Remove, and counts are spoken text rather than decoration.
+
+Keyboard work mirrors the mouse:
+
+| Key | Action |
+| --- | --- |
+| Enter or Space | Open the panel |
+| Tab | Move across trigger, chips, inputs, footer actions |
+| Space | Toggle a focused checkbox or radio choice |
+| Escape | Close the panel, discarding drafts in apply mode |
+
+Closing always returns focus to the trigger. Chip removal buttons are individually focusable, the +N summary is a real button, and clearing is reachable by keyboard wherever it appears. Color never carries state alone: selection pairs fills with checked states, badges pair number with position, and popover motion honors reduced-motion settings.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["filter-bar", "date-range-picker"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the calendar and date utility packages used by range filters:</Step>
+
+```bash
+npm install react-day-picker date-fns
+```
+
+<Step>Copy the Date Range Picker component that custom ranges build on.</Step>
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-picker.tsx" file="date-range-picker.tsx" />
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-calendar.tsx" file="date-range-calendar.tsx" />
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-presets.tsx" file="date-range-presets.tsx" />
+
+<ComponentSource name="date-range-picker" title="components/ui/date-range-picker/date-range-utils.ts" file="date-range-utils.ts" />
+
+<Step>Copy and paste the Filter Bar source.</Step>
+
+<ComponentSource name="filter-bar" title="components/ui/filter-bar/filter-bar-types.ts" file="filter-bar-types.ts" />
+
+<ComponentSource name="filter-bar" title="components/ui/filter-bar/filter-bar-utils.ts" file="filter-bar-utils.ts" />
+
+<ComponentSource name="filter-bar" title="components/ui/filter-bar/filter-bar-context.tsx" file="filter-bar-context.tsx" />
+
+<ComponentSource name="filter-bar" title="components/ui/filter-bar/filter-bar-fields.tsx" file="filter-bar-fields.tsx" />
+
+<ComponentSource name="filter-bar" title="components/ui/filter-bar/filter-bar.tsx" file="filter-bar.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Controlled state is the main documented path, and honestly the one you want anyway, because filtering usually touches something else nearby:
+
+```tsx
+import { FilterBar } from "@/components/ui/filter-bar/filter-bar"
+
+const filters = [
+  {
+    key: "status",
+    label: "Status",
+    type: "multi-select",
+    options: [
+      { label: "Active", value: "active", count: 124 },
+      { label: "Pending", value: "pending", count: 32 },
+      { label: "Archived", value: "archived", count: 18 },
+    ],
+  },
+]
+
+const [value, setValue] = useState<FilterValue[]>([])
+
+<FilterBar filters={filters} value={value} onValueChange={setValue} />
+```
+
+The value is one consistent structure regardless of filter type:
+
+```ts
+type FilterValue = {
+  key: string
+  operator?: string
+  value: unknown
+}
+```
+
+It is UI state, not a database schema. Transform it in `onValueChange` before it reaches a URL, a fetch body, or TanStack's column filters:
+
+```tsx
+onValueChange={(next) => {
+  setFilters(next)
+  updateSearchParams(toUrlParams(next))
+}}
+```
+
+Uncontrolled use works when a prototype just needs a working toolbar: pass `defaultValue` and read values back later through `onValueChange`.
+
+### Defaults worth knowing
+
+Instant mode, collapsed values, search past ten options, counts shown when provided, Sheet below 640px wide, panel aligned start. All are props; none require configuration.
+
+## Don't do this
+
+### Counting selected values as filters
+
+```tsx
+// Bad. One multi-select suddenly outweighs three whole filters.
+const count = filters.reduce((sum, f) => sum + (f.value.length ?? 1), 0)
+```
+
+Count active keys instead. Filter Bar does this for the trigger badge already, and group headings report per-group selections where that detail belongs.
+
+### Reading outside clicks as approval
+
+```tsx
+// Bad. Users who changed their mind still commit expensive queries.
+onOpenChange={(open) => {
+  if (!open && mode === "apply") applyDraft()
+}}
+```
+
+Outside clicks behave like Cancel. If the query behind these filters is cheap enough that accidental application hurts less than re-opening the panel, use instant mode; it exists for exactly that tradeoff.
+
+## Examples
+
+### Searchable long lists
+
+Fourteen categories with facet counts. Type finance to watch non-matches leave, selections included, and try zebra for the empty message.
+
+<ComponentPreview name="filter-bar-searchable" previewClassName="h-auto" />
+
+### Number rules
+
+A price filter starting between $100 and $500. Switch the rule and notice the wording change on both input pairing and chip text.
+
+<ComponentPreview name="filter-bar-number-range" previewClassName="h-auto" />
+
+### Preset dates plus custom windows
+
+Committed ranges match Last 7 days or Last 30 days and shorten into a named chip. Pick Custom to reach the shared Date Range Picker.
+
+<ComponentPreview name="filter-bar-date-range" previewClassName="h-auto" />
+
+### Text operators
+
+Contains starts prefilled. Choose Is empty to watch the input disappear entirely instead of lingering beneath a rule that ignores it.
+
+<ComponentPreview name="filter-bar-text" previewClassName="h-auto" />
+
+### Apply before commit
+
+Change several things, close the panel carelessly, and check the readout underneath: nothing reached the application state until Apply filters ran.
+
+<ComponentPreview name="filter-bar-apply" previewClassName="h-auto" />
+
+### Server-loaded options
+
+Customers load after a delay, debounced while you type. Flip the failure switch to force an error state, then use Try again; whatever you had selected survives the whole episode.
+
+<ComponentPreview name="filter-bar-async" previewClassName="h-auto" />
+
+### A filter we did not predict
+
+Distance ships as a custom renderer over a plain slider. Its formatValue keeps the chip readable, proving custom controls connect to the rest of the system rather than floating beside it.
+
+<ComponentPreview name="filter-bar-custom" previewClassName="h-auto" />
+
+### External ownership
+
+State lives in the parent, Reset proves resets cost one call, and every commit increments a counter you could imagine feeding analytics or URL sync.
+
+<ComponentPreview name="filter-bar-controlled" previewClassName="h-auto" />
+
+### Above a Data Table
+
+Six lines map filter values onto sample orders; nothing about Filter Bar knows Data Table exists. The same callback shape drives Data Grid columns, server params, or whatever else your collection needs.
+
+<ComponentPreview name="filter-bar-data-table" previewClassName="h-auto" />
+
+## API reference
+
+### FilterBar
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `filters` | `FilterDefinition[]` | None | Available filters, ordered by `priority` then declaration. |
+| `value` | `FilterValue[]` | None | Controlled committed value. |
+| `defaultValue` | `FilterValue[]` | `[]` | Initial uncontrolled value. |
+| `onValueChange` | `(values: FilterValue[]) => void` | None | Receives committed values, including clears. |
+| `mode` | `"instant" \| "apply"` | `"instant"` | Draft handling described under Behavior. |
+| `open` / `defaultOpen` / `onOpenChange` | boolean, boolean, callback | Uncontrolled | Panel open state. |
+| `valuesDisplay` | `"collapse" \| "wrap"` | `"collapse"` | Overflow handling for chips. |
+| `searchableThreshold` | number | `10` | Option count that adds search automatically. |
+| `showOptionCounts` | boolean | `true` | Renders supplied `count` data on options. |
+| `mobileBreakpoint` | number | `640` | Width below which the panel becomes a Sheet. |
+| `popoverAlign` | `"start" \| "center" \| "end"` | `"start"` | Desktop panel alignment relative to the trigger. |
+| `disabled` | boolean | `false` | Disables the trigger and all writes. |
+| `labels` | partial labels object | English defaults | Overrides every string listed below. |
+
+Any other div prop forwards to the root element.
+
+### FilterDefinition
+
+| Prop | Applies to | Description |
+| --- | --- | --- |
+| `key`, `label` | all | Identity plus chip and group text. |
+| `type` | all | `text`, `select`, `multi-select`, `number`, `date`, `date-range`, `boolean`, or `custom`. |
+| `options` | select types | `{ label, value, count?, disabled? }` entries. Use string or number values. |
+| `operators` | text, select, number, date | Restricts or reorders the default operator set. |
+| `defaultOperator` | those types | Picks which rule reads first. |
+| `searchable` | multi-select | Forces search beyond the threshold decision. |
+| `loadOptions(query)` | multi-select, select | Async resolver returning options; debounce happens for you. |
+| `priority` | all | Lower numbers appear earlier. |
+| `placeholder` | most | Empty-state hint forwarded to the control. |
+| `disabled`, `disabledReason` | all | Keep unavailable filters visible with their explanation. |
+| `meta` | varies | `prefix`, `suffix`, `min`, `max`, `step` for numbers; `datePresets` for dates; `booleanStyle: "radio" \| "switch"` for booleans. |
+| `formatValue(value)` | all | Replaces automatic chip phrasing. |
+| `render(props)` | `custom` | Full control: receives `value`, `operator`, `onChange`, `clear`, `disabled`, `labelId`, `descriptionId`, and `definition`. Connect the custom widget to the supplied IDs. |
+
+Operators ship per type, sensible defaults first:
+
+- text: Contains, Does not contain, Is, Is not, Starts with, Ends with, Is empty, Is not empty
+- number: Equals, Does not equal, Greater than, Greater than or equal, Less than, Less than or equal, Between, Is empty, Is not empty
+- date: On, Before, After
+- select and boolean: Is
+
+Selection filters omit the operator picker when only one reading exists, which is nearly always the right call for Status.
+
+### Labels
+
+| Key | Default |
+| --- | --- |
+| `trigger` | Filter |
+| `triggerActiveSuffix(count)` | N active filter(s) |
+| `title` | Filters |
+| `clearAll` | Clear all |
+| `clearPanel` | Clear all filters |
+| `cancel` / `apply` | Cancel / Apply filters |
+| `moreCount(n)` | +N |
+| `removeFilter(label)` | Remove X filter |
+| `loadingOptions` / `retryOptions` | Loading... / Try again |
+| `optionsError` | Could not load these options. |
+| `noMatches(query)` | No results match "...". |
+
+Components exported alongside: `FilterBarToolbar`, `FilterBarTrigger`, `FilterBarValues`, `FilterBarValue`, `FilterBarClear`, `FilterBarContent`, `FilterBarHeader`, `FilterBarTitle`, `FilterBarGroups`, `FilterBarGroup`, `FilterBarGroupLabel`, `FilterBarFooter`, `FilterBarApply`, `FilterBarCancel`, and `FilterBarChip`.
