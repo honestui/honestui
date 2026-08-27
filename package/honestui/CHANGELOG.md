@@ -5,7 +5,11 @@ follow semantic versioning and link to the corresponding GitHub release.
 
 ## Unreleased
 
-- No unreleased package changes.
+- Add the DataGrid product component with virtualized rows, inline editing, filtering, and selection.
+- Add the DataTable product component with search, filters, pagination, a toolbar, and view options.
+- Add the DateRangePicker product component with a calendar, presets, and date limits.
+- Add the File Upload product component with drag and drop, paste, validation, and image previews.
+- Add the Filter Bar product component with text, number, and date range fields, async loading, and a DataTable integration.
 
 ## 0.0.9
 
