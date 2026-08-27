@@ -179,6 +179,7 @@ function OperatorChoice({
   onSelect: (operator: string) => void
 }) {
   const { disabled } = useFilterBarContext("OperatorChoice")
+  const { description } = useFilterFieldIds()
   const operators = getOperatorsFor(definition)
   const resolved = current ?? resolveDefaultOperator(definition)
 
@@ -195,8 +196,14 @@ function OperatorChoice({
     >
       <SelectTrigger
         size="small"
+        className="h-(--hui-space-10) w-full"
         aria-label={`${definition.label}${OPERATOR_ARIA_SUFFIX}`}
-      />
+        aria-describedby={
+          definition.disabledReason ? description : undefined
+        }
+      >
+        <SelectValue>{OPERATOR_LABELS[resolved] ?? resolved}</SelectValue>
+      </SelectTrigger>
       <SelectContent>
         {operators.map((operator) => (
           <SelectItem key={operator} value={operator}>
@@ -205,6 +212,39 @@ function OperatorChoice({
         ))}
       </SelectContent>
     </Select>
+  )
+}
+
+function RuleValueRow({
+  definition,
+  current,
+  onSelect,
+  children,
+}: {
+  definition: FilterDefinition
+  current: string | undefined
+  onSelect: (operator: string) => void
+  children?: React.ReactNode
+}) {
+  if (getOperatorsFor(definition).length <= 1) return children
+
+  return (
+    <div
+      className={cn(
+        "grid min-w-0 items-center gap-(--hui-space-2)",
+        children &&
+          "grid-cols-[minmax(8rem,10rem)_minmax(0,1fr)] sm:grid-cols-[minmax(10rem,12rem)_minmax(0,1fr)]",
+        !children && "grid-cols-[minmax(10rem,12rem)]"
+      )}
+      data-slot="filter-bar-rule-value-row"
+    >
+      <OperatorChoice
+        definition={definition}
+        current={current}
+        onSelect={onSelect}
+      />
+      {children}
+    </div>
   )
 }
 
@@ -242,17 +282,14 @@ function FilterTextControl({
 
   return (
     <>
-      <OperatorChoice
+      <RuleValueRow
         definition={definition}
         current={entry?.operator}
         onSelect={(next) =>
           setEntry(definition.key, hidesInput ? undefined : value, next)
         }
-      />
-      {hidesInput ? (
-        // "Is empty" alone states the whole filter; keep the box away.
-        <ControlEmptySlot />
-      ) : (
+      >
+        {hidesInput ? null : (
         <Input
           id={control}
           aria-labelledby={label}
@@ -273,14 +310,11 @@ function FilterTextControl({
           }
           disabled={disabled || definition.disabled}
         />
-      )}
+        )}
+      </RuleValueRow>
       <DisabledReasonNotice definition={definition} />
     </>
   )
-}
-
-function ControlEmptySlot() {
-  return <div className="min-h-(--hui-space-7)" aria-hidden="true" />
 }
 
 /* ------------------------------------------------------------------ */
@@ -316,46 +350,48 @@ function FilterSelectControl({
 
   return (
     <>
-      <OperatorChoice
+      <RuleValueRow
         definition={definition}
         current={entry?.operator}
         onSelect={(next) =>
           setEntry(definition.key, hasSelection ? entry?.value : undefined, next)
         }
-      />
-      <Select
-        value={selected}
-        disabled={disabled || definition.disabled}
-        onValueChange={(value) => {
-          if (value == null) {
-            removeEditing(definition.key)
-            return
-          }
-
-          setEntry(definition.key, resolveFilterOptionValue(definition, value))
-        }}
       >
-        <SelectTrigger
-          size="small"
-          aria-label={definition.label}
-          aria-describedby={
-            definition.disabledReason ? description : undefined
-          }
+        <Select
+          value={selected}
+          disabled={disabled || definition.disabled}
+          onValueChange={(value) => {
+            if (value == null) {
+              removeEditing(definition.key)
+              return
+            }
+
+            setEntry(definition.key, resolveFilterOptionValue(definition, value))
+          }}
         >
-          <SelectValue placeholder={`Any ${definition.label.toLowerCase()}`} />
-        </SelectTrigger>
-        <SelectContent>
-          {(definition.options ?? []).map((option) => (
-            <SelectItem
-              key={optionKey(option)}
-              value={optionKey(option)}
-              disabled={option.disabled}
-            >
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          <SelectTrigger
+            size="small"
+            className="h-(--hui-space-10) w-full"
+            aria-label={definition.label}
+            aria-describedby={
+              definition.disabledReason ? description : undefined
+            }
+          >
+            <SelectValue placeholder={`Any ${definition.label.toLowerCase()}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {(definition.options ?? []).map((option) => (
+              <SelectItem
+                key={optionKey(option)}
+                value={optionKey(option)}
+                disabled={option.disabled}
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </RuleValueRow>
       <DisabledReasonNotice definition={definition} />
     </>
   )
@@ -739,14 +775,14 @@ function FilterNumber({
 
   return (
     <FilterField definition={definition} hideLabel>
-      <OperatorChoice
+      <RuleValueRow
         definition={definition}
         current={entry?.operator}
         onSelect={(next) =>
           setEntry(definition.key, entry?.value ?? undefined, next)
         }
-      />
-      {between ? (
+      >
+        {between ? (
         <div className="flex w-full min-w-0 items-center gap-(--hui-space-2)">
           <AmountInput
             definition={definition}
@@ -767,9 +803,7 @@ function FilterNumber({
             onAmountChange={(amount) => writeRange("max", amount)}
           />
         </div>
-      ) : hidesInput ? (
-        <ControlEmptySlot />
-      ) : (
+        ) : hidesInput ? null : (
         <AmountInput
           definition={definition}
           idSuffix="amount"
@@ -778,7 +812,8 @@ function FilterNumber({
             setEntry(definition.key, amount ?? null)
           }
         />
-      )}
+        )}
+      </RuleValueRow>
       <DisabledReasonNotice definition={definition} />
     </FilterField>
   )
@@ -849,13 +884,33 @@ function FilterDateControl({
 
   return (
     <>
-      <OperatorChoice
+      <RuleValueRow
         definition={definition}
         current={entry?.operator}
         onSelect={(next) =>
           setEntry(definition.key, pickedDay ?? undefined, next)
         }
-      />
+      >
+        <Input
+          id={control}
+          type="date"
+          value={toDateInputString(pickedDay)}
+          onChange={(event) => {
+            const date = fromDateInputString(event.target.value)
+
+            setEntry(definition.key, date ?? null)
+          }}
+          disabled={disabled || definition.disabled}
+          aria-describedby={
+            definition.disabledReason ? description : undefined
+          }
+          aria-label={
+            presets && presets.length > 0
+              ? `${definition.label}, exact date`
+              : `${definition.label} ${operator.replace(/-/g, " ")}`
+          }
+        />
+      </RuleValueRow>
       {presets && presets.length > 0 ? (
         <RadioGroup
           aria-labelledby={label}
@@ -894,25 +949,6 @@ function FilterDateControl({
           ))}
         </RadioGroup>
       ) : null}
-      <Input
-        id={control}
-        type="date"
-        value={toDateInputString(pickedDay)}
-        onChange={(event) => {
-          const date = fromDateInputString(event.target.value)
-
-          setEntry(definition.key, date ?? null)
-        }}
-        disabled={disabled || definition.disabled}
-        aria-describedby={
-          definition.disabledReason ? description : undefined
-        }
-        aria-label={
-          presets && presets.length > 0
-            ? `${definition.label}, exact date`
-            : `${definition.label} ${operator.replace(/-/g, " ")}`
-        }
-      />
       <DisabledReasonNotice definition={definition} />
     </>
   )

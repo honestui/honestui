@@ -1,0 +1,422 @@
+---
+title: File Upload
+description: Select, validate, and review files while your application keeps control of every upload request.
+---
+
+<ComponentPreview name="file-upload-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+FileUpload lets people choose, drop, or paste files. It checks count, type, and size rules in the browser, then shows the selected files and any rejection reasons. Your application supplies upload progress, success, and failure states.
+
+FileUpload does not send requests. Your application receives the selection through `onValueChange`, uploads each `File`, and updates `status`, `progress`, and `error`. There is no endpoint prop or storage adapter.
+
+The default dropzone uses a dashed border, an upload icon, and short instructions. Drag, rejection, and success states pair color with text or an icon. Progress and errors stay in the row for the file they describe.
+
+## Anatomy
+
+<Anatomy title="FileUpload">
+  <AnatomyItem name="Dropzone" description="Clickable dashed area that also accepts drops, Enter, and Space">
+    <AnatomyItem name="Icon" description="Small upload arrow tinted by drag state" />
+    <AnatomyItem name="Title" description="Primary instruction, such as 'Drop files here or click to browse'" />
+    <AnatomyItem name="Description" description="Muted requirements line, such as 'PNG, JPG, PDF up to 10 MB'" />
+  </AnatomyItem>
+  <AnatomyItem name="Trigger" description="Any button that opens the picker; Choose file, Replace, Add more files">
+    <AnatomyItem name="Summary" description="Optional chosen-file text for button-only layouts" />
+  </AnatomyItem>
+  <AnatomyItem name="List" description="Bordered row container, including rejected rows until dismissed">
+    <AnatomyItem name="Item" description="Preview, content column, and actions">
+    <AnatomyItem name="Preview" description="Image thumbnail or file-type tile" />
+      <AnatomyItem name="Content" description="Name, metadata, status, progress, reason" />
+      <AnatomyItem name="Actions" description="Remove plus Retry when status is error" />
+    </AnatomyItem>
+  </AnatomyItem>
+  <AnatomyItem name="Clear all" description="Quiet text action shown above one selected file" />
+</Anatomy>
+
+`<FileUploadList />` renders complete rows, including Retry on failed uploads. Each row part is also exported for custom layouts.
+
+Installing `file-upload` brings `Button` and `Progress` along as registry dependencies, because rows render both internally.
+
+## Behavior
+
+### Ownership of the request
+
+FileUpload reports selections. The application uploads them:
+
+```tsx
+<FileUpload value={files} onValueChange={setFiles} />
+```
+
+Items carry whatever state your uploader produces:
+
+```ts
+type FileUploadStatus = "pending" | "uploading" | "success" | "error"
+
+type FileUploadItemData = {
+  id: string
+  file: File
+  status?: FileUploadStatus
+  progress?: number | null // null means indeterminate
+  error?: string           // your sentence, shown verbatim
+}
+```
+
+A fresh pick starts as `pending`. When a transfer begins, set `uploading` and update `progress` from your transport's progress events. If the length cannot be computed, use `progress: null`. The row then shows an indeterminate bar and the text `Uploading...`.
+
+On failure, set `status: "error"` and add a specific `error` sentence. The original `File` stays in the item, so Retry calls your handler with it again:
+
+```tsx
+onRetry={(item) => startUpload(item)}
+```
+
+Retry renders only when a failed row has an `onRetry` handler. It performs no request itself.
+
+### Validation order
+
+Count rules run first because they answer a different question than size rules. A batch either fits the remaining capacity or it does not, and partial acceptance hides that fact. Dropping three files into two open slots rejects the entire gesture with You can upload up to N files. Remove a file before adding another, printed under the dropzone and announced politely.
+
+Then per-file rules run: empty files, `minSize`, `maxSize`, the `accept` mapping, and your `validateFile` callback. Each rejected file gets a row with its reason. `onReject` receives all rejections from that selection.
+
+These checks are picker feedback, not a security boundary. Filenames and browser-reported MIME types are untrusted. Recheck type and size on the server, inspect file signatures when the format allows it, generate safe storage names, and scan files when your threat model calls for it. The [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html) covers the server controls that this client component cannot provide.
+
+Single-file mode replaces its selection wholesale, whether the new file comes from Replace, a re-pick, or a drop. Extra files in a single-file drop land as rejected rows saying only one file belongs there, because silently discarding someone's second photo teaches nothing.
+
+### Drag feedback
+
+During a hover, browsers expose the number of files being carried, but not their names or sizes. The dropzone can check capacity at that point. A drag that fits uses the accent state. A drag that cannot fit uses the danger state, sets `dropEffect` to `none`, and announces the limit. Type and size checks run after the drop, when the browser exposes each file.
+
+Non-file drags, a text selection for instance, leave the zone untouched.
+
+### Capacity and removal
+
+Add more files disables itself at the cap instead of letting someone fill a queue the rules will reject. Clear all appears above one file, stays a ghost-weight text button, and skips destructive styling since nothing has been uploaded by FileUpload itself. Removing a row is instant with no confirm dialog, appropriate for local picks that nobody's server has seen.
+
+### Focus after changes
+
+After removing a selected or rejected row, focus moves to the next remove action, then the previous one. When no row remains, focus moves to the first available picker trigger or dropzone. Clear all follows the same fallback. Closing the native picker returns focus to the control that opened it.
+
+## Accessibility
+
+Everything reachable by pointer works by keyboard. The dropzone is a real button, so Enter and Space open the picker without drag assistance, removed files report their removal target, and every icon-only action carries a generated accessible label such as Remove invoice-march.pdf, overridable per instance.
+
+<kbd>Tab</kbd> walks trigger, rows, and actions in DOM order. Each row exposes filename, size and type, current status, and any error as visible text, which screen readers announce through normal reading rather than noisy per-row live regions.
+
+One polite status region announces additions, completed uploads, failed uploads, and rejections. Percentage updates stay silent. Row-level Progress elements use labels such as `Uploading report.pdf`, so each progress bar is identifiable on its own.
+
+The instruction inside the dropzone contributes to its accessible name. `FieldLabel` can name the button through its `id`, and `aria-describedby` connects outside help text. Invalid drags change the text and icon as well as the color. Reduced motion removes the indeterminate animation, while the `Uploading...` text remains.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across dropzone, triggers, rows, remove and retry controls |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Open the picker from the focused dropzone or trigger |
+| <kbd>Space</kbd> | Activate remove when a row action holds focus |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["file-upload"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="file-upload" title="components/ui/file-upload/file-upload-types.ts" file="file-upload-types.ts" />
+
+<ComponentSource name="file-upload" title="components/ui/file-upload/file-upload-utils.ts" file="file-upload-utils.ts" />
+
+<ComponentSource name="file-upload" title="components/ui/file-upload/file-upload-context.tsx" file="file-upload-context.tsx" />
+
+<ComponentSource name="file-upload" title="components/ui/file-upload/file-upload.tsx" file="file-upload.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Import the parts your layout needs. Composition mirrors the anatomy tree:
+
+```tsx
+import {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadDescription,
+  FileUploadIcon,
+  FileUploadTitle,
+} from "@/components/ui/file-upload/file-upload"
+
+<FileUpload accept={{ "image/png": [".png"] }} maxSize={10 * 1024 * 1024} multiple>
+  <FileUploadDropzone>
+    <FileUploadIcon />
+    <FileUploadTitle>Drop files here or click to browse</FileUploadTitle>
+    <FileUploadDescription>PNG up to 10 MB</FileUploadDescription>
+  </FileUploadDropzone>
+</FileUpload>
+```
+
+Inside an existing [Field](/docs/components/field), point the label at the dropzone button. Use `aria-describedby` for instructions outside the dropzone:
+
+```tsx
+<Field>
+  <FieldLabel htmlFor="attachments">Attachments</FieldLabel>
+  <FileUpload>
+    <FileUploadDropzone
+      id="attachments"
+      aria-describedby="attachments-help"
+    >
+      <FileUploadIcon />
+      <FileUploadTitle>Drop attachments or browse</FileUploadTitle>
+    </FileUploadDropzone>
+  </FileUpload>
+  <FieldDescription id="attachments-help">
+    PDF or image up to 5 MB.
+  </FieldDescription>
+</Field>
+```
+
+Connecting an uploader takes one callback; wire statuses wherever your requests resolve:
+
+```tsx
+const [items, setItems] = useState<FileUploadItemData[]>([])
+
+<FileUpload value={items} onValueChange={setItems} />
+
+async function upload(item: FileUploadItemData) {
+  patch(item.id, { status: "uploading", progress: null })
+
+  await xhrSend(item.file, (percent) =>
+    patch(item.id, { status: "uploading", progress: percent })
+  )
+
+  patch(item.id, { status: "success", progress: 100 })
+}
+```
+
+FileUpload does not participate in native form submission. If the uploader sits in a form, submit the selected files in your form handler or build a `FormData` object yourself:
+
+```tsx
+async function submitFiles(items: FileUploadItemData[]) {
+  const body = new FormData()
+
+  for (const item of items) {
+    body.append("attachments", item.file, item.file.name)
+  }
+
+  await fetch("/api/attachments", { method: "POST", body })
+}
+```
+
+Paste support opts in per instance with `allowPaste`; directory browsing and camera capture are plain props (`directory`, `capture`) documented under [Less common inputs](#examples).
+
+### Single-file flows
+
+Compact tasks read better with the row replacing the zone entirely. Both buttons below ride the same hidden input, so Replace never spawns a second picker circuit:
+
+```tsx
+<FileUpload value={value} onValueChange={setValue} accept={avatarTypes}>
+  {value.length > 0 ? (
+    <>
+      <FileUploadList />
+      <FileUploadTrigger render={<Button variant="outline" />}>
+        Replace
+      </FileUploadTrigger>
+    </>
+  ) : (
+    <FileUploadDropzone>...</FileUploadDropzone>
+  )}
+</FileUpload>
+```
+
+Button-only layouts work the same way. The summary uses the familiar text `No file chosen` when the selection is empty:
+
+```tsx
+<FileUploadTrigger render={<Button variant="outline" />}>Choose file</FileUploadTrigger>
+<FileUploadSummary />
+```
+
+### Locale and long names
+
+Long filenames truncate in the row, with the full name available through the native `title` tooltip. The default metadata uses English number formatting and binary KB, MB, and GB units. Compose a custom row if your product needs locale-specific file sizes.
+
+## Don't do this
+
+### Sending requests from inside the component
+
+```tsx
+// Bad. Storage credentials leak into every bundle that touches this form.
+<FileUpload bucket="prod-assets" supabaseKey={publicAnonKey} />
+```
+
+```tsx
+// Good. The server signs, the client uploads, the component stays dumb.
+onAccept={(items) => enqueue(items.map((item) => signAndUpload(item.file)))}
+```
+
+Provider adapters hide authentication and retry decisions inside a presentation component. Keep transport in the application layer.
+
+### Faking progress
+
+```tsx
+// Bad. Nine seconds of lies followed by sudden truth.
+setInterval(() => bumpProgress(+4), 300)
+await doRealUpload()
+patch(item.id, { status: "success" })
+```
+
+Use `progress: null` when the transport cannot report bytes sent. Do not invent percentages.
+
+## Examples
+
+The examples below cover selected files, upload states, rejection, alternate inputs, and controlled ownership.
+
+<ComponentPreview name="file-upload-selected" previewClassName="h-auto min-h-[280px]" />
+
+### Multiple files and capacity
+
+This example shows the selected count, a disabled Add more action at the cap, and Clear all.
+
+### Upload lifecycle
+
+One determinate climb, one indeterminate ride, one finished row, and one scripted connection loss with a working Retry. Retry replays succeed because this demo, like your app, still holds the original File.
+
+<ComponentPreview name="file-upload-states" previewClassName="h-auto min-h-[340px]" />
+
+### Rejections
+
+Deliberately tight limits, so ordinary browsing trips the rules. Rows explain themselves and wait for dismissal.
+
+<ComponentPreview name="file-upload-rejected" previewClassName="h-auto min-h-[320px]" />
+
+### Drag states
+
+The examples show valid and over-capacity drag states. Count rules run during the drag. Type and size rules wait for the drop.
+
+<ComponentPreview name="file-upload-drag-over" previewClassName="h-auto min-h-[320px]" />
+
+### Single file
+
+Replace and the empty state take over from the dropzone, sized for avatars, certificates, and imports that take exactly one document.
+
+<ComponentPreview name="file-upload-single" previewClassName="h-auto min-h-[220px]" />
+
+### Button only
+
+Use this layout for filters and other compact controls. It shows `No file chosen` while empty.
+
+<ComponentPreview name="file-upload-button-only" previewClassName="h-auto min-h-[120px]" />
+
+### Disabled, inside Field
+
+The enabled example makes the disabled border, text, and cursor changes easy to compare.
+
+<ComponentPreview name="file-upload-disabled" previewClassName="h-auto min-h-[360px]" />
+
+### Controlled ownership
+
+Reset writes through the same callback everything else uses, and the commit counter makes round-trips visible.
+
+<ComponentPreview name="file-upload-controlled" previewClassName="h-auto min-h-[380px]" />
+
+### Custom validation
+
+Return a sentence from `validateFile` to reject a file with that reason.
+
+<ComponentPreview name="file-upload-validation" previewClassName="h-auto min-h-[260px]" />
+
+### Image previews
+
+This example creates blob thumbnails from an SVG and a JPG, then updates their progress and status.
+
+<ComponentPreview name="file-upload-images" previewClassName="h-auto min-h-[320px]" />
+
+### Paste support
+
+Focus the zone, press paste, and clipboard screenshots travel the identical validation path.
+
+<ComponentPreview name="file-upload-paste" previewClassName="h-auto min-h-[300px]" />
+
+### Less common inputs
+
+Directory picking and camera capture together, both opt-in props with their caveats stated next to the controls that enable them.
+
+<ComponentPreview name="file-upload-sources" previewClassName="h-auto min-h-[560px]" />
+
+## API reference
+
+### FileUpload
+
+Root provider and layout wrapper. Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `FileUploadItemData[]` | None | Controlled selection owned by your application. |
+| `defaultValue` | `FileUploadItemData[]` | `[]` | Initial items when uncontrolled. |
+| `onValueChange` | `(items) => void` | None | Every accepted mutation, including clears. |
+| `accept` | `Record<string, string[]> \| string` | None | MIME-to-extension map filtering the picker and rules. |
+| `multiple` | boolean | `false` | Allows stacking selections instead of replacing. |
+| `maxFiles` | number | None | Capacity ceiling driving batch rejection and trigger disabling. |
+| `maxSize` / `minSize` | number | None | Per-file byte bounds quoted back in reasons. |
+| `disabled` | boolean | `false` | Blocks clicks, drops, pastes, and focus entry. |
+| `onAccept` | `(items) => void` | None | Fires after validation passes. |
+| `onReject` | `(rejections) => void` | None | One call per selection carrying every rejection. |
+| `onRemove` | `(item) => void` | None | User-initiated removals only. |
+| `onRetry` | `(item) => void` | None | Reports retry intent; you restart the request. |
+| `validateFile` | `(file) => string \| null` | None | Custom rule returning a display-ready reason or null. |
+| `allowPaste` | boolean | `false` | Reads clipboard files while focus sits inside this uploader. |
+| `directory` | boolean | `false` | Switches the picker to folder selection where supported. |
+| `capture` | `"user" \| "environment"` | None | Requests a phone camera facing direction. |
+
+### Parts
+
+| Part | Renders | Notes |
+| --- | --- | --- |
+| `FileUploadDropzone` | button | Accepts native button props, handles picker and drop actions, and prints selection errors beneath itself. Use `wrapperClassName` to style its outer layout wrapper. |
+| `FileUploadIcon` | svg, 24px | Tint tracks idle, valid, and invalid drag states. |
+| `FileUploadTitle` | span | Reads primary instructions; swap wording during drags for non-color feedback. |
+| `FileUploadDescription` | span | Muted requirements line that joins the accessible name. |
+| `FileUploadTrigger` | configurable button | Merges with `render={<Button />}` and disables at the file limit. |
+| `FileUploadAddMore` | outline Button | Plus-marked convenience wrapper around the trigger. |
+| `FileUploadClear` | link Button | Renders nothing at zero or one file. |
+| `FileUploadList` | ul | Contains item rows plus rejection rows; `showImagePreviews={false}` uses file-type tiles. |
+| `FileUploadItem` | li | Requires an `item` prop; sets row context for its children. |
+| `FileUploadItemPreview` | img or tile | Uses image bytes or `src`; `showImagePreview={false}` forces a file-type tile. |
+| `FileUploadItemContent` | div | Flex row holding name, metadata, status; wraps progress and reason below. |
+| `FileUploadItemActions` | div | Holds Retry and Remove in the row's action column. |
+| `FileUploadItemName` | span | Truncates with title fallback; strongest weight in the row. |
+| `FileUploadItemMetadata` | span | Human size joined with uppercase extension by a middle dot. |
+| `FileUploadItemStatus` | span | Waiting, uploading, uploaded, or failed text with a status icon. |
+| `FileUploadItemProgress` | Progress track | Thin determinate or indeterminate bar labeled `Uploading {name}`. |
+| `FileUploadItemReason` | span | Shows `item.error` verbatim under the name. |
+| `FileUploadItemRetry` | link Button | Renders for error rows when `onRetry` is set. Your handler owns the request. |
+| `FileUploadItemRemove` | ghost icon Button | Becomes plain-text Remove on failed rows; focus target follows removals. |
+| `FileUploadSummary` | span | Chosen-file echo for trigger-only layouts. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `FileUploadItemData` | `{ id: string; file: File; status?: FileUploadStatus; progress?: number \| null; error?: string }` |
+| `FileUploadStatus` | `"pending" \| "uploading" \| "success" \| "error"` |
+| `FileUploadRejection` | `{ id: string; file: File; reason: string }` |
+| `FileUploadAccept` | `Record<string, string[]> \| string` |
+| `FileUploadDragState` | `"idle" \| "valid" \| "invalid"` |
+
+Rows use HonestUI spacing, color, radius, and focus tokens. Test custom token values in every theme your application supports.

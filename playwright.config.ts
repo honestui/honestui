@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const port = 3100;
 const providedBaseURL = process.env.PLAYWRIGHT_BASE_URL;
 const baseURL = providedBaseURL ?? "http://127.0.0.1:" + port;
-const compatibilityTests = /(data-grid|filter-bar)\.compat\.spec\.ts/;
+const compatibilityTests = /(data-grid|file-upload|filter-bar)\.compat\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./tests/e2e",

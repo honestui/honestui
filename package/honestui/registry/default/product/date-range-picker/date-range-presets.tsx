@@ -93,7 +93,7 @@ export function DateRangePresets({
       data-slot="date-range-presets"
       role="group"
       aria-label={ariaLabel}
-      className={cn("flex flex-col gap-[var(--hui-space-1)]", className)}
+      className={cn("flex flex-col gap-[var(--hui-space-2)]", className)}
     >
       {presets.map((preset) => {
         const isSelected = presetMatches(preset, value)
@@ -107,8 +107,10 @@ export function DateRangePresets({
             aria-pressed={isSelected}
             data-selected={isSelected || undefined}
             className={cn(
-              "justify-start hover:bg-[var(--hui-color-background-base-primary-hover)]! active:bg-[var(--hui-color-background-base-primary-hover)]!",
-              "data-[selected]:bg-[var(--hui-color-background-accent-primary)]! data-[selected]:text-[var(--hui-color-foreground-accent-primary-hover)]!"
+              "h-[var(--hui-space-9)] w-full shrink-0 justify-start rounded-[var(--hui-radius-2)] px-[var(--hui-space-4)]",
+              "[font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+              "hover:bg-[var(--hui-color-background-base-primary-hover)]! active:bg-[var(--hui-color-background-base-primary-hover)]!",
+              "data-[selected]:bg-[var(--hui-color-background-accent-primary)]! data-[selected]:text-[var(--hui-color-foreground-accent-primary-hover)]! data-[selected]:[font-weight:var(--hui-font-weight-medium)]!"
             )}
             onClick={() => onSelect(preset.getValue())}
           >

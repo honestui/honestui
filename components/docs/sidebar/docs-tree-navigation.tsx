@@ -51,6 +51,7 @@ const NEW_PAGES: readonly { url: string; releasedOn: string }[] = [
   { url: "/docs/product/data-grid", releasedOn: "2026-08-26" },
   { url: "/docs/product/data-table", releasedOn: "2026-08-25" },
   { url: "/docs/product/date-range-picker", releasedOn: "2026-08-26" },
+  { url: "/docs/product/file-upload", releasedOn: "2026-08-26" },
   { url: "/docs/product/filter-bar", releasedOn: "2026-08-26" },
   { url: "/docs/shaders/chromatic-image", releasedOn: "2026-08-18" },
   { url: "/docs/shaders/dither", releasedOn: "2026-08-18" },

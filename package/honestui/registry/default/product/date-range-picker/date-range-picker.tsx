@@ -429,18 +429,18 @@ function DateRangePicker({
                   onSelect={handlePresetSelect}
                   ariaLabel={labels.presetsGroup}
                   disabled={disabled}
-                  className="flex-row overflow-x-auto pb-[var(--hui-space-1)] min-[52rem]:w-36 min-[52rem]:shrink-0 min-[52rem]:flex-col min-[52rem]:overflow-visible"
+                  className="flex-row gap-x-[var(--hui-space-2)] overflow-x-auto pb-[var(--hui-space-1)] min-[52rem]:w-40 min-[52rem]:shrink-0 min-[52rem]:flex-col min-[52rem]:overflow-visible"
                 />
                 <Separator
                   orientation="vertical"
                   size="full"
-                  variant="tertiary"
+                  variant="secondary"
                   className="hidden min-[52rem]:block"
                 />
                 <Separator
                   orientation="horizontal"
                   size="full"
-                  variant="tertiary"
+                  variant="secondary"
                   className="min-[52rem]:hidden"
                 />
               </>
@@ -465,7 +465,7 @@ function DateRangePicker({
 
           {showFooter && (
             <>
-              <Separator size="full" variant="tertiary" className="mt-[var(--hui-space-4)] mb-[var(--hui-space-3)]" />
+              <Separator size="full" variant="secondary" className="mt-[var(--hui-space-4)] mb-[var(--hui-space-3)]" />
               <div className="flex items-center justify-between">
                 {canClear ? (
                   <Button type="button" variant="ghost" size="sm" onClick={handleClear}>

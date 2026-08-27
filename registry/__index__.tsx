@@ -160,6 +160,19 @@ import filter_bar_async from "./default/examples/filter-bar-async";
 import filter_bar_custom from "./default/examples/filter-bar-custom";
 import filter_bar_controlled from "./default/examples/filter-bar-controlled";
 import filter_bar_data_table from "./default/examples/filter-bar-data-table";
+import file_upload_demo from "./default/examples/file-upload-demo";
+import file_upload_selected from "./default/examples/file-upload-selected";
+import file_upload_single from "./default/examples/file-upload-single";
+import file_upload_button_only from "./default/examples/file-upload-button-only";
+import file_upload_states from "./default/examples/file-upload-states";
+import file_upload_rejected from "./default/examples/file-upload-rejected";
+import file_upload_drag_over from "./default/examples/file-upload-drag-over";
+import file_upload_disabled from "./default/examples/file-upload-disabled";
+import file_upload_controlled from "./default/examples/file-upload-controlled";
+import file_upload_validation from "./default/examples/file-upload-validation";
+import file_upload_images from "./default/examples/file-upload-images";
+import file_upload_paste from "./default/examples/file-upload-paste";
+import file_upload_sources from "./default/examples/file-upload-sources";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -645,6 +658,19 @@ export const Index: Record<string, { component: ComponentType }> = {
   "filter-bar-custom": { component: filter_bar_custom },
   "filter-bar-controlled": { component: filter_bar_controlled },
   "filter-bar-data-table": { component: filter_bar_data_table },
+  "file-upload-demo": { component: file_upload_demo },
+  "file-upload-selected": { component: file_upload_selected },
+  "file-upload-single": { component: file_upload_single },
+  "file-upload-button-only": { component: file_upload_button_only },
+  "file-upload-states": { component: file_upload_states },
+  "file-upload-rejected": { component: file_upload_rejected },
+  "file-upload-drag-over": { component: file_upload_drag_over },
+  "file-upload-disabled": { component: file_upload_disabled },
+  "file-upload-controlled": { component: file_upload_controlled },
+  "file-upload-validation": { component: file_upload_validation },
+  "file-upload-images": { component: file_upload_images },
+  "file-upload-paste": { component: file_upload_paste },
+  "file-upload-sources": { component: file_upload_sources },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },

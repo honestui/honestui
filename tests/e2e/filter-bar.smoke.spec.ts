@@ -96,6 +96,26 @@ test.describe("Filter Bar docs previews", () => {
     expect(results.violations).toEqual([])
   })
 
+  test("operator dropdown and value control share one aligned row", async ({ page }) => {
+    await openDocs(page)
+
+    const first = trigger(page, 0)
+    await first.scrollIntoViewIfNeeded()
+    await first.click()
+
+    const amount = page.locator(
+      '[data-slot="filter-bar-panel"] [data-filter-key="amount"]'
+    )
+    const rule = amount.getByRole("combobox", { name: "Amount rule" })
+    const value = amount.locator('[data-slot="number-field"]')
+    const ruleBounds = await rule.boundingBox()
+    const valueBounds = await value.boundingBox()
+
+    await expect(rule).toContainText("Equals")
+    expect(ruleBounds?.y).toBe(valueBounds?.y)
+    expect(ruleBounds?.height).toBe(valueBounds?.height)
+  })
+
   test("chip remove button clears its filter from the bar", async ({ page }) => {
     await openDocs(page)
 
