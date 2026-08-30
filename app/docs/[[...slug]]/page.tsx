@@ -23,14 +23,15 @@ export async function generateMetadata(props: {
 
   if (!page) return {};
 
-  const { title, metaTitle, description, image } = page.data;
+  const { title, metaTitle, description, metaDescription, image } = page.data;
+  const metadataDescription = metaDescription ?? description;
 
   const url = absoluteUrl(page.url);
   const ogImage = absoluteUrl(image ?? "/og/og-image.png");
 
   return {
     title: metaTitle ?? title,
-    description,
+    description: metadataDescription,
     alternates: {
       canonical: url,
       types: {
@@ -41,7 +42,7 @@ export async function generateMetadata(props: {
       type: "article",
       url,
       title: metaTitle ?? title,
-      description,
+      description: metadataDescription,
       siteName: "Honest UI",
       images: [
         {
@@ -55,7 +56,7 @@ export async function generateMetadata(props: {
     twitter: {
       card: "summary_large_image",
       title: metaTitle ?? title,
-      description,
+      description: metadataDescription,
       images: [ogImage],
     },
   };
@@ -71,12 +72,12 @@ function buildDocsJsonLd(page: DocsPage) {
   const section = page.slugs[0];
   if (section === "charts") {
     crumbs.push({
-      name: "Charts",
+      name: "React Charts",
       url: absoluteUrl("/docs/charts"),
     });
   } else if (section === "components") {
     crumbs.push({
-      name: "Components",
+      name: "React UI Components",
       url: absoluteUrl("/docs/component-guide"),
     });
   } else if (section === "product" && page.url !== "/docs/product") {

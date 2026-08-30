@@ -463,6 +463,9 @@ export function LandingShowcase() {
       <section className="flex flex-col px-5 py-16 sm:px-8 md:py-24 lg:min-h-0 lg:py-10">
         <div className="flex flex-1 items-center lg:justify-end">
           <div className="w-full max-w-[42rem] lg:max-w-[34rem]">
+            <p className="mb-4 text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
+              Open-source React UI components and charts
+            </p>
             <h1 className="text-[clamp(2.375rem,10vw,3.25rem)]! leading-[0.94]! font-medium tracking-[var(--hui-letter-spacing-t4)]">
               <span className="sr-only">Honest UI: </span>
               <span className="block whitespace-nowrap">Good interfaces.</span>
@@ -490,6 +493,24 @@ export function LandingShowcase() {
                 Browse components
               </Link>
             </div>
+            <nav
+              aria-label="Browse Honest UI collections"
+              className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--hui-color-foreground-base-secondary)]"
+            >
+              <span>Browse:</span>
+              <Link className={styles.inlineLink} href="/docs/component-guide">
+                UI components
+              </Link>
+              <Link className={styles.inlineLink} href="/docs/charts">
+                React charts
+              </Link>
+              <Link className={styles.inlineLink} href="/docs/icons">
+                Icons
+              </Link>
+              <Link className={styles.inlineLink} href="/docs/animated">
+                Animated components
+              </Link>
+            </nav>
             <p className="mt-4 text-xs text-[var(--hui-color-foreground-base-secondary)]">
               These examples are interactive previews; they don’t submit data.
             </p>

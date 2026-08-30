@@ -5,10 +5,10 @@ import { SiteHeader } from "@/components/site-header"
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Honest UI — Source-First React Components",
+    absolute: "Open Source React UI Components & Charts — Honest UI",
   },
   description:
-    "Thoughtful React components, charts, icons, and visual effects with good defaults, visible source, and no lock-in.",
+    "Open-source React UI components you can copy and adapt, plus composable charts, icons, and visual effects from the Honest UI package.",
   alternates: {
     canonical: "/",
     types: {

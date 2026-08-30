@@ -1,10 +1,12 @@
 ---
-title: Charts
-description: Choose and compose Honest UI charts for product data.
+title: React Charts
+metaTitle: React Chart Components with Apache ECharts
+metaDescription: Browse composable React chart components built on Apache ECharts, including line, bar, area, pie, scatter, and heatmap charts.
+description: Browse composable React chart components built on Apache ECharts, including line, bar, area, pie, scatter, and heatmap charts.
 image: /og/og-image.png
 ---
 
-Honest UI charts are React components built on <Link href="https://echarts.apache.org/" _blank={true}>Apache ECharts</Link>. Install them from `honestui/charts`, then compose the axes, series, legend, tooltip, and controls your visualization needs.
+Honest UI charts are composable React chart components built on <Link href="https://echarts.apache.org/" _blank={true}>Apache ECharts</Link>. Install them from `honestui/charts`, then compose the axes, series, legend, tooltip, and controls your visualization needs.
 
 Charts are package imports rather than CLI-copied UI components. You can inspect their source in the Honest UI repository and use ECharts options when the component API does not expose a setting directly.
 
@@ -12,12 +14,12 @@ Charts are package imports rather than CLI-copied UI components. You can inspect
 
 | Chart | Use it to | Use something else when |
 | --- | --- | --- |
-| Area | Show change over time when magnitude or contribution to a total matters | A filled area would make close comparisons harder |
-| Bar | Compare values across categories | The primary question is change over a continuous sequence |
-| Line | Show trends and rate of change across an ordered dimension | The data is unordered or category comparison matters more |
-| Pie or donut | Show a simple part-to-whole relationship with a few categories | Values are close, there are many categories, or precision matters |
-| Scatter | Find relationships, clusters, and outliers across numeric measures | One axis is categorical |
-| Heatmap | Find patterns across two categorical dimensions | Readers need frequent point-by-point comparison |
+| [Area chart](/docs/charts/area-chart/static) | Show change over time when magnitude or contribution to a total matters | A filled area would make close comparisons harder |
+| [Bar chart](/docs/charts/bar-chart/static) | Compare values across categories | The primary question is change over a continuous sequence |
+| [Line chart](/docs/charts/line-chart/static) | Show trends and rate of change across an ordered dimension | The data is unordered or category comparison matters more |
+| [Pie or donut chart](/docs/charts/pie-chart/static) | Show a simple part-to-whole relationship with a few categories | Values are close, there are many categories, or precision matters |
+| [Scatter chart](/docs/charts/scatter-chart/static) | Find relationships, clusters, and outliers across numeric measures | One axis is categorical |
+| [Heatmap](/docs/charts/heatmap/static) | Find patterns across two categorical dimensions | Readers need frequent point-by-point comparison |
 
 ## How composition works
 
