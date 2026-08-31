@@ -51,6 +51,7 @@ export function ComponentPreview({
       className={cn(className)}
       containerClassName={containerClassName}
       component={<Component />}
+      data-component-preview={name}
       hideCode={hideCode}
       playground={playground}
       source={<ComponentSource collapsible={false} name={name} />}

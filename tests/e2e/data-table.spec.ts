@@ -1,10 +1,19 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+
+async function getDataTableDemo(page: Page, name: string): Promise<Locator> {
+  const preview = page.locator(`[data-component-preview="${name}"]`);
+  await preview.scrollIntoViewIfNeeded();
+
+  const table = preview.locator('[data-slot="data-table"]');
+  await expect(table).toBeVisible();
+  return table;
+}
 
 test("data table cycles sortable columns through ascending, descending, and unsorted", async ({ page }) => {
   await page.goto("/docs/product/data-table");
 
-  const demo = page.locator('[data-slot="data-table"]').first();
+  const demo = await getDataTableDemo(page, "data-table-demo");
   const customerHeader = demo.getByRole("columnheader", {
     name: /Sort by Customer/,
   });
@@ -26,7 +35,7 @@ test("data table cycles sortable columns through ascending, descending, and unso
 test("blank space in a sortable header does not activate sorting", async ({ page }) => {
   await page.goto("/docs/product/data-table");
 
-  const demo = page.locator('[data-slot="data-table"]').first();
+  const demo = await getDataTableDemo(page, "data-table-demo");
   const spentHeader = demo.getByRole("columnheader", {
     name: /Sort by Spent/,
   });
@@ -49,7 +58,10 @@ test("date columns sort their underlying dates instead of formatted labels", asy
 }) => {
   await page.goto("/docs/product/data-table");
 
-  const customCellsDemo = page.locator('[data-slot="data-table"]').nth(3);
+  const customCellsDemo = await getDataTableDemo(
+    page,
+    "data-table-custom-cells",
+  );
   const closeDateHeader = customCellsDemo.getByRole("columnheader", {
     name: /Sort by Close date/,
   });
@@ -79,9 +91,14 @@ test("date columns sort their underlying dates instead of formatted labels", asy
 test("search filters rows and clearing restores them", async ({ page }) => {
   await page.goto("/docs/product/data-table");
 
-  const searchDemo = page.locator('[data-slot="data-table"]').nth(1);
+  const searchDemo = await getDataTableDemo(
+    page,
+    "data-table-search-filters",
+  );
 
-  const search = searchDemo.getByRole("textbox");
+  const search = searchDemo.getByRole("searchbox", {
+    name: "Search invoices",
+  });
   await search.fill("Acme");
   await expect(searchDemo.getByRole("row")).toHaveCount(2);
 
@@ -92,7 +109,7 @@ test("search filters rows and clearing restores them", async ({ page }) => {
 test("selection summary appears and clears", async ({ page }) => {
   await page.goto("/docs/product/data-table");
 
-  const selectionDemo = page.locator('[data-slot="data-table"]').nth(2);
+  const selectionDemo = await getDataTableDemo(page, "data-table-selection");
   await selectionDemo
     .getByRole("checkbox", { name: "Select Olivia Rhye" })
     .click();
@@ -106,7 +123,10 @@ test("selection summary appears and clears", async ({ page }) => {
 test("filters menu toggles facet and shows count", async ({ page }) => {
   await page.goto("/docs/product/data-table");
 
-  const filterDemo = page.locator('[data-slot="data-table"]').nth(1);
+  const filterDemo = await getDataTableDemo(
+    page,
+    "data-table-search-filters",
+  );
   await filterDemo.getByRole("button", { name: /Filters/ }).click();
   await page
     .getByRole("menuitemcheckbox", { name: "Overdue" })
@@ -120,7 +140,10 @@ test("filters menu toggles facet and shows count", async ({ page }) => {
 test("columns menu changes column visibility", async ({ page }) => {
   await page.goto("/docs/product/data-table");
 
-  const filterDemo = page.locator('[data-slot="data-table"]').nth(1);
+  const filterDemo = await getDataTableDemo(
+    page,
+    "data-table-search-filters",
+  );
   await filterDemo.getByRole("button", { name: "Columns" }).click();
   await page.getByRole("menuitemcheckbox", { name: "Customer" }).click();
 
@@ -134,7 +157,7 @@ test("server table paginates rows and resets after a page-size change", async ({
 }) => {
   await page.goto("/docs/product/data-table");
 
-  const serverDemo = page.locator('[data-slot="data-table"]').last();
+  const serverDemo = await getDataTableDemo(page, "data-table-server");
   await expect(serverDemo.getByText("1-10 of 37")).toBeVisible();
   await expect(serverDemo.getByRole("row")).toHaveCount(11);
 
