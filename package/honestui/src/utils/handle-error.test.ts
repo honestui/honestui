@@ -83,7 +83,7 @@ describe("handleError", () => {
     ).toBe("npx honestui@4.5.0 add 'hello world' 'it'\\''s-working'")
   })
 
-  it("does not suggest an unavailable previous minor before exiting", () => {
+  it("suggests the available previous minor before exiting", () => {
     expect(() => {
       handleError(
         new RegistryNotFoundError(
@@ -92,9 +92,10 @@ describe("handleError", () => {
       )
     }).toThrow("process.exit:1")
 
-    expect(logger.error).not.toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       "You can also try a previous version to see if that works:"
     )
+    expect(logger.error).toHaveBeenCalledWith("npx honestui@0.1.0 add foo")
     expect(exit).toHaveBeenCalledWith(1)
   })
 })

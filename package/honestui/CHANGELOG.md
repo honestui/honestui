@@ -5,6 +5,11 @@ follow semantic versioning and link to the corresponding GitHub release.
 
 ## Unreleased
 
+## 0.2.0 - 2026-09-01
+
+- Move CLI project scaffolds into the public `honestui/honestui-starters` repository.
+- Add complete Next.js, Vite, TanStack Start, React Router, Astro, and Laravel application starters, plus monorepo variants for every supported framework except Laravel.
+- Include the full public component registry, HonestUI styles, and local font files in every starter.
 - Add the DataGrid product component with virtualized rows, inline editing, filtering, and selection.
 - Add the DataTable product component with search, filters, pagination, a toolbar, and view options.
 - Add the DateRangePicker product component with a calendar, presets, and date limits.
