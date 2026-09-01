@@ -482,6 +482,13 @@ test("makes Developer Resources discoverable by name", async ({
     /Use this skill when[\s\S]{0,400}?(Install|Add|Customize|Debug)/,
   );
 
+  const designGuidelines = await request.get("/design.md");
+  expect(designGuidelines.status()).toBe(200);
+  expect(designGuidelines.headers()["content-type"]).toContain("text/markdown");
+  expect(await designGuidelines.text()).toContain(
+    "# Honest UI design guidelines for report websites",
+  );
+
   // The well-known skill copy must match the served one.
   const wellKnownSkill = await request.get(
     "/.well-known/agent-skills/honest-ui/SKILL.md",

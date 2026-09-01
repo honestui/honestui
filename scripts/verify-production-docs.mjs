@@ -170,6 +170,7 @@ const requiredAgentResources = [
   ["/llms.txt", /^text\/plain\b/i],
   ["/llms-full.txt", /^text\/plain\b/i],
   ["/skill.md", /^text\/markdown\b/i],
+  ["/design.md", /^text\/markdown\b/i],
   ["/.well-known/agent-skills/honest-ui/SKILL.md", /^text\/markdown\b/i],
   ["/.well-known/agent-skills/index.json", /^application\/json\b/i],
 ]
