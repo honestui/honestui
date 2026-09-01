@@ -9,7 +9,8 @@ import { execa } from "execa"
 import fs from "fs-extra"
 
 const GITHUB_REPO_URL =
-  process.env.HONESTUI_GITHUB_URL ?? "https://github.com/honestui/honestui.git"
+  process.env.HONESTUI_GITHUB_URL ??
+  "https://github.com/honestui/honestui-starters.git"
 
 export interface TemplateOptions {
   projectPath: string

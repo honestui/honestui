@@ -84,7 +84,7 @@ describe("defaultScaffold", () => {
       "1",
       "--filter=blob:none",
       "--sparse",
-      "https://github.com/honestui/honestui.git",
+      "https://github.com/honestui/honestui-starters.git",
       expect.stringContaining("honestui-template-"),
     ])
 
