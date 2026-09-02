@@ -19,6 +19,12 @@
       }
     ],
     "paths": {
+      "@/components/dashboard/*": [
+        "./registry/default/blocks/analytics-dashboard/components/dashboard/*"
+      ],
+      "@/lib/dashboard/*": [
+        "./registry/default/blocks/analytics-dashboard/lib/dashboard/*"
+      ],
       "@/*": ["./*"],
       "honestui/icons": ["./package/honestui/src/icons.ts"],
       "honestui/logos": ["./package/honestui/src/logos.ts"],
