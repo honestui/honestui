@@ -38,6 +38,10 @@ export interface TemplateConfig {
   templateDir: string
   // Framework names that map to this template.
   frameworks?: string[]
+  // Standalone templates scaffold a complete, pre-configured application
+  // (components.json, styles, and components included), so init skips the
+  // base/preset flow entirely.
+  standalone?: boolean
   scaffold?: (options: TemplateOptions) => Promise<void>
   create: (options: TemplateOptions) => Promise<void>
   init?: (options: TemplateInitOptions) => Promise<Config>
@@ -95,7 +99,7 @@ export function resolveTemplate(
 }
 
 // Get the appropriate install args for the given package manager.
-function getInstallArgs(packageManager: string): string[] {
+export function getInstallArgs(packageManager: string): string[] {
   switch (packageManager) {
     case "pnpm":
       // pnpm enables frozen lockfile in CI by default.

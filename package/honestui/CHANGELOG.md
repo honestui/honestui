@@ -5,6 +5,8 @@ follow semantic versioning and link to the corresponding GitHub release.
 
 ## Unreleased
 
+- Add the `dashboard` template: `honestui create -t dashboard` scaffolds the complete Northstar analytics dashboard from the `honestui/honestui-dashboard` template repository. Standalone templates ship fully configured, so init skips the base and preset prompts for them.
+
 ## 0.2.0 - 2026-09-01
 
 - Move CLI project scaffolds into the public `honestui/honestui-starters` repository.

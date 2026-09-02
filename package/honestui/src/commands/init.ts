@@ -121,7 +121,7 @@ export const init = new Command()
   .argument("[components...]", "names, url or local path to component")
   .option(
     "-t, --template <template>",
-    "the template to use. (next, start, vite, react-router, laravel, astro)"
+    "the template to use. (next, start, vite, react-router, laravel, astro, dashboard)"
   )
   .option("-b, --base <base>", "the component library to use. (base)")
   .option("--monorepo", "scaffold a monorepo project.")
@@ -358,6 +358,23 @@ export const init = new Command()
           process.exit(0)
         }
 
+        const isStandaloneTemplate = Boolean(
+          options.template &&
+            templates[options.template as keyof typeof templates]?.standalone
+        )
+
+        // Standalone templates scaffold a complete application.
+        if (isStandaloneTemplate && hasPackageJson) {
+          logger.break()
+          logger.error(
+            `The ${highlighter.info(
+              options.template!
+            )} template creates a new project and cannot be used inside an existing one.`
+          )
+          logger.break()
+          process.exit(1)
+        }
+
         // Prompt for monorepo if the template supports it (new projects only).
         if (
           options.monorepo === undefined &&
@@ -374,13 +391,17 @@ export const init = new Command()
           options.monorepo = monorepo
         }
 
-        // Prompt for base if not provided.
-        if (!options.base) {
-          options.base = await promptForBase()
-        }
+        // Standalone templates ship their own configuration and styles,
+        // so there is no base or preset to choose.
+        if (!isStandaloneTemplate) {
+          // Prompt for base if not provided.
+          if (!options.base) {
+            options.base = await promptForBase()
+          }
 
-        // Show interactive preset list.
-        options.preset = true
+          // Show interactive preset list.
+          options.preset = true
+        }
       }
 
       if (options.preset !== undefined) {
@@ -644,6 +665,27 @@ export async function runInit(
   const templatePostInit = newProjectTemplate
     ? selectedTemplate?.postInit
     : undefined
+
+  // Standalone templates scaffold a complete, pre-configured application —
+  // there is no config or preset flow to run. Return the project's own config.
+  if (
+    selectedTemplate?.standalone &&
+    newProjectTemplate &&
+    !options.components?.length
+  ) {
+    if (templatePostInit) {
+      await templatePostInit({ projectPath: options.cwd })
+    }
+
+    const config = await getConfig(options.cwd)
+    if (!config) {
+      throw new Error(
+        `Could not read components.json in the new project at ${options.cwd}.`
+      )
+    }
+
+    return config
+  }
 
   if (selectedTemplate?.init) {
     const result = await selectedTemplate.init({

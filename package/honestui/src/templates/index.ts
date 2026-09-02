@@ -1,4 +1,5 @@
 import { astro } from "./astro"
+import { dashboard } from "./dashboard"
 import { laravel } from "./laravel"
 import { next } from "./next"
 import { reactRouter } from "./react-router"
@@ -15,6 +16,7 @@ export const templates = {
   "react-router": reactRouter,
   astro,
   laravel,
+  dashboard,
 }
 
 // Resolve a template key from a detected framework name.
