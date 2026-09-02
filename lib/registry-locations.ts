@@ -23,6 +23,12 @@ export function getRegistryLocations() {
       directoriesAsItems: true,
     },
     {
+      path: path.join(process.cwd(), "registry/default/blocks"),
+      type: "registry:block" as const,
+      includeInCatalog: true,
+      directoriesAsItems: true,
+    },
+    {
       path: path.join(process.cwd(), "registry/default/examples"),
       type: "registry:example" as const,
     },
@@ -106,8 +112,14 @@ async function collectRegistryItems(
 
     for (const entry of entries) {
       if (entry.isDirectory() && location.directoriesAsItems) {
+        // Blocks are directories described by a registry-item.json manifest;
+        // other directory items use a same-named entry component file.
+        const entryFileName =
+          location.type === "registry:block"
+            ? "registry-item.json"
+            : `${entry.name}.tsx`;
         const hasEntryFile = await fs
-          .access(path.join(location.path, entry.name, `${entry.name}.tsx`))
+          .access(path.join(location.path, entry.name, entryFileName))
           .then(() => true)
           .catch(() => false);
 

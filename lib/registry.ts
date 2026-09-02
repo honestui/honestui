@@ -16,6 +16,11 @@ export async function getRegistryItem(name: string) {
     return null;
   }
 
+  const blockItem = await getBlockItem(name);
+  if (blockItem) {
+    return blockItem;
+  }
+
   const locations = getRegistryLocations();
   const fileNames = path.extname(name)
     ? [name]
@@ -131,6 +136,109 @@ export async function getRegistryItem(name: string) {
     }),
     files: finalFiles,
   };
+}
+
+type BlockManifest = {
+  name?: string;
+  title?: string;
+  description?: string;
+  categories?: string[];
+  docs?: string;
+  dependencies?: string[];
+  registryDependencies?: string[];
+};
+
+/**
+ * Blocks are directories under `registry/default/blocks/<name>/` holding a
+ * `registry-item.json` manifest plus the block's `app/`, `components/`,
+ * `lib/`, and `hooks/` files. Every file installs at its path relative to the
+ * block directory, so a block can ship pages and config alongside components.
+ */
+async function getBlockItem(name: string) {
+  const blockDir = path.join(
+    process.cwd(),
+    "registry",
+    "default",
+    "blocks",
+    name,
+  );
+  const manifestPath = path.join(blockDir, "registry-item.json");
+
+  let manifest: BlockManifest;
+  try {
+    manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8"));
+  } catch {
+    return null;
+  }
+
+  const filePaths = (await fs.readdir(blockDir, {
+    recursive: true,
+    withFileTypes: true,
+  }))
+    .filter(
+      (entry) =>
+        entry.isFile() &&
+        /\.(?:css|ts|tsx)$/.test(entry.name),
+    )
+    .map((entry) => path.join(entry.parentPath, entry.name))
+    .sort();
+
+  const files = await Promise.all(
+    filePaths.map(async (filePath) => {
+      const target = path
+        .relative(blockDir, filePath)
+        .split(path.sep)
+        .join("/");
+      const topLevelDir = target.split("/")[0];
+      const type =
+        topLevelDir === "app"
+          ? ("registry:page" as const)
+          : topLevelDir === "lib"
+            ? ("registry:lib" as const)
+            : topLevelDir === "hooks"
+              ? ("registry:hook" as const)
+              : ("registry:component" as const);
+
+      return {
+        path: path.relative(process.cwd(), filePath),
+        type,
+        target,
+        content: await getFileContent({ path: filePath }),
+      };
+    }),
+  );
+
+  const source = files.map((file) => file.content ?? "").join("\n");
+  const detected = getDependencies(source);
+  const bundledNames = new Set(
+    files.flatMap((file) => [
+      path.basename(file.path),
+      path.basename(file.path, path.extname(file.path)),
+    ]),
+  );
+  const dependencies = Array.from(
+    new Set([...detected.dependencies, ...(manifest.dependencies ?? [])]),
+  ).sort();
+  const registryDependencies = Array.from(
+    new Set([
+      ...detected.registryDependencies.filter(
+        (dependency) => !bundledNames.has(dependency),
+      ),
+      ...(manifest.registryDependencies ?? []),
+    ]),
+  ).sort();
+
+  return {
+    name,
+    type: "registry:block",
+    ...(manifest.title && { title: manifest.title }),
+    ...(manifest.description && { description: manifest.description }),
+    ...(manifest.categories?.length && { categories: manifest.categories }),
+    ...(manifest.docs && { docs: manifest.docs }),
+    ...(dependencies.length > 0 && { dependencies }),
+    ...(registryDependencies.length > 0 && { registryDependencies }),
+    files,
+  } as RegistryItem;
 }
 
 async function getProductItemFiles(registryFilePath: string) {
