@@ -83,6 +83,17 @@ export type {
 
 export * from "../registry/default/ui/charts/brush"
 export * from "../registry/default/ui/charts/chart"
+export {
+  DATA_STATUSES,
+  DataStatusKey,
+  resolveDataStatusText,
+} from "../registry/default/ui/charts/data-quality"
+export type {
+  DataStatus,
+  DataStatusMark,
+  DataStatusText,
+  ResolvedDataStatusText,
+} from "../registry/default/ui/charts/data-quality"
 export * from "../registry/default/ui/charts/dot"
 export * from "../registry/default/ui/charts/legend"
 export * from "../registry/default/ui/charts/tooltip"

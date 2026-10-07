@@ -48,9 +48,35 @@ import {
   type ChartConfig,
   type ResolvedColors,
 } from "@/registry/default/ui/charts/chart";
+import {
+  collectDataQuality,
+  dataQualityAriaSummary,
+  dataQualityKeys,
+  DataStatusKey,
+  noValueHtml,
+  missingMarkerSeries,
+  rangeWhiskerSeries,
+  reportDataQualityIssues,
+  shareTotals,
+  resolveDataStatusText,
+  statusDetailText,
+  statusFillStyles,
+  statusNotesHtml,
+  type DataQualityKeys,
+  type DataStatus,
+  type DataStatusText,
+  type PointQuality,
+  type RenderItemApi,
+  type ResolvedDataStatusText,
+} from "@/registry/default/ui/charts/data-quality";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
 import type { ComposeOption, ImagePatternObject } from "echarts/core";
-import { BarChart as BarChartModule, type BarSeriesOption } from "echarts/charts";
+import {
+  BarChart as BarChartModule,
+  CustomChart,
+  type BarSeriesOption,
+  type CustomSeriesOption,
+} from "echarts/charts";
 import { sampleGradient } from "@/registry/default/ui/charts/dot";
 import { motion, useReducedMotion } from "motion/react";
 import { CanvasRenderer } from "echarts/renderers";
@@ -58,12 +84,16 @@ import * as echarts from "echarts/core";
 
 export type { ChartConfig, LegendVariant, TooltipPosition, TooltipRoundness, TooltipVariant };
 
-echarts.use([BarChartModule, GridComponent, TooltipComponent, DataZoomComponent, CanvasRenderer]);
+echarts.use([BarChartModule, CustomChart, GridComponent, TooltipComponent, DataZoomComponent, CanvasRenderer]);
 
 type EChartsInstance = ReturnType<typeof echarts.init>;
 
 type EChartsOption = ComposeOption<
-  BarSeriesOption | GridComponentOption | TooltipComponentOption | DataZoomComponentOption
+  | BarSeriesOption
+  | CustomSeriesOption
+  | GridComponentOption
+  | TooltipComponentOption
+  | DataZoomComponentOption
 >;
 
 type ArrayItem<T> = T extends readonly (infer U)[] ? U : T;
@@ -143,6 +173,7 @@ export interface BarChartProps<TData extends Record<string, unknown>> {
   isLoading?: boolean; 
   loadingBars?: number; 
   ariaLabel?: string;
+  dataStatusText?: DataStatusText; 
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -156,6 +187,9 @@ export interface BarProps {
   enableHoverHighlight?: boolean; 
   glowing?: boolean; 
   bufferBar?: boolean; 
+  statusKey?: string; 
+  lowerKey?: string; 
+  upperKey?: string; 
 }
 
 const Bar: FC<BarProps> = () => null;
@@ -208,6 +242,7 @@ type BarSeriesConfig = {
   enableHoverHighlight: boolean;
   glowing: boolean;
   bufferBar: boolean;
+  quality: DataQualityKeys | null;
 };
 
 type AxisSlot = {
@@ -283,6 +318,7 @@ function collectConfig(children: ReactNode): CollectedConfig {
         enableHoverHighlight: props.enableHoverHighlight ?? false,
         glowing: props.glowing ?? false,
         bufferBar: props.bufferBar ?? false,
+        quality: dataQualityKeys(props),
       });
     } else if (type === XAxis) {
       const props = child.props as XAxisProps;
@@ -597,6 +633,8 @@ type OptionBuildContext = {
   barGap?: number;
   barCategoryGap?: number;
   resolved: ResolvedColors;
+  quality: Record<string, PointQuality[]>; 
+  statusText: ResolvedDataStatusText;
   categories: string[];
   brushRange: BrushRange; 
   valuePxPerUnit: number | null; 
@@ -734,7 +772,7 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
 }
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
-  const { config, selectedDataKey, tooltipSlot } = ctx;
+  const { config, selectedDataKey, tooltipSlot, quality, statusText } = ctx;
 
   return (params: unknown): string => {
     const rows = Array.isArray(params) ? params : [params];
@@ -745,12 +783,14 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
     const axisValue = first.axisValue ?? first.name ?? "";
     const label = String(axisValue);
 
+    const statuses = new Set<DataStatus>();
     const body = rows
       .map((param) => {
         const p = param as {
           seriesId?: string;
           seriesName?: string;
-          value?: number | string;
+          value?: number | string | null;
+          dataIndex?: number;
         };
 
         if (String(p.seriesId ?? "").startsWith("__")) return "";
@@ -759,21 +799,31 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
         const colorsCount = item ? getColorsCount(item) : 1;
         const labelText = typeof item?.label === "string" ? item.label : (p.seriesName ?? key);
         const dimmed = selectedDataKey != null && selectedDataKey !== key ? " opacity-30" : "";
+        const point = typeof p.dataIndex === "number" ? quality[key]?.[p.dataIndex] : undefined;
+        const hasValue = p.value !== null && p.value !== undefined && p.value !== "-";
+        if (point?.status) statuses.add(point.status);
         const value =
-          typeof p.value === "number" ? p.value.toLocaleString() : String(p.value ?? "");
+          point && !hasValue
+            ? noValueHtml(statusText)
+            : typeof p.value === "number"
+              ? p.value.toLocaleString()
+              : String(p.value ?? "");
 
         return tooltipRow({
           indicatorHtml: tooltipIndicatorHtml(key, colorsCount),
           labelText,
           valueText: value,
           dimmed,
+          detailText: point
+            ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
+            : undefined,
         });
       })
       .join("");
 
     return tooltipShell({
       label,
-      body,
+      body: body + statusNotesHtml(statuses, statusText),
       roundness: tooltipSlot.roundness,
       variant: tooltipSlot.variant,
     });
@@ -842,7 +892,7 @@ function buildBrushOption(
       type: "bar",
       xAxisIndex: 1,
       yAxisIndex: 1,
-      data: data.map((row) => Number(row[key]) || 0),
+      data: ctx.quality[key]?.map((point) => point.value) ?? data.map((row) => Number(row[key]) || 0),
       stack: isStacked ? "__mini-total" : undefined,
       silent: true,
       barCategoryGap: "20%",
@@ -913,9 +963,7 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
 
   const lastIndex = data.length - 1;
 
-  const rowTotals = isPercent
-    ? data.map((row) => seriesKeys.reduce((sum, key) => sum + (Number(row[key]) || 0), 0))
-    : [];
+  const rowTotals = isPercent ? shareTotals(data, seriesKeys, ctx.quality) : [];
 
   const series: BarSeriesOption[] = bars.map((bar) => {
     const key = bar.dataKey;
@@ -948,14 +996,18 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
         )
       : null;
 
-    const values = data.map((row, i) => {
-      const value = Number(row[key]) || 0;
-      if (!isPercent) return value;
+    // Fill carries data status on a series that reads one, so its buffer bar is not applied.
+    const points = ctx.quality[key];
+    const statusStyles = points ? statusFillStyles(base) : null;
+    const values: (number | null)[] = data.map((row, i) => {
+      const value = points ? points[i].value : Number(row[key]) || 0;
+      if (value === null || !isPercent) return value;
       const total = rowTotals[i];
+      if (total === null) return null;
       return total ? value / total : 0;
     });
 
-    const bufferStyle = bar.bufferBar
+    const bufferStyle = bar.bufferBar && !points
       ? {
           color: patternFill("buffer", base) ?? "transparent",
           borderColor: base,
@@ -982,10 +1034,23 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
       isExpandable ||
       glowFor ||
       ctx.maxHighlightIndex != null ||
+      statusStyles ||
       (bufferStyle && lastIndex >= 0)
         ? values.map((value, i) => {
+            if (value === null) return null;
             const isBuffer = !!bufferStyle && i === lastIndex;
-            if (!isBuffer && !glowFor && !isStripped && !isExpandable && !isMuted(i)) return value;
+            const status = points?.[i].status;
+            const statusStyle = status ? statusStyles?.[status] : undefined;
+            if (
+              !isBuffer &&
+              !glowFor &&
+              !isStripped &&
+              !isExpandable &&
+              !isMuted(i) &&
+              !statusStyle
+            ) {
+              return value;
+            }
             return {
               value,
               ...(isExpandable ? { label: { show: i === expandHovered } } : {}),
@@ -1003,6 +1068,7 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
                 ...(isExpandable && !isBuffer
                   ? { color: expandableDatumPaint(slots, expandOf(i)) }
                   : {}),
+                ...(statusStyle ?? {}),
                 ...(isBuffer && bufferStyle ? bufferStyle : {}),
                 ...(glowFor ? glowFor(i) : {}),
 
@@ -1084,6 +1150,75 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
   return spaced;
 }
 
+const QUALITY_Z = 4;
+
+function buildBarQualitySeries(ctx: OptionBuildContext): CustomSeriesOption[] {
+  const { data, bars, isHorizontal, isStacked, isPercent, selectedDataKey, barGap, barCategoryGap } =
+    ctx;
+  const { tokens, series: seriesColors } = ctx.resolved;
+
+  const gapUnits =
+    isStacked && bars.length > 1 && ctx.valuePxPerUnit
+      ? STACK_SEGMENT_GAP / ctx.valuePxPerUnit
+      : 0;
+  const stackBase: number[] = new Array(data.length).fill(0);
+  const layout = {
+    count: bars.length,
+    ...(barGap !== undefined ? { barGap } : {}),
+    ...(barCategoryGap !== undefined ? { barCategoryGap } : {}),
+  };
+
+  return bars.flatMap((bar, position): CustomSeriesOption[] => {
+    const key = bar.dataKey;
+    const points = ctx.quality[key];
+    const base = isStacked ? [...stackBase] : null;
+    data.forEach((row, i) => {
+      const value = points ? (points[i].value ?? 0) : Number(row[key]) || 0;
+      stackBase[i] += value + gapUnits;
+    });
+    if (!points) return [];
+
+    const opacity = selectionOpacity(selectedDataKey, key);
+    // Grouped bars sit beside the category centre; stacked bars sit on it.
+    const categoryOffset = isStacked
+      ? undefined
+      : (api: RenderItemApi) => api.barLayout(layout)?.[position]?.offsetCenter ?? 0;
+
+    const marks: CustomSeriesOption[] = [];
+    const ranges = points.flatMap((point, index) => {
+      if (!point.range) return [];
+      const lift = base?.[index] ?? 0;
+      return [{ index, lower: point.range.lower + lift, upper: point.range.upper + lift }];
+    });
+    if (ranges.length) {
+      marks.push(
+        rangeWhiskerSeries({
+          dataKey: key,
+          ranges,
+          color: tokens.foreground,
+          opacity,
+          z: QUALITY_Z,
+          isHorizontal,
+          categoryOffset,
+        }),
+      );
+    }
+
+    const missingMarkers = missingMarkerSeries({
+      dataKey: key,
+      points,
+      color: seriesColors[key]?.[0] ?? GRAY,
+      opacity,
+      z: QUALITY_Z,
+      isHorizontal,
+      categoryOffset,
+      anchors: isPercent ? null : base,
+    });
+    if (missingMarkers) marks.push(missingMarkers);
+    return marks;
+  });
+}
+
 type LiveState = {
   resolved: ResolvedColors | null; 
   hasRevealed: boolean; 
@@ -1138,6 +1273,7 @@ export function BarChart<TData extends Record<string, unknown>>({
   isLoading = false,
   loadingBars = LOADING_DEFAULT_BARS,
   ariaLabel,
+  dataStatusText,
   chartOptions,
   children,
 }: BarChartProps<TData>) {
@@ -1209,7 +1345,20 @@ export function BarChart<TData extends Record<string, unknown>>({
   const valueSlot = isHorizontal ? xAxisSlot : yAxisSlot;
 
   const seriesKeys = useMemo(() => bars.map((bar) => bar.dataKey), [bars]);
-  const defaultAriaLabel = `Bar chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.`;
+
+  // Bounds on a value say nothing about bounds on its share of a total, so a
+  // percent chart keeps the status and drops the range.
+  const quality = useMemo(
+    () => collectDataQuality(data, bars, { dropRanges: isPercent }),
+    [data, bars, isPercent],
+  );
+  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
+  const qualityIssues = quality.issues.join("\n");
+  useEffect(() => {
+    if (qualityIssues) reportDataQualityIssues("BarChart", qualityIssues.split("\n"));
+  }, [qualityIssues]);
+
+  const defaultAriaLabel = `Bar chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.${dataQualityAriaSummary(quality.summary, statusText)}`;
 
   const categoryKey = useMemo(() => {
     if (categorySlot.dataKey) return categorySlot.dataKey;
@@ -1346,6 +1495,8 @@ export function BarChart<TData extends Record<string, unknown>>({
       barGap,
       barCategoryGap,
       resolved,
+      quality: quality.points,
+      statusText,
       categories,
       brushRange: liveRef.current.brushRange,
       valuePxPerUnit: liveRef.current.valuePxPerUnit,
@@ -1370,7 +1521,11 @@ export function BarChart<TData extends Record<string, unknown>>({
       yAxis: brush ? [yAxis, brush.miniYAxis] : yAxis,
       tooltip: buildTooltipOption(ctx),
       dataZoom: brush?.dataZoom,
-      series: [...buildBarSeries(ctx), ...(brush?.miniSeries ?? [])],
+      series: [
+        ...buildBarSeries(ctx),
+        ...buildBarQualitySeries(ctx),
+        ...(brush?.miniSeries ?? []),
+      ],
     };
   }, [
     data,
@@ -1397,6 +1552,8 @@ export function BarChart<TData extends Record<string, unknown>>({
     barGap,
     barCategoryGap,
     maxHighlightIndex,
+    quality,
+    statusText,
   ]);
 
   useEffect(() => {
@@ -1730,9 +1887,15 @@ export function BarChart<TData extends Record<string, unknown>>({
     ...(legendSlot.verticalAlign === "top"
       ? { top: 12 }
       : legendSlot.verticalAlign === "bottom"
-        ? { bottom: brushEnabled ? brushHeight + 16 : 12 }
+        ? { bottom: 12 }
         : { top: "50%", transform: "translateY(-50%)" }),
   };
+
+  // The status key takes the edge the series legend is not on, so the two never overlap.
+  const statusKeyOnTop = legendSlot.present && legendSlot.verticalAlign === "bottom";
+  const statusKey = !isLoading && (
+    <DataStatusKey summary={quality.summary} mark="fill" text={statusText} />
+  );
 
   return (
     <div
@@ -1743,6 +1906,8 @@ export function BarChart<TData extends Record<string, unknown>>({
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
+      {statusKeyOnTop && statusKey}
+
       <div
         className="relative min-h-0 w-full flex-1"
         role="img"
@@ -1750,6 +1915,8 @@ export function BarChart<TData extends Record<string, unknown>>({
       >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
+
+      {!statusKeyOnTop && statusKey}
 
       {legendSlot.present && !isLoading && (
         <LegendOverlay

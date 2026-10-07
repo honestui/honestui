@@ -89,6 +89,24 @@ The loading state preserves the plot dimensions with neutral placeholder points 
   <ApiRow name="isLoading" type="boolean" default="false">Shows neutral placeholder points and a loading label.</ApiRow>
   <ApiRow name="loadingPoints" type="number" default="14">Number of loading placeholders.</ApiRow>
   <ApiRow name="ariaLabel" type="string">Accessible name for the canvas chart.</ApiRow>
+  <ApiRow name="statusKey" type="string">
+    The row field that holds each point's status. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
+  <ApiRow name="yLowerKey" type="string">
+    The row field that holds the lower bound of each y value. Set it together with `yUpperKey`.
+  </ApiRow>
+  <ApiRow name="yUpperKey" type="string">
+    The row field that holds the upper bound of each y value. Set it together with `yLowerKey`.
+  </ApiRow>
+  <ApiRow name="xLowerKey" type="string">
+    The row field that holds the lower bound of each x value. Set it together with `xUpperKey`.
+  </ApiRow>
+  <ApiRow name="xUpperKey" type="string">
+    The row field that holds the upper bound of each x value. Set it together with `xLowerKey`.
+  </ApiRow>
+  <ApiRow name="dataStatusText" type="DataStatusText">
+    Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record&lt;string, unknown&gt;">Escape hatch merged over generated ECharts options.</ApiRow>
 </ApiTable>
 

@@ -1,0 +1,8 @@
+{
+  "name": "analytics-dashboard",
+  "type": "registry:block",
+  "title": "Analytics Dashboard",
+  "description": "A complete SaaS analytics dashboard: KPI strip, revenue area chart, acquisition, conversion funnel, cohort retention heatmap, filterable customer table, and activity feed — plus the app shell (sidebar, mobile navigation, theme toggle) and typed mock data.",
+  "categories": ["dashboard"],
+  "docs": "Import \"honestui/charts.css\" once in your global stylesheet (before tailwindcss) so the charts are styled. The dashboard installs under app/(dashboard)/ — visit /dashboard. Dark mode: add suppressHydrationWarning to <html> in your root layout (the theme is applied on the client). Mock data lives in lib/dashboard/data.ts; replace it with your own data access. A ready-to-clone template of this dashboard lives at https://github.com/honestui/honestui-dashboard."
+}

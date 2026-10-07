@@ -50,9 +50,35 @@ import {
   type ReactNode,
 } from "react";
 import { dotItemStyle, dotStyle, sampleGradient, type DotVariant } from "@/registry/default/ui/charts/dot";
+import {
+  collectDataQuality,
+  dataQualityAriaSummary,
+  dataQualityKeys,
+  DataStatusKey,
+  noValueHtml,
+  isQualityRunId,
+  missingMarkerSeries,
+  qualityRunId,
+  qualitySeriesOwner,
+  rangeWhiskerSeries,
+  reportDataQualityIssues,
+  runFocusPatch,
+  resolveDataStatusText,
+  runValues,
+  shareTotals,
+  statusDetailText,
+  statusNotesHtml,
+  STROKE_DASH,
+  strokeRuns,
+  type DataQualityKeys,
+  type DataStatus,
+  type DataStatusText,
+  type PointQuality,
+  type ResolvedDataStatusText,
+} from "@/registry/default/ui/charts/data-quality";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
 import type { ComposeOption, ImagePatternObject } from "echarts/core";
-import { LineChart, type LineSeriesOption } from "echarts/charts";
+import { CustomChart, LineChart, type CustomSeriesOption, type LineSeriesOption } from "echarts/charts";
 import { motion, useReducedMotion } from "motion/react";
 import { CanvasRenderer } from "echarts/renderers";
 import * as echarts from "echarts/core";
@@ -66,12 +92,12 @@ export type {
   TooltipVariant,
 };
 
-echarts.use([LineChart, GridComponent, TooltipComponent, DataZoomComponent, CanvasRenderer]);
+echarts.use([LineChart, CustomChart, GridComponent, TooltipComponent, DataZoomComponent, CanvasRenderer]);
 
 type EChartsInstance = ReturnType<typeof echarts.init>;
 
 type EChartsOption = ComposeOption<
-  LineSeriesOption | GridComponentOption | TooltipComponentOption | DataZoomComponentOption
+  LineSeriesOption | CustomSeriesOption | GridComponentOption | TooltipComponentOption | DataZoomComponentOption
 >;
 
 type ArrayItem<T> = T extends readonly (infer U)[] ? U : T;
@@ -140,6 +166,7 @@ export interface AreaChartProps<TData extends Record<string, unknown>> {
   isLoading?: boolean; 
   loadingPoints?: number; 
   ariaLabel?: string;
+  dataStatusText?: DataStatusText; 
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -154,6 +181,9 @@ export interface AreaProps {
   connectNulls?: boolean; 
   isClickable?: boolean; 
   enableBufferLine?: boolean; 
+  statusKey?: string; 
+  lowerKey?: string; 
+  upperKey?: string; 
   children?: ReactNode; 
 }
 
@@ -216,6 +246,7 @@ type AreaSeriesConfig = {
   connectNulls: boolean;
   isClickable: boolean;
   enableBufferLine: boolean;
+  quality: DataQualityKeys | null;
   dotVariant: DotVariant; 
   activeDotVariant: DotVariant; 
 };
@@ -312,6 +343,7 @@ function collectConfig(children: ReactNode): CollectedConfig {
         connectNulls: props.connectNulls ?? false,
         isClickable: props.isClickable ?? false,
         enableBufferLine: props.enableBufferLine ?? false,
+        quality: dataQualityKeys(props),
         dotVariant,
         activeDotVariant,
       });
@@ -634,6 +666,8 @@ type OptionBuildContext = {
   revealIndex: number | null; 
   revealSink: Record<string, unknown[]>; 
   resolved: ResolvedColors;
+  quality: Record<string, PointQuality[]>; 
+  statusText: ResolvedDataStatusText;
   rendererSize: { width: number; height: number }; 
   categories: string[];
   brushRange: BrushRange; 
@@ -742,7 +776,7 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
 }
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
-  const { config, selectedDataKey, tooltipSlot, getHoveredKey } = ctx;
+  const { config, selectedDataKey, tooltipSlot, getHoveredKey, quality, statusText } = ctx;
 
   return (params: unknown): string => {
     const rows = Array.isArray(params) ? params : [params];
@@ -754,12 +788,14 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
     const label = String(axisValue);
 
     const seen = new Set<string>();
+    const statuses = new Set<DataStatus>();
     const body = rows
       .map((param) => {
         const p = param as {
           seriesId?: string;
           seriesName?: string;
           value?: number | string | null;
+          dataIndex?: number;
         };
         const rawId = String(p.seriesId ?? "");
 
@@ -770,9 +806,12 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
             : (p.seriesId ?? p.seriesName ?? "");
         if (!key) return "";
 
-        if (p.value === null || p.value === undefined) return "";
+        const point = typeof p.dataIndex === "number" ? quality[key]?.[p.dataIndex] : undefined;
+        const hasValue = p.value !== null && p.value !== undefined && p.value !== "-";
+        if (!hasValue && !point) return "";
         if (seen.has(key)) return "";
         seen.add(key);
+        if (point?.status) statuses.add(point.status);
 
         const item = config[key];
         const colorsCount = item ? getColorsCount(item) : 1;
@@ -783,21 +822,27 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
           (hovered != null && hovered !== key)
             ? " opacity-30"
             : "";
-        const value =
-          typeof p.value === "number" ? p.value.toLocaleString() : String(p.value ?? "");
+        const value = !hasValue
+          ? noValueHtml(statusText)
+          : typeof p.value === "number"
+            ? p.value.toLocaleString()
+            : String(p.value);
 
         return tooltipRow({
           indicatorHtml: tooltipIndicatorHtml(key, colorsCount),
           labelText,
           valueText: value,
           dimmed,
+          detailText: point
+            ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
+            : undefined,
         });
       })
       .join("");
 
     return tooltipShell({
       label,
-      body,
+      body: body + statusNotesHtml(statuses, statusText),
       roundness: tooltipSlot.roundness,
       variant: tooltipSlot.variant,
     });
@@ -868,11 +913,11 @@ function buildBrushOption(
       type: "line",
       xAxisIndex: 1,
       yAxisIndex: 1,
-      data: data.map((row) => Number(row[key]) || 0),
+      data: ctx.quality[key]?.map((point) => point.value) ?? data.map((row) => Number(row[key]) || 0),
       stack: isStacked ? "__mini-total" : undefined,
       smooth: curve.smooth,
       step: curve.step,
-      connectNulls: area.connectNulls,
+      connectNulls: area.connectNulls && !ctx.quality[key],
       silent: true,
       showSymbol: false,
       emphasis: { disabled: true },
@@ -929,7 +974,7 @@ function buildLoadingOption(
   };
 }
 
-function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
+function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSeriesOption)[] {
   const {
     data,
     config,
@@ -948,11 +993,13 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
     rendererSize,
   } = ctx;
 
-  const rowTotals = isExpanded
-    ? data.map((row) => seriesKeys.reduce((sum, key) => sum + (Number(row[key]) || 0), 0))
-    : [];
+  const rowTotals = isExpanded ? shareTotals(data, seriesKeys, ctx.quality) : [];
 
-  return areas.flatMap((area): LineSeriesOption[] => {
+  // Status strokes are drawn unstacked, so a stacked chart places them at the
+  // cumulative height its own stack reaches.
+  const plottedTops = isStacked ? computePlottedTops(ctx) : null;
+
+  return areas.flatMap((area): (LineSeriesOption | CustomSeriesOption)[] => {
     const key = area.dataKey;
     const slots = resolved.series[key] ?? ["rgba(120, 120, 120, 1)"];
     const paint = seriesPaint(slots);
@@ -961,16 +1008,21 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
     const opacity = getOpacity(selectedDataKey, key);
     const curve = curveConfig(area.curveType ?? curveType);
 
-    const values = data.map((row, i) => {
-      const value = Number(row[key]) || 0;
-      if (!isExpanded) return value;
+    // Dashes carry data status on a series that reads one, so its own stroke
+    // variant, buffer segment, and null bridging are not applied.
+    const points = ctx.quality[key];
+    const tracked = points !== undefined;
+    const values: (number | null)[] = data.map((row, i) => {
+      const value = points ? points[i].value : Number(row[key]) || 0;
+      if (value === null || !isExpanded) return value;
       const total = rowTotals[i];
+      if (total === null) return null;
       return total ? value / total : 0;
     });
     const n = values.length;
 
     const reveal = enableHoverReveal;
-    const buffer = !reveal && area.enableBufferLine && n >= 2;
+    const buffer = !reveal && !tracked && area.enableBufferLine && n >= 2;
     const revealActive = reveal && revealIndex !== null;
 
     const restingDot = dotStyle(area.dotVariant, paint, resolved.tokens.background);
@@ -995,7 +1047,7 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
       | number
       | null
       | {
-          value: number;
+          value: number | null;
           itemStyle: Record<string, unknown>;
           emphasis: { itemStyle: Record<string, unknown> };
         };
@@ -1038,7 +1090,7 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
         : values;
 
     const mainDash: "solid" | [number, number] =
-      buffer || area.strokeVariant === "solid" ? "solid" : ([3, 3] as [number, number]);
+      buffer || tracked || area.strokeVariant === "solid" ? "solid" : ([3, 3] as [number, number]);
 
     const z = isSelected ? 3 : hasSelection ? 1 : 2;
 
@@ -1050,7 +1102,7 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
       stack: isStacked ? "total" : undefined,
       smooth: curve.smooth,
       step: curve.step,
-      connectNulls: area.connectNulls,
+      connectNulls: area.connectNulls && !tracked,
       cursor: area.isClickable ? "pointer" : "default",
 
       triggerEvent: area.isClickable,
@@ -1061,7 +1113,7 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
       lineStyle: {
         color: strokePaint,
         width: area.strokeWidth,
-        opacity: opacity.stroke,
+        opacity: tracked ? 0 : opacity.stroke,
         type: mainDash,
         dashOffset: 0,
       },
@@ -1079,15 +1131,91 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
 
         focus: enableHoverHighlight && !enableHoverReveal && !hasSelection ? "series" : "none",
         scale: restingVisible ? activeDot.size / Math.max(restingDot.size, 1) : 1,
+        ...(tracked ? { lineStyle: { opacity: 0 } } : {}),
         ...(multiColor ? {} : { itemStyle: { ...activeDot.itemStyle, opacity: 1 } }),
       },
 
       blur: {
-        lineStyle: { opacity: 0.3 },
+        lineStyle: { opacity: tracked ? 0 : 0.3 },
         areaStyle: { opacity: 0.1 },
         itemStyle: { opacity: 0.3 },
       },
     };
+
+    const qualitySeries: (LineSeriesOption | CustomSeriesOption)[] = [];
+    if (points) {
+      const tops = plottedTops?.[key];
+      const plotted = tops ? values.map((value, i) => (value === null ? null : tops[i])) : values;
+      const markColor = multiColor ? resolved.tokens.foreground : slots[0];
+      const runPaint = multiColor
+        ? new echarts.graphic.LinearGradient(
+            8,
+            0,
+            Math.max(rendererSize.width - 8, 9),
+            0,
+            slots.map((color, i) => ({ offset: i / (slots.length - 1), color })),
+            true,
+          )
+        : paint;
+
+      strokeRuns(points).forEach((run, runIndex) => {
+        const id = qualityRunId(key, runIndex);
+        const runData = runValues(plotted, run);
+        if (reveal) revealSink[id] = runData;
+        qualitySeries.push({
+          id,
+          type: "line",
+          data: revealActive ? sliceToNull(runData, revealIndex as number) : runData,
+          smooth: curve.smooth,
+          step: curve.step,
+          connectNulls: false,
+          silent: true,
+          showSymbol: false,
+          z,
+          tooltip: { show: false },
+          lineStyle: {
+            color: runPaint,
+            width: area.strokeWidth,
+            opacity: opacity.stroke,
+            type: STROKE_DASH[run.stroke],
+            cap: run.stroke === "estimated" ? "round" : "butt",
+          },
+          emphasis: {
+            focus: "none",
+            lineStyle: { opacity: opacity.stroke, width: area.strokeWidth },
+          },
+          blur: { lineStyle: { opacity: opacity.stroke } },
+        });
+      });
+
+      const ranges = points.flatMap((point, index) => {
+        if (!point.range) return [];
+        // In a stack, the bounds move up with the series they belong to.
+        const lift = tops ? tops[index] - (point.value ?? 0) : 0;
+        return [{ index, lower: point.range.lower + lift, upper: point.range.upper + lift }];
+      });
+      if (ranges.length) {
+        qualitySeries.push(
+          rangeWhiskerSeries({
+            dataKey: key,
+            ranges,
+            color: markColor,
+            opacity: opacity.stroke,
+            z,
+          }),
+        );
+      }
+
+      const missingMarkers = missingMarkerSeries({
+        dataKey: key,
+        points,
+        color: markColor,
+        opacity: opacity.stroke,
+        z,
+        anchors: isExpanded ? null : tops,
+      });
+      if (missingMarkers) qualitySeries.push(missingMarkers);
+    }
 
     if (reveal) {
       const muted = resolved.tokens.mutedForeground;
@@ -1116,10 +1244,10 @@ function buildAreaSeries(ctx: OptionBuildContext): LineSeriesOption[] {
         blur: { lineStyle: { opacity: revealActive ? 0.3 : 0 } },
         tooltip: { show: false },
       };
-      return [revealBase, mainSeries];
+      return [revealBase, mainSeries, ...qualitySeries];
     }
 
-    if (!buffer) return [mainSeries];
+    if (!buffer) return [mainSeries, ...qualitySeries];
 
     const bufferValues: (number | null)[] = values.map((v, i) => (i >= n - 2 ? v : null));
     const bufferSeries: LineSeriesOption = {
@@ -1193,15 +1321,14 @@ function sliceFrom<T>(vals: readonly T[], idx: number): (T | null)[] {
 
 function computePlottedTops(ctx: OptionBuildContext): Record<string, number[]> {
   const { data, areas, seriesKeys, isStacked, isExpanded } = ctx;
-  const rowTotals = isExpanded
-    ? data.map((row) => seriesKeys.reduce((sum, key) => sum + (Number(row[key]) || 0), 0))
-    : [];
+  const rowTotals = isExpanded ? shareTotals(data, seriesKeys, ctx.quality) : [];
   const running = new Array(data.length).fill(0);
   const tops: Record<string, number[]> = {};
   for (const area of areas) {
     const key = area.dataKey;
     tops[key] = data.map((row, i) => {
-      let value = Number(row[key]) || 0;
+      const points = ctx.quality[key];
+      let value = points ? (points[i].value ?? 0) : Number(row[key]) || 0;
       if (isExpanded) value = rowTotals[i] ? value / rowTotals[i] : 0;
       return isStacked ? (running[i] += value) : value;
     });
@@ -1291,6 +1418,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
   isLoading = false,
   loadingPoints = LOADING_DEFAULT_POINTS,
   ariaLabel,
+  dataStatusText,
   chartOptions,
   children,
 }: AreaChartProps<TData>) {
@@ -1379,6 +1507,18 @@ export function AreaChart<TData extends Record<string, unknown>>({
   const hasSelection = selectedDataKey !== null;
   const isExpanded = stackType === "expanded";
   const isStacked = stackType === "stacked" || isExpanded;
+
+  // Bounds on a value say nothing about bounds on its share of a total, so an
+  // expanded chart keeps the status and drops the range.
+  const quality = useMemo(
+    () => collectDataQuality(data, areas, { dropRanges: isExpanded }),
+    [data, areas, isExpanded],
+  );
+  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
+  const qualityIssues = quality.issues.join("\n");
+  useEffect(() => {
+    if (qualityIssues) reportDataQualityIssues("AreaChart", qualityIssues.split("\n"));
+  }, [qualityIssues]);
 
   const clickableKeys = useMemo(
     () => new Set(areas.filter((area) => area.isClickable).map((area) => area.dataKey)),
@@ -1486,6 +1626,8 @@ export function AreaChart<TData extends Record<string, unknown>>({
       enableHoverReveal,
       revealIndex: liveRef.current.revealIndex,
       resolved,
+      quality: quality.points,
+      statusText,
       rendererSize: {
         width: echartsRef.current?.getWidth() ?? mountRef.current?.clientWidth ?? 0,
         height: echartsRef.current?.getHeight() ?? mountRef.current?.clientHeight ?? 0,
@@ -1523,6 +1665,10 @@ export function AreaChart<TData extends Record<string, unknown>>({
         ids.push(`${BUFFER_PREFIX}${area.dataKey}`, `${BUFFERFILL_PREFIX}${area.dataKey}`);
       }
       if (enableHoverReveal) ids.push(`${REVEAL_PREFIX}${area.dataKey}`);
+      for (const entry of series) {
+        const id = String(entry.id ?? "");
+        if (qualitySeriesOwner(id) === area.dataKey) ids.push(id);
+      }
       if (ids.length) companionIdsByKey.set(area.dataKey, ids);
     }
     liveRef.current.companionIdsByKey = companionIdsByKey;
@@ -1558,6 +1704,8 @@ export function AreaChart<TData extends Record<string, unknown>>({
     brushHeight,
     enableHoverHighlight,
     enableHoverReveal,
+    quality,
+    statusText,
   ]);
 
   useEffect(() => {
@@ -1629,14 +1777,29 @@ export function AreaChart<TData extends Record<string, unknown>>({
         for (const id of liveRef.current.companionIdsByKey.get(key) ?? [])
           chart.dispatchAction({ type: "highlight", seriesId: id });
       }
+
+      const patch = runFocusPatch(
+        liveRef.current.companionIdsByKey,
+        key,
+        (dataKey) => getOpacity(liveRef.current.handlers.selectedDataKey, dataKey).stroke,
+      );
+      if (patch.length) chart.setOption({ series: patch }, { silent: true, lazyUpdate: true });
     };
 
     const pushReveal = (idx: number | null) => {
       const keys = liveRef.current.handlers.seriesKeys;
       const on = idx !== null;
+      const runIds = Object.keys(liveRef.current.revealValues).filter(isQualityRunId);
       chart.setOption(
         {
-          series: keys.flatMap((key) => [
+          series: [
+            ...runIds.map((id) => ({
+              id,
+              data: on
+                ? sliceToNull(liveRef.current.revealValues[id], idx)
+                : liveRef.current.revealValues[id],
+            })),
+            ...keys.flatMap((key) => [
             {
               id: key,
               data: on
@@ -1652,6 +1815,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
               lineStyle: { opacity: on ? 0.3 : 0 },
             },
           ]),
+          ],
         },
 
         { silent: true },
@@ -1843,7 +2007,10 @@ export function AreaChart<TData extends Record<string, unknown>>({
     const chart = echartsRef.current;
     if (!chart || isLoading) return;
     const animatedKeys = areas
-      .filter((area) => area.strokeVariant === "animated-dashed" && !area.enableBufferLine)
+      .filter(
+        (area) =>
+          area.strokeVariant === "animated-dashed" && !area.enableBufferLine && !area.quality,
+      )
       .map((area) => area.dataKey);
     if (animatedKeys.length === 0 || hasSelection) return;
 
@@ -1932,9 +2099,15 @@ export function AreaChart<TData extends Record<string, unknown>>({
     ...(legendSlot.verticalAlign === "top"
       ? { top: 12 }
       : legendSlot.verticalAlign === "bottom"
-        ? { bottom: showBrush ? brushHeight + 16 : 12 }
+        ? { bottom: 12 }
         : { top: "50%", transform: "translateY(-50%)" }),
   };
+
+  // The status key takes the edge the series legend is not on, so the two never overlap.
+  const statusKeyOnTop = legendSlot.present && legendSlot.verticalAlign === "bottom";
+  const statusKey = !isLoading && (
+    <DataStatusKey summary={quality.summary} mark="line" text={statusText} />
+  );
 
   return (
     <div
@@ -1945,13 +2118,19 @@ export function AreaChart<TData extends Record<string, unknown>>({
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
+      {statusKeyOnTop && statusKey}
+
       <div
         className="relative min-h-0 w-full flex-1"
         role="img"
-        aria-label={ariaLabel ?? defaultAriaLabel}
+        aria-label={
+          ariaLabel ?? `${defaultAriaLabel}${dataQualityAriaSummary(quality.summary, statusText)}`
+        }
       >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
+
+      {!statusKeyOnTop && statusKey}
 
       {legendSlot.present && !isLoading && (
         <LegendOverlay

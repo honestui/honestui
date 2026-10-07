@@ -216,6 +216,9 @@ The root container. It owns the data, shared selection state, loading skeleton, 
   <ApiRow name="xDataKey" type="keyof TData & string">
     The data key used for the category axis. Falls back to the axis `dataKey`; also read by the brush footer.
   </ApiRow>
+  <ApiRow name="dataStatusText" type="DataStatusText">
+    Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record<string, unknown>">
     Escape hatch merged over the underlying ECharts option object. See the <Link href="https://echarts.apache.org/en/option.html" _blank>ECharts option documentation</Link>.
   </ApiRow>
@@ -249,6 +252,15 @@ A single bar series. Each `<Bar />` carries its own fill variant, radius, glow, 
   </ApiRow>
   <ApiRow name="bufferBar" type="boolean" default="false">
     Renders this series' last data point with a hatched (diagonal lines) pattern and a series-colored outline while the rest stay solid. Useful for flagging projected or incomplete data at the end of a series.
+  </ApiRow>
+  <ApiRow name="statusKey" type="string">
+    The row field that holds each value's status. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
+  <ApiRow name="lowerKey" type="string">
+    The row field that holds the lower bound of each value. Set it together with `upperKey`.
+  </ApiRow>
+  <ApiRow name="upperKey" type="string">
+    The row field that holds the upper bound of each value. Set it together with `lowerKey`.
   </ApiRow>
 </ApiTable>
 

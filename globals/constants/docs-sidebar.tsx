@@ -58,6 +58,11 @@ export const DocumentationOptions: SidebarOption[] = [
     url: "/docs/charts/chart-config",
     icon: <ChartConfigIcon />,
   },
+  {
+    name: "Data Status",
+    url: "/docs/charts/data-status",
+    icon: <CheckIcon />,
+  },
 ];
 
 export const IconStartedOptions: SidebarOption[] = [

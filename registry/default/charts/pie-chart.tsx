@@ -32,6 +32,23 @@ import {
   type ResolvedColors,
 } from "@/registry/default/ui/charts/chart";
 import { TooltipComponent, type TooltipComponentOption } from "echarts/components";
+import {
+  dataQualityAriaSummary,
+  dataQualityKeys,
+  DataStatusKey,
+  readSeriesQuality,
+  reportDataQualityIssues,
+  resolveDataStatusText,
+  statusDetailText,
+  statusFillStyles,
+  statusNotesHtml,
+  summarizeDataQuality,
+  type DataStatus,
+  type DataStatusText,
+  type PointQuality,
+  type ResolvedDataStatusText,
+  type StatusItemStyle,
+} from "@/registry/default/ui/charts/data-quality";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
 import { PieChart as PieChartModule, type PieSeriesOption } from "echarts/charts";
 import { motion, useReducedMotion } from "motion/react";
@@ -48,11 +65,12 @@ type EChartsInstance = ReturnType<typeof echarts.init>;
 type EChartsOption = ComposeOption<PieSeriesOption | TooltipComponentOption>;
 
 type PieItemStyle = {
-  color: string | echarts.graphic.LinearGradient;
+  color: StatusItemStyle["color"];
   opacity: number;
   borderRadius: number;
   borderColor?: string;
   borderWidth?: number;
+  borderType?: [number, number];
 };
 
 const REVEAL_DURATION = 1000; 
@@ -124,6 +142,10 @@ export interface PieChartProps<TData extends Record<string, unknown>> {
   onSelectionChange?: (selection: { dataKey: string; value: number } | null) => void; 
   isLoading?: boolean; 
   ariaLabel?: string;
+  statusKey?: keyof TData & string; 
+  lowerKey?: keyof TData & string; 
+  upperKey?: keyof TData & string; 
+  dataStatusText?: DataStatusText; 
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -279,6 +301,11 @@ function collectConfig(children: ReactNode): CollectedConfig {
   });
 
   return { pie, tooltip, legend, background };
+}
+
+function sectorLabel(config: ChartConfig, name: string): string {
+  const label = config[name]?.label;
+  return typeof label === "string" ? label : name;
 }
 
 function sectorPaint(slots: string[]): string | echarts.graphic.LinearGradient {
@@ -486,6 +513,8 @@ type OptionBuildContext = {
   legendSlot: LegendSlot;
   isLoading: boolean;
   resolved: ResolvedColors;
+  points: PointQuality[] | null; 
+  statusText: ResolvedDataStatusText;
 };
 
 function pieCenterY(legendSlot: LegendSlot): string {
@@ -496,13 +525,14 @@ function pieCenterY(legendSlot: LegendSlot): string {
 }
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
-  const { config, selectedSector, tooltipSlot } = ctx;
+  const { config, selectedSector, tooltipSlot, points, statusText } = ctx;
 
   return (params: unknown): string => {
     const p = (Array.isArray(params) ? params[0] : params) as {
       name?: string;
       value?: number | string;
       seriesId?: string;
+      dataIndex?: number;
     } | null;
 
     if (!p || String(p.seriesId ?? "").startsWith("__")) return "";
@@ -514,15 +544,23 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
     const value = typeof p.value === "number" ? p.value.toLocaleString() : String(p.value ?? "");
     const dimmed = selectedSector != null && selectedSector !== name ? " opacity-30" : "";
 
+    const point = typeof p.dataIndex === "number" ? points?.[p.dataIndex] : undefined;
     const row = tooltipRow({
       indicatorHtml: tooltipIndicatorHtml(name, colorsCount),
       labelText,
       valueText: value,
       dimmed,
+      detailText: point
+        ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
+        : undefined,
     });
+    const notes = statusNotesHtml(
+      new Set<DataStatus>(point?.status ? [point.status] : []),
+      statusText,
+    );
 
     return `<div class="grid min-w-32 items-start gap-1.5 border border-border/50 px-2.5 py-1.5 text-xs shadow-xl ${roundnessClass[tooltipSlot.roundness]} ${tooltipVariantClass[tooltipSlot.variant]}">
-      <div class="grid gap-1.5">${row}</div>
+      <div class="grid gap-1.5">${row}${notes}</div>
     </div>`;
   };
 }
@@ -551,7 +589,10 @@ function buildPieSeries(ctx: OptionBuildContext): PieSeriesOption[] {
 
   const border = sectorBorder(pie.paddingAngle, tokens.background);
 
-  const sectors = data.map((row) => {
+  const showLabel = pie.labelDataKey !== null;
+  const isOutside = pie.labelPosition === "outside";
+
+  const sectors = data.map((row, index) => {
     const name = String(row[nameKey]);
     const slots = resolved.series[name] ?? [FALLBACK_COLOR];
 
@@ -569,11 +610,32 @@ function buildPieSeries(ctx: OptionBuildContext): PieSeriesOption[] {
       itemStyle.borderWidth = border.borderWidth;
     }
 
-    return { name, value: Number(row[dataKey]) || 0, itemStyle, selected: isSelected };
-  });
+    const point = ctx.points?.[index];
+    if (!point) {
+      return { name, value: Number(row[dataKey]) || 0, itemStyle, selected: isSelected };
+    }
 
-  const showLabel = pie.labelDataKey !== null;
-  const isOutside = pie.labelPosition === "outside";
+    // Fill carries data status on a sector, the same way it does on a bar.
+    const statusStyle = point.status ? statusFillStyles(slots[0])[point.status] : undefined;
+    return {
+      name,
+      value: point.value ?? undefined,
+      itemStyle: { ...itemStyle, ...statusStyle },
+      selected: isSelected,
+      // An inside label is set in the background colour, which a patterned or empty
+      // sector lacks, so it gets a plate to stay readable over the pattern.
+      ...(statusStyle && !isOutside
+        ? {
+            label: {
+              color: tokens.foreground,
+              backgroundColor: tokens.background,
+              padding: [2, 4],
+              borderRadius: 2,
+            },
+          }
+        : {}),
+    };
+  });
 
   const explicitKey = pie.labelDataKey ? pie.labelDataKey : null;
   const labelFormatter = (labelParams: { dataIndex: number; name?: string; value?: unknown }) => {
@@ -705,6 +767,10 @@ export function PieChart<TData extends Record<string, unknown>>({
   onSelectionChange,
   isLoading = false,
   ariaLabel,
+  statusKey,
+  lowerKey,
+  upperKey,
+  dataStatusText,
   chartOptions,
   children,
 }: PieChartProps<TData>) {
@@ -739,7 +805,28 @@ export function PieChart<TData extends Record<string, unknown>>({
     () => data.map((row) => String(row[nameKey as string])),
     [data, nameKey],
   );
-  const defaultAriaLabel = `Pie chart showing ${String(dataKey)} by ${String(nameKey)}.`;
+
+  const quality = useMemo(() => {
+    const keys = dataQualityKeys({ statusKey, lowerKey, upperKey });
+    if (!keys) return null;
+    const { points, issues } = readSeriesQuality(data, dataKey, keys);
+    // A sector has no place to draw bounds, so a range is reported in the tooltip only.
+    const summary = { ...summarizeDataQuality([points]), hasRanges: false };
+    // A missing sector cannot be drawn, so the key names it instead.
+    const missingNames = points.flatMap((point, index) =>
+      point.status === "missing" ? [sectorLabel(config, sectorKeys[index])] : [],
+    );
+    return { points, issues, summary, missingNames };
+  }, [data, dataKey, statusKey, lowerKey, upperKey, config, sectorKeys]);
+  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
+  const qualityIssues = quality?.issues.join("\n") ?? "";
+  useEffect(() => {
+    if (qualityIssues) reportDataQualityIssues("PieChart", qualityIssues.split("\n"));
+  }, [qualityIssues]);
+
+  const defaultAriaLabel = `Pie chart showing ${String(dataKey)} by ${String(nameKey)}.${
+    quality ? dataQualityAriaSummary(quality.summary, statusText) : ""
+  }`;
 
   const css = useMemo(() => buildChartCss(chartId, config), [chartId, config]);
 
@@ -781,6 +868,8 @@ export function PieChart<TData extends Record<string, unknown>>({
       legendSlot,
       isLoading,
       resolved,
+      points: quality?.points ?? null,
+      statusText,
     };
 
     if (isLoading) return buildLoadingOption(ctx);
@@ -800,6 +889,8 @@ export function PieChart<TData extends Record<string, unknown>>({
     tooltipSlot,
     legendSlot,
     isLoading,
+    quality,
+    statusText,
   ]);
 
   useEffect(() => {
@@ -956,6 +1047,17 @@ export function PieChart<TData extends Record<string, unknown>>({
         : { top: "50%", transform: "translateY(-50%)" }),
   };
 
+  // The status key takes the edge the sector legend is not on, so the two never overlap.
+  const statusKeyOnTop = legendSlot.present && legendSlot.verticalAlign === "bottom";
+  const statusKeyNode = quality && !isLoading && (
+    <DataStatusKey
+      summary={quality.summary}
+      mark="fill"
+      text={statusText}
+      missingNote={quality.missingNames.join(", ")}
+    />
+  );
+
   return (
     <div
       ref={containerRef}
@@ -964,6 +1066,8 @@ export function PieChart<TData extends Record<string, unknown>>({
       aria-busy={isLoading}
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
+
+      {statusKeyOnTop && statusKeyNode}
 
       <div
         className="relative min-h-0 w-full flex-1"
@@ -975,6 +1079,8 @@ export function PieChart<TData extends Record<string, unknown>>({
         )}
         <div ref={mountRef} className="relative h-full min-h-0 w-full" />
       </div>
+
+      {!statusKeyOnTop && statusKeyNode}
 
       {legendSlot.present && !isLoading && (
         <LegendOverlay

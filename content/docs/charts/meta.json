@@ -13,6 +13,7 @@
     "ui/legend",
     "ui/dots",
     "ui/brush",
+    "data-status",
     "chart-config"
   ]
 }

@@ -1,0 +1,204 @@
+---
+title: Data Status
+description: Mark each value as measured, estimated, provisional, forecast, or missing, and show the bounds you have for it.
+---
+
+<ComponentPreview title="Revenue with an open month and a forecast" name="ex-data-status-echarts-line-chart" />
+
+## Overview
+
+A chart can mix numbers that deserve different amounts of trust: closed months, a month that is still open, a projection, a gap. Data status lets you say which is which. You supply the status of each value, and every Honest UI chart draws it, lists it in a key beside the plot, and explains it in the tooltip.
+
+The charts never work a status out for you. A value with no status is drawn as an ordinary value and is not labelled "Measured". A range appears only where you supply both bounds.
+
+## Statuses
+
+| Status | Use it for |
+| --- | --- |
+| `measured` | A value recorded from the source. |
+| `estimated` | A value that was calculated or modelled instead of recorded. |
+| `provisional` | A value that is incomplete or unconfirmed and can still change. |
+| `forecast` | A projection for a period that has not been recorded yet. |
+| `missing` | A point where no value was recorded. |
+
+Each chart draws a status with the mark it has room for. A missing value is a dashed ring wherever the plot has a place for it; a pie chart names it in the key and a scatter chart counts it there.
+
+| Status | Line and area | Bar and pie | Scatter | Heatmap |
+| --- | --- | --- | --- | --- |
+| `measured` | Solid stroke | Solid fill | Filled point | Plain cell |
+| `estimated` | Dotted stroke | Dotted fill with an outline | Ring with a centre dot | Dot in the cell's corner |
+| `provisional` | Short dashes | Hatched fill with an outline | Half-filled point | Slash in the cell's corner |
+| `forecast` | Long dashes | Empty shape with a dashed outline | Empty ring | Dashed outline inside the cell |
+| `missing` | A gap, with a ring on the baseline | No bar, with a ring on the baseline; a sector is named in the key | Not drawn; counted in the key | Empty cell with a ring |
+
+Status is shown with stroke, fill, and shape, and it is named in the key and the tooltip, so it does not depend on color. A heatmap cell keeps its color, because the color is the value.
+
+## Usage
+
+Put the status in the same row as the value it describes, then name that field with `statusKey`. Add `lowerKey` and `upperKey` when you have bounds for a value. These props go wherever the chart's value key goes: on the series part for `LineChart`, `AreaChart`, and `BarChart`, and on the chart root for `PieChart`, `ScatterChart`, and `Heatmap`.
+
+```tsx
+import { LineChart, type ChartConfig } from "honestui/charts";
+
+const data = [
+  { month: "September", revenue: 428, status: "measured" },
+  { month: "October", revenue: 187, status: "provisional" },
+  { month: "November", revenue: 436, status: "forecast", low: 398, high: 471 },
+  { month: "December", revenue: null, status: "missing" },
+];
+
+<LineChart data={data} config={chartConfig} xDataKey="month">
+  <LineChart.XAxis dataKey="month" />
+  <LineChart.Tooltip />
+  <LineChart.Line dataKey="revenue" statusKey="status" lowerKey="low" upperKey="high" />
+</LineChart>
+```
+
+When a chart has several series, give each one its own fields, such as `webStatus` and `mobileStatus`. `AreaChart.Area` and `BarChart.Bar` take the same three props.
+
+`PieChart` and `Heatmap` read one value per row, so they take the props on the root:
+
+```tsx
+<PieChart data={data} config={chartConfig} dataKey="tickets" nameKey="channel" statusKey="status">
+  <PieChart.Pie />
+</PieChart>
+
+<Heatmap data={data} config={chartConfig} xDataKey="day" yDataKey="hour" valueDataKey="orders" statusKey="status">
+  <Heatmap.Cells />
+</Heatmap>
+```
+
+A scatter point has two values, so `ScatterChart` takes one `statusKey` for the point and separate bounds for each axis: `yLowerKey` and `yUpperKey`, and `xLowerKey` and `xUpperKey`.
+
+```tsx
+<ScatterChart
+  data={data}
+  config={chartConfig}
+  xDataKey="floorArea"
+  yDataKey="energyUse"
+  statusKey="status"
+  yLowerKey="low"
+  yUpperKey="high"
+>
+  <ScatterChart.Scatter dataKey="office" />
+</ScatterChart>
+```
+
+### How segments are drawn
+
+A line segment joins two points, so it needs a rule when their statuses differ. A segment is solid only when both of its ends are measured or have no status. Otherwise it takes the status of its later point, or of its earlier point when the later one is solid. The line never crosses a point that has no value.
+
+### Ranges
+
+On line, area, bar, and scatter charts, a range is drawn as a whisker from the lower bound to the upper bound, at that point only. The chart does not join whiskers into a band, because that would draw bounds between points that you did not supply. A range can appear with any status, including `measured`, and on a line, area, or bar point that has bounds but no value.
+
+A pie sector and a heatmap cell have no place to draw a whisker, so those charts report the range in the tooltip only.
+
+## Examples
+
+### An estimated value and a missing value
+
+<ComponentPreview title="statusKey with a gap" name="ex-data-status-gaps-echarts-line-chart" />
+
+### Area
+
+<ComponentPreview title="Two series with their own status fields" name="ex-data-status-echarts-area-chart" />
+
+### Bar
+
+<ComponentPreview title="Every status on a grouped bar chart" name="ex-data-status-echarts-bar-chart" />
+
+### Pie
+
+A missing sector cannot be drawn, so the key names it. The remaining sectors are then shares of the known total, not of the whole.
+
+<ComponentPreview title="A donut with a missing sector" name="ex-data-status-echarts-pie-chart" />
+
+### Scatter
+
+<ComponentPreview title="Point status with bounds on the y value" name="ex-data-status-echarts-scatter-chart" />
+
+### Heatmap
+
+<ComponentPreview title="Cell status over the value color" name="ex-data-status-echarts-heatmap" />
+
+## Behavior to know about
+
+- **Other stroke and fill options.** Dashes and fills carry status on a series that sets `statusKey`, `lowerKey`, or `upperKey`. On that series, `strokeVariant`, `glowing`, `enableBufferLine`, `bufferBar`, and `connectNulls` are not applied, and a bar's status fill replaces its `variant` fill for estimated, provisional, and forecast values.
+- **Absent values.** On a series or chart that reads a status, a `null`, empty, or non-numeric value is left empty instead of being drawn at zero. Charts and series that do not read a status keep their existing behavior.
+- **Points that cannot be placed.** A scatter point needs both coordinates. A point marked `missing` is left out and counted in the key, for example "Missing: 1 not shown".
+- **Small marks.** Heatmap status marks need room. In a dense heatmap with cells only a few pixels wide, rely on the tooltip and a text summary.
+- **Stacked charts.** In a stacked chart, a range moves up with the series it belongs to. In an expanded area chart or a percent bar chart, ranges are not drawn, because bounds on a value are not bounds on its share. If any value in a category is missing, every share in that category is unknown and the category is left empty.
+- **Invalid input.** In development, the chart logs a console warning and skips the claim it cannot draw: a status that is not one of the five, a row marked `missing` that still has a value, a single bound, bounds that are out of order or exclude the value, or a scatter point whose x or y is not a number.
+
+## Accessibility
+
+The key is a list under the plot, or above it when the chart's legend sits at the bottom. Each entry carries its explanation for screen readers, and the default `ariaLabel` names the statuses in the chart. The plot itself is a canvas, and the tooltip is pointer-operated, so give readers a text summary or a data table that includes each value's status when the difference matters to a decision.
+
+## Changing the text
+
+Pass `dataStatusText` to the chart root to translate or reword the labels and explanations. Anything you leave out keeps its default. Define the object outside the component so the chart does not rebuild on every render.
+
+```tsx
+import { LineChart, type DataStatusText } from "honestui/charts";
+
+const dataStatusText: DataStatusText = {
+  keyLabel: "Datenstatus",
+  rangeLabel: "Spanne",
+  noValueLabel: "Kein Wert",
+  statuses: {
+    forecast: {
+      label: "Prognose",
+      description: "Eine Hochrechnung für einen Zeitraum, der noch nicht erfasst ist.",
+    },
+  },
+};
+
+<LineChart data={data} config={chartConfig} dataStatusText={dataStatusText}>
+  <LineChart.Line dataKey="revenue" statusKey="status" />
+</LineChart>
+```
+
+## API Reference
+
+<ApiHeading>Line, Area, and Bar parts; PieChart and Heatmap roots</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="statusKey" type="string">
+    The row field that holds this series' status: `"measured"`, `"estimated"`, `"provisional"`, `"forecast"`, or `"missing"`. Rows without the field are drawn without a status.
+  </ApiRow>
+  <ApiRow name="lowerKey" type="string">
+    The row field that holds the lower bound. Set it together with `upperKey`.
+  </ApiRow>
+  <ApiRow name="upperKey" type="string">
+    The row field that holds the upper bound. Set it together with `lowerKey`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>ScatterChart root</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="statusKey" type="string">
+    The row field that holds each point's status.
+  </ApiRow>
+  <ApiRow name="yLowerKey" type="string">
+    The row field that holds the lower bound of the y value. Set it together with `yUpperKey`.
+  </ApiRow>
+  <ApiRow name="yUpperKey" type="string">
+    The row field that holds the upper bound of the y value. Set it together with `yLowerKey`.
+  </ApiRow>
+  <ApiRow name="xLowerKey" type="string">
+    The row field that holds the lower bound of the x value. Set it together with `xUpperKey`.
+  </ApiRow>
+  <ApiRow name="xUpperKey" type="string">
+    The row field that holds the upper bound of the x value. Set it together with `xLowerKey`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Every chart root</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataStatusText" type="DataStatusText">
+    Replacement text for the status labels and explanations, the key label, the range label, the label shown for a point with no value, and the count of points that are not shown.
+  </ApiRow>
+</ApiTable>

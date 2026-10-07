@@ -18,6 +18,18 @@ export const tooltipVariantClass: Record<TooltipVariant, string> = {
   "frosted-glass": "bg-background/50 backdrop-blur-md",
 };
 
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+export function escapeHtml(text: string): string {
+  return text.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
+}
+
 export function tooltipIndicatorHtml(key: string, colorsCount: number): string {
   return `<div class="h-2.5 w-2.5 shrink-0 rounded-[2px]" style="background:${indicatorBackground(key, colorsCount)}"></div>`;
 }
@@ -27,18 +39,24 @@ export function tooltipRow({
   labelText,
   valueText,
   dimmed,
+  detailText,
 }: {
   indicatorHtml: string;
   labelText: string;
   valueText: string;
   dimmed: string;
+  detailText?: string;
 }): string {
+  const detail = detailText
+    ? `<div class="text-muted-foreground basis-full pl-[18px] leading-none">${escapeHtml(detailText)}</div>`
+    : "";
   return `<div class="flex w-full flex-wrap items-center gap-2${dimmed}">
           ${indicatorHtml}
           <div class="flex flex-1 items-center justify-between gap-4 leading-none">
             <span class="text-muted-foreground">${labelText}</span>
             <span class="text-foreground font-mono font-medium tabular-nums">${valueText}</span>
           </div>
+          ${detail}
         </div>`;
 }
 

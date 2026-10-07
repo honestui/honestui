@@ -187,6 +187,9 @@ The root container. It owns the data, shared selection state, loading skeleton, 
   <ApiRow name="loadingPoints" type="number" default="14">
     Number of points in the loading skeleton.
   </ApiRow>
+  <ApiRow name="dataStatusText" type="DataStatusText">
+    Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record<string, unknown>">
     Escape hatch merged over the built ECharts option object. See the <Link href="https://echarts.apache.org/en/option.html" _blank>ECharts option documentation</Link>.
   </ApiRow>
@@ -223,6 +226,15 @@ A single line series. Each `<Line />` is self-contained, its own stroke, glow, a
   </ApiRow>
   <ApiRow name="enableBufferLine" type="boolean" default="false">
     Renders this line's last segment as a dashed buffer while the rest stays solid, useful for projected or incomplete data at the end of a series.
+  </ApiRow>
+  <ApiRow name="statusKey" type="string">
+    The row field that holds each value's status. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
+  <ApiRow name="lowerKey" type="string">
+    The row field that holds the lower bound of each value. Set it together with `upperKey`.
+  </ApiRow>
+  <ApiRow name="upperKey" type="string">
+    The row field that holds the upper bound of each value. Set it together with `lowerKey`.
   </ApiRow>
   <ApiRow name="children" type="ReactNode">
     Optional `<Dot />` and `<ActiveDot />` config that adds point markers to this line.

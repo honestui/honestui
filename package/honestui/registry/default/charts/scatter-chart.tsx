@@ -38,7 +38,28 @@ import {
   type GridComponentOption,
   type TooltipComponentOption,
 } from "echarts/components";
-import { ScatterChart as ScatterChartModule, type ScatterSeriesOption } from "echarts/charts";
+import {
+  dataQualityAriaSummary,
+  DataStatusKey,
+  rangeWhiskerSeries,
+  readSeriesQuality,
+  reportDataQualityIssues,
+  resolveDataStatusText,
+  statusLabelHtml,
+  statusNotesHtml,
+  statusPointStyles,
+  summarizeDataQuality,
+  type DataStatus,
+  type DataStatusText,
+  type PointQuality,
+  type ResolvedDataStatusText,
+} from "@/registry/default/ui/charts/data-quality";
+import {
+  CustomChart,
+  ScatterChart as ScatterChartModule,
+  type CustomSeriesOption,
+  type ScatterSeriesOption,
+} from "echarts/charts";
 import { motion, useReducedMotion } from "motion/react";
 import { CanvasRenderer } from "echarts/renderers";
 import type { ComposeOption } from "echarts/core";
@@ -54,6 +75,7 @@ export type {
 
 echarts.use([
   ScatterChartModule,
+  CustomChart,
   GridComponent,
   MarkAreaComponent,
   TooltipComponent,
@@ -62,7 +84,7 @@ echarts.use([
 
 type EChartsInstance = ReturnType<typeof echarts.init>;
 type EChartsOption = ComposeOption<
-  ScatterSeriesOption | GridComponentOption | TooltipComponentOption
+  ScatterSeriesOption | CustomSeriesOption | GridComponentOption | TooltipComponentOption
 >;
 type ArrayItem<T> = T extends readonly (infer U)[] ? U : T;
 type XAxisOption = ArrayItem<NonNullable<EChartsOption["xAxis"]>>;
@@ -105,6 +127,12 @@ export interface ScatterChartProps<TData extends Record<string, unknown>> {
   isLoading?: boolean;
   loadingPoints?: number;
   ariaLabel?: string;
+  statusKey?: keyof TData & string;
+  xLowerKey?: keyof TData & string;
+  xUpperKey?: keyof TData & string;
+  yLowerKey?: keyof TData & string;
+  yUpperKey?: keyof TData & string;
+  dataStatusText?: DataStatusText;
   chartOptions?: Record<string, unknown>;
   children?: ReactNode;
 }
@@ -368,7 +396,24 @@ function buildMarkArea(params: {
   } as ScatterSeriesOption["markArea"];
 }
 
+// What a chart that reads data status knows about each row's point.
+type ScatterQuality = {
+  x: PointQuality[];
+  y: PointQuality[];
+  statusText: ResolvedDataStatusText;
+};
+
+function formatRange(
+  point: PointQuality | undefined,
+  quality: ScatterQuality | null,
+  format: (value: number) => string,
+): string | undefined {
+  if (!point?.range || !quality) return undefined;
+  return `${quality.statusText.rangeLabel} ${format(point.range.lower)} – ${format(point.range.upper)}`;
+}
+
 function createTooltipFormatter(params: {
+  quality: ScatterQuality | null;
   data: Record<string, unknown>[];
   config: ChartConfig;
   xDataKey: string;
@@ -378,8 +423,17 @@ function createTooltipFormatter(params: {
   slot: TooltipSlot;
   selectedDataKey: string | null;
 }) {
-  const { data, config, xDataKey, yDataKey, pointNameDataKey, scatters, slot, selectedDataKey } =
-    params;
+  const {
+    quality,
+    data,
+    config,
+    xDataKey,
+    yDataKey,
+    pointNameDataKey,
+    scatters,
+    slot,
+    selectedDataKey,
+  } = params;
   return (raw: unknown) => {
     const p = raw as {
       seriesId?: string;
@@ -402,18 +456,23 @@ function createTooltipFormatter(params: {
     const dimmed = selectedDataKey != null && selectedDataKey !== key ? " opacity-30" : "";
     const xLabel = String(config[xDataKey]?.label ?? xDataKey);
     const yLabel = String(config[yDataKey]?.label ?? yDataKey);
+    const formatX = (value: number) => slot.xValueFormatter?.(value) ?? value.toLocaleString();
+    const formatY = (value: number) => slot.yValueFormatter?.(value) ?? value.toLocaleString();
+    const status = quality?.y[index]?.status ?? null;
     const rows = [
       tooltipRow({
         indicatorHtml: tooltipIndicatorHtml(key, colorsCount),
         labelText: xLabel,
-        valueText: slot.xValueFormatter?.(x) ?? x.toLocaleString(),
+        valueText: formatX(x),
         dimmed,
+        detailText: formatRange(quality?.x[index], quality, formatX),
       }),
       tooltipRow({
         indicatorHtml: '<div class="h-2.5 w-2.5 shrink-0"></div>',
         labelText: yLabel,
-        valueText: slot.yValueFormatter?.(y) ?? y.toLocaleString(),
+        valueText: formatY(y),
         dimmed,
+        detailText: formatRange(quality?.y[index], quality, formatY),
       }),
     ];
     if (size != null && scatter?.sizeDataKey) {
@@ -428,10 +487,14 @@ function createTooltipFormatter(params: {
     }
     const seriesLabel = typeof item?.label === "string" ? item.label : p.seriesName;
     const pointLabel = pointNameDataKey ? String(datum?.[pointNameDataKey] ?? "") : "";
+    const statusLabel = quality ? statusLabelHtml(status, quality.statusText) : "";
+    const notes = quality
+      ? statusNotesHtml(new Set<DataStatus>(status ? [status] : []), quality.statusText)
+      : "";
 
     return tooltipShell({
-      label: [pointLabel, seriesLabel].filter(Boolean).join(" · "),
-      body: rows.join(""),
+      label: [pointLabel, seriesLabel, statusLabel].filter(Boolean).join(" · "),
+      body: rows.join("") + notes,
       roundness: slot.roundness,
       variant: slot.variant,
     });
@@ -494,6 +557,12 @@ export function ScatterChart<TData extends Record<string, unknown>>({
   isLoading = false,
   loadingPoints = 14,
   ariaLabel,
+  statusKey,
+  xLowerKey,
+  xUpperKey,
+  yLowerKey,
+  yUpperKey,
+  dataStatusText,
   chartOptions,
   children,
 }: ScatterChartProps<TData>) {
@@ -509,18 +578,70 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     [children],
   );
   const seriesKeys = useMemo(() => scatters.map((scatter) => scatter.dataKey), [scatters]);
+  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
+  const quality = useMemo(() => {
+    if (!statusKey && !xLowerKey && !xUpperKey && !yLowerKey && !yUpperKey) return null;
+    const x = readSeriesQuality(data, xDataKey, { lowerKey: xLowerKey, upperKey: xUpperKey });
+    const y = readSeriesQuality(data, yDataKey, {
+      statusKey,
+      lowerKey: yLowerKey,
+      upperKey: yUpperKey,
+    });
+    const issues = [...x.issues, ...y.issues];
+    // A point needs both coordinates. One that is marked missing is counted in
+    // the key; one that simply lacks a number is reported instead of drawn at zero.
+    let missingCount = 0;
+    y.points.forEach((point, index) => {
+      if (point.status === "missing") missingCount += 1;
+      else if (point.value === null || x.points[index].value === null) {
+        issues.push(`row ${index}: x or y is not a number. The point is not drawn.`);
+      }
+    });
+    return {
+      x: x.points,
+      y: y.points,
+      statusText,
+      issues,
+      missingCount,
+      summary: summarizeDataQuality([x.points, y.points]),
+    };
+  }, [data, xDataKey, yDataKey, statusKey, xLowerKey, xUpperKey, yLowerKey, yUpperKey, statusText]);
+  const qualityIssues = quality?.issues.join("\n") ?? "";
+  useEffect(() => {
+    if (qualityIssues) reportDataQualityIssues("ScatterChart", qualityIssues.split("\n"));
+  }, [qualityIssues]);
+
+  // The axes make room for the bounds as well as the points.
   const xRange = useMemo(
-    () => extent(data.map((row) => Number(row[xDataKey])).filter(Number.isFinite)),
-    [data, xDataKey],
+    () =>
+      extent(
+        data
+          .flatMap((row, index) => {
+            const range = quality?.x[index].range;
+            return [Number(row[xDataKey]), ...(range ? [range.lower, range.upper] : [])];
+          })
+          .filter(Number.isFinite),
+      ),
+    [data, xDataKey, quality],
   );
   const yRange = useMemo(
-    () => extent(data.map((row) => Number(row[yDataKey])).filter(Number.isFinite)),
-    [data, yDataKey],
+    () =>
+      extent(
+        data
+          .flatMap((row, index) => {
+            const range = quality?.y[index].range;
+            return [Number(row[yDataKey]), ...(range ? [range.lower, range.upper] : [])];
+          })
+          .filter(Number.isFinite),
+      ),
+    [data, yDataKey, quality],
   );
   const css = useMemo(() => buildChartCss(chartId, config), [chartId, config]);
   const defaultAriaLabel = `Scatter chart comparing ${String(
     config[yDataKey]?.label ?? yDataKey,
-  )} and ${String(config[xDataKey]?.label ?? xDataKey)}`;
+  )} and ${String(config[xDataKey]?.label ?? xDataKey)}${
+    quality ? `.${dataQualityAriaSummary(quality.summary, statusText)}` : ""
+  }`;
 
   const liveRef = useRef<LiveState>({
     resolved: null,
@@ -622,6 +743,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
         transitionDuration: 0,
         position: resolveTooltipPosition(tooltip.position),
         formatter: createTooltipFormatter({
+          quality,
           data,
           config,
           xDataKey,
@@ -632,11 +754,15 @@ export function ScatterChart<TData extends Record<string, unknown>>({
           selectedDataKey,
         }),
       },
-      series: scatters.map((scatter, seriesIndex) => {
+      series: scatters.flatMap((scatter, seriesIndex) => {
         const filtered = data
           .map((datum, index) => ({ datum, index }))
           .filter(({ datum }) =>
             groupDataKey ? String(datum[groupDataKey]) === scatter.dataKey : true,
+          )
+          .filter(
+            ({ index }) =>
+              !quality || (quality.x[index].value !== null && quality.y[index].value !== null),
           );
         const sizeValues = scatter.sizeDataKey
           ? filtered.map(({ datum }) => finiteNumber(datum[scatter.sizeDataKey as string]))
@@ -644,14 +770,56 @@ export function ScatterChart<TData extends Record<string, unknown>>({
         const colors = resolved.series[scatter.dataKey] ?? [GRAY];
         const base = colors[colors.length - 1] ?? GRAY;
         const selected = selectedDataKey == null || selectedDataKey === scatter.dataKey;
-        const seriesData = filtered.map(({ datum, index }) => [
-          finiteNumber(datum[xDataKey]),
-          finiteNumber(datum[yDataKey]),
-          scatter.sizeDataKey ? finiteNumber(datum[scatter.sizeDataKey]) : scatter.symbolSize,
-          index,
-        ]);
+        const statusStyles = quality ? statusPointStyles(base) : null;
+        const seriesData = filtered.map(({ datum, index }) => {
+          const value = [
+            finiteNumber(datum[xDataKey]),
+            finiteNumber(datum[yDataKey]),
+            scatter.sizeDataKey ? finiteNumber(datum[scatter.sizeDataKey]) : scatter.symbolSize,
+            index,
+          ];
+          const status = quality?.y[index].status;
+          const statusStyle = status ? statusStyles?.[status] : undefined;
+          return statusStyle ? { value, itemStyle: statusStyle } : value;
+        });
 
-        return {
+        const opacity = selected ? 1 : SELECTION_DIM;
+        const whiskers: CustomSeriesOption[] = [];
+        if (quality) {
+          const yRanges = filtered.flatMap(({ datum, index }) => {
+            const range = quality.y[index].range;
+            return range ? [{ index: finiteNumber(datum[xDataKey]), ...range }] : [];
+          });
+          const xRanges = filtered.flatMap(({ datum, index }) => {
+            const range = quality.x[index].range;
+            return range ? [{ index: finiteNumber(datum[yDataKey]), ...range }] : [];
+          });
+          if (yRanges.length) {
+            whiskers.push(
+              rangeWhiskerSeries({
+                dataKey: `${scatter.dataKey}-y`,
+                ranges: yRanges,
+                color: base,
+                opacity,
+                z: 1,
+              }),
+            );
+          }
+          if (xRanges.length) {
+            whiskers.push(
+              rangeWhiskerSeries({
+                dataKey: `${scatter.dataKey}-x`,
+                ranges: xRanges,
+                color: base,
+                opacity,
+                z: 1,
+                isHorizontal: true,
+              }),
+            );
+          }
+        }
+
+        const points: ScatterSeriesOption = {
           id: scatter.dataKey,
           name:
             typeof config[scatter.dataKey]?.label === "string"
@@ -677,7 +845,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
             color: scatterPaint(colors, scatter.fillOpacity, scatter.variant === "bubble"),
             borderColor: base,
             borderWidth: scatter.variant === "bubble" ? 1.25 : 1,
-            opacity: selected ? 1 : SELECTION_DIM,
+            opacity,
           },
           emphasis: {
             disabled: !scatter.isClickable,
@@ -700,6 +868,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
                 })
               : undefined,
         };
+        return [points, ...whiskers];
       }),
     };
   }, [
@@ -723,6 +892,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     yAxis,
     yDataKey,
     yRange,
+    quality,
   ]);
 
   useEffect(() => {
@@ -815,6 +985,17 @@ export function ScatterChart<TData extends Record<string, unknown>>({
         : { top: "50%", transform: "translateY(-50%)" }),
   };
 
+  // The status key takes the edge the series legend is not on, so the two never overlap.
+  const statusKeyOnTop = legend.present && legend.verticalAlign === "bottom";
+  const statusKeyNode = quality && !isLoading && (
+    <DataStatusKey
+      summary={quality.summary}
+      mark="point"
+      text={statusText}
+      missingNote={quality.missingCount ? statusText.notShownLabel(quality.missingCount) : undefined}
+    />
+  );
+
   return (
     <div
       ref={containerRef}
@@ -823,6 +1004,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
       aria-busy={isLoading}
     >
       <style dangerouslySetInnerHTML={{ __html: css }} />
+      {statusKeyOnTop && statusKeyNode}
       <div
         className="relative min-h-0 w-full flex-1"
         role="img"
@@ -830,6 +1012,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
       >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
+      {!statusKeyOnTop && statusKeyNode}
 
       {legend.present && !isLoading && (
         <LegendOverlay

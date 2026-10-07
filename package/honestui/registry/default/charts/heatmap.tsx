@@ -37,7 +37,29 @@ import {
   type TooltipComponentOption,
   type VisualMapComponentOption,
 } from "echarts/components";
-import { HeatmapChart as HeatmapChartModule, type HeatmapSeriesOption } from "echarts/charts";
+import {
+  cellStatusSeries,
+  dataQualityAriaSummary,
+  dataQualityKeys,
+  DataStatusKey,
+  noValueHtml,
+  readSeriesQuality,
+  reportDataQualityIssues,
+  resolveDataStatusText,
+  statusDetailText,
+  statusNotesHtml,
+  summarizeDataQuality,
+  type DataStatus,
+  type DataStatusText,
+  type PointQuality,
+  type ResolvedDataStatusText,
+} from "@/registry/default/ui/charts/data-quality";
+import {
+  CustomChart,
+  HeatmapChart as HeatmapChartModule,
+  type CustomSeriesOption,
+  type HeatmapSeriesOption,
+} from "echarts/charts";
 import { motion, useReducedMotion } from "motion/react";
 import { CanvasRenderer } from "echarts/renderers";
 import type { ComposeOption } from "echarts/core";
@@ -47,6 +69,7 @@ export type { ChartConfig, TooltipPosition, TooltipRoundness, TooltipVariant };
 
 echarts.use([
   HeatmapChartModule,
+  CustomChart,
   GridComponent,
   TooltipComponent,
   VisualMapContinuousComponent,
@@ -56,7 +79,11 @@ echarts.use([
 
 type EChartsInstance = ReturnType<typeof echarts.init>;
 type EChartsOption = ComposeOption<
-  HeatmapSeriesOption | GridComponentOption | TooltipComponentOption | VisualMapComponentOption
+  | HeatmapSeriesOption
+  | CustomSeriesOption
+  | GridComponentOption
+  | TooltipComponentOption
+  | VisualMapComponentOption
 >;
 type ArrayItem<T> = T extends readonly (infer U)[] ? U : T;
 type XAxisOption = ArrayItem<NonNullable<EChartsOption["xAxis"]>>;
@@ -89,6 +116,10 @@ export interface HeatmapProps<TData extends Record<string, unknown>> {
   loadingColumns?: number;
   loadingRows?: number;
   ariaLabel?: string;
+  statusKey?: keyof TData & string;
+  lowerKey?: keyof TData & string;
+  upperKey?: keyof TData & string;
+  dataStatusText?: DataStatusText;
   onCellClick?: (cell: HeatmapCell<TData>) => void;
   chartOptions?: Record<string, unknown>;
   children?: ReactNode;
@@ -258,13 +289,8 @@ function uniqueValues<TData extends Record<string, unknown>>(data: TData[], key:
   return Array.from(new Set(data.map((row) => String(row[key]))));
 }
 
-function valueRange<TData extends Record<string, unknown>>(
-  data: TData[],
-  valueDataKey: keyof TData & string,
-  min?: number,
-  max?: number,
-) {
-  const values = data.map((row) => Number(row[valueDataKey])).filter(Number.isFinite);
+function valueRange(rawValues: unknown[], min?: number, max?: number) {
+  const values = rawValues.map(Number).filter(Number.isFinite);
   const resolvedMin = min ?? (values.length ? Math.min(...values) : 0);
   const resolvedMax = max ?? (values.length ? Math.max(...values) : 1);
   return resolvedMin === resolvedMax
@@ -316,8 +342,10 @@ function createTooltipFormatter(params: {
   xCategories: string[];
   yCategories: string[];
   slot: TooltipSlot;
+  points: PointQuality[] | null;
+  statusText: ResolvedDataStatusText;
 }) {
-  const { data, config, valueDataKey, xCategories, yCategories, slot } = params;
+  const { data, config, valueDataKey, xCategories, yCategories, slot, points, statusText } = params;
   return (raw: unknown) => {
     const p = raw as { dataIndex?: number; value?: [number, number, number] };
     const index = p.dataIndex ?? 0;
@@ -327,16 +355,23 @@ function createTooltipFormatter(params: {
     const y = yCategories[p.value?.[1] ?? 0] ?? "";
     const item = config[valueDataKey];
     const label = typeof item?.label === "string" ? item.label : valueDataKey;
-    const valueText = slot.valueFormatter?.(value) ?? value.toLocaleString();
+    const format = (amount: number) => slot.valueFormatter?.(amount) ?? amount.toLocaleString();
+    const point = points?.[index];
+    const valueText = point && point.value === null ? noValueHtml(statusText) : format(value);
     const body = tooltipRow({
       indicatorHtml: tooltipIndicatorHtml(valueDataKey, item ? getColorsCount(item) : 1),
       labelText: label,
       valueText,
       dimmed: "",
+      detailText: point ? statusDetailText(point, statusText, format) : undefined,
     });
+    const notes = statusNotesHtml(
+      new Set<DataStatus>(point?.status ? [point.status] : []),
+      statusText,
+    );
     return tooltipShell({
       label: [y, x].filter(Boolean).join(" · "),
-      body,
+      body: body + notes,
       roundness: slot.roundness,
       variant: slot.variant,
     });
@@ -459,6 +494,10 @@ export function Heatmap<TData extends Record<string, unknown>>({
   loadingColumns = 7,
   loadingRows = 5,
   ariaLabel,
+  statusKey,
+  lowerKey,
+  upperKey,
+  dataStatusText,
   onCellClick,
   chartOptions,
   children,
@@ -473,20 +512,41 @@ export function Heatmap<TData extends Record<string, unknown>>({
   const { cells, xAxis, yAxis, grid: showGrid, tooltip, legend } = collected;
   const xCategories = useMemo(() => uniqueValues(data, xDataKey), [data, xDataKey]);
   const yCategories = useMemo(() => uniqueValues(data, yDataKey), [data, yDataKey]);
+  const quality = useMemo(() => {
+    const keys = dataQualityKeys({ statusKey, lowerKey, upperKey });
+    if (!keys) return null;
+    const { points, issues } = readSeriesQuality(data, valueDataKey, keys);
+    // A cell has no room to draw bounds, so a range is reported in the tooltip only.
+    return { points, issues, summary: { ...summarizeDataQuality([points]), hasRanges: false } };
+  }, [data, valueDataKey, statusKey, lowerKey, upperKey]);
+  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
+  const qualityIssues = quality?.issues.join("\n") ?? "";
+  useEffect(() => {
+    if (qualityIssues) reportDataQualityIssues("Heatmap", qualityIssues.split("\n"));
+  }, [qualityIssues]);
+
   const seriesData = useMemo(() => {
     const xIndex = new Map(xCategories.map((value, index) => [value, index]));
     const yIndex = new Map(yCategories.map((value, index) => [value, index]));
 
-    return data.map((row) => [
+    return data.map((row, index) => [
       xIndex.get(String(row[xDataKey])) ?? 0,
       yIndex.get(String(row[yDataKey])) ?? 0,
-      Number(row[valueDataKey]) || 0,
+      // "-" is ECharts' empty value: a cell without a value is left uncoloured.
+      quality ? (quality.points[index].value ?? "-") : Number(row[valueDataKey]) || 0,
     ]);
-  }, [data, xDataKey, yDataKey, valueDataKey, xCategories, yCategories]);
+  }, [data, xDataKey, yDataKey, valueDataKey, xCategories, yCategories, quality]);
   const isDense = seriesData.length >= 3000;
-  const range = useMemo(() => valueRange(data, valueDataKey, min, max), [data, valueDataKey, min, max]);
+  const range = useMemo(() => {
+    const values = quality
+      ? quality.points.map((point) => point.value ?? undefined)
+      : data.map((row) => row[valueDataKey]);
+    return valueRange(values, min, max);
+  }, [data, valueDataKey, min, max, quality]);
   const css = useMemo(() => buildChartCss(chartId, config), [chartId, config]);
-  const defaultAriaLabel = `Heatmap of ${String(config[valueDataKey]?.label ?? valueDataKey)} by ${yDataKey} and ${xDataKey}`;
+  const defaultAriaLabel = `Heatmap of ${String(config[valueDataKey]?.label ?? valueDataKey)} by ${yDataKey} and ${xDataKey}${
+    quality ? `.${dataQualityAriaSummary(quality.summary, statusText)}` : ""
+  }`;
 
   const liveRef = useRef<LiveState>({
     resolved: null,
@@ -531,6 +591,20 @@ export function Heatmap<TData extends Record<string, unknown>>({
       backgroundColor: withAlpha(resolved.tokens.foreground, 0.015),
     };
 
+    const statusMarks = quality
+      ? cellStatusSeries({
+          dataKey: valueDataKey,
+          cells: seriesData.map(([x, y], index) => ({
+            x: x as number,
+            y: y as number,
+            status: quality.points[index].status,
+          })),
+          foreground: resolved.tokens.foreground,
+          background: resolved.tokens.background,
+          z: 3,
+        })
+      : null;
+
     return {
       animation: animation && !shouldReduceMotion && !isDense,
       animationDuration: 480,
@@ -557,8 +631,11 @@ export function Heatmap<TData extends Record<string, unknown>>({
           xCategories,
           yCategories,
           slot: tooltip,
+          points: quality?.points ?? null,
+          statusText,
         }),
       },
+      // The value series stays first: the visual map and the default tooltip address index 0.
       series: [
         {
           id: valueDataKey,
@@ -583,6 +660,7 @@ export function Heatmap<TData extends Record<string, unknown>>({
             fontSize: 10,
             formatter: (params: unknown) => {
               const value = Number((params as { value?: unknown[] }).value?.[2] ?? 0);
+              if (!Number.isFinite(value)) return "";
               return cells.valueFormatter?.(value) ?? value.toLocaleString();
             },
           },
@@ -597,6 +675,7 @@ export function Heatmap<TData extends Record<string, unknown>>({
                 },
               },
         },
+        ...(statusMarks ? [statusMarks] : []),
       ],
     };
   }, [
@@ -619,6 +698,8 @@ export function Heatmap<TData extends Record<string, unknown>>({
     legend,
     animation,
     shouldReduceMotion,
+    quality,
+    statusText,
   ]);
 
   useEffect(() => {
@@ -710,6 +791,9 @@ export function Heatmap<TData extends Record<string, unknown>>({
       >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
+      {quality && !isLoading && (
+        <DataStatusKey summary={quality.summary} mark="cell" text={statusText} />
+      )}
       {isLoading && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
           <motion.div

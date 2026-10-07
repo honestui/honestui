@@ -121,6 +121,18 @@ Pass `isLoading` to reserve the chart layout with a neutral cell matrix and the 
   <ApiRow name="onCellClick" type="(cell: HeatmapCell&lt;TData&gt;) => void">
     Fires when a cell with `isClickable` enabled is selected.
   </ApiRow>
+  <ApiRow name="statusKey" type="string">
+    The row field that holds each value's status. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
+  <ApiRow name="lowerKey" type="string">
+    The row field that holds the lower bound of each value. Set it together with `upperKey`. The range is reported in the tooltip.
+  </ApiRow>
+  <ApiRow name="upperKey" type="string">
+    The row field that holds the upper bound of each value. Set it together with `lowerKey`.
+  </ApiRow>
+  <ApiRow name="dataStatusText" type="DataStatusText">
+    Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record<string, unknown>">
     Escape hatch merged over the generated ECharts option object.
   </ApiRow>
