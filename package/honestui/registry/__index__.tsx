@@ -178,6 +178,9 @@ import change_review_decisions from "./default/examples/change-review-decisions"
 import change_review_audit from "./default/examples/change-review-audit";
 import change_review_nested from "./default/examples/change-review-nested";
 import change_review_empty from "./default/examples/change-review-empty";
+import paste_table_demo from "./default/examples/paste-table-demo";
+import paste_table_validation from "./default/examples/paste-table-validation";
+import paste_table_failure from "./default/examples/paste-table-failure";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -681,6 +684,9 @@ export const Index: Record<string, { component: ComponentType }> = {
   "change-review-audit": { component: change_review_audit },
   "change-review-nested": { component: change_review_nested },
   "change-review-empty": { component: change_review_empty },
+  "paste-table-demo": { component: paste_table_demo },
+  "paste-table-validation": { component: paste_table_validation },
+  "paste-table-failure": { component: paste_table_failure },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },

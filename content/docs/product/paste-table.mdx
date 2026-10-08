@@ -1,0 +1,290 @@
+---
+title: Paste Table
+description: Paste cells from Excel or Google Sheets, map the columns to your fields, correct invalid cells, and confirm the import.
+---
+
+<ComponentPreview name="paste-table-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+PasteTable turns spreadsheet cells on the clipboard into rows your application can save. People paste once and see a preview table. Each pasted column is matched to one of your fields, each cell is parsed as text, a number, or a date, and every cell that fails is marked with the reason. They fix or remove those rows, then press Import.
+
+Everything before Import happens in the browser. The component reads the clipboard text, parses it, and holds the rows in memory. It calls `onImport` with the valid rows, and your application decides what importing means.
+
+This first version reads tabular text from a paste. It does not read `.xlsx` or `.csv` files, merge with existing records, or detect duplicates. Use [File Upload](/docs/product/file-upload) to collect a file, and [Data Grid](/docs/product/data-grid) when people need to keep editing rows after they are saved.
+
+## Anatomy
+
+<Anatomy title="PasteTable">
+  <AnatomyItem name="Paste step" description="Shown until rows are pasted, and again after an import">
+    <AnatomyItem name="Paste field" description="Labelled textarea that reads the clipboard on paste" />
+    <AnatomyItem name="Preview rows" description="Button for text that was typed or dictated instead of pasted" />
+    <AnatomyItem name="Result" description="Status line with the number of rows the last import sent" />
+  </AnatomyItem>
+  <AnatomyItem name="Review step" description="Shown once a paste has been read">
+    <AnatomyItem name="Summary" description="Row count, and how many cells and rows need fixing" />
+    <AnatomyItem name="Header switch" description="Says whether the first pasted row holds column names" />
+    <AnatomyItem name="Problems" description="Required fields with no column, a blocked import, or a failed import" />
+    <AnatomyItem name="Preview table" description="One column per pasted column, one row per pasted row">
+      <AnatomyItem name="Field select" description="Chooses the field a column imports as, or Do not import" />
+      <AnatomyItem name="Cell" description="The value that will be imported; press it to edit the pasted text" />
+      <AnatomyItem name="Cell error" description="Icon and sentence under an invalid cell" />
+      <AnatomyItem name="Remove row" description="Button at the end of each row" />
+    </AnatomyItem>
+    <AnatomyItem name="Actions" description="Discard paste, Remove rows with problems, Next problem, and Import" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing `paste-table` brings `Button`, `Field`, `Input`, `Select`, `Switch`, `Table`, and `Textarea` along as registry dependencies.
+
+## Behavior
+
+### Reading the clipboard
+
+Excel and Google Sheets copy cells as text with a tab between cells and a line break between rows. A cell that contains a tab, a line break, or a double quote is wrapped in double quotes. PasteTable reads that format, trims each cell, drops blank rows, and pads short rows so every row has the same number of cells.
+
+Set `delimiter=","` if your users paste comma-separated text. The delimiter is never guessed, because a single pasted column of names such as "Park, Dee" would be split in two.
+
+A paste with more data rows than `maxRows`, which defaults to 1,000, is refused with a message that states both numbers. Nothing is truncated silently.
+
+### Header row and mapping
+
+If any cell in the first row equals a field's `label`, `key`, or one of its `aliases`, that row is treated as a header. The comparison ignores case, spaces, and punctuation, so a pasted "E-mail" heading matches a field labelled Email. Matching columns are mapped, and the rest start as "Do not import".
+
+If nothing in the first row matches, the paste is treated as data only and fields are assigned in column order. The "First row is a header" switch corrects either guess.
+
+Each column heading has a select for its field. A field holds one column, so choosing a field that another column already uses moves it. Columns set to "Do not import" stay visible in a muted color and are left out of the result.
+
+### Numbers and dates
+
+A `number` column accepts digits with optional thousands groups, a sign or accounting parentheses, one currency symbol, and scientific notation. `decimalSeparator` defaults to `"."`. Set it to `","` for values such as `1.249,90`. A number written for the other convention is invalid, so `1,5` is never imported as 15.
+
+A `date` column needs a `dateOrder` of `"mdy"`, `"dmy"`, or `"ymd"`, because `03/04/2026` is 4 March in one country and 3 April in another. A date that starts with a four-digit year is accepted for every order. The value is imported as a `YYYY-MM-DD` string. Two-digit years, times, and days that do not exist, such as 31 April, are invalid.
+
+A valid cell shows the value that will be imported, so `3/4/2026` appears as `2026-03-04` and `1,250` as `1250`.
+
+### Validation callbacks
+
+`parse` replaces the built-in parsing for a column. It receives the cell text and returns `{ value }` or `{ error }`. `validate` runs after the whole row is parsed. It receives the parsed value and the other parsed values in the row, and returns a message when the value is not acceptable. Neither is called for an empty cell. Use `required` for that.
+
+### Fixing cells
+
+Press a cell to edit the text that was pasted. <kbd>Enter</kbd> or leaving the field keeps the edit, and <kbd>Escape</kbd> cancels it. The cell is parsed and validated again when the edit is kept.
+
+"Next problem" moves focus to the next invalid cell and cycles back to the first. "Remove rows with problems" drops every invalid row at once. The first 50 rows are rendered, and "Show more rows" adds 50 at a time.
+
+### Importing
+
+Import is named for the number of rows it will send. While any cell is invalid or a required field has no column, pressing it sends nothing, explains why, and moves focus to the first problem.
+
+When everything is valid, `onImport` receives one object per row, keyed by field. Empty cells are `null`, and fields with no mapped column are absent. If `onImport` returns a promise, the controls are disabled until it settles. When it resolves, the component returns to the paste step and reports how many rows were imported. When it rejects, the rows stay in place with a message, and the error's `message` is shown as the reason.
+
+"Discard paste" clears the pasted rows and any edits without asking, and returns to the paste step.
+
+## Accessibility
+
+The paste field is a labelled textarea, so it can be reached and pasted into with a keyboard, a touch keyboard, or voice control. Text entered another way can be read with the "Preview rows" button.
+
+After a paste, focus moves to the summary, which says how many rows were read and how many need fixing. The summary is a polite status region, so it is announced again as cells are fixed and rows are removed.
+
+The preview is a native table with column and row headers. Each field select is named for its column, such as "Field for E-mail". Each cell is a button named for its position and value, such as "Edit Email in row 2: li.wei@northwind", and an invalid cell's error is its description.
+
+Errors do not depend on color. An invalid cell has a wavy underline, a warning icon, and a sentence that says what to enter.
+
+Give the root an `aria-label` or `aria-labelledby` that says what is being imported.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Ctrl</kbd> or <kbd>⌘</kbd> + <kbd>V</kbd> | Paste into the focused paste field and open the review step |
+| <kbd>Tab</kbd> | Move across the header switch, field selects, cells, row buttons, and actions |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Edit the focused cell, or activate the focused button |
+| <kbd>Enter</kbd> | Keep the edit and return focus to the cell |
+| <kbd>Escape</kbd> | Cancel the edit and return focus to the cell |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["paste-table"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="paste-table" title="components/ui/paste-table/paste-table-types.ts" file="paste-table-types.ts" />
+
+<ComponentSource name="paste-table" title="components/ui/paste-table/paste-table-utils.ts" file="paste-table-utils.ts" />
+
+<ComponentSource name="paste-table" title="components/ui/paste-table/paste-table.tsx" file="paste-table.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Describe the fields once, then handle the rows:
+
+```tsx
+import {
+  PasteTable,
+  type PasteTableColumn,
+} from "@/components/ui/paste-table/paste-table"
+
+const columns: PasteTableColumn[] = [
+  { key: "name", label: "Name", aliases: ["Full name"], required: true },
+  { key: "email", label: "Email", required: true, validate: emailMessage },
+  { key: "seats", label: "Seats", type: "number" },
+  { key: "startDate", label: "Start date", type: "date", dateOrder: "mdy" },
+]
+
+<PasteTable
+  aria-label="Import contacts"
+  columns={columns}
+  onImport={(rows) => api.createContacts(rows)}
+/>
+```
+
+Define `columns` outside the component, or memoize it, so the rows are not parsed again on every render.
+
+Rows arrive as `Record<string, unknown>[]`. Check them again on the server. Validation in the browser helps the person pasting; it does not protect your data.
+
+### Custom parsing and row rules
+
+```tsx
+{
+  key: "status",
+  label: "Status",
+  parse: (raw) =>
+    raw.toLowerCase() === "active" ? { value: "active" } : { error: "Enter Active or Paused" },
+},
+{
+  key: "validTo",
+  label: "Valid to",
+  type: "date",
+  dateOrder: "dmy",
+  validate: (value, { row }) =>
+    typeof row.validFrom === "string" && String(value) < row.validFrom
+      ? "Choose a date on or after Valid from"
+      : undefined,
+}
+```
+
+### Other languages
+
+Every word the component writes comes from `labels`. Pass the ones you want to replace. Counts are functions, so each language can apply its own plural rules.
+
+```tsx
+<PasteTable
+  labels={{
+    skipColumn: "Nicht importieren",
+    import: (rows) => (rows === 1 ? "1 Zeile importieren" : `${rows} Zeilen importieren`),
+  }}
+  {...importer}
+/>
+```
+
+## Don't do this
+
+### Guessing the date order
+
+```tsx
+// Bad. A custom parser that accepts both orders imports 03/04/2026 as whichever it tries first.
+{ key: "due", label: "Due", parse: (raw) => ({ value: new Date(raw) }) }
+```
+
+```tsx
+// Good. The order is stated, and a cell that does not fit is shown to the person who pasted it.
+{ key: "due", label: "Due", type: "date", dateOrder: "dmy" }
+```
+
+### Reporting success before the save
+
+```tsx
+// Bad. The promise is not returned, so the importer reports success while the request is still running.
+onImport={(rows) => { api.createContacts(rows) }}
+```
+
+Return the promise. PasteTable waits for it, and keeps the rows on screen if it rejects.
+
+## Examples
+
+Each preview has a "Copy sample rows" button that puts prepared rows on your clipboard. It belongs to the documentation, not to the component.
+
+### Custom parsing and cross-field rules
+
+A price list with comma decimals, day-first dates, a status parser, a rule that compares two dates, and one pasted column that is not imported.
+
+<ComponentPreview name="paste-table-validation" previewClassName="h-auto min-h-[420px]" />
+
+### A failed import
+
+No header row, so fields follow column order. This preview has no server: it rejects the first attempt on purpose and resolves the second.
+
+<ComponentPreview name="paste-table-failure" previewClassName="h-auto min-h-[360px]" />
+
+## API reference
+
+### PasteTable
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `columns` | `PasteTableColumn[]` | Required | The fields a pasted column can be mapped to. |
+| `onImport` | `(rows) => void \| Promise<void>` | Required | Receives the valid rows. A returned promise is awaited. |
+| `delimiter` | string | `"\t"` | The character between cells. |
+| `maxRows` | number | `1000` | A paste with more data rows is refused. |
+| `disabled` | boolean | `false` | Keeps every control visible but inactive. |
+| `labels` | `Partial<PasteTableLabels>` | English | Replacement text and count wording. |
+
+### Columns
+
+| Property | Type | Applies to | Description |
+| --- | --- | --- | --- |
+| `key` | string | All columns | Property name of the field in each imported row. |
+| `label` | string | All columns | Name shown in the field select and matched against headers. |
+| `aliases` | `string[]` | All columns | Other header names that map to this field. |
+| `required` | boolean | All columns | An empty cell is invalid, and a column must be mapped to the field. |
+| `type` | `"text" \| "number" \| "date"` | All columns | How cells are parsed. Defaults to `"text"`. |
+| `decimalSeparator` | `"." \| ","` | Number columns | The character before the fraction. Defaults to `"."`. |
+| `dateOrder` | `"mdy" \| "dmy" \| "ymd"` | Date columns | Required. The order of day, month, and year. |
+| `parse` | `(raw) => { value } \| { error }` | All columns | Replaces the built-in parsing. |
+| `validate` | `(value, { raw, row }) => string \| undefined` | All columns | Returns a message when the value is not acceptable. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `parseClipboardTable` | `(text, delimiter?) => string[][]` | Splits clipboard text into rows of trimmed cells. |
+| `parseNumberCell` | `(raw, decimalSeparator?) => number \| null` | Reads one number, or returns `null`. |
+| `parseDateCell` | `(raw, dateOrder) => string \| null` | Reads one date as `YYYY-MM-DD`, or returns `null`. |
+| `matchColumns` | `(headers, columns) => PasteTableMapping` | The header matching the component runs. |
+| `evaluateRows` | `(rows, mapping, columns, labels) => PasteTableRowResult[]` | Parses and validates every mapped cell, for use on a server or in tests. |
+| `getMissingColumns` | `(mapping, columns) => string[]` | Labels of required fields with no mapped column. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `PasteTableColumn` | A text, number, or date column as described above |
+| `PasteTableMapping` | `(string \| null)[]`, one field key per pasted column |
+| `PasteTableRowResult` | `{ id; cells; values; isValid }` |
+| `PasteTableCellResult` | `{ raw; value; error? }` |
+| `PasteTableLabels` | Every string and count function the component writes |
