@@ -1,0 +1,319 @@
+---
+title: Change Review
+description: Show what changed between two versions of an object, field by field, and collect a decision on each change when your application needs one.
+---
+
+<ComponentPreview name="change-review-demo" previewClassName="h-auto min-h-[340px]" />
+
+## Overview
+
+ChangeReview shows the difference between two versions of a structured object, such as settings, a profile, permissions, an order, or configuration. Each field gets one row with its label, the old value, and the new value. A list field says how many items were added and removed, then names them. People read "Billing email: old address → new address" instead of a JSON diff.
+
+You can give it two snapshots and a list of fields, and it works out what changed. Or you can give it change records your application already stores. The same component then serves a confirmation step before saving, an entry in an audit history, and an approval screen.
+
+ChangeReview does not save, apply, or revert anything. When you pass a decision handler it shows accept and reject controls and reports each choice. Your application decides what an accepted change does.
+
+## Anatomy
+
+<Anatomy title="ChangeReview">
+  <AnatomyItem name="Header" description="One row above the list">
+    <AnatomyItem name="Summary" description="Count of changes, and of decisions when they are collected" />
+    <AnatomyItem name="Filter" description="Switch that hides unchanged fields; absent when every field changed" />
+    <AnatomyItem name="Bulk actions" description="Reject all and Accept all; absent unless decisions are collected" />
+  </AnatomyItem>
+  <AnatomyItem name="List" description="Bordered list of rows, nested under group headings">
+    <AnatomyItem name="Group" description="Heading with its own rows and nested groups" />
+    <AnatomyItem name="Row" description="Label, change, and decision controls">
+      <AnatomyItem name="Label" description="The field's name" />
+      <AnatomyItem name="Change" description="Old value, arrow, new value; or a list summary with its items" />
+      <AnatomyItem name="Decision" description="Reject and Accept toggle buttons on changed rows" />
+    </AnatomyItem>
+  </AnatomyItem>
+</Anatomy>
+
+`<ChangeReview />` with no children renders the header and the list. Pass children to choose the parts yourself, for example to replace the header with a sentence about who made the change.
+
+Installing `change-review` brings `Button` and `Switch` along as registry dependencies.
+
+## Behavior
+
+### Two ways to supply changes
+
+Pass `before`, `after`, and `fields` when you hold two versions of the object. Each field names a `key`, which is a dot path such as `billing.email`, and a `label`. ChangeReview reads both values and compares them.
+
+Pass `changes` when you hold records instead of snapshots, which is common in audit logs. Each record carries an `id`, a `label`, and either `before` and `after` or, for a list, `added` and `removed`.
+
+### What counts as a change
+
+Values are compared by content, so two equal dates, arrays, or objects are unchanged even when they are different instances. An empty value is `null`, `undefined`, or an empty string. A field that goes from empty to a value reads "Not set → value", and the reverse reads "value → Not set".
+
+Give a field `isEqual` when your data needs a different rule, for example to ignore surrounding spaces.
+
+### Lists
+
+A field with `type: "list"` compares membership. `itemKey` names the property that identifies an item across both versions, and `itemLabel` returns the text shown for it. The row says how many items were added and removed, then names each one.
+
+An item that appears in both versions but whose contents differ is listed as changed. Its details are not shown, so use separate fields when the change inside an item matters, such as a member's role.
+
+Long lists show the first five items and a "Show more" button. Change the limit with `maxListItems`.
+
+### Groups
+
+Wrap fields in `{ group, fields }` to put them under a heading. Groups nest to any depth, and a group whose fields are all hidden by the filter is hidden with them.
+
+### Changed fields only
+
+Unchanged fields are hidden by default. The header shows a "Changed fields only" switch whenever at least one field did not change, so people can bring the full object back for context. Use `changedOnly` and `onChangedOnlyChange` to control it, or `defaultChangedOnly={false}` to start with everything visible.
+
+### Decisions
+
+Pass `onDecisionsChange` and every changed row gains Reject and Accept buttons, with Reject all and Accept all in the header. Without the handler the controls are not rendered, because nothing would receive the choice.
+
+Decisions are a record keyed by change id, holding `"accepted"` or `"rejected"`. A change with no entry is undecided. Pressing the chosen button again clears it.
+
+`applyAcceptedChanges(before, after, decisions)` returns `before` with each accepted field taken from `after`. Rejected and undecided fields keep their old value. Call it when the reviewer confirms, then save the result yourself.
+
+## Accessibility
+
+Rows are a description list, so each label is announced with its change. Screen readers hear "Was old value, now new value": the words are in the markup, and the arrow is decorative. Added and removed list items are announced as "Added" and "Removed" before the item.
+
+Nothing depends on color. An old value is struck through and followed by an arrow, list items carry plus and minus icons, and a chosen decision gains an icon as well as a fill.
+
+Reject and Accept are toggle buttons that report their pressed state. Each is named for its field, such as "Accept change to Billing email", so the buttons make sense out of context. The summary is a polite status region, so the decision counts are announced as they change.
+
+Give the root an `aria-label` or `aria-labelledby` that says what is being reviewed. Each group is labelled by its heading.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the filter, bulk actions, and each row's decision buttons |
+| <kbd>Space</kbd> | Toggle the filter or a focused decision button |
+| <kbd>Enter</kbd> | Activate a focused button |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["change-review"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="change-review" title="components/ui/change-review/change-review-types.ts" file="change-review-types.ts" />
+
+<ComponentSource name="change-review" title="components/ui/change-review/change-review-utils.ts" file="change-review-utils.ts" />
+
+<ComponentSource name="change-review" title="components/ui/change-review/change-review-context.tsx" file="change-review-context.tsx" />
+
+<ComponentSource name="change-review" title="components/ui/change-review/change-review.tsx" file="change-review.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Describe the fields once, then pass both versions of the object:
+
+```tsx
+import {
+  ChangeReview,
+  type ChangeReviewFieldNode,
+} from "@/components/ui/change-review/change-review"
+
+const fields: ChangeReviewFieldNode[] = [
+  { key: "billingEmail", label: "Billing email" },
+  { key: "notifications", label: "Notifications", type: "boolean" },
+  {
+    key: "members",
+    label: "Team access",
+    type: "list",
+    itemKey: "id",
+    itemLabel: (member: Member) => member.name,
+  },
+]
+
+<ChangeReview aria-label="Changes to workspace settings" before={saved} after={draft} fields={fields} />
+```
+
+Define `fields` outside the component, or memoize it, so the comparison does not run again on every render.
+
+To collect decisions, own them in state and apply the accepted ones when the reviewer confirms:
+
+```tsx
+const [decisions, setDecisions] = React.useState<ChangeReviewDecisions>({})
+
+<ChangeReview
+  aria-label="Requested profile changes"
+  before={current}
+  after={requested}
+  fields={fields}
+  decisions={decisions}
+  onDecisionsChange={setDecisions}
+/>
+
+<Button onClick={() => save(applyAcceptedChanges(current, requested, decisions))}>
+  Apply accepted changes
+</Button>
+```
+
+To show stored records, pass `changes` and compose the parts you need:
+
+```tsx
+<ChangeReview aria-label="Changes made by Ana Ruiz" changes={entry.changes}>
+  <ChangeReviewList />
+</ChangeReview>
+```
+
+### Custom values
+
+A field's `render` receives the raw value from one side and returns what to show. Use it for money, dates, status badges, or anything stored in a form people should not read directly. `renderValue` on the root is the fallback for fields without their own.
+
+```tsx
+{ key: "payment.total", label: "Order total", render: (value) => pounds.format(Number(value) / 100) }
+```
+
+### Other languages
+
+Every word the component writes comes from `labels`. Pass the ones you want to replace. Counts are functions, so each language can apply its own plural rules.
+
+```tsx
+<ChangeReview
+  labels={{
+    notSet: "Nicht festgelegt",
+    summary: ({ changed }) => (changed === 1 ? "1 Änderung" : `${changed} Änderungen`),
+  }}
+  {...review}
+/>
+```
+
+## Don't do this
+
+### Showing secrets
+
+```tsx
+// Bad. The old and new API keys are printed in full.
+{ key: "apiKey", label: "API key" }
+```
+
+```tsx
+// Good. The row says that the key changed without revealing either value.
+{ key: "apiKey", label: "API key", render: () => "Hidden" }
+```
+
+A review screen is often shared, screenshotted, or shown to an approver with fewer permissions than the author. Mask secret values in `render`.
+
+### Treating a click as a save
+
+```tsx
+// Bad. Each click writes to the server, and a misclick is already live.
+onDecisionsChange={(decisions) => api.save(applyAcceptedChanges(before, after, decisions))}
+```
+
+Keep decisions in state and save once, from a button that says what will happen. Decisions are easy to change until then.
+
+## Examples
+
+### Approving individual changes
+
+The parent owns the decisions. The line below the review shows the profile that would be saved.
+
+<ComponentPreview name="change-review-decisions" previewClassName="h-auto min-h-[340px]" />
+
+### Audit history
+
+Stored change records with a custom header in place of the default one.
+
+<ComponentPreview name="change-review-audit" previewClassName="h-auto min-h-[320px]" />
+
+### Nested groups and custom values
+
+An order with grouped fields, a status badge, formatted money and dates, and unchanged fields shown for context.
+
+<ComponentPreview name="change-review-nested" previewClassName="h-auto min-h-[640px]" />
+
+### No changes
+
+When every field is unchanged, the list is replaced by a short message.
+
+<ComponentPreview name="change-review-empty" previewClassName="h-auto min-h-[180px]" />
+
+## API reference
+
+### ChangeReview
+
+Root provider and layout wrapper. Accepts native section props beyond those listed. Pass either `before`, `after`, and `fields`, or `changes`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `before` | `unknown` | None | The saved version of the object. |
+| `after` | `unknown` | None | The proposed or resulting version. |
+| `fields` | `ChangeReviewFieldNode[]` | None | Fields to compare, with labels, types, and groups. |
+| `changes` | `ChangeReviewChange[]` | None | Change records to show instead of comparing snapshots. |
+| `changedOnly` | boolean | None | Controlled filter that hides unchanged fields. |
+| `defaultChangedOnly` | boolean | `true` | Initial filter state when uncontrolled. |
+| `onChangedOnlyChange` | `(changedOnly) => void` | None | Runs when the filter switch changes. |
+| `decisions` | `ChangeReviewDecisions` | None | Controlled decisions keyed by change id. |
+| `defaultDecisions` | `ChangeReviewDecisions` | `{}` | Initial decisions when uncontrolled. |
+| `onDecisionsChange` | `(decisions) => void` | None | Receives every decision change. Passing it shows the controls. |
+| `disabled` | boolean | `false` | Keeps the decision controls visible but inactive. |
+| `renderValue` | `(value, change) => ReactNode` | None | Display for values whose field has no `render`. |
+| `labels` | `Partial<ChangeReviewLabels>` | English | Replacement text and count wording. |
+| `maxListItems` | number | `5` | List items shown before the rest collapse. |
+
+### Fields
+
+| Property | Type | Applies to | Description |
+| --- | --- | --- | --- |
+| `key` | string | All fields | Dot path into both objects. Also the change id used in decisions. |
+| `label` | string | All fields | The row's visible name. |
+| `type` | `"value" \| "boolean" \| "list"` | All fields | `"boolean"` shows Enabled and Disabled; `"list"` compares membership. Defaults to `"value"`. |
+| `render` | `(value) => ReactNode` | Value fields | Display for one side of the change. |
+| `isEqual` | `(before, after) => boolean` | Value fields | Replaces comparison by content. |
+| `itemKey` | `string \| (item) => string` | List fields | Identifies an item across both versions. |
+| `itemLabel` | `(item) => ReactNode` | List fields | Text shown for an item. |
+| `group` and `fields` | `string` and `ChangeReviewFieldNode[]` | Groups | A heading and the fields or groups under it. |
+
+### Parts
+
+| Part | Renders | Notes |
+| --- | --- | --- |
+| `ChangeReviewHeader` | div | Summary, filter, and bulk actions by default; pass children to replace them. |
+| `ChangeReviewSummary` | p, status region | Change count, plus decision counts when decisions are collected. |
+| `ChangeReviewFilter` | div with Switch | Renders nothing when every field changed. |
+| `ChangeReviewBulkActions` | div with two Buttons | Renders nothing without `onDecisionsChange` or when nothing changed. |
+| `ChangeReviewList` | div containing description lists | Rows, groups, and the empty message. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `getChanges` | `(before, after, fields) => ChangeReviewChange[]` | The comparison the component runs, for use on a server or in tests. |
+| `getChangeStatus` | `(change) => "added" \| "removed" \| "changed" \| "unchanged"` | How a single change is classified. |
+| `applyAcceptedChanges` | `(before, after, decisions) => T` | `before` with each accepted field taken from `after`. |
+| `useChangeReviewController` | `(componentName) => ChangeReviewControllerValue` | Reads changes, counts, and decision actions inside a custom part. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ChangeReviewChange` | `{ id; label; groups?; status?; before?; after?; type?; render? }` or `{ id; label; groups?; kind: "list"; added; removed; changed?; itemLabel? }` |
+| `ChangeReviewDecisions` | `Record<string, "accepted" \| "rejected">` |
+| `ChangeReviewFieldNode` | A field, or `{ group: string; fields: ChangeReviewFieldNode[] }` |
+| `ChangeReviewLabels` | Every string and count function the component writes |

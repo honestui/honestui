@@ -173,6 +173,11 @@ import file_upload_validation from "./default/examples/file-upload-validation";
 import file_upload_images from "./default/examples/file-upload-images";
 import file_upload_paste from "./default/examples/file-upload-paste";
 import file_upload_sources from "./default/examples/file-upload-sources";
+import change_review_demo from "./default/examples/change-review-demo";
+import change_review_decisions from "./default/examples/change-review-decisions";
+import change_review_audit from "./default/examples/change-review-audit";
+import change_review_nested from "./default/examples/change-review-nested";
+import change_review_empty from "./default/examples/change-review-empty";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -671,6 +676,11 @@ export const Index: Record<string, { component: ComponentType }> = {
   "file-upload-images": { component: file_upload_images },
   "file-upload-paste": { component: file_upload_paste },
   "file-upload-sources": { component: file_upload_sources },
+  "change-review-demo": { component: change_review_demo },
+  "change-review-decisions": { component: change_review_decisions },
+  "change-review-audit": { component: change_review_audit },
+  "change-review-nested": { component: change_review_nested },
+  "change-review-empty": { component: change_review_empty },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },

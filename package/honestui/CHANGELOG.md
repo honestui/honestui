@@ -5,6 +5,7 @@ follow semantic versioning and link to the corresponding GitHub release.
 
 ## Unreleased
 
+- Add the Change Review product component: a before-and-after view of a structured object that states each change in words, summarizes list changes, nests fields under groups, hides unchanged fields on request, accepts custom value renderers, and collects an accept or reject decision per change when the application handles them.
 - Add data status to every chart: name a row field with `statusKey` to mark values as measured, estimated, provisional, forecast, or missing, and add `lowerKey` and `upperKey` to show the bounds you supply. Each chart draws the status, lists it in a key, and explains it in the tooltip. `LineChart`, `AreaChart`, and `BarChart` take the props on the series part; `PieChart`, `ScatterChart`, and `Heatmap` take them on the root, and `ScatterChart` has separate bounds for each axis. `dataStatusText` replaces the default wording.
 - Add the `dashboard` template: `honestui create -t dashboard` scaffolds the complete Northstar analytics dashboard from the `honestui/honestui-dashboard` template repository. Standalone templates ship fully configured, so init skips the base and preset prompts for them.
 

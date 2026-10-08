@@ -48,6 +48,7 @@ const OVERVIEW_ICONS: Record<string, ReactNode> = {
 const NEW_PAGES: readonly { url: string; releasedOn: string }[] = [
   { url: "/docs/components/command", releasedOn: "2026-08-18" },
   { url: "/docs/components/context-menu", releasedOn: "2026-08-18" },
+  { url: "/docs/product/change-review", releasedOn: "2026-10-07" },
   { url: "/docs/product/data-grid", releasedOn: "2026-08-26" },
   { url: "/docs/product/data-table", releasedOn: "2026-08-25" },
   { url: "/docs/product/date-range-picker", releasedOn: "2026-08-26" },
