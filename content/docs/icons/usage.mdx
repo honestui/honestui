@@ -3,7 +3,7 @@ title: Usage
 description: Choose, style, and compose Honest UI icons, logos, and vectors in React.
 ---
 
-The category pages for Icons, Logos, and Vectors share the same browser. Select an asset to view its preview, export name, style, import statement, and basic React usage.
+[Icons](/docs/icons), [Logos](/docs/icons/logos), and [Vectors](/docs/icons/vectors) share the same browser. Search a collection by name, then select an asset to see its preview, its other styles, and its export name, import statement, and JSX ready to copy.
 
 ## Choose the right collection
 
@@ -32,6 +32,12 @@ export function Example() {
   );
 }
 ```
+
+## Shared component API
+
+All three collections share one React SVG API. Assets accept standard SVG props such as `className`, `aria-label`, `role`, `width`, and `height`. They also accept a `size` prop and forward their ref to the underlying SVG element.
+
+An export name includes its visual variant when applicable. Icons can have filled, rounded, or doodle versions; logos can have symbols and wordmarks; vectors can have shape, sketch, pattern, texture, or character versions.
 
 ## Using icons
 

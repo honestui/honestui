@@ -67,11 +67,6 @@ export const DocumentationOptions: SidebarOption[] = [
 
 export const IconStartedOptions: SidebarOption[] = [
   {
-    name: "Overview",
-    url: "/docs/icons",
-    icon: <AddMagicIcon />,
-  },
-  {
     name: "Installation",
     url: "/docs/icons/installation",
     icon: <SquareAddonIcon />,

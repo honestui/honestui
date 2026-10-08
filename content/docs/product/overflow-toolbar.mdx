@@ -1,0 +1,307 @@
+---
+title: Overflow Toolbar
+description: A toolbar that moves lower-priority actions into a More menu as its container narrows, and returns them when there is room.
+---
+
+<ComponentPreview name="overflow-toolbar-demo" previewClassName="h-auto min-h-[260px]" />
+
+## Overview
+
+Overflow Toolbar is a [Toolbar](/docs/components/toolbar) whose actions each declare a priority. When its container is too narrow for all of them, the lowest-priority actions move into a More menu. When the container widens, they come back.
+
+You write each action once. The component renders it as a toolbar button while it fits and as a menu item when it doesn't, so there are no breakpoint rules to maintain and no second, hand-written menu that repeats the same actions.
+
+The toolbar measures its own box, not the window. It responds the same way when a sidebar opens, a split pane is dragged, or the page is zoomed. In the preview above, the comments panel takes the space and the window never changes size.
+
+Overflow Toolbar is for actions: things a person presses. Toggles, selects, links, and inputs can sit in the same toolbar as ordinary Toolbar parts, but they never collapse. It is horizontal only.
+
+## Anatomy
+
+<Anatomy title="OverflowToolbar">
+  <AnatomyItem name="OverflowToolbar" description="The toolbar. Fills its container and decides which actions fit">
+    <AnatomyItem name="OverflowToolbarGroup" description="Related actions under one label, divided from what comes before">
+      <AnatomyItem name="OverflowToolbarItem" description="One action, with a label, a priority, and an optional icon" />
+    </AnatomyItem>
+    <AnatomyItem name="OverflowToolbarItem" description="An action outside any group" />
+    <AnatomyItem name="OverflowToolbarMore" description="The button and menu for collapsed actions; absent while everything fits" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing `overflow-toolbar` brings `Toolbar`, `Menu`, `Button`, and `Tooltip` along as registry dependencies.
+
+## Behavior
+
+### Priority
+
+`priority="always"` pins an action to the toolbar. Any other action takes a number, and the lowest number collapses first. The default is `0`.
+
+Actions with the same number collapse from the end of the toolbar toward the start. They return in the reverse order, so the last action to leave is the first to come back.
+
+Pin only what a person must reach in one press, such as Save. Every pinned action narrows the range of widths the toolbar can adapt to.
+
+### Available space
+
+The toolbar is as wide as its container and watches its own size. Each time the size changes, it collapses actions until the rest fit, or tries the next action to see whether it has room. Both happen before the browser paints, so no frame shows a clipped toolbar.
+
+It also checks again when an action itself changes size, for example when a label changes or a web font finishes loading.
+
+Other controls in the toolbar keep their size, and the actions get what is left. A control that can shrink will shrink before anything collapses, so give an input a fixed or minimum width.
+
+### Groups
+
+`OverflowToolbarGroup` keeps related actions together in both places. In the toolbar, a rule divides the group from the visible content before it. In the menu, the group's label heads its collapsed actions.
+
+Actions leave a group one at a time, by priority. When the last one has left, the group and its rule disappear from the toolbar.
+
+### Disabled actions
+
+A disabled action is disabled in the toolbar and in the menu. It still takes up space and still collapses by its priority. In the toolbar it stays focusable, so a keyboard or screen reader user can find it and learn that it exists.
+
+### The More menu
+
+`OverflowToolbarMore` renders nothing while every action fits. Without it, nothing collapses: the toolbar never hides an action it has nowhere to show.
+
+The menu lists collapsed actions in the order they have in the toolbar. While the menu is open, actions can still move into it but do not move out, so an item cannot vanish as someone reaches for it. The toolbar fits again when the menu closes.
+
+### When pinned actions do not fit
+
+If the pinned actions and the other controls are wider than the container on their own, the toolbar scrolls horizontally. Nothing is cut off.
+
+### Server rendering
+
+The server renders every action in the toolbar, because it cannot know the width. The first fit runs in the browser before the first paint after hydration. Until the page hydrates, a narrow screen shows the full toolbar, scrollable.
+
+## Accessibility
+
+The toolbar is a single <kbd>Tab</kbd> stop, as every [Toolbar](/docs/components/toolbar#behavior) is, and the arrow keys move across its visible controls, including More.
+
+Each action exists once in the page. A collapsed action is a menu item and nothing else, so a screen reader does not find a hidden copy in the toolbar.
+
+Groups are exposed as `role="group"` with the label you pass, and the menu repeats the same labels above the actions that belong to them.
+
+### Focus when an action moves
+
+Moving an action removes the control that showed it. If that control had focus, the toolbar moves focus to the control that now stands for the action:
+
+- When the focused button collapses, focus moves to More. In the preview above, pressing Show comments opens the panel, the button collapses, and focus lands on More.
+- When More goes away because everything fits again, focus moves to the action that returned last.
+
+Focus is never moved while it is somewhere else on the page.
+
+### Names
+
+`label` is the name of an action in both places. With `iconOnly`, the label becomes the button's accessible name and a tooltip. Mark icons `aria-hidden="true"`; the label already says what they mean.
+
+More shows its label as text by default. If you replace the text with an icon, the label remains as the accessible name.
+
+Give the toolbar itself a name with `aria-label` or `aria-labelledby`.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move into or out of the toolbar |
+| <kbd>ArrowLeft</kbd> or <kbd>ArrowRight</kbd> | Move between the toolbar's visible controls |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Run the focused action, or open the menu from More |
+| <kbd>ArrowDown</kbd> on More | Open the menu |
+| <kbd>ArrowUp</kbd> or <kbd>ArrowDown</kbd> in the menu | Move between collapsed actions |
+| <kbd>Escape</kbd> | Close the menu and return focus to More |
+
+The group rules are drawn with a system color in forced-colors mode. The component adds no motion of its own.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["overflow-toolbar"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Add the [Toolbar](/docs/components/toolbar), [Menu](/docs/components/menu), [Button](/docs/components/button), and [Tooltip](/docs/components/tooltip) components.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="overflow-toolbar" title="components/ui/overflow-toolbar/overflow-toolbar-types.ts" file="overflow-toolbar-types.ts" />
+
+<ComponentSource name="overflow-toolbar" title="components/ui/overflow-toolbar/overflow-toolbar-utils.ts" file="overflow-toolbar-utils.ts" />
+
+<ComponentSource name="overflow-toolbar" title="components/ui/overflow-toolbar/overflow-toolbar.tsx" file="overflow-toolbar.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  OverflowToolbar,
+  OverflowToolbarGroup,
+  OverflowToolbarItem,
+  OverflowToolbarMore,
+} from "@/components/ui/overflow-toolbar/overflow-toolbar"
+
+<OverflowToolbar aria-label="Document">
+  <OverflowToolbarGroup label="History">
+    <OverflowToolbarItem priority="always" label="Undo" icon={<UndoIcon aria-hidden="true" />} onSelect={undo} />
+    <OverflowToolbarItem priority={2} label="Redo" icon={<RedoIcon aria-hidden="true" />} disabled={!canRedo} onSelect={redo} />
+  </OverflowToolbarGroup>
+  <OverflowToolbarGroup label="Export">
+    <OverflowToolbarItem priority={1} label="Download" onSelect={download} />
+    <OverflowToolbarItem label="Print" onSelect={print} />
+  </OverflowToolbarGroup>
+  <OverflowToolbarMore />
+</OverflowToolbar>
+```
+
+### Giving it space
+
+The toolbar takes the full width of its container, so the container has to be the space you mean. Inside a flex row, let the toolbar's column shrink:
+
+```tsx
+<div className="flex">
+  <main className="min-w-0 flex-1">
+    <OverflowToolbar aria-label="Document">…</OverflowToolbar>
+  </main>
+  {isPanelOpen && <aside className="w-72 shrink-0">…</aside>}
+</div>
+```
+
+Without `min-w-0`, a flex child refuses to become narrower than its content, and the toolbar never learns that space ran out.
+
+### Other toolbar parts
+
+Toggles, selects, links, and inputs go in as ordinary [Toolbar](/docs/components/toolbar) parts. They stay visible and join the same arrow-key order.
+
+```tsx
+<OverflowToolbar aria-label="Files">
+  <ToolbarInput aria-label="Filter files" className="w-32 shrink-0" />
+  <OverflowToolbarGroup label="Selected files">
+    <OverflowToolbarItem iconOnly label="Download" icon={<DownloadIcon aria-hidden="true" />} onSelect={download} />
+  </OverflowToolbarGroup>
+  <OverflowToolbarMore />
+</OverflowToolbar>
+```
+
+### Translating
+
+Every word the component shows comes from a prop: `label` on each action and group, and `label` on `OverflowToolbarMore`, which defaults to "More".
+
+## Don't do this
+
+### Pinning everything
+
+```tsx
+// Bad. Nothing may collapse, so a narrow container gets a scrolling toolbar.
+<OverflowToolbarItem priority="always" label="Share" />
+<OverflowToolbarItem priority="always" label="Export" />
+<OverflowToolbarItem priority="always" label="Print" />
+```
+
+```tsx
+// Good. One action is always in reach; the rest are ranked.
+<OverflowToolbarItem priority="always" label="Share" />
+<OverflowToolbarItem priority={2} label="Export" />
+<OverflowToolbarItem priority={1} label="Print" />
+```
+
+### Keeping a second menu for small screens
+
+```tsx
+// Bad. Two lists of the same actions, kept in step by hand and switched at a breakpoint.
+<Toolbar className="hidden md:flex">{actions}</Toolbar>
+<MobileActionsMenu className="md:hidden" />
+```
+
+Declare the actions once in an `OverflowToolbar`. A breakpoint describes the window, and it is wrong the moment a sidebar opens.
+
+### Leaving out the More button
+
+```tsx
+// Bad. There is nowhere for a collapsed action to go, so none collapse.
+<OverflowToolbar aria-label="Document">
+  <OverflowToolbarItem label="Print" />
+</OverflowToolbar>
+```
+
+Add `<OverflowToolbarMore />` where the button should appear, usually last.
+
+### Icon-only actions that people have to guess
+
+```tsx
+// Bad. An unfamiliar icon with no visible name.
+<OverflowToolbarItem iconOnly label="Reconcile" icon={<ScaleIcon aria-hidden="true" />} />
+```
+
+Use `iconOnly` for icons people already know, such as undo or print. Otherwise show the label; the toolbar makes room by collapsing lower-priority actions.
+
+## Examples
+
+### Priorities
+
+One pinned action and five ranked ones. Move the slider to change the width of the box around the toolbar and watch the order. The actions do nothing in this preview.
+
+<ComponentPreview name="overflow-toolbar-priorities" previewClassName="h-auto min-h-[260px]" />
+
+### With other toolbar parts
+
+A filter field with a fixed width beside icon-only actions, and an icon for More. The field stays; the actions share what is left.
+
+<ComponentPreview name="overflow-toolbar-mixed" previewClassName="h-auto min-h-[200px]" />
+
+## API reference
+
+### OverflowToolbar
+
+Accepts every [Toolbar](/docs/components/toolbar#api-reference) prop except `orientation`. It does not take a `ref`.
+
+The root renders `<div role="toolbar">` at the full width of its container.
+
+### OverflowToolbarGroup
+
+Accepts every `ToolbarGroup` prop beyond the one listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | Names the group for assistive technology and heads its actions in the menu. |
+
+### OverflowToolbarItem
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | The action's name in the toolbar and in the menu. |
+| `icon` | ReactNode | None | Shown before the label in both places. |
+| `priority` | `"always"` or number | `0` | `"always"` pins the action. Among numbers, the lowest collapses first. |
+| `iconOnly` | boolean | `false` | Shows only the icon in the toolbar, with the label as accessible name and tooltip. Ignored without an icon. |
+| `disabled` | boolean | `false` | Disables the action in both places. |
+| `onSelect` | `() => void` | None | Runs when the button or the menu item is activated. |
+| `id` | string | Generated | Identifies the action. It is also the value of `data-overflow-toolbar-item` on the button. |
+| `className` | string | None | Applied to the toolbar button, not to the menu item. |
+
+### OverflowToolbarMore
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | `"More"` | The button's name, shown as its text. |
+| `children` | ReactNode | None | Replaces the visible text, for example with an icon. `label` stays as the accessible name. |
+| `className` | string | None | Applied to the toolbar button. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `OverflowPriority` | `"always"` or a number |

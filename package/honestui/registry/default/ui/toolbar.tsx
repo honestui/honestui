@@ -1,10 +1,14 @@
 "use client"
 
+import type * as React from "react"
 import { Toolbar as ToolbarPrimitive } from "@base-ui-components/react/toolbar"
 
 import { cn } from "@/lib/utils"
 
-function Toolbar({ className, ...props }: ToolbarPrimitive.Root.Props) {
+function Toolbar({
+  className,
+  ...props
+}: ToolbarPrimitive.Root.Props & React.RefAttributes<HTMLDivElement>) {
   return (
     <ToolbarPrimitive.Root
       data-slot="toolbar"

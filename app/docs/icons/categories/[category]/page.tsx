@@ -1,4 +1,4 @@
-import { AssetCategoryPage } from "@/components/docs/icons/asset-category-page";
+import { AssetCatalogPage } from "@/components/docs/icons/asset-catalog-page";
 import { ICON_CATEGORIES, getIconCategorySummary } from "@/globals/constants/icon-categories";
 import { getAssetCategory } from "@/lib/icon-library";
 import { absoluteUrl } from "@/lib/utils";
@@ -39,5 +39,5 @@ export default async function IconCategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category: slug } = await params;
-  return <AssetCategoryPage collection="icons" slug={slug} />;
+  return <AssetCatalogPage collection="icons" categorySlug={slug} />;
 }

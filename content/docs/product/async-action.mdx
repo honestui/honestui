@@ -1,0 +1,323 @@
+---
+title: Async Action
+description: Run a request from a button, show the result at once, and keep its recovery available — retry after a failure, cancel while pending, and undo when your application can reverse it.
+---
+
+<ComponentPreview name="async-action-demo" previewClassName="h-auto min-h-[300px]" />
+
+## Overview
+
+Async Action coordinates one request and what happens after it. `useAsyncAction` runs the request and holds its state, `ActionButton` starts it, and `ActionStatus` says what is happening and offers the recovery that applies.
+
+Take "Archive project". The project leaves the list as soon as the button is pressed. If the request fails, the project returns and the status offers Retry. If it succeeds and you passed a reversal, the status offers Undo.
+
+A [promise toast](/docs/components/toast) reports the same phases, but the report ends when the toast closes. Here the state belongs to the hook, so Retry and Undo stay available until someone dismisses the status or runs the action again.
+
+Async Action does not send requests, store data, or know how to reverse anything. You pass the request, the optimistic update, and the reversal. It offers only the recovery you supplied.
+
+## Anatomy
+
+<Anatomy title="AsyncAction">
+  <AnatomyItem name="useAsyncAction" description="Runs the request and holds the phase, input, result, and error" />
+  <AnatomyItem name="ActionButton" description="Starts a run; shows a spinner while its own run is pending" />
+  <AnatomyItem name="ActionStatus" description="One row beside or below the control">
+    <AnatomyItem name="Message" description="The current phase in words, in a polite status region" />
+    <AnatomyItem name="Cancel" description="While pending, and only when the action is declared cancelable" />
+    <AnatomyItem name="Retry" description="After the request fails, or after an undo fails" />
+    <AnatomyItem name="Undo" description="After success, and only when a reversal was passed" />
+    <AnatomyItem name="Dismiss" description="Once the action has settled" />
+  </AnatomyItem>
+</Anatomy>
+
+The three pieces are independent. Use the hook alone with any control, such as a switch or a menu item, and render `ActionStatus` wherever the outcome should be read.
+
+Installing `async-action` brings `Button` along as a registry dependency.
+
+## Behavior
+
+### Phases
+
+An action is in one phase at a time: `idle`, `pending`, `success`, `error`, `cancelled`, `undoing`, `undone`, or `undoError`. `action.state` carries the phase and what is known in it: the input from `pending` onward, the result after success, and the error after a failure.
+
+### One run at a time
+
+`run` does nothing while a request or an undo is in flight, and resolves to `{ status: "ignored" }`. This holds for two clicks in the same instant, because the state is kept outside React and changes before the next render. `ActionButton` stays focusable while it is inactive, so a keyboard user does not lose their place.
+
+One hook serves one action at a time. When several rows share a hook, every `ActionButton` is inactive during a run and only the one that started it shows a spinner.
+
+### Optimistic updates
+
+`optimistic` receives the input, changes your state to the expected result, and returns a function that takes the change back. The hook calls that rollback when the request fails, when the run is cancelled, and after an undo succeeds. Write the rollback as a state update based on the current value, so it stays correct if other things changed in the meantime.
+
+Call the hook above anything the update removes. If a row owned the hook, archiving the row would unmount the state along with it.
+
+### Retry
+
+After a failure, `retry` runs the request again with the same input and applies the optimistic update again. After a failed undo, it repeats the undo.
+
+### Cancel
+
+Cancel is offered only when you pass `cancelable`. It aborts the `signal` given to your action, rolls back the optimistic update, and moves to `cancelled`. If the cancelled request settles later anyway, its result is discarded, including after a newer run has started.
+
+Pass `cancelable` only when aborting the signal really stops the work. If the server may have finished already, a "Cancelled" message would be untrue.
+
+### Undo
+
+Undo is offered only when you pass `undo`, a function that reverses the action on the server. It receives the input and the result. When it resolves, the hook calls the optimistic rollback to restore the interface. When it rejects, the action still stands, the interface is left as it is, and the status offers Retry.
+
+Success and its Undo stay until the status is dismissed or the action runs again. Nothing expires on a timer.
+
+### Leaving the page
+
+A request that is in flight when the component unmounts is not aborted. The rollback and the `onSuccess` and `onError` callbacks still run, so keep state they touch somewhere that outlives the component.
+
+## Accessibility
+
+`ActionStatus` is a polite status region, so each message is announced when it changes. Render it from the start and keep it mounted: it is empty while the action is idle, and screen readers announce only regions that were already on the page. The recovery buttons sit outside the region so they are not read as part of the message.
+
+Each phase has a sentence. The spinner, check, and alert icons are decorative, and nothing depends on color.
+
+While a run is in flight, `ActionButton` sets `aria-disabled` and ignores presses instead of becoming `disabled`, which would drop keyboard focus.
+
+A phase change can remove the control that has focus: a Retry button that was just pressed, or a row the optimistic update took away. When that happens, `ActionStatus` takes focus itself, so the next <kbd>Tab</kbd> continues from the status instead of the top of the page.
+
+Give each `ActionButton` in a list a name that includes its object, such as `aria-label="Archive Docs refresh"`.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to the action button, then across Cancel, Retry, Undo, and Dismiss |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Activate the focused button |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["async-action"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="async-action" title="components/ui/async-action/async-action-types.ts" file="async-action-types.ts" />
+
+<ComponentSource name="async-action" title="components/ui/async-action/async-action-utils.ts" file="async-action-utils.ts" />
+
+<ComponentSource name="async-action" title="components/ui/async-action/use-async-action.ts" file="use-async-action.ts" />
+
+<ComponentSource name="async-action" title="components/ui/async-action/async-action.tsx" file="async-action.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Call the hook where the list's state lives, then pass the action to a button in each row and to one status:
+
+```tsx
+import {
+  ActionButton,
+  ActionStatus,
+  useAsyncAction,
+} from "@/components/ui/async-action/async-action"
+
+const archive = useAsyncAction({
+  action: (project: Project, { signal }) => api.archiveProject(project.id, { signal }),
+  optimistic: (project) => {
+    setProjects((current) => current.filter((item) => item.id !== project.id))
+    return () => setProjects((current) => [...current, project])
+  },
+  undo: (project) => api.restoreProject(project.id),
+})
+
+{projects.map((project) => (
+  <ActionButton key={project.id} action={archive} input={project} aria-label={`Archive ${project.name}`}>
+    Archive
+  </ActionButton>
+))}
+
+<ActionStatus action={archive} />
+```
+
+An action that takes no input needs no `input` prop:
+
+```tsx
+const exportReport = useAsyncAction({ action: (_input: void, { signal }) => api.exportReport({ signal }) })
+
+<ActionButton action={exportReport} pendingLabel="Exporting…">Export report</ActionButton>
+```
+
+### Messages
+
+The default messages are generic, such as "Done." and "This did not finish. Try again." Replace them with sentences about your action. `error` and `undoError` can be functions of the error.
+
+```tsx
+const name = archive.state.phase === "idle" ? "" : archive.state.input.name
+
+<ActionStatus
+  action={archive}
+  labels={{
+    pending: `Archiving ${name}…`,
+    success: `${name} archived.`,
+    error: (error) =>
+      isOffline(error)
+        ? `You are offline, so ${name} is back in the list.`
+        : `The request failed, so ${name} is back in the list.`,
+  }}
+/>
+```
+
+Every word the status writes comes from `labels`, including the button names, so the same prop translates it.
+
+### With a toast
+
+To show a toast as well, call `toastManager` from `onSuccess` or `onError`. The toast can close on its own schedule, and Retry and Undo remain in the status.
+
+```tsx
+useAsyncAction({
+  action: archiveProject,
+  onError: () => toastManager.add({ type: "error", title: "Project not archived" }),
+})
+```
+
+### Without the button
+
+`run` returns a promise that resolves to how the run ended and never rejects, so any handler can start the action:
+
+```tsx
+<Switch checked={isSubscribed} readOnly={save.isBusy} onCheckedChange={(next) => void save.run(next)} />
+```
+
+## Don't do this
+
+### Offering an undo that does not undo
+
+```tsx
+// Bad. The project is put back on screen, but it is still archived on the server.
+undo: async () => setProjects((current) => [...current, project])
+```
+
+```tsx
+// Good. The server reverses the action; the hook then restores the list with the rollback.
+undo: (project) => api.restoreProject(project.id)
+```
+
+Leave `undo` out when the action cannot be reversed. No Undo is better than one that misleads.
+
+### Calling the hook inside the row
+
+```tsx
+// Bad. Archiving removes the row, and the action's state is unmounted with it.
+function ProjectRow({ project }) {
+  const archive = useAsyncAction({ action: () => api.archiveProject(project.id), optimistic: removeRow })
+}
+```
+
+Call the hook in the list and pass the project as `input`, as in Usage.
+
+### Mounting the status only when there is something to say
+
+```tsx
+// Bad. The region appears together with its first message, so the message is not announced.
+{archive.state.phase !== "idle" && <ActionStatus action={archive} />}
+```
+
+Render `ActionStatus` unconditionally. It takes up no space while the action is idle.
+
+## Examples
+
+### Failure and retry
+
+This preview rejects the first attempt. The project returns to the list with Retry, and the second attempt succeeds. No reversal is passed, so success offers no Undo.
+
+<ComponentPreview name="async-action-failure" previewClassName="h-auto min-h-[260px]" />
+
+### Cancel and repeated clicks
+
+A cancelable action with no optimistic update. The count shows how many requests began, however many times the button is pressed.
+
+<ComponentPreview name="async-action-cancel" previewClassName="h-auto min-h-[220px]" />
+
+### The hook with another control
+
+A switch that saves on change. This preview rejects the first change, so the switch returns to its saved position.
+
+<ComponentPreview name="async-action-hook" previewClassName="h-auto min-h-[180px]" />
+
+## API reference
+
+### useAsyncAction
+
+`useAsyncAction<TInput, TResult>(options)` returns the action. `TInput` is inferred from the first parameter of `action`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `action` | `(input, { signal }) => Promise<TResult>` | Required | The request. `signal` aborts when the run is cancelled. |
+| `optimistic` | `(input) => (() => void) \| void` | None | Applies the expected result and returns its rollback. |
+| `undo` | `(input, { result }) => Promise<unknown>` | None | Reverses the action. Passing it offers Undo after success. |
+| `cancelable` | boolean | `false` | Offers Cancel while pending. Set only when aborting `signal` stops the request. |
+| `onSuccess` | `(result, input) => void` | None | Runs after the request resolves. |
+| `onError` | `(error, input) => void` | None | Runs after the request rejects and the rollback has run. |
+
+Options are read when they are needed, so they can be new functions on every render.
+
+### The action
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `state` | `AsyncActionState<TInput, TResult>` | The phase, with `input`, `result`, and `error` when they are known. |
+| `isBusy` | boolean | A request or an undo is in flight. |
+| `canCancel` | boolean | Pending, and the action is cancelable. |
+| `canRetry` | boolean | The request or the undo failed. |
+| `canUndo` | boolean | Succeeded, and a reversal was passed. |
+| `canDismiss` | boolean | Settled, so `reset` will clear it. |
+| `run` | `(input) => Promise<AsyncActionOutcome<TResult>>` | Starts a run. Resolves to `success`, `error`, `cancelled`, or `ignored`. |
+| `retry` | `() => void` | Repeats the failed request or the failed undo. |
+| `cancel` | `() => void` | Aborts a pending, cancelable run and rolls back. |
+| `undo` | `() => void` | Runs the reversal after success. |
+| `reset` | `() => void` | Returns a settled action to idle. Does nothing while busy. |
+
+### ActionButton
+
+Accepts every `Button` prop beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `action` | The value from `useAsyncAction` | Required | The action to run on press. |
+| `input` | `TInput` | None | Passed to `run`. Required when the action takes an input. |
+| `pendingLabel` | ReactNode | None | Replaces the children while this button's run is pending. |
+
+A press handler that calls `event.preventDefault()` stops the run.
+
+### ActionStatus
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `action` | The value from `useAsyncAction` | Required | The action to report. |
+| `labels` | `Partial<ActionStatusLabels>` | English | Messages for each phase and names for the four buttons. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `AsyncActionState` | `{ phase: "idle" }`, or a phase with `input`, plus `result` after success and `error` after a failure |
+| `AsyncActionOutcome` | `{ status: "success"; result }`, `{ status: "error"; error }`, `{ status: "cancelled" }`, or `{ status: "ignored" }` |
+| `ActionStatusLabels` | `pending`, `success`, `error`, `cancelled`, `undoing`, `undone`, `undoError`, `retry`, `cancel`, `undo`, `dismiss` |

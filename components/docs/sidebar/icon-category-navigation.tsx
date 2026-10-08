@@ -199,7 +199,7 @@ export function assetCollectionFromPathname(pathname: string): AssetCollection |
     return "vectors";
   }
 
-  if (pathname.startsWith("/docs/icons/categories/")) {
+  if (pathname === "/docs/icons" || pathname.startsWith("/docs/icons/categories/")) {
     return "icons";
   }
 

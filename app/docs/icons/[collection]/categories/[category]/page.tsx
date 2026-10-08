@@ -1,9 +1,5 @@
-import { AssetCategoryPage } from "@/components/docs/icons/asset-category-page";
-import {
-  ASSET_CATEGORIES,
-  getAssetCategorySummary,
-  type AssetCollection,
-} from "@/globals/constants/icon-categories";
+import { AssetCatalogPage } from "@/components/docs/icons/asset-catalog-page";
+import { ASSET_CATEGORIES, getAssetCategorySummary } from "@/globals/constants/icon-categories";
 import { absoluteUrl } from "@/lib/utils";
 import { getAssetCategory } from "@/lib/icon-library";
 import type { Metadata } from "next";
@@ -56,5 +52,5 @@ export default async function CollectionCategoryPage({
   const { collection, category } = await params;
   if (!isSupportedCollection(collection)) notFound();
 
-  return <AssetCategoryPage collection={collection as AssetCollection} slug={category} />;
+  return <AssetCatalogPage collection={collection} categorySlug={category} />;
 }

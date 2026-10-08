@@ -181,6 +181,13 @@ import change_review_empty from "./default/examples/change-review-empty";
 import paste_table_demo from "./default/examples/paste-table-demo";
 import paste_table_validation from "./default/examples/paste-table-validation";
 import paste_table_failure from "./default/examples/paste-table-failure";
+import async_action_demo from "./default/examples/async-action-demo";
+import async_action_failure from "./default/examples/async-action-failure";
+import async_action_cancel from "./default/examples/async-action-cancel";
+import async_action_hook from "./default/examples/async-action-hook";
+import overflow_toolbar_demo from "./default/examples/overflow-toolbar-demo";
+import overflow_toolbar_priorities from "./default/examples/overflow-toolbar-priorities";
+import overflow_toolbar_mixed from "./default/examples/overflow-toolbar-mixed";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -687,6 +694,13 @@ export const Index: Record<string, { component: ComponentType }> = {
   "paste-table-demo": { component: paste_table_demo },
   "paste-table-validation": { component: paste_table_validation },
   "paste-table-failure": { component: paste_table_failure },
+  "async-action-demo": { component: async_action_demo },
+  "async-action-failure": { component: async_action_failure },
+  "async-action-cancel": { component: async_action_cancel },
+  "async-action-hook": { component: async_action_hook },
+  "overflow-toolbar-demo": { component: overflow_toolbar_demo },
+  "overflow-toolbar-priorities": { component: overflow_toolbar_priorities },
+  "overflow-toolbar-mixed": { component: overflow_toolbar_mixed },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },
