@@ -293,7 +293,7 @@ Compact uses 44px rows. Default uses 56px. Comfortable uses 64px for cells with 
 | `stickyHeader` | `boolean` | `false` | Keeps headers visible in the grid viewport. |
 | `keyboardNavigation` | `boolean` | `false` | Adds roving cell focus and arrow-key movement. |
 | `virtualize` | `boolean \| { estimateSize?, overscan? }` | `false` | Virtualizes rows with TanStack Virtual. |
-| `density` | `"compact" \| "default" \| "comfortable"` | `"default"` | Sets 44px, 56px, or 64px rows. |
+| `density` | `"compact" \| "default" \| "comfortable"` | Inherited, or `"default"` | Sets 44px, 56px, or 64px rows. When unset, the grid inherits from the nearest [`DensityScope`](/docs/components/density). |
 | `maxHeight` | `number \| string` | None | Constrains the scrolling viewport. |
 | `toolbar` | `{ export?, refresh?, actions? }` | None | Adds working toolbar actions. |
 | `loading` / `refreshing` | `boolean` | `false` | Distinguishes initial row loading from background refresh. |

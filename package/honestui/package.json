@@ -23,6 +23,7 @@
       "default": "./dist/charts.js"
     },
     "./charts.css": "./dist/charts.css",
+    "./density.css": "./dist/density.css",
     "./icons": {
       "types": "./dist/src/icons.d.ts",
       "default": "./dist/icons.js"
@@ -59,7 +60,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup && npm run build:types && node scripts/mark-client-entries.mjs && node scripts/build-chart-styles.mjs",
+    "build": "tsup && npm run build:types && node scripts/mark-client-entries.mjs && node scripts/build-chart-styles.mjs && node scripts/copy-density-styles.mjs",
     "build:types": "tsc --project tsconfig.build.json",
     "sync:registry": "node scripts/copy-registry.mjs",
     "verify:registry": "node scripts/verify-registry.mjs",

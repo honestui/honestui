@@ -1,0 +1,347 @@
+---
+title: Quantity Field
+description: A number field for a duration or a data size that knows its unit. People enter the value in whichever unit is convenient, and your application stores one number in one unit.
+---
+
+<ComponentPreview name="quantity-field-demo" previewClassName="h-auto min-h-[260px]" />
+
+## Overview
+
+Quantity Field holds a quantity, such as a session timeout or an upload limit, as one number in a unit you choose. The unit beside the number is a view of that value. Switching from minutes to hours turns `90` into `1.5` on screen, and the stored 5,400 seconds do not change.
+
+A [Number Field](/docs/components/number-field) with a suffix treats the unit as decoration: the number means whatever the label next to it says. Here the unit is part of the value. The field converts between units, reads a unit from pasted text, checks limits against the real quantity, and says so when the number on screen is rounded.
+
+Two unit groups are included. `durationUnits` has milliseconds, seconds, minutes, hours, days, and weeks. `storageUnits` has bytes, the decimal units kB, MB, GB, and TB, and the binary units KiB, MiB, GiB, and TiB. Other measurements are not included, though a group is plain data and you can write your own.
+
+Quantity Field measures elapsed time, not calendar time. A day is always 24 hours, so it does not follow daylight saving changes, and months and years are left out because their length varies. Use a date picker to choose a point in time.
+
+## Anatomy
+
+<Anatomy title="QuantityField">
+  <AnatomyItem name="QuantityField" description="Holds the value, the unit shown, the limits, and the rounding policy">
+    <AnatomyItem name="QuantityFieldLabel" description="Names the number input and the unit menu" />
+    <AnatomyItem name="QuantityFieldControl" description="The number, its steppers, and the unit menu; plain unit text when one unit is offered" />
+    <AnatomyItem name="QuantityFieldStatus" description="Limit errors, refused or converted pastes, and the exact value while the number is rounded" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing `quantity-field` brings `NumberField`, `Select`, and `Label` along as registry dependencies.
+
+## Behavior
+
+### The stored value
+
+`value` is a number counted in `valueUnit`, which defaults to the group's base unit: seconds for `durationUnits` and bytes for `storageUnits`. `min`, `max`, the `name` submitted with a form, and the number passed to `onValueChange` all use that unit. The unit on screen never changes what they mean.
+
+Pick `valueUnit` to match what your API stores. `valueUnit="ms"` stores a timeout in milliseconds, and `valueUnit="MiB"` stores a quota in mebibytes.
+
+### Switching units
+
+Choosing another unit converts the number on screen. It does not call `onValueChange`, because the quantity is the same. `onUnitChange` reports the new unit.
+
+When the conversion is exact, the status states it, as in "90 min is 1.5 h."
+
+### Rounding
+
+The rounding policy has two settings, and both round half away from zero.
+
+`rounding.maximumFractionDigits` is the most decimal places shown in any unit. The default is 2. A typed number with more places is rounded to this many.
+
+`rounding.increment` is the smallest step the stored value can take, counted in `valueUnit`. The default is 1, so values stored in seconds or bytes are whole numbers. A unit never shows more decimal places than the increment can tell apart: with whole seconds stored, seconds show no decimals and minutes show two.
+
+Some values cannot be written in the selected unit within those places. 100 minutes is 1.666… hours. The field then shows `1.67`, and the status reads "Shown rounded. The exact value is 100 min." The stored value is still 6,000 seconds. Leaving the field without editing it changes nothing. Editing the number stores what was typed.
+
+Steppers and arrow keys add to the exact value, not to the rounded number. One hour more than 100 minutes is 160 minutes, which shows as `2.67`.
+
+### Pasted values
+
+Pasting replaces the number, as it does in Number Field. The field reads the unit along with it.
+
+| Pasted | Result |
+| --- | --- |
+| `90 min`, `90min`, `90 minutes` | Switches to minutes and shows `90` |
+| `1h 30m` | Adds the parts and shows `90 min`, with a note |
+| `2 wk` when weeks are not offered | Converts into the unit already shown, with a note |
+| `90` | Read in the unit already shown |
+| `1,024 MiB` | Read with the grouping and decimal characters of `locale` |
+| `soon`, `1:30:00`, `5 GB` in a duration field | Refused. The number stays, and the status lists the accepted units |
+
+Grouping is accepted only in threes, so `1,5 h` in an English locale is refused and never read as 15 hours.
+
+Storage symbols must match exactly. `MB` is megabytes, a power of 1000, and `MiB` is mebibytes, a power of 1024. `Mb` and `mb` are refused, because `Mb` means megabits. If your field offers only binary units, a pasted `500 MB` is converted to `476.84 MiB`, and the status says the value was converted and states the exact value.
+
+### Limits
+
+`min` and `max` are compared with the stored value, so a rounded number on screen cannot slip past a limit. `min` defaults to 0.
+
+Steppers and arrow keys stop at the limits. A typed or pasted value outside them is kept as entered and reported: the input is marked invalid, the status names the limit in a unit that states it exactly, and `onValueChange` receives `rangeError`. The field does not replace what someone typed with the nearest limit.
+
+The error appears when the field loses focus, not while a number is still being typed. The browser also blocks native form submission while the value is out of range.
+
+## Accessibility
+
+`QuantityFieldLabel` is the label of the number input. The unit menu is named with the label and the word "unit", such as "Session timeout unit", so two quantity fields on a page have distinct menus. The pair is wrapped in a group named by the same label.
+
+The number input is described by the name of the unit, so a screen reader reads "90, Minutes" and not a bare number. Menu options carry both the name and the symbol, as in "Minutes (min)".
+
+`QuantityFieldStatus` is a polite status region, and the input's description points to it. Render it from the start and keep it mounted: it is empty until there is something to say, and screen readers announce only regions that were already on the page. Errors add an icon and set `aria-invalid`, so they do not depend on color.
+
+After a paste, focus stays in the number input.
+
+| Key | Action |
+| --- | --- |
+| <kbd>↑</kbd> <kbd>↓</kbd> | Step the number by `step`, within the limits |
+| <kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> | Step the number by 10 |
+| <kbd>Tab</kbd> | Move from the number to the unit menu. The stepper buttons are not tab stops; the arrow keys do their work |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> on the unit menu | Open it; arrow keys choose a unit |
+
+Your application supplies the label text and, for other languages, the `labels` and the unit names in the group.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["quantity-field"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the `number-field`, `select`, and `label` components.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="quantity-field" title="components/ui/quantity-field/quantity-field-types.ts" file="quantity-field-types.ts" />
+
+<ComponentSource name="quantity-field" title="components/ui/quantity-field/quantity-field-utils.ts" file="quantity-field-utils.ts" />
+
+<ComponentSource name="quantity-field" title="components/ui/quantity-field/quantity-field.tsx" file="quantity-field.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+State the group, the units to offer, and the limits in the stored unit:
+
+```tsx
+import {
+  QuantityField,
+  QuantityFieldControl,
+  QuantityFieldLabel,
+  QuantityFieldStatus,
+  durationUnits,
+} from "@/components/ui/quantity-field/quantity-field"
+
+const [timeoutSeconds, setTimeoutSeconds] = React.useState<number | null>(5400)
+
+<QuantityField
+  unitGroup={durationUnits}
+  units={["min", "h", "d"]}
+  defaultUnit="min"
+  value={timeoutSeconds}
+  onValueChange={setTimeoutSeconds}
+  min={60}
+  max={86_400}
+>
+  <QuantityFieldLabel>Session timeout</QuantityFieldLabel>
+  <QuantityFieldControl />
+  <QuantityFieldStatus />
+</QuantityField>
+```
+
+`units` sets which units the menu offers and their order. Leave it out to offer every unit in the group. For storage, list one family, decimal or binary, unless people really need both.
+
+### One unit
+
+With a single unit, the menu becomes text. Pasted values in other units are still converted:
+
+```tsx
+<QuantityField unitGroup={durationUnits} units={["d"]} valueUnit="d" defaultValue={30} min={1}>
+  <QuantityFieldLabel>Keep deleted files for</QuantityFieldLabel>
+  <QuantityFieldControl />
+  <QuantityFieldStatus />
+</QuantityField>
+```
+
+### In a form
+
+`name` submits the stored value. Put the unit in the name, so the request is as unambiguous as the state:
+
+```tsx
+<QuantityField unitGroup={storageUnits} units={["MB", "GB"]} valueUnit="MB" name="quota_megabytes" required>
+```
+
+### Reacting to limits
+
+`onValueChange` receives the value even when it is out of range, with the reason:
+
+```tsx
+onValueChange={(seconds, { rangeError }) => {
+  setTimeoutSeconds(seconds)
+  setCanSave(rangeError === null)
+}}
+```
+
+### Your own units
+
+A group is a base unit and a list of units with a `factor` in that base:
+
+```tsx
+import type { QuantityUnitGroup } from "@/components/ui/quantity-field/quantity-field"
+
+const bitrateUnits: QuantityUnitGroup<"kbps" | "Mbps"> = {
+  base: "kbps",
+  units: [
+    { key: "kbps", symbol: "kbps", name: "Kilobits per second", factor: 1 },
+    { key: "Mbps", symbol: "Mbps", name: "Megabits per second", factor: 1000, aliases: ["Mbit"] },
+  ],
+}
+```
+
+Units in one group must convert by a fixed factor. Celsius and Fahrenheit do not, so they cannot share a group.
+
+### Wording
+
+Every sentence the field writes comes from `labels`, and unit names and symbols come from the group, so both can be translated. Pass `locale` to format and read numbers for a language other than the browser's.
+
+```tsx
+<QuantityField
+  locale="de-DE"
+  labels={{
+    unit: "Einheit",
+    aboveMax: (limit) => `Höchstens ${limit}.`,
+    rounded: (exact) => `Gerundet angezeigt. Der genaue Wert ist ${exact}.`,
+  }}
+/>
+```
+
+## Don't do this
+
+### Naming a surrounding Field
+
+```tsx
+// Bad. The Field's name submits the number on screen: 1.5 with hours selected, 90 with minutes.
+<Field name="timeout">
+  <QuantityField unitGroup={durationUnits}>…</QuantityField>
+</Field>
+```
+
+```tsx
+// Good. QuantityField submits the stored value, in the unit the name states.
+<QuantityField unitGroup={durationUnits} name="timeout_seconds">…</QuantityField>
+```
+
+### Storing the number and the unit separately
+
+```tsx
+// Bad. Two fields can disagree, and every reader has to convert.
+save({ amount: 1.5, unit: "h" })
+```
+
+Store the single number `onValueChange` gives you. If you want the field to reopen in the unit someone chose, keep that unit as a display preference with `onUnitChange`.
+
+### Offering a unit smaller than the stored increment
+
+```tsx
+// Bad. Whole seconds are stored, so 250 ms is stored as 0 s.
+<QuantityField unitGroup={durationUnits} units={["ms", "s"]} />
+```
+
+```tsx
+// Good. Store milliseconds when people can enter them.
+<QuantityField unitGroup={durationUnits} units={["ms", "s"]} valueUnit="ms" />
+```
+
+### Mounting the status only when there is something to say
+
+Render `QuantityFieldStatus` unconditionally. It takes up no space while it is empty, and a region that appears together with its first message is not announced.
+
+## Examples
+
+### Storage
+
+An upload limit stored in bytes and offered in binary units. 1,024 MiB becomes 1 GiB, and the byte count stays the same. Paste `500 MB` to see a decimal value converted.
+
+<ComponentPreview name="quantity-field-storage" previewClassName="h-auto min-h-[260px]" />
+
+### A value the unit cannot show
+
+This field keeps one decimal place. 100 minutes shows as 1.7 h with the exact value stated. Switch to minutes and it reads 100.
+
+<ComponentPreview name="quantity-field-rounding" previewClassName="h-auto min-h-[260px]" />
+
+### Form submission
+
+Nothing is sent from this preview. It lists the form data the browser would submit: megabytes for the quota, whichever unit is on screen, and days for the retention field, which offers one unit.
+
+<ComponentPreview name="quantity-field-form" previewClassName="h-auto min-h-[420px]" />
+
+## API reference
+
+### QuantityField
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `unitGroup` | `QuantityUnitGroup` | Required | The units this quantity can be measured in. |
+| `units` | `string[]` | Every unit in the group | The unit keys offered, in menu order. |
+| `valueUnit` | Unit key | The group's base unit | The unit `value`, `min`, and `max` are counted in. |
+| `value` | `number \| null` | None | The quantity. `null` is an empty field. |
+| `defaultValue` | `number \| null` | `null` | The initial quantity when uncontrolled. |
+| `onValueChange` | `(value, details) => void` | None | Runs when the quantity changes. `details` has `unit`, `valueUnit`, and `rangeError`. |
+| `unit` | Unit key | None | The unit shown. |
+| `defaultUnit` | Unit key | `valueUnit` if offered, otherwise the first unit | The initial unit when uncontrolled. |
+| `onUnitChange` | `(unit) => void` | None | Runs when a unit is chosen or a paste switches the unit. |
+| `min` | number | `0` | The smallest allowed value, in `valueUnit`. Pass a negative number to allow negative quantities. |
+| `max` | number | None | The largest allowed value, in `valueUnit`. |
+| `rounding` | `{ maximumFractionDigits?, increment? }` | `{ maximumFractionDigits: 2, increment: 1 }` | The rounding policy. |
+| `step` | number | `1` | How far a stepper or arrow key moves the number, in the unit shown. |
+| `locale` | `Intl.LocalesArgument` | The browser's locale | Formats numbers and decides which separators pasted text uses. |
+| `name` | string | None | Submits the stored value with a form. |
+| `required` | boolean | `false` | Blocks native form submission while the field is empty. |
+| `disabled` | boolean | `false` | Disables the number, the steppers, and the unit menu. |
+| `readOnly` | boolean | `false` | Shows the value without allowing edits or unit changes. |
+| `labels` | `Partial<QuantityFieldLabels>` | English | The words and sentences the field writes. |
+
+### QuantityFieldLabel
+
+Accepts every `Label` prop. It is connected to the number input for you.
+
+### QuantityFieldControl
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `steppers` | boolean | `true` | Shows the decrease and increase buttons. Arrow keys step either way. |
+
+### QuantityFieldStatus
+
+Accepts native paragraph props. `data-state` is `empty`, `note`, or `error`.
+
+### Types and helpers
+
+| Export | Shape |
+| --- | --- |
+| `QuantityUnitGroup` | `{ base, units, caseSensitive? }` |
+| `QuantityUnit` | `{ key, symbol, name, factor, aliases? }` |
+| `QuantityFieldChangeDetails` | `{ unit, valueUnit, rangeError: "belowMin" \| "aboveMax" \| null }` |
+| `QuantityFieldLabels` | `unit`, `decrease`, `increase`, `belowMin`, `aboveMax`, `unreadablePaste`, `pasteConverted`, `unitChanged`, `rounded` |
+| `durationUnits` | Keys `ms`, `s`, `min`, `h`, `d`, `wk`. Base unit `s`. |
+| `storageUnits` | Keys `B`, `kB`, `MB`, `GB`, `TB`, `KiB`, `MiB`, `GiB`, `TiB`. Base unit `B`. Symbols match exactly. |
+| `convertQuantity` | `(value, fromUnit, toUnit) => number`, without rounding |

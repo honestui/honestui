@@ -23,6 +23,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/default/ui/button"
 import { Checkbox } from "@/registry/default/ui/checkbox"
+import { useDensity } from "@/registry/default/ui/density"
 import {
   Empty,
   EmptyDescription,
@@ -159,7 +160,7 @@ export function DataTable<TData>({
   pagination: paginationProp = false,
   pageSizeOptions,
   toolbarActions,
-  density = "default",
+  density: densityProp,
   framed = true,
   caption,
   getRowId,
@@ -189,6 +190,8 @@ export function DataTable<TData>({
   onRowSelectionChange,
   onPaginationChange,
 }: DataTableProps<TData>) {
+  const inheritedDensity = useDensity()
+  const density = densityProp ?? inheritedDensity ?? "default"
   const facetIds = React.useMemo(
     () => new Set((filters ?? []).map((facet) => facet.columnId)),
     [filters],
@@ -604,6 +607,7 @@ export function DataTableContent({ className }: { className?: string }) {
                     key={cell.id}
                     className={cn(
                       density === "compact" && "py-[var(--hui-space-2)]",
+                      density === "comfortable" && "py-[var(--hui-space-5)]",
                       alignClass(meta.align),
                     )}
                   >

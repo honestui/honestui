@@ -26,6 +26,7 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/default/ui/button"
 import { Checkbox } from "@/registry/default/ui/checkbox"
+import { useDensity } from "@/registry/default/ui/density"
 import {
   Empty,
   EmptyContent,
@@ -269,7 +270,7 @@ export function DataGridRoot<TData>({
   stickyHeader = false,
   keyboardNavigation = false,
   virtualize = false,
-  density = "default",
+  density: densityProp,
   maxHeight,
   toolbar,
   loading = false,
@@ -306,6 +307,8 @@ export function DataGridRoot<TData>({
   onColumnPinningChange,
   onCellEdit,
 }: DataGridProps<TData>) {
+  const inheritedDensity = useDensity()
+  const density = densityProp ?? inheritedDensity ?? "default"
   const selectable = selection !== false
   const filtersEnabled = filters !== false
   const paginationEnabled = pagination !== false
@@ -463,7 +466,7 @@ export function DataGridRoot<TData>({
       <div
         data-slot="data-grid"
         data-density={density}
-        className={cn("w-full min-w-0 space-y-[var(--hui-space-3)]", className)}
+        className={cn("w-full min-w-0 space-y-[var(--hui-density-gap,var(--hui-space-3))]", className)}
       >
         {children ?? (
           <>

@@ -43,6 +43,8 @@ import { LightRays } from "honestui/shaders"
 
 Load `honestui/charts.css` once in your application root when you use charts. Shaders use Tailwind utilities and do not require a separate stylesheet.
 
+To size a whole section with one `data-density` scope, import `honestui/density.css` after Tailwind CSS in your stylesheet. See the [density guide](https://honestui.com/docs/components/density).
+
 ## Registry API
 
 The root entry point exposes registry functions for tooling:

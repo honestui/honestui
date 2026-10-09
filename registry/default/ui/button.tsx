@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "relative inline-flex w-fit shrink-0 cursor-pointer items-center justify-center gap-[var(--hui-space-3)] whitespace-nowrap rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-4)] py-[var(--hui-space-3)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] motion-safe:active:[transition:var(--hui-transition-pressed)] focus-visible:[outline:var(--hui-focus-ring)] not-disabled:active:scale-[var(--hui-scale-pressed)] disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:after:pointer-events-none pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative inline-flex w-fit shrink-0 cursor-pointer items-center justify-center gap-[var(--hui-space-3)] whitespace-nowrap rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-density-control-padding-inline,var(--hui-space-4))] py-[var(--hui-density-control-padding-block,var(--hui-space-3))] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] motion-safe:active:[transition:var(--hui-transition-pressed)] focus-visible:[outline:var(--hui-focus-ring)] not-disabled:active:scale-[var(--hui-scale-pressed)] disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:after:pointer-events-none pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -26,12 +26,12 @@ const buttonVariants = cva(
       },
       size: {
         default:
-          "px-[var(--hui-space-4)] py-[var(--hui-space-3)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+          "min-h-[var(--hui-density-control-height,0px)] px-[var(--hui-density-control-padding-inline,var(--hui-space-4))] py-[var(--hui-density-control-padding-block,var(--hui-space-3))] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         xs: "gap-[var(--hui-space-2)] rounded-[var(--hui-radius-1)] px-[var(--hui-space-2)] py-[var(--hui-space-1)] [font-size:var(--hui-font-size-micro)] [letter-spacing:var(--hui-letter-spacing-micro)] [line-height:var(--hui-line-height-micro)] [&_svg:not([class*='size-'])]:size-3",
         sm: "gap-[var(--hui-space-2)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
         lg: "px-[var(--hui-space-5)] py-[var(--hui-space-3)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
         xl: "px-[var(--hui-space-6)] py-[var(--hui-space-4)] [font-size:var(--hui-font-size-large)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)] [&_svg:not([class*='size-'])]:size-4.5",
-        icon: "size-8 p-0",
+        icon: "size-[var(--hui-density-control-height,2rem)] p-0",
         "icon-sm": "size-6 p-0",
         "icon-lg": "size-9 p-0",
       },

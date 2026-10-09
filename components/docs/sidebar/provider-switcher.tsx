@@ -14,18 +14,20 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  ChartStackedLineIcon,
-  CheckIcon,
-  ComponentBlocksIcon,
-  IconLibraryIcon,
-  MotionIcon,
-  ShaderIcon,
-} from "@/assets/icons";
+import { CheckIcon } from "@/assets/icons";
 import { usePathname, useRouter } from "next/navigation";
-import { CaretDown, Product as ProductIcon } from "@carbon/icons-react";
-import { PanelsTopLeft } from "honestui/icons";
+import { CaretDown } from "@carbon/icons-react";
 import { cn } from "@/lib/utils";
+import {
+  AnimatedAreaIcon,
+  ChartsAreaIcon,
+  ComponentsAreaIcon,
+  ExamplesAreaIcon,
+  IconsAreaIcon,
+  ProductAreaIcon,
+  ShadersAreaIcon,
+  type ProductAreaIconProps,
+} from "./product-area-icons";
 
 export type ProductArea =
   | "components"
@@ -41,8 +43,7 @@ interface ProductAreaMeta {
   name: string;
   tagline: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  tint: string;
+  icon: React.ComponentType<ProductAreaIconProps>;
 }
 
 const PRODUCT_AREAS: ProductAreaMeta[] = [
@@ -51,63 +52,49 @@ const PRODUCT_AREAS: ProductAreaMeta[] = [
     name: "UI Components",
     tagline: "Accessible building blocks",
     href: "/docs",
-    icon: ComponentBlocksIcon,
-    tint:
-      "text-[#E43861] group-focus/dropdown-menu-item:text-[#E43861]!",
+    icon: ComponentsAreaIcon,
   },
   {
     id: "product",
     name: "Product Components",
     tagline: "Composed application patterns",
     href: "/docs/product",
-    icon: ProductIcon,
-    tint:
-      "text-[var(--hui-color-foreground-accent-primary)] group-focus/dropdown-menu-item:text-[var(--hui-color-foreground-accent-primary)]!",
+    icon: ProductAreaIcon,
   },
   {
     id: "charts",
     name: "Charts",
     tagline: "Composable data visualization",
     href: "/docs/charts",
-    icon: ChartStackedLineIcon,
-    tint:
-      "text-[#60DAFB] group-focus/dropdown-menu-item:text-[#60DAFB]!",
+    icon: ChartsAreaIcon,
   },
   {
     id: "icons",
     name: "Icons & Assets",
     tagline: "Icons, logos, and vectors",
     href: "/docs/icons",
-    icon: IconLibraryIcon,
-    tint:
-      "text-amber-400 group-focus/dropdown-menu-item:text-amber-400!",
+    icon: IconsAreaIcon,
   },
   {
     id: "animated",
     name: "Animated Components",
     tagline: "Purposeful interaction patterns",
     href: "/docs/animated",
-    icon: MotionIcon,
-    tint:
-      "text-emerald-400 group-focus/dropdown-menu-item:text-emerald-400!",
+    icon: AnimatedAreaIcon,
   },
   {
     id: "shaders",
     name: "Shaders",
     tagline: "GPU-rendered visual effects",
     href: "/docs/shaders",
-    icon: ShaderIcon,
-    tint:
-      "text-fuchsia-400 group-focus/dropdown-menu-item:text-fuchsia-400!",
+    icon: ShadersAreaIcon,
   },
   {
     id: "examples",
     name: "Examples",
     tagline: "Complete product interfaces",
     href: "/docs/examples",
-    icon: PanelsTopLeft,
-    tint:
-      "text-violet-400 group-focus/dropdown-menu-item:text-violet-400!",
+    icon: ExamplesAreaIcon,
   },
 ];
 
@@ -143,24 +130,13 @@ export function areaFromPathname(pathname: string): ProductArea {
   return "components";
 }
 
-function ProductAreaIcon({
-  area,
-  className,
-}: {
-  area: ProductAreaMeta;
-  className?: string;
-}) {
-  const Icon = area.icon;
-
-  return <Icon className={cn(area.tint, className)} aria-hidden="true" />;
-}
-
 export function ProviderSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
   const { isMobile, setOpenMobile } = useSidebar();
   const activeArea = areaFromPathname(pathname);
   const displayed = PRODUCT_AREAS.find((area) => area.id === activeArea)!;
+  const DisplayedIcon = displayed.icon;
 
   const selectArea = (area: ProductAreaMeta) => {
     if (isMobile) {
@@ -187,7 +163,7 @@ export function ProviderSwitcher() {
               />
             }
           >
-            <ProductAreaIcon area={displayed} className="size-7!" />
+            <DisplayedIcon className="size-7!" />
             <div className="ml-0.5 grid min-w-0 flex-1 text-left leading-tight">
               <span className="truncate text-sm font-medium">{displayed.name}</span>
               <span className="text-muted-foreground truncate text-[11px]">
@@ -213,9 +189,9 @@ export function ProviderSwitcher() {
                   <DropdownMenuItem
                     key={area.id}
                     onClick={() => selectArea(area)}
-                    className="gap-2 p-2 focus:bg-[var(--hui-color-background-base-primary-hover)]! focus:text-[var(--hui-color-foreground-base-primary)]!"
+                    className="gap-2.5 p-2 focus:bg-[var(--hui-color-background-base-primary-hover)]! focus:text-[var(--hui-color-foreground-base-primary)]!"
                   >
-                    <ProductAreaIcon area={area} className="size-6!" />
+                    <area.icon className="size-7" />
                     <div className="ml-0.5 grid min-w-0 flex-1 leading-tight">
                       <span className="truncate text-sm group-focus/dropdown-menu-item:text-[var(--hui-color-foreground-base-primary)]!">
                         {area.name}

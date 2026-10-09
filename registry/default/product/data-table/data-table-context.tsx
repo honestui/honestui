@@ -1,7 +1,9 @@
 import * as React from "react"
 import type { Row } from "@tanstack/react-table"
 
-export type DataTableDensity = "default" | "compact"
+import { DensityProvider } from "@/registry/default/ui/density"
+
+export type DataTableDensity = "compact" | "default" | "comfortable"
 
 export type DataTableContextValue<TData> = {
   table: import("@tanstack/react-table").Table<TData>
@@ -31,7 +33,7 @@ export function DataTableProvider<TData>({
     <DataTableContext.Provider
       value={value as unknown as DataTableContextValue<unknown>}
     >
-      {children}
+      <DensityProvider density={value.density}>{children}</DensityProvider>
     </DataTableContext.Provider>
   )
 }

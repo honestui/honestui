@@ -13,7 +13,7 @@ function Toolbar({
     <ToolbarPrimitive.Root
       data-slot="toolbar"
       className={cn(
-        "flex items-center gap-[var(--hui-space-1)] overflow-clip rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] p-[var(--hui-space-1)] data-[orientation=vertical]:flex-col data-[orientation=vertical]:[&_[data-slot=toolbar-button]]:w-full data-[orientation=vertical]:[&_[data-slot=toolbar-group]]:flex-col [&>*]:border-0",
+        "flex items-center gap-[var(--hui-density-group-gap,var(--hui-space-1))] overflow-clip rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] p-[var(--hui-density-group-gap,var(--hui-space-1))] data-[orientation=vertical]:flex-col data-[orientation=vertical]:[&_[data-slot=toolbar-button]]:w-full data-[orientation=vertical]:[&_[data-slot=toolbar-group]]:flex-col [&>*]:border-0",
         className
       )}
       {...props}
@@ -56,7 +56,7 @@ function ToolbarGroup({ className, ...props }: ToolbarPrimitive.Group.Props) {
     <ToolbarPrimitive.Group
       data-slot="toolbar-group"
       className={cn(
-        "flex items-center gap-[var(--hui-space-1)] bg-transparent p-0 [&>*]:border-0",
+        "flex items-center gap-[var(--hui-density-group-gap,var(--hui-space-1))] bg-transparent p-0 [&>*]:border-0",
         className
       )}
       {...props}

@@ -8,6 +8,8 @@ import type {
   Table,
 } from "@tanstack/react-table"
 
+import { DensityProvider } from "@/registry/default/ui/density"
+
 export type DataGridDensity = "compact" | "default" | "comfortable"
 export type DataGridAlignment = "left" | "center" | "right"
 export type DataGridFilterType =
@@ -133,7 +135,7 @@ export function DataGridProvider<TData>({
     <DataGridContext.Provider
       value={value as unknown as DataGridContextValue<unknown>}
     >
-      {children}
+      <DensityProvider density={value.density}>{children}</DensityProvider>
     </DataGridContext.Provider>
   )
 }

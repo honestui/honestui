@@ -1,0 +1,177 @@
+---
+title: Density
+description: Set compact, default, or comfortable density for a whole section with one scope, and let nested sections override it.
+---
+
+<ComponentPreview name="density-demo" previewClassName="h-auto sm:h-auto" />
+
+## Overview
+
+A density scope sets the size of controls, menu items, table rows, and gaps for everything inside one element. You mark the section once instead of passing a size to every component in it.
+
+There are three levels: `compact`, `default`, and `comfortable`. `default` matches the size every component has outside a scope.
+
+## Anatomy
+
+Density has two parts. The `honestui/density.css` stylesheet defines the variables for each level on `[data-density]` and adds three Tailwind variants. `DensityScope` renders the element that carries `data-density` and shares the level through React context, which is how portaled popups and `DataGrid` receive it. `DensityProvider` shares a level without rendering an element, and `useDensity` reads it.
+
+## Accessibility
+
+Density changes size only. Roles, names, focus order, focus rings, and font sizes are the same at every level.
+
+### Touch behavior
+
+On devices whose primary pointer is coarse (`@media (pointer: coarse)`), every scope gives controls, menu items, and table rows a minimum height of 44px. Padding and gaps keep their level.
+
+Compact rows are stacked edge to edge, so an invisible 44px hit area on a 28px control would overlap the row above and below. A real 44px box avoids that. The floor applies to all three levels so that compact is never larger than default on the same screen.
+
+Two things to know:
+
+- Outside a scope, components keep their existing touch behavior. Set a scope on your app root if you want the 44px floor everywhere.
+- A control with an explicit size, such as `<Button size="sm">`, keeps that size at every density and on touch.
+
+Change the floor by setting `--hui-density-touch-target` on `:root` or on a scope.
+
+## Installation
+
+Density is optional. Components read each density variable with a fallback to their own size, so nothing changes until you load the stylesheet and set a scope.
+
+Import the stylesheet after Tailwind CSS and the Honest UI tokens. It uses the [spacing tokens](/docs/theme/spacing).
+
+```css
+@import "tailwindcss";
+@import "honestui/density.css";
+```
+
+Add `DensityScope` to your project. `Menu`, `Select`, `DataTable`, and `DataGrid` import it, so the CLI installs it with them.
+
+<CliBlock commands={["density"]} />
+
+To add it by hand, copy this file:
+
+<ComponentSource name="density" title="components/ui/density.tsx" />
+
+## Usage
+
+Use `DensityScope` for a section:
+
+```tsx
+import { DensityScope } from "@/components/ui/density"
+
+export function InvoicesPanel() {
+  return (
+    <DensityScope density="compact">
+      <InvoiceToolbar />
+      <InvoiceTable />
+    </DensityScope>
+  )
+}
+```
+
+`DensityScope` renders a `div` with `data-density` and accepts any `div` prop.
+
+A bare attribute also works when the section has no popups, `DataTable`, or `DataGrid`:
+
+```tsx
+<section data-density="compact">…</section>
+```
+
+Menus and select lists are portaled to the end of the document, outside the section's DOM subtree, so CSS inheritance cannot reach them. They read the density from `DensityScope` instead. `DataTable` and `DataGrid` read it there too: they resolve their density in React, and `DataGrid` needs the row height in JavaScript for virtualization.
+
+### Read the density in a component
+
+`useDensity()` returns the density of the nearest `DensityScope`, or `undefined` outside one. It does not see a bare `data-density` attribute.
+
+```tsx
+import { useDensity } from "@/components/ui/density"
+
+function RowAvatar() {
+  const density = useDensity()
+  return density === "compact" ? null : <Avatar />
+}
+```
+
+Use `DensityProvider` to share a density without rendering an element, for example when your own component already renders the element that carries `data-density`.
+
+## Examples
+
+### Nested scopes
+
+The nearest scope wins. A comfortable form inside a compact panel stays comfortable, and a sibling section without a scope keeps the component defaults.
+
+<ComponentPreview name="density-nested" previewClassName="h-auto" />
+
+## Components that follow density
+
+| Component | What changes |
+| --- | --- |
+| `Button` | Height and padding of the default size; width and height of `size="icon"` |
+| `Input` | Height of the default size |
+| `Select` | Trigger height and padding of the default size; item padding |
+| `Menu` | Item padding |
+| `Table` | Cell and header padding |
+| `Toolbar` | Gap and padding |
+| `DataTable` | Row padding; `density` prop now also accepts `comfortable` |
+| `DataGrid` | Row height (44px, 56px, or 64px) |
+
+`DataTable` and `DataGrid` use their `density` prop when it is set and inherit from `DensityScope` when it is not. Either way they become a scope for the buttons, inputs, and menus inside them.
+
+## Variables
+
+Each level sets these variables on the scope element. Use them in your own components with a fallback, the same way the built-in components do.
+
+<TokenTable
+  caption="Honest UI density variables"
+  tokens={[
+    { name: "--hui-density-control-height", value: "28px / 32px / 40px", description: "Height of buttons, inputs, and select triggers. 44px in a scope on touch." },
+    { name: "--hui-density-control-padding-block", value: "4px / 8px / 12px", description: "Vertical padding of buttons and select triggers" },
+    { name: "--hui-density-control-padding-inline", value: "8px / 12px / 16px", description: "Horizontal padding of buttons" },
+    { name: "--hui-density-item-padding-block", value: "4px / 8px / 12px", description: "Vertical padding of menu and select items" },
+    { name: "--hui-density-cell-padding-block", value: "4px / 12px / 16px", description: "Vertical padding of table cells" },
+    { name: "--hui-density-cell-padding-inline", value: "8px / 8px / 12px", description: "Horizontal padding of table cells and headers" },
+    { name: "--hui-density-header-padding-block", value: "4px / 8px / 12px", description: "Vertical padding of table headers" },
+    { name: "--hui-density-gap", value: "4px / 8px / 12px", description: "Gap between related controls in the section" },
+    { name: "--hui-density-group-gap", value: "1px / 2px / 4px", description: "Gap and padding inside a toolbar" },
+    { name: "--hui-density-item-min-height", value: "44px on touch", description: "Minimum height of menu and select items. Set only in a scope on touch." },
+    { name: "--hui-density-row-min-height", value: "44px on touch", description: "Minimum height of table rows. Set only in a scope on touch." },
+    { name: "--hui-density-touch-target", value: "44px", description: "The touch floor used by the three variables above" },
+  ]}
+/>
+
+Values are listed as compact / default / comfortable.
+
+```tsx
+<div className="grid gap-[var(--hui-density-gap,var(--hui-space-3))]">
+  <button className="min-h-[var(--hui-density-control-height,var(--hui-space-9))]">
+    Refresh
+  </button>
+</div>
+```
+
+## Tailwind variants
+
+The stylesheet adds three Tailwind CSS v4 variants for changes a variable cannot express, such as hiding secondary text in compact sections:
+
+```tsx
+<p className="density-compact:hidden">Last synced 2 minutes ago</p>
+<Avatar className="size-8 density-compact:size-6 density-comfortable:size-10" />
+```
+
+`density-compact:`, `density-default:`, and `density-comfortable:` match the scope element and the elements whose nearest scope has that level.
+
+One limit: when a level is re-entered through a different level, such as compact inside comfortable inside compact, the variant does not match in the innermost scope. The variables have no such limit, so prefer them for sizing.
+
+## API reference
+
+### DensityScope
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `density` | `"compact" \| "default" \| "comfortable"` | Required | The density for this section. |
+| `...props` | `React.ComponentProps<"div">` | — | Passed to the rendered `div`. |
+
+### DensityProvider
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `density` | `"compact" \| "default" \| "comfortable"` | Required | The density shared with descendants. |

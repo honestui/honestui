@@ -129,6 +129,8 @@ import data_grid_columns from "./default/examples/data-grid-columns";
 import data_grid_controlled from "./default/examples/data-grid-controlled";
 import data_grid_demo from "./default/examples/data-grid-demo";
 import data_grid_density from "./default/examples/data-grid-density";
+import density_demo from "./default/examples/density-demo";
+import density_nested from "./default/examples/density-nested";
 import data_grid_editing from "./default/examples/data-grid-editing";
 import data_grid_filters from "./default/examples/data-grid-filters";
 import data_grid_selection from "./default/examples/data-grid-selection";
@@ -188,6 +190,10 @@ import async_action_hook from "./default/examples/async-action-hook";
 import overflow_toolbar_demo from "./default/examples/overflow-toolbar-demo";
 import overflow_toolbar_priorities from "./default/examples/overflow-toolbar-priorities";
 import overflow_toolbar_mixed from "./default/examples/overflow-toolbar-mixed";
+import quantity_field_demo from "./default/examples/quantity-field-demo";
+import quantity_field_storage from "./default/examples/quantity-field-storage";
+import quantity_field_rounding from "./default/examples/quantity-field-rounding";
+import quantity_field_form from "./default/examples/quantity-field-form";
 import dialog_close_confirmation from "./default/examples/dialog-close-confirmation";
 import dialog_destructive_confirm from "./default/examples/dialog-destructive-confirm";
 import dialog_demo from "./default/examples/dialog-demo";
@@ -642,6 +648,8 @@ export const Index: Record<string, { component: ComponentType }> = {
   "data-grid-controlled": { component: data_grid_controlled },
   "data-grid-demo": { component: data_grid_demo },
   "data-grid-density": { component: data_grid_density },
+  "density-demo": { component: density_demo },
+  "density-nested": { component: density_nested },
   "data-grid-editing": { component: data_grid_editing },
   "data-grid-filters": { component: data_grid_filters },
   "data-grid-selection": { component: data_grid_selection },
@@ -701,6 +709,10 @@ export const Index: Record<string, { component: ComponentType }> = {
   "overflow-toolbar-demo": { component: overflow_toolbar_demo },
   "overflow-toolbar-priorities": { component: overflow_toolbar_priorities },
   "overflow-toolbar-mixed": { component: overflow_toolbar_mixed },
+  "quantity-field-demo": { component: quantity_field_demo },
+  "quantity-field-storage": { component: quantity_field_storage },
+  "quantity-field-rounding": { component: quantity_field_rounding },
+  "quantity-field-form": { component: quantity_field_form },
   "dialog-close-confirmation": { component: dialog_close_confirmation },
   "dialog-destructive-confirm": { component: dialog_destructive_confirm },
   "dialog-demo": { component: dialog_demo },

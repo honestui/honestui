@@ -231,7 +231,7 @@ This example sends search, sorting, filters, and pagination changes to the serve
 | `pagination` | boolean \| `{ pageSizeOptions? }` \| `PaginationState` | `false` | Footer pagination. Pass a `{ pageIndex, pageSize }` object to control it. |
 | `pageSizeOptions` | number[] | `[10, 20, 50, 100]` | Page-size choices for the footer select. |
 | `toolbarActions` | ReactNode | None | Right-aligned slot for actions such as Export. |
-| `density` | `"default"` \| `"compact"` | `"default"` | Compact reduces row padding for logs and admin screens. |
+| `density` | `"compact"` \| `"default"` \| `"comfortable"` | Inherited, or `"default"` | Compact reduces row padding for logs and admin screens; comfortable adds it. When unset, the table inherits from the nearest [`DensityScope`](/docs/components/density). |
 | `framed` | boolean | `true` | Draws the outer border. Disable when the layout already frames the table. |
 | `getRowId` | `(row, index) => string` | None | Stable row identity. Use it with selection. |
 | `getRowLabel` | `(row) => string` | None | Returns the accessible label for each row checkbox. |

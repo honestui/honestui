@@ -225,9 +225,9 @@ export function DocsCopyPage({ url, path }: { url: string; path: string }) {
       variant="secondary"
       size="sm"
       aria-label="Open dropdown menu"
-      className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-none border-0 border-l-[0.5px] border-[var(--hui-color-border-base-primary)] bg-transparent p-0! hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:ring-0!"
+      className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-none border-0 border-l-[0.5px] border-[var(--hui-color-border-base-primary)] bg-transparent p-0! hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:ring-0! data-popup-open:[&>svg]:rotate-180"
     >
-      <CaretDown />
+      <CaretDown className="transition-transform duration-200 ease-out motion-reduce:transition-none" />
     </Button>
   );
 

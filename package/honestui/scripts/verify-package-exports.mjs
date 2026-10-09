@@ -72,6 +72,10 @@ const chartsCss = await readFile(new URL("../dist/charts.css", import.meta.url),
 assert.match(chartsCss, /\.animate-spin/)
 assert.match(chartsCss, /\.focus-visible\\:outline-2/)
 
+const densityCss = await readFile(new URL("../dist/density.css", import.meta.url), "utf8")
+assert.match(densityCss, /\[data-density="compact"\]/)
+assert.match(densityCss, /@custom-variant density-compact/)
+
 const { stdout: help } = await execFileAsync(
   process.execPath,
   [new URL("../dist/index.js", import.meta.url).pathname, "--help"],

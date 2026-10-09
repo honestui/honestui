@@ -1,4 +1,4 @@
 {
   "title": "Product",
-  "pages": ["index", "data-table", "data-grid", "date-range-picker", "filter-bar", "file-upload", "change-review", "paste-table", "async-action", "overflow-toolbar"]
+  "pages": ["index", "data-table", "data-grid", "date-range-picker", "filter-bar", "file-upload", "change-review", "paste-table", "async-action", "overflow-toolbar", "quantity-field"]
 }
