@@ -3,7 +3,7 @@
 Changes to the public honestui package are recorded here. Version headings
 follow semantic versioning and link to the corresponding GitHub release.
 
-## Unreleased
+## 0.2.1 - 2026-10-12
 
 - Add scoped density: `honestui/density.css` defines `compact`, `default`, and `comfortable` levels as CSS variables on `[data-density]`, plus `density-compact:`, `density-default:`, and `density-comfortable:` Tailwind CSS v4 variants. `DensityScope`, `DensityProvider`, and `useDensity` carry the level to portaled popups. `Button`, `Input`, `Select`, `Menu`, `Table`, `Toolbar`, `DataTable`, and `DataGrid` follow the nearest scope and are unchanged outside one. On coarse pointers every scope gives controls, menu items, and rows a 44px minimum height. `DataTable` accepts `density="comfortable"`, and `DataTable` and `DataGrid` inherit their density from a scope when the prop is unset.
 - Add the Quantity Field product component: `QuantityField`, `QuantityFieldLabel`, `QuantityFieldControl`, and `QuantityFieldStatus` hold a duration or a data size as one number in one declared unit and show it in whichever unit is selected. Switching units converts the number on screen and leaves the stored value unchanged; when a unit cannot show the value within `rounding.maximumFractionDigits`, the field says the number is rounded and states the exact value. Pasted text such as `90 min`, `1h 30m`, or `1,024 MiB` is read with its unit. `min` and `max` are checked against the stored value. `durationUnits` and `storageUnits` are included.
