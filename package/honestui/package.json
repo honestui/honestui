@@ -84,7 +84,6 @@
     "diff": "^8.0.2",
     "echarts": "^6.1.0",
     "execa": "^9.6.0",
-    "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.1",
     "fuzzysort": "^3.1.0",
     "https-proxy-agent": "^7.0.6",
@@ -101,7 +100,8 @@
     "recast": "^0.23.11",
     "stringify-object": "^5.0.0",
     "tailwind-merge": "^3.0.1",
-    "ts-morph": "^26.0.0",
+    "tinyglobby": "^0.2.17",
+    "ts-morph": "^28.0.0",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.76"
   },
@@ -118,7 +118,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@types/babel__core": "^7.20.5",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.43",
     "@types/prompts": "^2.4.9",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
@@ -130,6 +130,7 @@
     "type-fest": "^4.41.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.65.0",
-    "vitest": "^3.2.4"
+    "vite": "^6.4.4",
+    "vitest": "^4.1.11"
   }
 }

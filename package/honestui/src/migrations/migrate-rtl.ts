@@ -6,7 +6,7 @@ import { highlighter } from "@/src/utils/highlighter"
 import { logger } from "@/src/utils/logger"
 import { spinner } from "@/src/utils/spinner"
 import { transformDirection } from "@/src/utils/transformers/transform-rtl"
-import fg from "fast-glob"
+import { glob as fg } from "tinyglobby"
 import prompts from "prompts"
 
 // Files that may need manual RTL adjustments.
@@ -33,6 +33,8 @@ export async function migrateRtl(
 
     if (isGlob) {
       files = await fg(options.path, {
+        expandDirectories: false,
+        absolute: path.isAbsolute(options.path),
         cwd: basePath,
         onlyFiles: true,
         ignore: ["**/node_modules/**"],
@@ -48,6 +50,7 @@ export async function migrateRtl(
       if (stat.isDirectory()) {
         basePath = fullPath
         files = await fg("**/*.{js,ts,jsx,tsx}", {
+          expandDirectories: false,
           cwd: basePath,
           onlyFiles: true,
           ignore: ["**/node_modules/**"],
@@ -72,6 +75,7 @@ export async function migrateRtl(
 
     basePath = config.resolvedPaths.ui
     files = await fg("**/*.{js,ts,jsx,tsx}", {
+      expandDirectories: false,
       cwd: basePath,
       onlyFiles: true,
     })

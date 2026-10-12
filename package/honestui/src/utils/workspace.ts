@@ -8,7 +8,7 @@ import {
   type ImportResolutionEntry,
   type ImportResolutionMatch,
 } from "@/src/utils/import-matcher"
-import fg from "fast-glob"
+import { glob as fg } from "tinyglobby"
 import fs from "fs-extra"
 
 type WorkspacePackageInfo = {
@@ -137,6 +137,7 @@ async function loadWorkspacePackages(root: string) {
       path.posix.join(pattern.split(path.sep).join("/"), "package.json")
     ),
     {
+      expandDirectories: false,
       cwd: root,
       ignore: ["**/node_modules/**"],
     }

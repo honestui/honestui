@@ -6,7 +6,7 @@ import { highlighter } from "@/src/utils/highlighter"
 import { logger } from "@/src/utils/logger"
 import { spinner } from "@/src/utils/spinner"
 import { updateDependencies } from "@/src/utils/updaters/update-dependencies"
-import fg from "fast-glob"
+import { glob as fg } from "tinyglobby"
 import prompts from "prompts"
 
 function toPascalCase(str: string): string {
@@ -113,6 +113,8 @@ export async function migrateRadix(
 
     if (isGlob) {
       files = await fg(options.path, {
+        expandDirectories: false,
+        absolute: path.isAbsolute(options.path),
         cwd: basePath,
         onlyFiles: true,
         ignore: ["**/node_modules/**"],
@@ -128,6 +130,7 @@ export async function migrateRadix(
       if (stat.isDirectory()) {
         basePath = fullPath
         files = await fg("**/*.{js,ts,jsx,tsx}", {
+          expandDirectories: false,
           cwd: basePath,
           onlyFiles: true,
           ignore: ["**/node_modules/**"],
@@ -152,6 +155,7 @@ export async function migrateRadix(
 
     basePath = config.resolvedPaths.ui
     files = await fg("**/*.{js,ts,jsx,tsx}", {
+      expandDirectories: false,
       cwd: basePath,
       onlyFiles: true,
     })

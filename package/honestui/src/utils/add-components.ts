@@ -33,7 +33,7 @@ import {
 } from "@/src/utils/updaters/update-fonts"
 import { updateTailwindConfig } from "@/src/utils/updaters/update-tailwind-config"
 import { z } from "zod"
-import fg from "fast-glob"
+import { glob as fg } from "tinyglobby"
 
 export async function addComponents(
   components: string[],
@@ -223,6 +223,7 @@ async function getProjectMutationPaths(
   }
 
   const environmentFiles = await fg(["**/.env", "**/.env.*"], {
+    expandDirectories: false,
     absolute: true,
     cwd,
     dot: true,
@@ -248,6 +249,7 @@ async function getProjectMutationPaths(
 
     if (path.dirname(currentDirectory) === currentDirectory) break
     const isRepositoryRoot = await fg(".git", {
+      expandDirectories: false,
       cwd: currentDirectory,
       dot: true,
       onlyDirectories: true,

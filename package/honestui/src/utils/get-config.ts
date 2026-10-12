@@ -9,7 +9,7 @@ import { getProjectInfo } from "@/src/utils/get-project-info"
 import { highlighter } from "@/src/utils/highlighter"
 import { resolveImportWithMetadata } from "@/src/utils/resolve-import"
 import { cosmiconfig } from "cosmiconfig"
-import fg from "fast-glob"
+import { glob as fg } from "tinyglobby"
 import { loadConfig, type ConfigLoaderSuccessResult } from "tsconfig-paths"
 import { z } from "zod"
 
@@ -273,9 +273,10 @@ export async function findPackageRoot(cwd: string, resolvedPath: string) {
   const commonRoot = findCommonRoot(cwd, resolvedPath)
   const relativePath = path.relative(commonRoot, resolvedPath)
 
-  const packageRoots = await fg.glob("**/package.json", {
+  const packageRoots = await fg("**/package.json", {
+    expandDirectories: false,
     cwd: commonRoot,
-    deep: 3,
+    deep: 2,
     ignore: ["**/node_modules/**", "**/dist/**", "**/build/**", "**/public/**"],
   })
 
