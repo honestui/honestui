@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { promisify } from "node:util"
 import { fileURLToPath } from "node:url"
-import fg from "fast-glob"
+import { glob } from "tinyglobby"
 
 const execFileAsync = promisify(execFile)
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
@@ -55,7 +55,8 @@ for (const [catalogName, catalog] of [
   }
 }
 
-const catalogSources = await fg("src/assets/{icons,logos,vectors}/**/*.tsx", {
+const catalogSources = await glob("src/assets/{icons,logos,vectors}/**/*.tsx", {
+  expandDirectories: false,
   absolute: true,
   cwd: packageRoot,
 })
