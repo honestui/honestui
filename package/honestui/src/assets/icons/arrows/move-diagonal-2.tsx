@@ -15,6 +15,8 @@ export const MoveDiagonal2 = React.forwardRef<SVGSVGElement, MoveDiagonal2Props>
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
       {...(strokeWidth !== undefined ? { strokeWidth } : {})}

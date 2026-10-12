@@ -15,6 +15,8 @@ export const Grid2x2Check = React.forwardRef<SVGSVGElement, Grid2x2CheckProps>(
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
       {...(strokeWidth !== undefined ? { strokeWidth } : {})}
