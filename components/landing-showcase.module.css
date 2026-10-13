@@ -166,6 +166,10 @@
   background: var(--hui-color-background-success-primary);
 }
 
+.badgeAccent {
+  background: var(--hui-color-background-accent-primary);
+}
+
 .switch {
   width: 1.875rem;
   height: 1.125rem;
@@ -286,6 +290,104 @@
 .sizeOption[aria-pressed="true"] {
   border-color: var(--hui-color-border-accent-emphasis);
   background: var(--hui-color-background-accent-primary);
+}
+
+.announcement {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: var(--hui-space-3);
+  border: 0.5px solid var(--hui-color-border-base-tertiary);
+  border-radius: var(--hui-radius-2);
+  padding: var(--hui-space-2) var(--hui-space-4) var(--hui-space-2) var(--hui-space-2);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-small);
+  line-height: var(--hui-line-height-small);
+  outline: none;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.announcement strong {
+  color: var(--hui-color-foreground-base-primary);
+  font-weight: var(--hui-font-weight-medium);
+}
+
+.announcement svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+
+.announcement:hover {
+  border-color: var(--hui-color-border-base-primary);
+  background: var(--hui-color-background-base-secondary);
+}
+
+.announcement:hover svg {
+  transform: translateX(2px);
+}
+
+.announcement:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .announcement,
+  .announcement svg {
+    transition: none;
+  }
+}
+
+.command {
+  display: flex;
+  align-items: center;
+  gap: var(--hui-space-3);
+  border: 0.5px solid var(--hui-color-border-base-tertiary);
+  border-radius: var(--hui-radius-2);
+  background: var(--hui-color-background-base-secondary);
+  padding: var(--hui-space-2) var(--hui-space-2) var(--hui-space-2) var(--hui-space-4);
+  color: var(--hui-color-foreground-base-primary);
+  font-family: var(--hui-font-mono);
+  font-size: var(--hui-font-size-small);
+}
+
+.command code {
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.commandPrompt {
+  color: var(--hui-color-foreground-base-secondary);
+  user-select: none;
+}
+
+.commandCopy {
+  display: inline-flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--hui-radius-1);
+  color: var(--hui-color-foreground-base-secondary);
+  outline: none;
+}
+
+.commandCopy:hover {
+  background: var(--hui-color-background-neutral-secondary);
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.commandCopy:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+.commandCopy svg {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 .inlineLink {

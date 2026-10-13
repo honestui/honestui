@@ -296,18 +296,6 @@ test("public pages have no detectable WCAG A or AA violations", async ({
   }
 });
 
-test("landing showcase identifies its controls as previews", async ({
-  page,
-}) => {
-  await page.goto("/");
-
-  await expect(
-    page.getByText(
-      "These examples are interactive previews; they don’t submit data.",
-    ),
-  ).toBeVisible();
-});
-
 test("landing sign-up preview buttons fill their layout columns", async ({
   page,
 }) => {

@@ -5,6 +5,11 @@ export const SITE_TITLE = "Honest UI, Open Source React UI Components and Charts
 export const SITE_DESCRIPTION =
   "Open-source React UI components you can copy and adapt, plus composable charts, icons, and visual effects from the Honest UI package.";
 
+// Honest AI is a separate site built on Honest UI; link to it, never proxy it.
+export const HONEST_AI_URL = "https://ai.honestui.com";
+
+export const HONEST_AI_TAGLINE = "Components for agent and chat interfaces";
+
 export const SITE_KEYWORDS: string[] = [
   "honest ui",
   "react ui components",

@@ -1,7 +1,6 @@
 import Link from "next/link"
 import {
   ArrowRight,
-  Check,
   Copy,
   CreditCard,
   Heart,
@@ -15,6 +14,12 @@ import {
 import { GithubIcon } from "@/assets/icons"
 import { LandingAccountTabs } from "@/components/landing-account-tabs"
 import {
+  LandingChartCard,
+  LandingShaderCard,
+  LandingTickerCard,
+} from "@/components/landing-collection-previews"
+import { LandingInstallCommand } from "@/components/landing-install-command"
+import {
   Card,
   CardDescription,
   CardFooter,
@@ -23,6 +28,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { HONEST_AI_TAGLINE, HONEST_AI_URL } from "@/globals/constants/site"
 import styles from "@/components/landing-showcase.module.css"
 
 const previewCardClass = styles.previewCard
@@ -83,14 +89,16 @@ function PreviewBadge({
 }: {
   children: React.ReactNode
   size?: "default" | "small"
-  variant?: "secondary" | "success"
+  variant?: "accent" | "secondary" | "success"
 }) {
   return (
     <span
       className={cx(
         styles.badge,
         size === "small" && styles.badgeSmall,
-        variant === "secondary" ? styles.badgeSecondary : styles.badgeSuccess,
+        variant === "accent" && styles.badgeAccent,
+        variant === "secondary" && styles.badgeSecondary,
+        variant === "success" && styles.badgeSuccess,
       )}
     >
       {children}
@@ -124,7 +132,7 @@ function PreviewField({
   )
 }
 
-function SignUpCard({ idPrefix }: { idPrefix: string }) {
+function SignUpCard() {
   return (
     <Card className={previewCardClass}>
       <CardHeader>
@@ -150,13 +158,13 @@ function SignUpCard({ idPrefix }: { idPrefix: string }) {
           or continue with email
         </p>
         <PreviewField
-          id={`${idPrefix}-email`}
+          id="signup-email"
           label="Email"
           type="email"
           placeholder="you@example.com"
         />
         <PreviewField
-          id={`${idPrefix}-password`}
+          id="signup-password"
           label="Password"
           type="password"
           placeholder="Enter your password"
@@ -219,45 +227,6 @@ function NotificationsCard() {
         <PreviewButton fullWidth variant="outline">
           Save preferences
         </PreviewButton>
-      </CardFooter>
-    </Card>
-  )
-}
-
-function PricingCard() {
-  const features = [
-    "Unlimited projects",
-    "Source in your repository",
-    "Accessible primitives",
-    "Semantic design tokens",
-  ]
-
-  return (
-    <Card className={previewCardClass}>
-      <CardHeader>
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <CardTitle>
-            <h3>Starter plan</h3>
-          </CardTitle>
-          <PreviewBadge size="small">Example</PreviewBadge>
-        </div>
-        <CardDescription>A compact pricing-card composition.</CardDescription>
-      </CardHeader>
-      <CardPanel className="space-y-6">
-        <p className="text-5xl font-medium tracking-[-0.05em]">
-          $19<span className="ml-1 text-base tracking-normal text-[var(--hui-color-foreground-base-secondary)]">/month</span>
-        </p>
-        <ul className="space-y-3">
-          {features.map((feature) => (
-            <li key={feature} className="flex items-center gap-3 text-sm">
-              <Check aria-hidden="true" className="size-4 text-[var(--hui-color-foreground-accent-primary)]" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-      </CardPanel>
-      <CardFooter>
-        <PreviewButton fullWidth>Choose plan</PreviewButton>
       </CardFooter>
     </Card>
   )
@@ -453,6 +422,35 @@ function IssueCard() {
   )
 }
 
+const footerLinks = [
+  { label: "Comparisons", href: "/compare" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+]
+
+function LandingFooter({ className }: { className?: string }) {
+  return (
+    <p
+      className={cx(
+        "flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[var(--hui-color-foreground-base-secondary)]",
+        className,
+      )}
+    >
+      <span>MIT licensed</span>
+      {footerLinks.map((link) => (
+        <Link
+          key={link.href}
+          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:text-[var(--hui-color-foreground-base-primary)] hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
+          href={link.href}
+        >
+          {link.label}
+        </Link>
+      ))}
+    </p>
+  )
+}
+
 export function LandingShowcase() {
   return (
     <main
@@ -460,9 +458,19 @@ export function LandingShowcase() {
       tabIndex={-1}
     >
       <div className="lg:grid lg:h-[calc(100svh-4rem)] lg:grid-cols-[minmax(30rem,5fr)_6fr] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
-      <section className="flex flex-col px-5 py-16 sm:px-8 md:py-24 lg:min-h-0 lg:py-10">
+      <section className="flex flex-col px-5 py-16 sm:px-8 md:py-24 lg:min-h-0 lg:py-6">
         <div className="flex flex-1 items-center lg:justify-end">
           <div className="w-full max-w-[42rem] lg:max-w-[34rem]">
+            <a className={cx(styles.announcement, "mb-7")} href={HONEST_AI_URL}>
+              <PreviewBadge size="small" variant="accent">New</PreviewBadge>
+              <span>
+                <strong>Honest AI</strong>
+                <span className="sr-only">: </span>
+                <span aria-hidden="true"> · </span>
+                {HONEST_AI_TAGLINE}
+              </span>
+              <ArrowRight aria-hidden="true" />
+            </a>
             <p className="mb-4 text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
               Open-source React UI components and charts
             </p>
@@ -475,74 +483,32 @@ export function LandingShowcase() {
             <p className="mt-7 max-w-[38rem] text-lg leading-7 text-[var(--hui-color-foreground-base-secondary)]">
               Honest UI is a React component library with good defaults and no lock-in. Copy components into your project, change the source, and import charts, icons, and visual effects only when you need them.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link
-                className={previewButtonClass({ size: "large" })}
-                href="/docs/get-started"
-              >
-                Get started
-                <ArrowRight aria-hidden="true" />
-              </Link>
-              <Link
-                className={previewButtonClass({
-                  size: "large",
-                  variant: "outline",
-                })}
-                href="/docs/component-guide"
-              >
-                Browse components
-              </Link>
+            <div className="mt-9 flex w-fit max-w-full flex-col gap-3">
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  className={previewButtonClass({ size: "large" })}
+                  href="/docs/get-started"
+                >
+                  Get started
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+                <Link
+                  className={previewButtonClass({
+                    size: "large",
+                    variant: "outline",
+                  })}
+                  href="/docs/component-guide"
+                >
+                  Browse components
+                </Link>
+              </div>
+              <LandingInstallCommand />
             </div>
-            <nav
-              aria-label="Browse Honest UI collections"
-              className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--hui-color-foreground-base-secondary)]"
-            >
-              <span>Browse:</span>
-              <Link className={styles.inlineLink} href="/docs/component-guide">
-                UI components
-              </Link>
-              <Link className={styles.inlineLink} href="/docs/charts">
-                React charts
-              </Link>
-              <Link className={styles.inlineLink} href="/docs/icons">
-                Icons
-              </Link>
-              <Link className={styles.inlineLink} href="/docs/animated">
-                Animated components
-              </Link>
-            </nav>
-            <p className="mt-4 text-xs text-[var(--hui-color-foreground-base-secondary)]">
-              These examples are interactive previews; they don’t submit data.
-            </p>
           </div>
         </div>
-        <p className="mt-12 hidden flex-wrap items-center gap-2 text-sm text-[var(--hui-color-foreground-base-secondary)] lg:flex">
-          <span>MIT licensed. Source-first by design.</span>
-          <Link
-            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-            href="/compare"
-          >
-            Comparisons
-          </Link>
-          <Link
-            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-            href="/privacy"
-          >
-            Privacy
-          </Link>
-          <Link
-            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-            href="/about"
-          >
-            About
-          </Link>
-          <Link
-            className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-            href="/contact"
-          >
-            Contact
-          </Link>
-        </p>
+        <div className="mt-8 hidden lg:flex lg:justify-end">
+          <LandingFooter className="w-full max-w-[34rem]" />
+        </div>
       </section>
 
       <section
@@ -553,14 +519,15 @@ export function LandingShowcase() {
         <div className="w-[74.5rem] origin-top-left pb-10 lg:rotate-[4deg] lg:translate-x-20 lg:translate-y-10 xl:translate-x-28">
           <div className="grid grid-cols-3 gap-7">
             <div className="flex flex-col gap-7">
-              <SignUpCard idPrefix="signup-primary" />
+              <LandingChartCard cardClassName={previewCardClass} />
+              <SignUpCard />
               <NotificationsCard />
-              <PricingCard />
             </div>
             <div className="flex flex-col gap-7">
+              <LandingShaderCard cardClassName={previewCardClass} />
+              <LandingTickerCard cardClassName={previewCardClass} />
               <PaymentCard />
               <EcommerceCard />
-              <SignUpCard idPrefix="signup-secondary" />
             </div>
             <div className="flex flex-col gap-7">
               <SharingCard />
@@ -571,33 +538,7 @@ export function LandingShowcase() {
         </div>
       </section>
 
-      <p className="flex flex-wrap items-center gap-2 px-5 pb-8 text-sm text-[var(--hui-color-foreground-base-secondary)] sm:px-8 lg:hidden">
-        <span>MIT licensed. Source-first by design.</span>
-        <Link
-          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-          href="/compare"
-        >
-          Comparisons
-        </Link>
-        <Link
-          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-          href="/privacy"
-        >
-          Privacy
-        </Link>
-        <Link
-          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-          href="/about"
-        >
-          About
-        </Link>
-        <Link
-          className="rounded-[var(--hui-radius-1)] underline-offset-4 outline-none hover:underline focus-visible:[outline:var(--hui-focus-ring)]"
-          href="/contact"
-        >
-          Contact
-        </Link>
-      </p>
+      <LandingFooter className="px-5 pb-8 sm:px-8 lg:hidden" />
       </div>
 
       <section

@@ -4,11 +4,8 @@ import { GithubIcon } from "@/assets/icons";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import ThemeSwitcher from "@/components/docs/sidebar/theme-switcher";
 import { Button } from "@/components/ui/button";
-import { getGithubStars } from "@/hooks/use-github-stars";
 
-export async function SiteHeader() {
-  const stars = await getGithubStars();
-
+export function SiteHeader() {
   return (
     <header>
       <div className="mx-auto flex h-16 w-full max-w-[80rem] items-center justify-between px-5 sm:px-8">
@@ -22,11 +19,7 @@ export async function SiteHeader() {
 
         <nav aria-label="Site links" className="flex items-center gap-2">
           <Button
-            aria-label={
-              stars === null
-                ? "Honest UI on GitHub (opens in a new tab)"
-                : `Honest UI on GitHub, ${stars.toLocaleString("en-US")} stars (opens in a new tab)`
-            }
+            aria-label="Honest UI on GitHub (opens in a new tab)"
             className="hidden h-8 sm:inline-flex"
             render={
               <Link
@@ -39,11 +32,6 @@ export async function SiteHeader() {
             variant="link"
           >
             <GithubIcon aria-hidden="true" className="size-4" />
-            {stars !== null && (
-              <span aria-hidden="true" className="text-xs tabular-nums">
-                {stars.toLocaleString("en-US")}
-              </span>
-            )}
           </Button>
           <ThemeSwitcher />
           <Button

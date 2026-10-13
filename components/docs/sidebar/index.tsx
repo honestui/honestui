@@ -6,8 +6,11 @@ import {
 } from "@/components/ui/sidebar";
 import { SidebarSections } from "./sidebar-sections";
 import { BrandWordmark } from "@/components/brand-wordmark";
+import { Badge } from "@/components/ui/badge";
+import { HONEST_AI_TAGLINE, HONEST_AI_URL } from "@/globals/constants/site";
 import { source } from "@/lib/source";
 import { cn } from "@/lib/utils";
+import { ArrowUpRight } from "honestui/icons";
 import Link from "next/link";
 import * as React from "react";
 
@@ -46,6 +49,24 @@ export function DocsSidebar({
           <SidebarSections tree={source.pageTree} />
         </SidebarContent>
         <SidebarFooter className="gap-1 px-4 py-3 group-data-[collapsible=icon]:hidden">
+          <a
+            className="group/honest-ai border-border/60 hover:bg-sidebar-accent mb-3 flex flex-col gap-1 rounded-lg border p-3 outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            href={HONEST_AI_URL}
+          >
+            <span className="flex items-center gap-2 text-sm font-medium">
+              Honest AI
+              <Badge size="sm" variant="accent">
+                New
+              </Badge>
+              <ArrowUpRight
+                aria-hidden="true"
+                className="text-muted-foreground group-hover/honest-ai:text-foreground ml-auto size-3.5 transition-colors"
+              />
+            </span>
+            <span className="text-muted-foreground text-xs leading-snug">
+              {HONEST_AI_TAGLINE}
+            </span>
+          </a>
           <p className="mb-1 text-[11px] font-medium text-muted-foreground">Resources</p>
           <Link
             className="text-muted-foreground w-fit rounded-sm text-xs outline-none hover:text-foreground hover:underline hover:underline-offset-4 focus-visible:ring-[3px] focus-visible:ring-ring/50"
