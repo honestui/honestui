@@ -1,0 +1,143 @@
+:root {
+  /* Fonts */
+  --hui-font-love-sans: var(--font-love-sans), Arial, sans-serif;
+
+  /* Font Families */
+  --hui-font-title: var(--hui-font-love-sans);
+  --hui-font-body: var(--hui-font-love-sans);
+  --hui-font-mono:
+    var(--font-jetbrains-mono), "JetBrains Mono", Menlo, monospace;
+
+  /* Font Weights */
+  --hui-font-weight-regular: 400;
+  --hui-font-weight-medium: 500;
+  --hui-font-weight-semibold: 600;
+
+  /* Body Font Sizes */
+  --hui-font-size-micro: 10px;
+  --hui-font-size-mini: 11px;
+  --hui-font-size-small: 12px;
+  --hui-font-size-regular: 14px;
+  --hui-font-size-large: 16px;
+  --hui-font-size-base: var(--hui-font-size-regular);
+  /* Text inside a control: button labels, field values, tab labels. */
+  --hui-font-size-control: 13px;
+
+  /* Body Line Heights */
+  --hui-line-height-micro: 12px;
+  --hui-line-height-mini: 14px;
+  --hui-line-height-small: 16px;
+  --hui-line-height-regular: 20px;
+  --hui-line-height-large: 24px;
+  --hui-line-height-base: var(--hui-line-height-regular);
+  --hui-line-height-control: 16px;
+
+  /* Body letter spacing — tuned for LoveSans, which is spaced generously already.
+     Near-zero at small sizes, slightly negative as size grows. em-based so it
+     scales with font-size. */
+  --hui-letter-spacing-micro: 0.01em;
+  --hui-letter-spacing-mini: 0.005em;
+  --hui-letter-spacing-small: 0em;
+  --hui-letter-spacing-regular: -0.006em;
+  --hui-letter-spacing-large: -0.011em;
+  --hui-letter-spacing-base: var(--hui-letter-spacing-regular);
+  --hui-letter-spacing-control: -0.003em;
+
+  /* Title Font Sizes */
+  --hui-font-size-t1: 20px;
+  --hui-font-size-t2: 24px;
+  --hui-font-size-t3: 28px;
+  --hui-font-size-t4: 32px;
+
+  /* Title Line Heights */
+  --hui-line-height-t1: 28px;
+  --hui-line-height-t2: 32px;
+  --hui-line-height-t3: 36px;
+  --hui-line-height-t4: 40px;
+
+  /* Title Letter Spacing */
+  --hui-letter-spacing-t1: -0.01em;
+  --hui-letter-spacing-t2: -0.013em;
+  --hui-letter-spacing-t3: -0.016em;
+  --hui-letter-spacing-t4: -0.02em;
+
+  /* Mono Font Sizes */
+  --hui-font-size-mono-mini: 11px;
+  --hui-font-size-mono-small: 12px;
+  --hui-font-size-mono-regular: 14px;
+  --hui-font-size-mono-large: 16px;
+
+  /* Mono Line Heights */
+  --hui-line-height-mono-mini: 16px;
+  --hui-line-height-mono-small: 16px;
+  --hui-line-height-mono-regular: 20px;
+  --hui-line-height-mono-large: 24px;
+
+  /* Mono Letter Spacing */
+  --hui-letter-spacing-mono-mini: 0px;
+  --hui-letter-spacing-mono-small: 0px;
+  --hui-letter-spacing-mono-regular: 0px;
+  --hui-letter-spacing-mono-large: 0px;
+}
+
+[data-style="modern"] {
+  --hui-font-title: var(--hui-font-love-sans);
+  --hui-font-body: var(--hui-font-love-sans);
+  font-family: var(--hui-font-body);
+}
+
+[data-style="traditional"] {
+  --hui-font-title: var(--hui-font-love-sans);
+  --hui-font-body: var(--hui-font-love-sans);
+  font-family: var(--hui-font-body);
+}
+
+body {
+  /* Default Font */
+  font-family: var(--hui-font-body);
+
+  /* Font Smoothing */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Every used weight and italic style is supplied by the local LoveSans family. */
+  font-synthesis: none;
+}
+
+/* Heading defaults. The size, weight, and line height skip component parts
+   (anything with a data-slot, such as a dialog title rendered as an h2) and
+   everything inside a docs preview, so components and examples render at the
+   size their own classes ask for. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--hui-font-title);
+  text-wrap: balance;
+}
+h1:not([data-slot], [data-slot="preview"] *) {
+  font-size: var(--hui-font-size-t4);
+  font-weight: var(--hui-font-weight-medium);
+  line-height: var(--hui-line-height-t4);
+}
+h2:not([data-slot], [data-slot="preview"] *) {
+  font-size: var(--hui-font-size-t3);
+  font-weight: var(--hui-font-weight-medium);
+  line-height: var(--hui-line-height-t3);
+}
+h3:not([data-slot], [data-slot="preview"] *) {
+  font-size: var(--hui-font-size-t2);
+  font-weight: var(--hui-font-weight-medium);
+  line-height: var(--hui-line-height-t2);
+}
+h4:not([data-slot], [data-slot="preview"] *) {
+  font-size: var(--hui-font-size-t1);
+  font-weight: var(--hui-font-weight-medium);
+  line-height: var(--hui-line-height-t1);
+}
+
+/* CSS for the text cursor */
+input,
+textarea {
+  caret-color: var(--hui-color-border-accent-emphasis);
+}

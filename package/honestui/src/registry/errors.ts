@@ -1,5 +1,5 @@
 import { HONESTUI_URL } from "@/src/registry/constants"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 // Error codes for programmatic error handling
 export const RegistryErrorCode = {

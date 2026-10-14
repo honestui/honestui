@@ -7,6 +7,7 @@ export default tseslint.config(
       "dist/**",
       "tests/**",
       "src/assets/**",
+      "src/honest-ai/**",
       "src/**/*.test.ts",
       "src/**/*.test.tsx",
     ],

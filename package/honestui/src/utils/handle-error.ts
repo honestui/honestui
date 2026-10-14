@@ -5,7 +5,7 @@ import {
 } from "@/src/utils/get-package-manager"
 import { highlighter } from "@/src/utils/highlighter"
 import { logger } from "@/src/utils/logger"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 import packageJson from "../../package.json"
 

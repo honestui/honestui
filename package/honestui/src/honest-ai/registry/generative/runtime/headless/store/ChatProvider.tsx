@@ -1,0 +1,104 @@
+// Copyright (c) 2011-2024 Thesys Inc. MIT; see the generative source LICENSE.
+import { useEffect, useRef, useState, type FC } from "react";
+import { createDefaultInMemoryStorage } from "../adapters/_defaultStorage";
+import { useArtifactAutoOpenWatcher } from "./artifactAutoOpenWatcher";
+import { ArtifactCategoriesContext } from "./ArtifactCategoriesContext";
+import {
+  ArtifactRenderersContext,
+  buildArtifactRendererRegistry,
+} from "./ArtifactRenderersContext";
+import { ArtifactStorageContext } from "./ArtifactStorageContext";
+import { ChatContext } from "./ChatContext";
+import { createChatStore } from "./createChatStore";
+import { createDetailedViewStore } from "./createDetailedViewStore";
+import { createThreadContextStore } from "./createThreadContextStore";
+import { DetailedViewContext } from "./DetailedViewContext";
+import { ThreadContextContext } from "./ThreadContextContext";
+import type { ChatProviderProps } from "./types";
+
+const EMPTY_CATEGORIES: never[] = [];
+
+export const ChatProvider: FC<ChatProviderProps> = ({
+  children,
+  storage,
+  llm,
+  artifactRenderers,
+  artifactCategories,
+  artifactAutoOpen,
+}) => {
+  const [memoryStorage] = useState(createDefaultInMemoryStorage);
+  const [resolvedStorage] = useState(() => storage ?? memoryStorage);
+  const config = useRef({ storage: resolvedStorage, llm });
+  config.current.llm = llm;
+  const [chatStore] = useState(() => createChatStore(config));
+  const [detailedViewStore] = useState(() => createDetailedViewStore());
+  const [threadContextStore] = useState(() => createThreadContextStore());
+  const [artifactRendererRegistry] = useState(() =>
+    buildArtifactRendererRegistry(artifactRenderers ?? []),
+  );
+
+  // Dev-mode warning if artifactRenderers reference changes after mount —
+  // captured registry is mount-only, so changes are silently ignored otherwise.
+  const initialRenderersRef = useRef(artifactRenderers);
+  const hasWarnedRef = useRef(false);
+  useEffect(() => {
+    if (
+      typeof process !== "undefined" &&
+      process.env?.["NODE_ENV"] !== "production" &&
+      !hasWarnedRef.current &&
+      initialRenderersRef.current !== artifactRenderers
+    ) {
+      console.warn(
+        "[HonestAI] `artifactRenderers` prop changed after ChatProvider mount. " +
+          "The original array is kept; new renderers will not be registered. " +
+          "Memoize the array (useMemo) to avoid this warning.",
+      );
+      hasWarnedRef.current = true;
+    }
+  }, [artifactRenderers]);
+
+  // The default transport has no server persistence; retain each local thread's
+  // complete response while the provider is mounted.
+  useEffect(() => {
+    if (resolvedStorage !== memoryStorage) return;
+    return chatStore.subscribe((state) => {
+      if (state.selectedThreadId && !state.isLoadingMessages) memoryStorage.rememberMessages(state.selectedThreadId, state.messages);
+    });
+  }, [chatStore, memoryStorage, resolvedStorage]);
+
+  // Cross-store subscription: reset detailed-view + thread-context state when the active thread changes.
+  // useEffect (not inline) so the cleanup function unsubscribes on unmount.
+  useEffect(() => {
+    const unsubscribe = chatStore.subscribe(
+      (state) => state.selectedThreadId,
+      () => {
+        detailedViewStore.getState().reset();
+        threadContextStore.getState().reset();
+      },
+    );
+    return unsubscribe;
+  }, [chatStore, detailedViewStore, threadContextStore]);
+
+  useArtifactAutoOpenWatcher(
+    artifactAutoOpen ?? true,
+    chatStore,
+    threadContextStore,
+    detailedViewStore,
+  );
+
+  return (
+    <ChatContext.Provider value={chatStore}>
+      <DetailedViewContext.Provider value={detailedViewStore}>
+        <ThreadContextContext.Provider value={threadContextStore}>
+          <ArtifactRenderersContext.Provider value={artifactRendererRegistry}>
+            <ArtifactStorageContext.Provider value={resolvedStorage.artifact ?? null}>
+              <ArtifactCategoriesContext.Provider value={artifactCategories ?? EMPTY_CATEGORIES}>
+                {children}
+              </ArtifactCategoriesContext.Provider>
+            </ArtifactStorageContext.Provider>
+          </ArtifactRenderersContext.Provider>
+        </ThreadContextContext.Provider>
+      </DetailedViewContext.Provider>
+    </ChatContext.Provider>
+  );
+};

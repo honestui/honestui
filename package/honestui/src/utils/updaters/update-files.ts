@@ -36,7 +36,7 @@ import { transformTwPrefixes } from "@/src/utils/transformers/transform-tw-prefi
 import prompts from "prompts"
 import { Project, ScriptKind } from "ts-morph"
 import { loadConfig, type ConfigLoaderSuccessResult } from "tsconfig-paths"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 const CODE_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"]
 const NON_ALIAS_RESOLVED_PATH_KEYS = new Set(["tailwindConfig", "tailwindCss"])

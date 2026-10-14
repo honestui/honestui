@@ -37,7 +37,7 @@ import { logger } from "@/src/utils/logger"
 import { Command } from "commander"
 import fs from "fs-extra"
 import prompts from "prompts"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export const applyOptionsSchema = z.object({
   cwd: z.string(),

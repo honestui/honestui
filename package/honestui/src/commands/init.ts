@@ -61,7 +61,7 @@ import { Command } from "commander"
 import deepmerge from "deepmerge"
 import fsExtra from "fs-extra"
 import prompts from "prompts"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export const initOptionsSchema = z.object({
   cwd: z.string(),

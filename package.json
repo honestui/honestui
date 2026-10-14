@@ -1,7 +1,7 @@
 {
   "name": "honestui-site",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.3",
   "description": "Accessible React components, animated interactions, shaders, charts, and icons from Honest UI.",
   "license": "MIT",
   "homepage": "https://honestui.com",

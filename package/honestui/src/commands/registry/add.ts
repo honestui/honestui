@@ -8,7 +8,7 @@ import { spinner } from "@/src/utils/spinner"
 import { Command } from "commander"
 import fs from "fs-extra"
 import prompts from "prompts"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 const addOptionsSchema = z.object({
   cwd: z.string(),

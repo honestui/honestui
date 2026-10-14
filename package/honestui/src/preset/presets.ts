@@ -9,7 +9,7 @@ import { logger } from "@/src/utils/logger"
 import { ensureRegistriesInConfig } from "@/src/utils/registries"
 import open from "open"
 import prompts from "prompts"
-import { type z } from "zod"
+import { type z } from "zod/v3"
 
 import { DEFAULT_PRESETS } from "./defaults"
 

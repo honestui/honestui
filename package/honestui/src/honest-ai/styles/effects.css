@@ -1,0 +1,122 @@
+:root,
+[data-theme="light"] {
+  /* Shadows */
+  /* Example usage: box-shadow: var(--hui-shadow-feather); */
+  --hui-shadow-feather:
+    0px 1px 1px 0px oklch(0 0 0 / 0.06), 0px 4px 4px -1px oklch(0 0 0 / 0.02); /* sm */
+  --hui-shadow-soft:
+    0px 2px 4px 0px oklch(0 0 0 / 0.04), 0px 1px 2px 0px oklch(0 0 0 / 0.04); /* md */
+  --hui-shadow-lifted:
+    0px 1px 1px 0px oklch(0 0 0 / 0.07), 0px 2px 5px 0px oklch(0 0 0 / 0.07), 0px 3px 8px 0px oklch(
+      0 0 0 / 0.07
+    ); /* lg */
+  --hui-shadow-floating:
+    0px 1px 1px 0px oklch(0 0 0 / 0.04), 0px 2px 8px 0px oklch(0 0 0 / 0.04), 0px 3px 17px 0px oklch(
+      0 0 0 / 0.04
+    ), 0px 4px 30px 0px oklch(0 0 0 / 0.13); /* xl */
+  --hui-shadow-inset: 0px 1px 1px 0px oklch(0 0 0 / 0.04) inset;
+  /* Key: the hard bottom edge under a raised control. */
+  --hui-shadow-key:
+    0px 1px 0px 0px oklch(0 0 0 / 0.14), 0px 2px 3px -1px oklch(0 0 0 / 0.1);
+}
+
+:root {
+  /* Transitions */
+  --hui-transition-interactive:
+    background-color var(--hui-duration-normal) var(--hui-ease-out),
+    border-color var(--hui-duration-normal) var(--hui-ease-out),
+    color var(--hui-duration-normal) var(--hui-ease-out),
+    box-shadow var(--hui-duration-normal) var(--hui-ease-out),
+    opacity var(--hui-duration-normal) var(--hui-ease-out);
+  /* Pressed states: acknowledge pointer-down near-instantly. Apply on
+       `:active`; releasing falls back to --hui-transition-interactive (200ms). */
+  --hui-transition-pressed:
+    background-color var(--hui-duration-press) var(--hui-ease-out),
+    border-color var(--hui-duration-press) var(--hui-ease-out),
+    color var(--hui-duration-press) var(--hui-ease-out),
+    box-shadow var(--hui-duration-press) var(--hui-ease-out),
+    opacity var(--hui-duration-press) var(--hui-ease-out),
+    transform var(--hui-duration-press) var(--hui-ease-out);
+
+  /* Pressed scale: a control shrinks slightly under the finger. Smaller
+       targets need a larger delta to read, so there are two steps. */
+  --hui-scale-pressed: 0.98; /* buttons, tabs, larger controls */
+  --hui-scale-pressed-strong: 0.94; /* checkbox, radio, chip dismiss */
+
+  /* Focus ring: keyboard-focus indicator. The shadow variant is for
+       chromeless text-entry surfaces that have no border to ring. Accent by
+       default; a colored control (danger, success, …) overrides
+       `outline-color` in its own :focus-visible rule to match. */
+  --hui-focus-ring: 2px solid var(--hui-color-border-accent-emphasis);
+  /* Box-shadow form of the ring above, for borderless inputs with no border to
+     outline. Kept 2px + accent-emphasis so it matches the outline ring. */
+  --hui-focus-ring-shadow: 0 0 0 2px var(--hui-color-border-accent-emphasis);
+
+  /* Ring offset: rings sit flush (0) by default. A control adds one of these
+       in its own :focus-visible rule when it needs to — accent-filled controls
+       push the ring out so it clears the same-colour fill; controls in a
+       clipped container pull it in so the ring isn't cut off. The -border
+       variant pulls in just 1px so the ring hugs a bordered control instead
+       of leaving a gap that reads as a double line. */
+  --hui-focus-ring-offset-accent: 2px;
+  --hui-focus-ring-offset-inset: -2px;
+  --hui-focus-ring-offset-inset-border: -1px;
+
+  /* Motion */
+  /* Example usage: transition: opacity var(--hui-duration-normal) var(--hui-ease-out); */
+  /* entrances, exits, value changes */
+  --hui-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* elements moving on screen */
+  --hui-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  /* iOS-like drawer slide */
+  --hui-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --hui-duration-press: 100ms; /* pressed/active feedback */
+  --hui-duration-fast: 150ms; /* tooltips, menus, small popups */
+  --hui-duration-normal: 200ms; /* popovers, dialogs, switches */
+  --hui-duration-moderate: 250ms; /* tabs indicator, preview card, tour steps */
+  --hui-duration-slow: 400ms; /* toasts */
+  --hui-duration-drawer: 450ms; /* drawer */
+
+  /* Blurs */
+  /* Example usage: backdrop-filter:: var(--hui-blur-sm); */
+  --hui-blur-sm: blur(0.5px);
+  --hui-blur-md: blur(1px);
+  --hui-blur-lg: blur(2px);
+  --hui-blur-xl: blur(4px);
+}
+
+[data-theme="dark"] {
+  --hui-shadow-feather:
+    0px 1px 1px 0px oklch(0 0 0 / 0.3), 0px 4px 4px -1px oklch(0 0 0 / 0.25);
+  --hui-shadow-soft:
+    0px 2px 4px 0px oklch(0 0 0 / 0.3), 0px 1px 2px 0px oklch(0 0 0 / 0.25);
+  --hui-shadow-lifted:
+    0px 1px 1px 0px oklch(0 0 0 / 0.35), 0px 2px 5px 0px oklch(0 0 0 / 0.35), 0px 3px 8px 0px oklch(
+      0 0 0 / 0.35
+    );
+  --hui-shadow-floating:
+    0px 1px 1px 0px oklch(0 0 0 / 0.3), 0px 2px 8px 0px oklch(0 0 0 / 0.3), 0px 3px 17px 0px oklch(
+      0 0 0 / 0.3
+    ), 0px 4px 30px 0px oklch(0 0 0 / 0.4);
+  --hui-shadow-inset: 0px 1px 1px 0px oklch(0 0 0 / 0.25) inset;
+  --hui-shadow-key:
+    0px 1px 0px 0px oklch(0 0 0 / 0.5), 0px 2px 3px -1px oklch(0 0 0 / 0.4);
+}
+
+@keyframes progress-indeterminate-sweep {
+  from {
+    transform: translateX(-45%) scaleX(0.4);
+  }
+  to {
+    transform: translateX(105%) scaleX(0.4);
+  }
+}
+
+@keyframes progress-indeterminate-rotate {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
+}

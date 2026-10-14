@@ -39,6 +39,44 @@ assert.deepEqual(Object.keys(shaders).sort(), [
   "LightRays",
 ])
 
+const [ai, promptBar, prose, syntax, syntaxReact, genui, genuiChat, genuiServer] = await Promise.all([
+  import("honestui/ai"), import("honestui/ai/prompt-bar"), import("honestui/prose"),
+  import("honestui/syntax"), import("honestui/syntax/react"), import("honestui/genui"),
+  import("honestui/genui/chat"), import("honestui/genui/server"),
+])
+assert.equal(typeof ai.PromptBar, "function")
+assert.equal(typeof promptBar.PromptBar, "function")
+assert.equal(typeof prose.repairMarkdown, "function")
+assert.equal(typeof prose.proseTailwind, "string")
+assert.equal(typeof syntaxReact.SyntaxCode, "function")
+assert.equal(typeof genui.Renderer, "function")
+assert.ok(genui.honestLibrary)
+assert.equal(typeof genuiChat.GenerativeChat, "function")
+assert.equal(typeof genuiServer.createParser, "function")
+assert.ok(genuiServer.honestChatSpec.schema)
+const highlighter = syntax.createHighlighter()
+try {
+  const result = await highlighter.highlight("const answer = 42", { language: "javascript" })
+  assert.ok(result.lines.flat().some(token => token.role !== "plain"))
+} finally { highlighter.dispose() }
+for (const entry of ["ai.js", "genui.js", "genui-chat.js", "syntax-react.js", "ai/prompt-bar.js"]) {
+  assert.match(await readFile(path.join(packageRoot, "dist", entry), "utf8"), /^"use client";/)
+}
+for (const entry of ["syntax.js", "genui-server.js", "genui-server-openai.js", "genui-server-vercel.js"]) {
+  assert.doesNotMatch(await readFile(path.join(packageRoot, "dist", entry), "utf8"), /^"use client";/)
+}
+for (const stylesheet of ["ai", "prose", "syntax", "theme"]) {
+  assert.ok((await readFile(path.join(packageRoot, "dist", `${stylesheet}.css`), "utf8")).length > 100)
+}
+const { mathPlugins } = await import("honestui/ai/markdown-math")
+const { createElement } = await import("react")
+const { renderToStaticMarkup } = await import("react-dom/server")
+const mathMarkup = renderToStaticMarkup(createElement(ai.Markdown, { ...mathPlugins, children: "$$x^2 + y^2 = z^2$$" }))
+assert.match(mathMarkup, /class="katex"/)
+assert.doesNotMatch(mathMarkup, /katex-error/)
+const [bundledPrompt] = await root.getRegistryItems(["prompt-bar"])
+assert.equal(bundledPrompt.files[0].target, "components/ai/prompt-bar.tsx")
+
 for (const [catalogName, catalog] of [
   ["icons", icons.allIcons],
   ["logos", logos.allLogos],

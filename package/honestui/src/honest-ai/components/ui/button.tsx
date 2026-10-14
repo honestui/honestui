@@ -1,0 +1,99 @@
+import * as React from "react"
+import { mergeProps } from "@base-ui-components/react/merge-props"
+import { useRender } from "@base-ui-components/react/use-render"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "../../lib/utils.js"
+
+const buttonVariants = cva(
+  "relative inline-flex w-fit shrink-0 cursor-pointer items-center justify-center gap-[var(--hui-space-3)] whitespace-nowrap rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-density-control-padding-inline,var(--hui-space-4))] py-[var(--hui-density-control-padding-block,var(--hui-space-3))] [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] motion-safe:active:[transition:var(--hui-transition-pressed)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)] not-disabled:active:scale-[var(--hui-scale-pressed)] disabled:pointer-events-auto disabled:cursor-not-allowed disabled:text-[var(--hui-color-foreground-base-tertiary)] disabled:shadow-none pointer-coarse:after:pointer-events-none pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-[var(--hui-color-background-accent-emphasis)] text-[var(--hui-color-foreground-accent-emphasis)] shadow-[var(--hui-shadow-key,var(--hui-shadow-feather))] not-disabled:hover:bg-[var(--hui-color-background-accent-emphasis-hover)] not-disabled:active:bg-[var(--hui-color-background-accent-emphasis-hover)] disabled:bg-[var(--hui-color-background-neutral-secondary)]",
+        outline:
+          "border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] not-disabled:hover:border-[var(--hui-color-border-base-focus)] not-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] not-disabled:active:bg-[var(--hui-color-background-base-primary-hover)] disabled:border-[var(--hui-color-border-base-primary)] disabled:bg-transparent",
+        secondary:
+          "bg-[var(--hui-color-background-neutral-secondary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-key,var(--hui-shadow-feather))] not-disabled:hover:bg-[var(--hui-color-background-neutral-secondary-hover)] not-disabled:active:bg-[var(--hui-color-background-neutral-secondary-hover)]",
+        // The danger fill is darkened 10% so white 13px label text reaches 4.5:1 (it is 3.9:1 on the raw token).
+        destructive:
+          "bg-[color-mix(in_oklch,var(--hui-color-background-danger-emphasis)_90%,black)] text-[var(--hui-color-foreground-danger-emphasis)] shadow-[var(--hui-shadow-key,var(--hui-shadow-feather))] not-disabled:hover:bg-[color-mix(in_oklch,var(--hui-color-background-danger-emphasis)_80%,black)] not-disabled:active:bg-[color-mix(in_oklch,var(--hui-color-background-danger-emphasis)_80%,black)] focus-visible:[outline-color:var(--hui-color-border-danger-emphasis)] disabled:bg-[var(--hui-color-background-neutral-secondary)]",
+        "destructive-outline":
+          "border-[0.5px] border-[var(--hui-color-border-danger-emphasis)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-danger-primary)] shadow-[var(--hui-shadow-feather)] not-disabled:hover:border-[var(--hui-color-border-danger-emphasis-hover)] not-disabled:hover:bg-[var(--hui-color-background-danger-primary)] not-disabled:active:border-[var(--hui-color-border-danger-emphasis-hover)] not-disabled:active:bg-[var(--hui-color-background-danger-primary)] focus-visible:[outline-color:var(--hui-color-border-danger-emphasis)] disabled:border-[var(--hui-color-border-base-primary)] disabled:bg-transparent",
+        ghost:
+          "border border-[var(--hui-color-border-base-primary)] text-[var(--hui-color-foreground-base-primary)] not-disabled:hover:border-[var(--hui-color-border-base-secondary)] not-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] not-disabled:active:bg-[var(--hui-color-background-neutral-secondary)]",
+        link: "text-[var(--hui-color-foreground-base-primary)] not-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] not-disabled:active:bg-[var(--hui-color-background-neutral-secondary)]",
+      },
+      size: {
+        default:
+          "min-h-[var(--hui-density-control-height,0px)] px-[var(--hui-density-control-padding-inline,var(--hui-space-4))] py-[var(--hui-density-control-padding-block,var(--hui-space-3))] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]",
+        xs: "gap-[var(--hui-space-2)] rounded-[var(--hui-radius-1)] px-[var(--hui-space-2)] py-[var(--hui-space-1)] [font-size:var(--hui-font-size-micro)] [letter-spacing:var(--hui-letter-spacing-micro)] [line-height:var(--hui-line-height-micro)] [&_svg:not([class*='size-'])]:size-3",
+        sm: "gap-[var(--hui-space-2)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
+        lg: "px-[var(--hui-space-5)] py-[var(--hui-space-3)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
+        xl: "px-[var(--hui-space-6)] py-[var(--hui-space-4)] [font-size:var(--hui-font-size-large)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)] [&_svg:not([class*='size-'])]:size-4.5",
+        icon: "size-[var(--hui-density-control-height,2rem)] p-0",
+        "icon-sm": "size-6 p-0",
+        "icon-lg": "size-9 p-0",
+      },
+      appearance: {
+        flat: null,
+        glossy:
+          "bg-[linear-gradient(180deg,rgba(255,255,255,.46)_0%,rgba(255,255,255,.12)_38%,transparent_39%),linear-gradient(180deg,rgba(255,255,255,.12)_0%,transparent_54%,rgba(0,0,0,.18)_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.5),inset_0_0_5px_rgba(255,255,255,.18),inset_0_-18px_15px_-14px_rgba(0,0,0,.35),0_0_0_.75px_rgba(0,0,0,.24),0_3px_8px_rgba(0,0,0,.24)]! [text-shadow:0_1px_2px_rgba(0,0,0,.35)] transition-[filter,box-shadow] duration-200 hover:brightness-[1.06]",
+        glow:
+          "bg-[linear-gradient(180deg,rgba(0,0,0,.18)_0%,rgba(255,255,255,.08)_100%)] shadow-[inset_0_-1.5px_2px_rgba(255,255,255,.45),inset_0_0_12px_rgba(255,255,255,.22),inset_0_0_8px_rgba(255,255,255,.18),0_2px_6px_rgba(0,0,0,.28)]! [text-shadow:0_1px_2px_rgba(0,0,0,.4)] transition-[filter,box-shadow] duration-200 hover:brightness-[1.12]",
+        bevel:
+          "bg-[linear-gradient(180deg,rgba(255,255,255,.2)_0%,transparent_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,.4),0_1px_0_rgba(0,0,0,.28),0_2px_0_rgba(0,0,0,.28),0_3px_0_rgba(0,0,0,.38),0_4px_0_rgba(0,0,0,.38),0_6px_8px_rgba(0,0,0,.3)]! [text-shadow:0_1px_0_rgba(0,0,0,.4)] transition-[transform,box-shadow] duration-120 hover:-translate-y-px [&:is(:active,[data-pressed])]:translate-y-1 [&:is(:active,[data-pressed])]:shadow-[inset_0_1px_0_rgba(255,255,255,.35),0_1px_0_rgba(0,0,0,.38),0_2px_4px_rgba(0,0,0,.28)]!",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+      appearance: "flat",
+    },
+  }
+)
+
+interface ButtonProps extends useRender.ComponentProps<"button"> {
+  variant?: VariantProps<typeof buttonVariants>["variant"]
+  size?: VariantProps<typeof buttonVariants>["size"]
+  appearance?: VariantProps<typeof buttonVariants>["appearance"]
+  asChild?: boolean
+}
+
+function Button({
+  className,
+  variant,
+  size,
+  appearance,
+  render,
+  asChild = false,
+  children,
+  ...props
+}: ButtonProps) {
+  const renderValue = asChild
+    ? (React.Children.only(children) as React.ReactElement<
+        Record<string, unknown>
+      >)
+    : render
+
+  const typeValue: React.ButtonHTMLAttributes<HTMLButtonElement>["type"] =
+    renderValue ? undefined : "button"
+
+  const defaultProps = {
+    "data-slot": "button",
+    className: cn(buttonVariants({ variant, size, appearance, className })),
+    type: typeValue,
+  }
+
+  return useRender({
+    defaultTagName: "button",
+    render: renderValue,
+    props: mergeProps<"button">(
+      defaultProps,
+      asChild ? props : { ...props, children }
+    ),
+  })
+}
+
+export { Button, buttonVariants }

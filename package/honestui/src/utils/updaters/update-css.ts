@@ -21,7 +21,7 @@ import Declaration from "postcss/lib/declaration"
 import Root from "postcss/lib/root"
 import Rule from "postcss/lib/rule"
 import { twMerge } from "tailwind-merge"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export async function updateCss(
   css: z.infer<typeof registryItemCssSchema> | undefined,

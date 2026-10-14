@@ -12,7 +12,7 @@ import {
 import { glob as fg } from "tinyglobby"
 import fs from "fs-extra"
 import { loadConfig } from "tsconfig-paths"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export type TailwindVersion = "v3" | "v4" | null
 

@@ -15,7 +15,7 @@ import {
   SyntaxKind,
   VariableDeclarationKind,
 } from "ts-morph"
-import z from "zod"
+import z from "zod/v3"
 
 const ROOT_FONT_VARIABLES = new Set([
   "--font-sans",

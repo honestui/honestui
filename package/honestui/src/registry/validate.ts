@@ -6,7 +6,7 @@ import {
   registryItemTypeSchema,
   type RegistryItem,
 } from "@/src/schema"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 type RegistryChunk = {
   $schema?: string

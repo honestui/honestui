@@ -1,7 +1,14 @@
 # Changelog
 
-Changes to the public honestui package are recorded here. Version headings
-follow semantic versioning and link to the corresponding GitHub release.
+Changes to the `honestui` npm package. Entries marked unreleased describe work prepared for the next publication.
+
+## 0.2.3
+
+- Install AI components, prose, syntax, and generative UI by name: `honestui add prompt-bar`, `honestui add prose-syntax-react`, and `honestui add generative-chat`. The CLI ships the AI source and dependency metadata; core UI dependencies still come from the Honest UI registry. AI items also appear in first-party registry search.
+- Import AI components from `honestui/ai` or `honestui/ai/<component-name>`. Add `honestui/prose` utilities and `honestui/prose.css`, syntax highlighting with React, browser, CodeMirror, and theme entry points, and the browser worker with lazy grammar chunks.
+- Add `honestui/genui` for the renderer and standard catalog, `/react` for custom libraries, `/chat` for conversation state and the chat shell, and `/server` for parsing, prompts, specs, and validation. OpenAI, Vercel, and LangGraph server adapters have separate entry points. Apps supply model transports, repair callbacks, and map services.
+- Include `honestui/ai.css` for compiled component utilities and `honestui/theme.css` for standalone theme tokens. Vite syntax consumers need `worker: { format: "es" }`. Generative schemas use Zod v4; existing CLI schemas keep Zod v3 behavior. Provider, editor, math, and Eve SDKs remain optional peers; optional math is verified with KaTeX 0.18.2.
+- Build copied items and package exports from the same Honest AI source snapshot. Add source sync, snapshot checks, packed-install TypeScript checks, browser flow verification, and import-boundary checks. Retain the source licenses.
 
 ## 0.2.2 - 2026-10-13
 

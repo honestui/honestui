@@ -6,7 +6,7 @@ import { highlighter } from "@/src/utils/highlighter"
 import { logger } from "@/src/utils/logger"
 import fs from "fs-extra"
 import prompts from "prompts"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export async function createProject(
   options: Pick<

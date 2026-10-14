@@ -17,7 +17,7 @@ import {
 import { registryItemSchema } from "@/src/schema"
 import { HttpsProxyAgent } from "https-proxy-agent"
 import fetch, { Headers } from "node-fetch"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 const DEFAULT_TIMEOUT_MS = 30_000
 

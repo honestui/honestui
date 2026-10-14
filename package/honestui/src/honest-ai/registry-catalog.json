@@ -1,0 +1,182 @@
+[
+  {
+    "name": "agent-screen",
+    "type": "registry:component"
+  },
+  {
+    "name": "approval-card",
+    "type": "registry:component"
+  },
+  {
+    "name": "artifact-panel",
+    "type": "registry:component"
+  },
+  {
+    "name": "chat-thread",
+    "type": "registry:component"
+  },
+  {
+    "name": "code-view",
+    "type": "registry:component"
+  },
+  {
+    "name": "context-cards",
+    "type": "registry:component"
+  },
+  {
+    "name": "context-meter",
+    "type": "registry:component"
+  },
+  {
+    "name": "diff-table",
+    "type": "registry:component"
+  },
+  {
+    "name": "filter-table",
+    "type": "registry:component"
+  },
+  {
+    "name": "fine-tune-card",
+    "type": "registry:component"
+  },
+  {
+    "name": "flowchart",
+    "type": "registry:component"
+  },
+  {
+    "name": "generative-chat",
+    "type": "registry:lib"
+  },
+  {
+    "name": "generative-server",
+    "type": "registry:lib"
+  },
+  {
+    "name": "generative-ui",
+    "type": "registry:lib"
+  },
+  {
+    "name": "insight-cards",
+    "type": "registry:component"
+  },
+  {
+    "name": "loading-state",
+    "type": "registry:component"
+  },
+  {
+    "name": "markdown",
+    "type": "registry:component"
+  },
+  {
+    "name": "markdown-math",
+    "type": "registry:lib"
+  },
+  {
+    "name": "markdown-shiki",
+    "type": "registry:lib"
+  },
+  {
+    "name": "message-scroller",
+    "type": "registry:component"
+  },
+  {
+    "name": "prompt-bar",
+    "type": "registry:component"
+  },
+  {
+    "name": "prose",
+    "type": "registry:file"
+  },
+  {
+    "name": "prose-code-block",
+    "type": "registry:component"
+  },
+  {
+    "name": "prose-syntax",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-browser",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-client",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-codemirror",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-palettes",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-react",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-shared",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-tailwind",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-theme",
+    "type": "registry:file"
+  },
+  {
+    "name": "prose-syntax-themes",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-syntax-worker",
+    "type": "registry:lib"
+  },
+  {
+    "name": "prose-tailwind",
+    "type": "registry:lib"
+  },
+  {
+    "name": "recommendation-card",
+    "type": "registry:component"
+  },
+  {
+    "name": "records-table",
+    "type": "registry:component"
+  },
+  {
+    "name": "repair-markdown",
+    "type": "registry:lib"
+  },
+  {
+    "name": "search-list",
+    "type": "registry:component"
+  },
+  {
+    "name": "selection-actions",
+    "type": "registry:component"
+  },
+  {
+    "name": "sidebar-nav",
+    "type": "registry:component"
+  },
+  {
+    "name": "streaming-text",
+    "type": "registry:component"
+  },
+  {
+    "name": "task-rows",
+    "type": "registry:component"
+  },
+  {
+    "name": "thinking-state",
+    "type": "registry:component"
+  },
+  {
+    "name": "tool-chips",
+    "type": "registry:component"
+  }
+]

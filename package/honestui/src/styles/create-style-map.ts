@@ -3,7 +3,7 @@ import selectorParser, {
   type ClassName,
   type Selector as SelectorNodeRoot,
 } from "postcss-selector-parser"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 const CN_PREFIX = "cn-"
 

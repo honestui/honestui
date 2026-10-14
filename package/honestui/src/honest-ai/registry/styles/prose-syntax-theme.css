@@ -1,0 +1,187 @@
+/* Honest Prose Syntax. Override public variables on the code surface or ancestors. */
+.honest-syntax {
+  --_syntax-plain: var(--_syntax-palette-plain-light, #243043);
+  --_syntax-comment: var(--_syntax-palette-comment-light, #566171);
+  --_syntax-keyword: var(--_syntax-palette-keyword-light, #6941a5);
+  --_syntax-string: var(--_syntax-palette-string-light, #166553);
+  --_syntax-constant: var(--_syntax-palette-constant-light, #895019);
+  --_syntax-function: var(--_syntax-palette-function-light, #285d98);
+  --_syntax-type: var(--_syntax-palette-type-light, #76508d);
+  --_syntax-property: var(--_syntax-palette-property-light, #385b72);
+  --_syntax-tag: var(--_syntax-palette-tag-light, #6941a5);
+  --_syntax-punctuation: var(--_syntax-palette-punctuation-light, #4d5969);
+  --_syntax-variable: var(--_syntax-palette-variable-light, #243043);
+  --_syntax-operator: var(--_syntax-palette-operator-light, #6941a5);
+  --_syntax-invalid: var(--_syntax-palette-invalid-light, #b42318);
+  --_syntax-parameter: var(--_syntax-palette-parameter-light, #9b3a5a);
+  --_syntax-background: #fcfcfc;
+  --_syntax-highlight: #f0f0f0;
+  --_syntax-frame: #f0f0f0;
+  --_syntax-rule: #e8e8e8;
+  color: var(--prose-syntax-plain, var(--_syntax-plain));
+  background: var(--prose-syntax-background, var(--_syntax-background));
+  font-family: var(--prose-font-mono, var(--hui-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace));
+  line-height: var(--prose-syntax-leading, 1.65);
+  tab-size: 2;
+  overflow-x: auto;
+  /* Italic marks parameters and emphasis, so slant the font when it has no italic face. */
+  font-synthesis-style: auto;
+}
+/* The docs code block frame: a shell around the panel with a hairline rule. Surfaces use the Honest UI gray scale. */
+.honest-syntax:where(pre) {
+  padding: var(--prose-syntax-padding, 0.875rem 1rem);
+  border: 0.25rem solid var(--prose-syntax-frame, var(--_syntax-frame));
+  border-radius: calc(var(--prose-radius, 0.25rem) + 0.25rem);
+  box-shadow: inset 0 0 0 0.5px var(--prose-syntax-rule, var(--_syntax-rule));
+  font-size: var(--prose-syntax-size, 0.8125rem);
+}
+.dark .honest-syntax, .honest-syntax[data-syntax-theme="dark"] {
+  --_syntax-plain: var(--_syntax-palette-plain-dark, #dce3ee);
+  --_syntax-comment: var(--_syntax-palette-comment-dark, #a4afbf);
+  --_syntax-keyword: var(--_syntax-palette-keyword-dark, #c4abed);
+  --_syntax-string: var(--_syntax-palette-string-dark, #92cbb7);
+  --_syntax-constant: var(--_syntax-palette-constant-dark, #e2ba8b);
+  --_syntax-function: var(--_syntax-palette-function-dark, #9bbfea);
+  --_syntax-type: var(--_syntax-palette-type-dark, #d0b4df);
+  --_syntax-property: var(--_syntax-palette-property-dark, #a8c5d8);
+  --_syntax-tag: var(--_syntax-palette-tag-dark, #c4abed);
+  --_syntax-punctuation: var(--_syntax-palette-punctuation-dark, #b7c1d0);
+  --_syntax-variable: var(--_syntax-palette-variable-dark, #dce3ee);
+  --_syntax-operator: var(--_syntax-palette-operator-dark, #c4abed);
+  --_syntax-invalid: var(--_syntax-palette-invalid-dark, #f97066);
+  --_syntax-parameter: var(--_syntax-palette-parameter-dark, #eaa5bd);
+  --_syntax-background: #111111;
+  --_syntax-highlight: #222222;
+  --_syntax-frame: #222222;
+  --_syntax-rule: #2a2a2a;
+}
+.honest-syntax[data-syntax-theme="light"] {
+  --_syntax-plain: var(--_syntax-palette-plain-light, #243043);
+  --_syntax-comment: var(--_syntax-palette-comment-light, #566171);
+  --_syntax-keyword: var(--_syntax-palette-keyword-light, #6941a5);
+  --_syntax-string: var(--_syntax-palette-string-light, #166553);
+  --_syntax-constant: var(--_syntax-palette-constant-light, #895019);
+  --_syntax-function: var(--_syntax-palette-function-light, #285d98);
+  --_syntax-type: var(--_syntax-palette-type-light, #76508d);
+  --_syntax-property: var(--_syntax-palette-property-light, #385b72);
+  --_syntax-tag: var(--_syntax-palette-tag-light, #6941a5);
+  --_syntax-punctuation: var(--_syntax-palette-punctuation-light, #4d5969);
+  --_syntax-variable: var(--_syntax-palette-variable-light, #243043);
+  --_syntax-operator: var(--_syntax-palette-operator-light, #6941a5);
+  --_syntax-invalid: var(--_syntax-palette-invalid-light, #b42318);
+  --_syntax-parameter: var(--_syntax-palette-parameter-light, #9b3a5a);
+  --_syntax-background: #fcfcfc;
+  --_syntax-highlight: #f0f0f0;
+  --_syntax-frame: #f0f0f0;
+  --_syntax-rule: #e8e8e8;
+}
+@media (prefers-color-scheme: dark) {
+  .honest-syntax:not([data-syntax-theme]):not(.light .honest-syntax):not(.dark .honest-syntax) {
+    --_syntax-plain: var(--_syntax-palette-plain-dark, #dce3ee);
+    --_syntax-comment: var(--_syntax-palette-comment-dark, #a4afbf);
+    --_syntax-keyword: var(--_syntax-palette-keyword-dark, #c4abed);
+    --_syntax-string: var(--_syntax-palette-string-dark, #92cbb7);
+    --_syntax-constant: var(--_syntax-palette-constant-dark, #e2ba8b);
+    --_syntax-function: var(--_syntax-palette-function-dark, #9bbfea);
+    --_syntax-type: var(--_syntax-palette-type-dark, #d0b4df);
+    --_syntax-property: var(--_syntax-palette-property-dark, #a8c5d8);
+    --_syntax-tag: var(--_syntax-palette-tag-dark, #c4abed);
+    --_syntax-punctuation: var(--_syntax-palette-punctuation-dark, #b7c1d0);
+    --_syntax-variable: var(--_syntax-palette-variable-dark, #dce3ee);
+    --_syntax-operator: var(--_syntax-palette-operator-dark, #c4abed);
+    --_syntax-invalid: var(--_syntax-palette-invalid-dark, #f97066);
+    --_syntax-parameter: var(--_syntax-palette-parameter-dark, #eaa5bd);
+    --_syntax-background: #111111;
+    --_syntax-highlight: #222222;
+    --_syntax-frame: #222222;
+    --_syntax-rule: #2a2a2a;
+  }
+}
+/* Palettes change token color only; surfaces and typography stay consistent. */
+.honest-syntax[data-syntax-palette="violet"] {
+  --_syntax-palette-plain-light: #243043;
+  --_syntax-palette-comment-light: #566171;
+  --_syntax-palette-keyword-light: #6941a5;
+  --_syntax-palette-string-light: #166553;
+  --_syntax-palette-constant-light: #895019;
+  --_syntax-palette-function-light: #285d98;
+  --_syntax-palette-type-light: #76508d;
+  --_syntax-palette-property-light: #385b72;
+  --_syntax-palette-tag-light: #6941a5;
+  --_syntax-palette-punctuation-light: #4d5969;
+  --_syntax-palette-variable-light: #243043;
+  --_syntax-palette-operator-light: #6941a5;
+  --_syntax-palette-invalid-light: #b42318;
+  --_syntax-palette-parameter-light: #9b3a5a;
+  --_syntax-palette-plain-dark: #dce3ee;
+  --_syntax-palette-comment-dark: #a4afbf;
+  --_syntax-palette-keyword-dark: #c4abed;
+  --_syntax-palette-string-dark: #92cbb7;
+  --_syntax-palette-constant-dark: #e2ba8b;
+  --_syntax-palette-function-dark: #9bbfea;
+  --_syntax-palette-type-dark: #d0b4df;
+  --_syntax-palette-property-dark: #a8c5d8;
+  --_syntax-palette-tag-dark: #c4abed;
+  --_syntax-palette-punctuation-dark: #b7c1d0;
+  --_syntax-palette-variable-dark: #dce3ee;
+  --_syntax-palette-operator-dark: #c4abed;
+  --_syntax-palette-invalid-dark: #f97066;
+  --_syntax-palette-parameter-dark: #eaa5bd;
+}
+.honest-syntax[data-syntax-palette="graphite"] {
+  --_syntax-palette-plain-light: #30343b;
+  --_syntax-palette-comment-light: #666b73;
+  --_syntax-palette-keyword-light: #34506f;
+  --_syntax-palette-string-light: #555d68;
+  --_syntax-palette-constant-light: #4b5563;
+  --_syntax-palette-function-light: #394b5e;
+  --_syntax-palette-type-light: #4c5665;
+  --_syntax-palette-property-light: #565f6b;
+  --_syntax-palette-tag-light: #34506f;
+  --_syntax-palette-punctuation-light: #656b74;
+  --_syntax-palette-variable-light: #30343b;
+  --_syntax-palette-operator-light: #34506f;
+  --_syntax-palette-invalid-light: #b42318;
+  --_syntax-palette-parameter-light: #5d4a63;
+  --_syntax-palette-plain-dark: #e0e3e8;
+  --_syntax-palette-comment-dark: #a3a9b2;
+  --_syntax-palette-keyword-dark: #93abc8;
+  --_syntax-palette-string-dark: #b5bdc8;
+  --_syntax-palette-constant-dark: #c3cbd5;
+  --_syntax-palette-function-dark: #b6c9dd;
+  --_syntax-palette-type-dark: #c5cdd8;
+  --_syntax-palette-property-dark: #b6c0ce;
+  --_syntax-palette-tag-dark: #93abc8;
+  --_syntax-palette-punctuation-dark: #aeb5c0;
+  --_syntax-palette-variable-dark: #e0e3e8;
+  --_syntax-palette-operator-dark: #93abc8;
+  --_syntax-palette-invalid-dark: #f97066;
+  --_syntax-palette-parameter-dark: #c8b4cc;
+}
+.honest-syntax .prose-syntax-plain { color: var(--prose-syntax-plain, var(--_syntax-plain)); }
+.honest-syntax .prose-syntax-comment { color: var(--prose-syntax-comment, var(--_syntax-comment)); }
+.honest-syntax .prose-syntax-keyword { color: var(--prose-syntax-keyword, var(--_syntax-keyword)); }
+.honest-syntax .prose-syntax-string { color: var(--prose-syntax-string, var(--_syntax-string)); }
+.honest-syntax .prose-syntax-constant { color: var(--prose-syntax-constant, var(--_syntax-constant)); }
+.honest-syntax .prose-syntax-function { color: var(--prose-syntax-function, var(--_syntax-function)); }
+.honest-syntax .prose-syntax-type { color: var(--prose-syntax-type, var(--_syntax-type)); }
+.honest-syntax .prose-syntax-property { color: var(--prose-syntax-property, var(--_syntax-property)); }
+.honest-syntax .prose-syntax-tag { color: var(--prose-syntax-tag, var(--_syntax-tag)); }
+.honest-syntax .prose-syntax-punctuation { color: var(--prose-syntax-punctuation, var(--_syntax-punctuation)); }
+/* Editor roles, used by the editor themes. Parameters are italic and invalid code is underlined, so neither is marked by color alone. */
+.honest-syntax .prose-syntax-variable { color: var(--prose-syntax-variable, var(--_syntax-variable)); }
+.honest-syntax .prose-syntax-operator { color: var(--prose-syntax-operator, var(--_syntax-operator)); }
+.honest-syntax .prose-syntax-parameter { color: var(--prose-syntax-parameter, var(--_syntax-parameter)); font-style: italic; }
+/* A semantic modifier from a language server, layered on a role. */
+.honest-syntax .prose-syntax-deprecated { text-decoration: line-through; }
+/* A semantic token knows more than the grammar, so grammar spans nested inside it take its color. */
+.honest-syntax .prose-syntax-semantic [class*="prose-syntax-"]:not(.prose-syntax-invalid) { color: inherit; }
+.honest-syntax .prose-syntax-invalid { color: var(--prose-syntax-invalid, var(--_syntax-invalid)); text-decoration: underline wavy; text-decoration-skip-ink: none; }
+.honest-syntax [data-highlighted-line] { background: var(--prose-syntax-highlight, var(--_syntax-highlight)); }
+.honest-syntax ::selection { color: HighlightText; background: Highlight; }
+.honest-syntax:focus-visible { outline: 2px solid currentColor; outline-offset: -2px; }
+@media (forced-colors: active) {
+  .honest-syntax { color: CanvasText; background: Canvas; border-color: CanvasText; box-shadow: none; }
+  .honest-syntax [class*="prose-syntax-"] { color: CanvasText; }
+  .honest-syntax [data-highlighted-line] { outline: 1px solid Highlight; }
+}

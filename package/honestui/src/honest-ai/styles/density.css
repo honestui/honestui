@@ -1,0 +1,91 @@
+/*
+ * Honest UI density scopes.
+ *
+ * Set data-density="compact | default | comfortable" on any element. The
+ * variables below are inherited custom properties, so the nearest scope wins
+ * and a nested scope overrides its parent. Components read each variable with
+ * a fallback to their own default, so they are unchanged outside a scope and
+ * when this file is not loaded.
+ */
+
+:root {
+  --hui-density-touch-target: 44px;
+}
+
+[data-density="compact"] {
+  --hui-density-control-height: var(--hui-space-8);
+  --hui-density-control-padding-block: var(--hui-space-2);
+  --hui-density-control-padding-inline: var(--hui-space-3);
+  --hui-density-item-padding-block: var(--hui-space-2);
+  --hui-density-cell-padding-block: var(--hui-space-2);
+  --hui-density-cell-padding-inline: var(--hui-space-3);
+  --hui-density-header-padding-block: var(--hui-space-2);
+  --hui-density-gap: var(--hui-space-2);
+  --hui-density-group-gap: 1px;
+}
+
+[data-density="default"] {
+  --hui-density-control-height: var(--hui-space-9);
+  --hui-density-control-padding-block: var(--hui-space-3);
+  --hui-density-control-padding-inline: var(--hui-space-4);
+  --hui-density-item-padding-block: var(--hui-space-3);
+  --hui-density-cell-padding-block: var(--hui-space-4);
+  --hui-density-cell-padding-inline: var(--hui-space-3);
+  --hui-density-header-padding-block: var(--hui-space-3);
+  --hui-density-gap: var(--hui-space-3);
+  --hui-density-group-gap: var(--hui-space-1);
+}
+
+[data-density="comfortable"] {
+  --hui-density-control-height: var(--hui-space-10);
+  --hui-density-control-padding-block: var(--hui-space-4);
+  --hui-density-control-padding-inline: var(--hui-space-5);
+  --hui-density-item-padding-block: var(--hui-space-4);
+  --hui-density-cell-padding-block: var(--hui-space-5);
+  --hui-density-cell-padding-inline: var(--hui-space-4);
+  --hui-density-header-padding-block: var(--hui-space-4);
+  --hui-density-gap: var(--hui-space-4);
+  --hui-density-group-gap: var(--hui-space-2);
+}
+
+/*
+ * Touch: stacked compact rows leave no room for an invisible hit area that
+ * does not overlap the next row, so every scope gives controls, menu items,
+ * and rows a real touch-sized box instead. Padding and gaps keep their level.
+ * All three levels are floored, so compact is never larger than default.
+ */
+@media (pointer: coarse) {
+  [data-density] {
+    --hui-density-control-height: var(--hui-density-touch-target);
+    --hui-density-item-min-height: var(--hui-density-touch-target);
+    --hui-density-row-min-height: var(--hui-density-touch-target);
+  }
+}
+
+/*
+ * Tailwind CSS v4 variants. Each matches the scope element and elements whose
+ * nearest scope has that level. One limit: selectors cannot find the nearest
+ * ancestor at any depth, so a level that is re-entered through a different
+ * level (compact > comfortable > compact) does not match in the innermost
+ * scope. The variables above have no such limit.
+ */
+@custom-variant density-compact {
+  &:where([data-density="compact"]),
+  &:where([data-density="compact"] :not([data-density])):not(:where([data-density="compact"] [data-density]:not([data-density="compact"]) *)) {
+    @slot;
+  }
+}
+
+@custom-variant density-default {
+  &:where([data-density="default"]),
+  &:where([data-density="default"] :not([data-density])):not(:where([data-density="default"] [data-density]:not([data-density="default"]) *)) {
+    @slot;
+  }
+}
+
+@custom-variant density-comfortable {
+  &:where([data-density="comfortable"]),
+  &:where([data-density="comfortable"] :not([data-density])):not(:where([data-density="comfortable"] [data-density]:not([data-density="comfortable"]) *)) {
+    @slot;
+  }
+}

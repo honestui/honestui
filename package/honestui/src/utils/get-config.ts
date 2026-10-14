@@ -11,7 +11,7 @@ import { resolveImportWithMetadata } from "@/src/utils/resolve-import"
 import { cosmiconfig } from "cosmiconfig"
 import { glob as fg } from "tinyglobby"
 import { loadConfig, type ConfigLoaderSuccessResult } from "tsconfig-paths"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export const DEFAULT_STYLE = "default"
 export const DEFAULT_COMPONENTS = "@/components"

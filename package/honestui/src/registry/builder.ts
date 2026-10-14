@@ -10,7 +10,7 @@ import { isLocalFile, isUrl } from "@/src/registry/utils"
 import { validateRegistryConfig } from "@/src/registry/validator"
 import { registryConfigItemSchema } from "@/src/schema"
 import { Config } from "@/src/utils/get-config"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 const NAME_PLACEHOLDER = "{name}"
 const STYLE_PLACEHOLDER = "{style}"

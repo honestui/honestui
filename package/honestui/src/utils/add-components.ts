@@ -32,7 +32,7 @@ import {
   updateFonts,
 } from "@/src/utils/updaters/update-fonts"
 import { updateTailwindConfig } from "@/src/utils/updaters/update-tailwind-config"
-import { z } from "zod"
+import { z } from "zod/v3"
 import { glob as fg } from "tinyglobby"
 
 export async function addComponents(

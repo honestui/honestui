@@ -13,6 +13,7 @@ import {
   RegistryParseError,
 } from "@/src/registry/errors"
 import { fetchRegistry, fetchRegistryLocal } from "@/src/registry/fetcher"
+import { getBundledHonestAIItem } from "@/src/registry/honest-ai"
 import { parseRegistryAndItemFromString } from "@/src/registry/parser"
 import {
   deduplicateFilesByTarget,
@@ -28,7 +29,7 @@ import { Config, getTargetStyleFromConfig } from "@/src/utils/get-config"
 import { getProjectTailwindVersionFromConfig } from "@/src/utils/get-project-info"
 import { buildTailwindThemeColorsFromCssVars } from "@/src/utils/updaters/update-tailwind-config"
 import deepmerge from "deepmerge"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export function resolveRegistryItemsFromRegistries(
   items: string[],
@@ -69,6 +70,9 @@ export async function fetchRegistryItems(
           throw new RegistryParseError(item, error)
         }
       }
+
+      const bundledItem = await getBundledHonestAIItem(item, config)
+      if (bundledItem) return bundledItem
 
       const resolved = buildUrlAndHeadersForRegistryItem(item, config)
       const [result] = await fetchRegistry(

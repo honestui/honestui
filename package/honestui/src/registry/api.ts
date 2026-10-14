@@ -20,6 +20,7 @@ import {
   resolveRegistryTree,
 } from "@/src/registry/resolver"
 import { isUrl } from "@/src/registry/utils"
+import { mergeHonestAICatalog } from "@/src/registry/honest-ai"
 import {
   configJsonSchema,
   iconsSchema,
@@ -35,7 +36,7 @@ import {
 import { Config, explorer } from "@/src/utils/get-config"
 import { handleError } from "@/src/utils/handle-error"
 import { logger } from "@/src/utils/logger"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 export async function getRegistry(
   name: string,
@@ -74,7 +75,14 @@ export async function getRegistry(
     useCache,
   })
 
-  return parseRegistryCatalog(registryName, result)
+  const registry = parseRegistryCatalog(registryName, result)
+  if (
+    registryName === "@honestui/registry" &&
+    configWithDefaults(config).registries?.["@honestui"] === BUILTIN_REGISTRIES["@honestui"]
+  ) {
+    return { ...registry, items: mergeHonestAICatalog(registry.items) }
+  }
+  return registry
 }
 
 function parseRegistryCatalog(name: string, result: unknown) {
@@ -178,7 +186,7 @@ export async function getHonestUIRegistryIndex() {
   try {
     const [result] = await fetchRegistry(["index.json"])
 
-    return registryIndexSchema.parse(result)
+    return registryIndexSchema.parse(mergeHonestAICatalog(registryIndexSchema.parse(result)))
   } catch (error) {
     logger.error("\n")
     handleError(error)

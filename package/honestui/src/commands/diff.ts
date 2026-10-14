@@ -29,7 +29,7 @@ import { transformRtl } from "@/src/utils/transformers/transform-rtl"
 import { transformTwPrefixes } from "@/src/utils/transformers/transform-tw-prefix"
 import { Command } from "commander"
 import { diffLines, type Change } from "diff"
-import { z } from "zod"
+import { z } from "zod/v3"
 
 const updateOptionsSchema = z.object({
   component: z.string().optional(),

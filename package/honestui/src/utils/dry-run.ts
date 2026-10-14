@@ -31,7 +31,7 @@ import {
 import { massageTreeForFonts } from "@/src/utils/updaters/update-fonts"
 import { Project } from "ts-morph"
 import { loadConfig } from "tsconfig-paths"
-import type { z } from "zod"
+import type { z } from "zod/v3"
 
 export type DryRunFile = {
   path: string
