@@ -84,7 +84,7 @@ export default function ToolbarDemo() {
         <ToolbarSeparator />
         <ToolbarInput
           aria-label="Find in document"
-          className="h-8 min-w-0 rounded-md border border-input bg-transparent px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-8 min-w-0 rounded-sm border-[0.5px] border-input bg-transparent px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="Find"
           type="search"
         />

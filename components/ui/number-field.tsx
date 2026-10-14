@@ -27,7 +27,7 @@ function NumberField({
       <NumberFieldPrimitive.Root
         id={fieldId}
         className={cn(
-          "flex flex-col items-start gap-[var(--hui-space-2)]",
+          "group/number-field flex flex-col items-start gap-[var(--hui-space-2)]",
           className
         )}
         data-slot="number-field"
@@ -61,7 +61,7 @@ function NumberFieldDecrement({
   return (
     <NumberFieldPrimitive.Decrement
       className={cn(
-        "relative flex size-[var(--hui-space-7)] shrink-0 cursor-pointer items-center justify-center rounded-s-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-secondary)] p-0 text-[var(--hui-color-foreground-base-primary)] [transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex size-[var(--hui-space-7)] group-data-[size=sm]/number-field:size-[var(--hui-space-6)] group-data-[size=lg]/number-field:size-[var(--hui-space-9)] shrink-0 cursor-pointer items-center justify-center rounded-s-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-secondary)] p-0 text-[var(--hui-color-foreground-base-primary)] [transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:z-1 focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:border-[var(--hui-color-border-base-primary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       data-slot="number-field-decrement"
@@ -79,7 +79,7 @@ function NumberFieldIncrement({
   return (
     <NumberFieldPrimitive.Increment
       className={cn(
-        "relative flex size-[var(--hui-space-7)] shrink-0 cursor-pointer items-center justify-center rounded-e-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-secondary)] p-0 text-[var(--hui-color-foreground-base-primary)] [transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex size-[var(--hui-space-7)] group-data-[size=sm]/number-field:size-[var(--hui-space-6)] group-data-[size=lg]/number-field:size-[var(--hui-space-9)] shrink-0 cursor-pointer items-center justify-center rounded-e-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-secondary)] p-0 text-[var(--hui-color-foreground-base-primary)] [transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:z-1 focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:border-[var(--hui-color-border-base-primary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       data-slot="number-field-increment"
@@ -97,7 +97,7 @@ function NumberFieldInput({
   return (
     <NumberFieldPrimitive.Input
       className={cn(
-        "h-[var(--hui-space-7)] min-w-0 flex-[1_0_0] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-2)] text-center text-[var(--hui-color-foreground-base-primary)] tabular-nums outline-none [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:var(--hui-transition-interactive)] focus:border-[var(--hui-color-border-accent-emphasis)] focus:bg-[var(--hui-color-background-base-primary)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)]",
+        "h-[var(--hui-space-7)] group-data-[size=sm]/number-field:h-[var(--hui-space-6)] group-data-[size=lg]/number-field:h-[var(--hui-space-9)] min-w-0 flex-[1_0_0] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-2)] text-center text-[var(--hui-color-foreground-base-primary)] tabular-nums outline-none [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:var(--hui-transition-interactive)] focus:border-[var(--hui-color-border-accent-emphasis)] focus:bg-[var(--hui-color-background-base-primary)] focus:z-1 focus:[outline:var(--hui-focus-ring)] focus:outline-offset-[var(--hui-focus-ring-offset-inset-border)] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:border-[var(--hui-color-border-base-primary)] data-disabled:bg-[var(--hui-color-background-base-secondary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)] data-invalid:focus:[outline-color:var(--hui-color-border-danger-emphasis)]",
         className
       )}
       data-slot="number-field-input"

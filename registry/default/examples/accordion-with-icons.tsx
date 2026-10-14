@@ -45,7 +45,7 @@ export default function AccordionWithIcons() {
           <AccordionItem
             key={item.value}
             value={item.value}
-            className="rounded-lg border border-border bg-card px-2"
+            className="rounded-sm border-[0.5px] border-border bg-card px-2"
           >
             <AccordionTrigger className="items-center px-1 py-3 font-semibold hover:no-underline">
               <div className="flex items-center gap-3">

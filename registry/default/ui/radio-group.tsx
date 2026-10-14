@@ -9,7 +9,7 @@ function RadioGroup({ className, ...props }: RadioGroupPrimitive.Props) {
   return (
     <RadioGroupPrimitive
       data-slot="radio-group"
-      className={cn("flex flex-col gap-3", className)}
+      className={cn("flex flex-col gap-[var(--hui-space-4)]", className)}
       {...props}
     />
   )
@@ -20,14 +20,14 @@ function Radio({ className, ...props }: RadioPrimitive.Root.Props) {
     <RadioPrimitive.Root
       data-slot="radio"
       className={cn(
-        "relative inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-input bg-background bg-clip-padding shadow-xs transition-shadow outline-none before:pointer-events-none before:absolute before:inset-0 before:rounded-full not-disabled:not-data-checked:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-64 aria-invalid:border-destructive/36 focus-visible:aria-invalid:border-destructive/64 focus-visible:aria-invalid:ring-destructive/48 dark:bg-clip-border dark:not-data-checked:bg-input/32 dark:not-disabled:not-data-checked:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:aria-invalid:ring-destructive/24 [&:is(:disabled,[data-checked],[aria-invalid])]:shadow-none",
+        "relative inline-flex size-[var(--hui-space-5)] shrink-0 cursor-pointer items-center justify-center rounded-[var(--hui-radius-full)] border border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] outline-none motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out),border-color_var(--hui-duration-fast)_var(--hui-ease-out),box-shadow_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-press)_var(--hui-ease-out)] not-data-disabled:hover:border-[var(--hui-color-border-base-focus)] not-data-disabled:not-data-checked:hover:bg-[var(--hui-color-background-base-primary-hover)] not-data-disabled:not-data-readonly:active:scale-[var(--hui-scale-pressed-strong)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)] data-checked:border-transparent data-checked:bg-[var(--hui-color-background-accent-emphasis)] data-checked:shadow-[var(--hui-shadow-key,var(--hui-shadow-feather))] not-data-disabled:data-checked:hover:bg-[var(--hui-color-background-accent-emphasis-hover)] data-readonly:cursor-default data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:data-checked:bg-[var(--hui-color-background-danger-emphasis)] data-invalid:focus-visible:[outline-color:var(--hui-color-border-danger-emphasis)] aria-invalid:border-[var(--hui-color-border-danger-emphasis)] aria-invalid:data-checked:bg-[var(--hui-color-background-danger-emphasis)] aria-invalid:focus-visible:[outline-color:var(--hui-color-border-danger-emphasis)] data-disabled:cursor-not-allowed data-disabled:border-[var(--hui-color-border-base-secondary)] data-disabled:bg-[var(--hui-color-background-neutral-primary)] data-disabled:shadow-none data-disabled:data-checked:bg-[var(--hui-color-background-neutral-secondary)]",
         className
       )}
       {...props}
     >
       <RadioPrimitive.Indicator
         data-slot="radio-indicator"
-        className="absolute -inset-px flex size-4 items-center justify-center rounded-full before:size-1.5 before:rounded-full before:bg-primary-foreground data-checked:bg-primary data-unchecked:hidden"
+        className="flex size-full items-center justify-center before:size-[6px] before:rounded-[var(--hui-radius-full)] before:bg-[var(--hui-color-foreground-accent-emphasis)] data-disabled:before:bg-[var(--hui-color-foreground-base-tertiary)] data-unchecked:hidden"
       />
     </RadioPrimitive.Root>
   )

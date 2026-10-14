@@ -109,7 +109,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "flex flex-1 cursor-pointer items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-64 [&[data-panel-open]>svg]:rotate-180",
+          "flex flex-1 cursor-pointer items-start justify-between gap-4 rounded-[var(--hui-radius-2)] py-4 text-left [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] font-medium transition-all outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)] disabled:pointer-events-none disabled:text-[var(--hui-color-foreground-base-tertiary)] [&[data-panel-open]>svg]:rotate-180",
           className
         )}
         {...props}
@@ -129,7 +129,7 @@ function AccordionPanel({
   return (
     <AccordionPrimitive.Panel
       data-slot="accordion-panel"
-      className="h-(--accordion-panel-height) overflow-hidden text-sm text-muted-foreground transition-[height] duration-200 ease-in-out data-ending-style:h-0 data-starting-style:h-0"
+      className="h-(--accordion-panel-height) overflow-hidden [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] text-[var(--hui-color-foreground-base-secondary)] transition-[height] duration-200 ease-in-out data-ending-style:h-0 data-starting-style:h-0"
       {...props}
     >
       <div className={cn("pt-0 pb-4", className)}>{children}</div>

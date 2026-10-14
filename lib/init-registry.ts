@@ -162,6 +162,53 @@ const DARK_VARS = {
   "sidebar-ring": "oklch(0.439 0 0)",
 };
 
+/*
+ * Shadcn-style variables resolve through the Honest UI semantic tokens when a
+ * project has them, so `data-theme` switches these aliases together with the
+ * components. The literal value stays as the fallback for a project without
+ * the token stylesheet. The value is written as a relative `oklch()` color
+ * because the CLI only maps a variable to a Tailwind color when its value
+ * starts with a color function.
+ */
+const TOKEN_ALIASES: Record<string, string> = {
+  background: "--hui-color-background-base-primary",
+  foreground: "--hui-color-foreground-base-primary",
+  card: "--hui-color-background-base-primary",
+  "card-foreground": "--hui-color-foreground-base-primary",
+  popover: "--hui-color-background-base-primary",
+  "popover-foreground": "--hui-color-foreground-base-primary",
+  primary: "--hui-color-background-neutral-emphasis",
+  "primary-foreground": "--hui-color-foreground-base-emphasis",
+  secondary: "--hui-color-background-neutral-secondary",
+  "secondary-foreground": "--hui-color-foreground-base-primary",
+  muted: "--hui-color-background-base-secondary",
+  "muted-foreground": "--hui-color-foreground-base-secondary",
+  accent: "--hui-color-background-base-primary-hover",
+  "accent-foreground": "--hui-color-foreground-base-primary",
+  destructive: "--hui-color-background-danger-emphasis",
+  "destructive-foreground": "--hui-color-foreground-danger-primary",
+  border: "--hui-color-border-base-secondary",
+  input: "--hui-color-border-base-secondary",
+  ring: "--hui-color-border-accent-emphasis",
+  sidebar: "--hui-color-background-base-secondary",
+  "sidebar-foreground": "--hui-color-foreground-base-primary",
+  "sidebar-primary": "--hui-color-background-neutral-emphasis",
+  "sidebar-primary-foreground": "--hui-color-foreground-base-emphasis",
+  "sidebar-accent": "--hui-color-background-neutral-secondary",
+  "sidebar-accent-foreground": "--hui-color-foreground-base-primary",
+  "sidebar-border": "--hui-color-border-base-primary",
+  "sidebar-ring": "--hui-color-border-accent-emphasis",
+};
+
+function withTokenAliases<T extends Record<string, string>>(vars: T): T {
+  return Object.fromEntries(
+    Object.entries(vars).map(([name, value]) => {
+      const token = TOKEN_ALIASES[name];
+      return [name, token ? `oklch(from var(${token}, ${value}) l c h)` : value];
+    })
+  ) as T;
+}
+
 function enumValue<T extends string>(
   params: URLSearchParams,
   key: string,
@@ -256,21 +303,23 @@ function buildTheme(config: InitConfig) {
       "--font-heading": headingFont.family,
     },
     light: {
-      ...LIGHT_VARS,
+      ...withTokenAliases(LIGHT_VARS),
       radius: RADIUS_VALUES[config.radius],
       ...(config.menuAccent === "bold"
         ? {
-            accent: LIGHT_VARS.primary,
-            "accent-foreground": LIGHT_VARS["primary-foreground"],
+            accent: withTokenAliases(LIGHT_VARS).primary,
+            "accent-foreground":
+              withTokenAliases(LIGHT_VARS)["primary-foreground"],
           }
         : {}),
     },
     dark: {
-      ...DARK_VARS,
+      ...withTokenAliases(DARK_VARS),
       ...(config.menuAccent === "bold"
         ? {
-            accent: DARK_VARS.primary,
-            "accent-foreground": DARK_VARS["primary-foreground"],
+            accent: withTokenAliases(DARK_VARS).primary,
+            "accent-foreground":
+              withTokenAliases(DARK_VARS)["primary-foreground"],
           }
         : {}),
     },
@@ -379,8 +428,8 @@ export function buildRegistryBase(
 
 export function buildRegistryBaseColor() {
   const cssVars = {
-    light: LIGHT_VARS,
-    dark: DARK_VARS,
+    light: withTokenAliases(LIGHT_VARS),
+    dark: withTokenAliases(DARK_VARS),
   };
 
   return {

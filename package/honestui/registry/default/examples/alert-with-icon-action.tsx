@@ -27,10 +27,10 @@ export default function AlertWithIconAction() {
         : InfoIcon
 
   return (
-    <section className="grid w-full max-w-lg gap-4 rounded-xl border bg-card p-5">
+    <section className="grid w-full max-w-lg gap-4 rounded-sm border-[0.5px] bg-card p-5">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <h3 className="font-medium">Account security</h3>
+          <h3 className="text-base font-medium text-foreground">Account security</h3>
           <p className="text-sm text-muted-foreground">Two-step verification</p>
         </div>
         <span className="text-sm font-medium">

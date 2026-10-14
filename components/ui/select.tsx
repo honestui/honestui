@@ -316,7 +316,7 @@ function SelectRoot(props: SelectRootProps) {
 SelectRoot.displayName = "Select"
 
 const selectTriggerVariants = cva(
-  "flex items-center justify-between rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] outline-none select-none [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] motion-safe:[transition:var(--hui-transition-interactive)] not-data-disabled:hover:cursor-pointer not-data-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] focus:not-focus-visible:outline-none focus-visible:[outline:var(--hui-focus-ring)] data-disabled:pointer-events-none data-disabled:opacity-50 disabled:pointer-events-none disabled:opacity-50 data-[multiselectable=true]:py-[var(--hui-space-2)]",
+  "flex items-center justify-between rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] outline-none select-none [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] motion-safe:[transition:var(--hui-transition-interactive)] not-data-disabled:hover:cursor-pointer not-data-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] focus:not-focus-visible:outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] data-disabled:pointer-events-none data-disabled:bg-[var(--hui-color-background-base-secondary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] disabled:pointer-events-none disabled:bg-[var(--hui-color-background-base-secondary)] disabled:text-[var(--hui-color-foreground-base-tertiary)] data-[multiselectable=true]:py-[var(--hui-space-2)]",
   {
     variants: {
       size: {
@@ -381,7 +381,7 @@ function SelectTrigger({
           "flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap [font-style:normal] [font-weight:var(--hui-font-weight-medium)]",
           resolvedSize === "small"
             ? "gap-[var(--hui-space-1)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
-            : "gap-[var(--hui-space-2)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+            : "gap-[var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]"
         )}
         data-slot="select-trigger-content"
       >
@@ -572,7 +572,7 @@ function SelectMultipleValue({ data = [] }: { data: ItemType[] }) {
       ))}
       {data.length > visibleCount && (
         <span
-          className="shrink-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)]"
+          className="shrink-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-control,13px)]"
           data-slot="select-value-overflow"
         >
           +{data.length - visibleCount}
@@ -603,7 +603,7 @@ function SelectContent({
   const { autocomplete, multiple } = useSelectContext()
   const density = useDensity()
   const contentClassName = cn(
-    "relative box-border max-h-[320px] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] [--apsara-select-padding:var(--hui-space-2)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
+    "relative box-border max-h-[320px] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] [--apsara-select-padding:var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
     className
   )
 
@@ -626,7 +626,7 @@ function SelectContent({
           >
             <ComboboxPrimitive.Input
               placeholder={searchPlaceholder}
-              className="sticky top-0 z-2 w-full rounded-t-[var(--hui-radius-2)] border-0 border-b-[0.5px] border-b-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+              className="sticky top-0 z-2 w-full rounded-t-[var(--hui-radius-2)] border-0 border-b-[0.5px] border-b-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]"
               size={12}
               data-slot="select-search"
             />
@@ -746,7 +746,7 @@ function SelectItem({
     )
 
   const itemClassName = cn(
-    "relative flex items-center gap-[var(--hui-space-3)] min-h-[var(--hui-density-item-min-height,0px)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-density-item-padding-block,var(--hui-space-3))] text-[var(--hui-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-[hidden=true]:hidden",
+    "relative flex items-center gap-[var(--hui-space-3)] min-h-[var(--hui-density-item-min-height,0px)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-density-item-padding-block,var(--hui-space-3))] text-[var(--hui-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-[hidden=true]:hidden",
     className
   )
   const renderItem = (

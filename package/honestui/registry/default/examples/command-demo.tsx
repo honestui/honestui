@@ -25,7 +25,7 @@ export default function CommandDemo() {
 
   return (
     <div className="w-full max-w-lg space-y-3">
-      <Command className="rounded-lg border border-border shadow-sm">
+      <Command className="rounded-sm border-[0.5px] border-border shadow-sm">
         <CommandInput
           leadingIcon={<SearchIcon />}
           placeholder="Search commands..."

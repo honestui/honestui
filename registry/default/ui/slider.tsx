@@ -106,7 +106,7 @@ function SliderValue({ className, ...props }: SliderPrimitive.Value.Props) {
   return (
     <SliderPrimitive.Value
       data-slot="slider-value"
-      className={cn("flex justify-end text-sm", className)}
+      className={cn("flex justify-end [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)]", className)}
       {...props}
     />
   )

@@ -43,9 +43,9 @@ export default function AlertDialogDemo() {
   }
 
   return (
-    <section className="grid w-full max-w-sm gap-4 rounded-xl border bg-card p-5">
+    <section className="grid w-full max-w-sm gap-4 rounded-sm border-[0.5px] bg-card p-5">
       <div className="space-y-1">
-        <h3 className="font-medium">Delete workspace</h3>
+        <h3 className="text-base font-medium text-foreground">Delete workspace</h3>
         <p className="text-sm text-muted-foreground">
           Permanently remove the Design workspace and its data.
         </p>

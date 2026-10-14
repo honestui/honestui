@@ -40,7 +40,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        "m-0 flex list-none items-center gap-[var(--hui-space-2)] p-0",
+        "m-0 flex list-none flex-wrap items-center gap-[var(--hui-space-2)] p-0",
         className
       )}
       {...props}
@@ -66,7 +66,7 @@ function BreadcrumbLink({
   const defaultProps = {
     "data-slot": "breadcrumb-link",
     className: cn(
-      "flex cursor-pointer items-center gap-[var(--hui-space-2)] whitespace-nowrap text-[var(--hui-color-foreground-base-tertiary)] no-underline outline-none motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:text-[var(--hui-color-foreground-base-secondary)] focus-visible:rounded-[var(--hui-radius-1)] focus-visible:[outline:var(--hui-focus-ring)] aria-disabled:pointer-events-none aria-disabled:opacity-50",
+      "flex cursor-pointer items-center gap-[var(--hui-space-2)] whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] no-underline outline-none motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:text-[var(--hui-color-foreground-base-secondary)] focus-visible:rounded-[var(--hui-radius-1)] focus-visible:[outline:var(--hui-focus-ring)] aria-disabled:pointer-events-none aria-disabled:text-[var(--hui-color-foreground-base-tertiary)]",
       className
     ),
   }
@@ -105,7 +105,7 @@ function BreadcrumbSeparator({
       role="presentation"
       aria-hidden="true"
       className={cn(
-        "flex items-center text-[var(--hui-color-foreground-base-tertiary)] [&>svg]:size-4",
+        "flex items-center text-[var(--hui-color-foreground-base-secondary)] [&>svg]:size-4",
         className
       )}
       {...props}
@@ -125,7 +125,7 @@ function BreadcrumbEllipsis({
       role="presentation"
       aria-hidden="true"
       className={cn(
-        "flex items-center text-[var(--hui-color-foreground-base-tertiary)]",
+        "flex items-center text-[var(--hui-color-foreground-base-secondary)]",
         className
       )}
       {...props}

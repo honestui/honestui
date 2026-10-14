@@ -30,8 +30,8 @@ export default function CardDepth() {
           </Button>
         </CardFooter>
       </Card>
-      <div className="absolute inset-4 -bottom-3 z-0 rounded-lg border bg-card shadow-md shadow-black/1" />
-      <div className="absolute inset-2 -bottom-1.5 z-0 rounded-lg border bg-card shadow-md shadow-black/1" />
+      <div className="absolute inset-4 -bottom-3 z-0 rounded-sm border-[0.5px] bg-card shadow-md shadow-black/1" />
+      <div className="absolute inset-2 -bottom-1.5 z-0 rounded-sm border-[0.5px] bg-card shadow-md shadow-black/1" />
     </div>
   )
 }

@@ -35,7 +35,7 @@ export default function AccordionDisabled() {
       <Accordion
         multiple={false}
         defaultValue={["item-1"]}
-        className="overflow-hidden rounded-lg border border-border"
+        className="overflow-hidden rounded-sm border-[0.5px] border-border"
       >
         {items.map((item) => (
           <AccordionItem

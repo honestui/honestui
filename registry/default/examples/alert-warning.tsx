@@ -14,9 +14,9 @@ export default function AlertWarning() {
   const [updated, setUpdated] = React.useState(false)
 
   return (
-    <section className="grid w-full max-w-sm gap-4 rounded-xl border bg-card p-5">
+    <section className="grid w-full max-w-sm gap-4 rounded-sm border-[0.5px] bg-card p-5">
       <div className="space-y-1">
-        <h3 className="font-medium">Payment method</h3>
+        <h3 className="text-base font-medium text-foreground">Payment method</h3>
         <p className="text-sm text-muted-foreground">
           Visa ending in 4242 · Expires this month
         </p>

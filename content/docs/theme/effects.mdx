@@ -20,6 +20,7 @@ Shadows resolve to different values in light and dark themes. The role stays the
     { name: "--hui-shadow-lifted", value: "Theme-aware", description: "Popovers, dropdowns, and notification toasts" },
     { name: "--hui-shadow-floating", value: "Theme-aware", description: "Dialogs and prominent floating surfaces" },
     { name: "--hui-shadow-inset", value: "Theme-aware inset", description: "Pressed or recessed states" },
+    { name: "--hui-shadow-key", value: "Theme-aware", description: "The hard bottom edge under a raised control" },
   ]}
 />
 
@@ -32,8 +33,8 @@ Focus tokens keep keyboard indicators consistent. Use the outline form for most 
 <TokenTable
   caption="Honest UI focus and pressed-state tokens"
   tokens={[
-    { name: "--hui-focus-ring", value: "1px solid accent emphasis", description: "Default visible keyboard-focus outline" },
-    { name: "--hui-focus-ring-shadow", value: "0 0 0 1px accent emphasis", description: "Focus indicator for borderless input surfaces" },
+    { name: "--hui-focus-ring", value: "2px solid accent emphasis", description: "Default visible keyboard-focus outline" },
+    { name: "--hui-focus-ring-shadow", value: "0 0 0 2px accent emphasis", description: "Focus indicator for borderless input surfaces" },
     { name: "--hui-focus-ring-offset-accent", value: "2px", description: "Moves a ring outside an accent-filled control" },
     { name: "--hui-focus-ring-offset-inset", value: "-2px", description: "Pulls a ring inside a clipped control" },
     { name: "--hui-focus-ring-offset-inset-border", value: "-1px", description: "Pulls a ring just inside a bordered control" },

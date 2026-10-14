@@ -5,7 +5,7 @@ import { Label } from "@/registry/default/ui/label"
 
 export default function CheckboxNotificationRow() {
   return (
-    <Label className="flex max-w-sm items-start gap-3 rounded-lg border p-4">
+    <Label className="flex max-w-sm items-start gap-3 rounded-sm border-[0.5px] p-4">
       <Checkbox defaultChecked className="mt-0.5" />
       <BellIcon className="mt-0.5 size-4 text-muted-foreground" />
       <span className="grid gap-1">

@@ -8,7 +8,7 @@ import { Fieldset, FieldsetLegend } from "@/registry/default/ui/fieldset"
 
 export default function FieldsetDisabled() {
   return (
-    <Fieldset disabled className="max-w-sm rounded-xl border p-4">
+    <Fieldset disabled className="max-w-sm rounded-sm border-[0.5px] p-4">
       <FieldsetLegend>Billing details</FieldsetLegend>
       <Field>
         <FieldLabel>Company</FieldLabel>

@@ -17,14 +17,14 @@ export default function AlertDemo() {
 
   return (
     <Form
-      className="grid w-full max-w-sm gap-4 rounded-xl border bg-card p-5"
+      className="grid w-full max-w-sm gap-4 rounded-sm border-[0.5px] bg-card p-5"
       onSubmit={(event) => {
         event.preventDefault()
         setSentTo(email)
       }}
     >
       <div className="space-y-1">
-        <h3 className="font-medium">Invite a teammate</h3>
+        <h3 className="text-base font-medium text-foreground">Invite a teammate</h3>
         <p className="text-sm text-muted-foreground">
           They will join the Design workspace as a member.
         </p>

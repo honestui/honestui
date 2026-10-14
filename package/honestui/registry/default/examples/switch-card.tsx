@@ -9,7 +9,7 @@ export default function SwitchCardDemo() {
   return (
     <Label
       htmlFor={id}
-      className="flex items-center gap-6 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50"
+      className="flex items-center gap-6 rounded-sm border-[0.5px] p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50"
     >
       <div className="flex flex-col gap-1">
         <p className="text-sm leading-4">Enable notifications</p>

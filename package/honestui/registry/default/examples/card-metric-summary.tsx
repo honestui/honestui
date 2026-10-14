@@ -18,7 +18,7 @@ export default function CardMetricSummary() {
       <CardPanel>
         <div className="flex items-end justify-between gap-6">
           <div className="text-3xl font-semibold tracking-tight">$48.2k</div>
-          <div className="flex items-center gap-1 text-sm text-success">
+          <div className="flex items-center gap-1 text-sm text-[var(--hui-color-foreground-success-primary-hover)]">
             <TrendingUpIcon className="size-4" />
             12.4%
           </div>

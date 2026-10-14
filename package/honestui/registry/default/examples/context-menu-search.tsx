@@ -17,7 +17,7 @@ export default function ContextMenuSearch() {
     <div className="w-full max-w-md space-y-3">
       <ContextMenu autocomplete>
         <ContextMenuTrigger
-          className="flex min-h-48 w-full items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground"
+          className="flex min-h-48 w-full items-center justify-center rounded-sm border border-dashed border-border bg-muted/30 p-8 text-center text-sm text-muted-foreground"
           tabIndex={0}
         >
           <span>

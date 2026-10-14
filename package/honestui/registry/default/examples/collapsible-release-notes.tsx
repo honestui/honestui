@@ -8,7 +8,7 @@ import {
 
 export default function CollapsibleReleaseNotes() {
   return (
-    <Collapsible className="w-full max-w-md rounded-xl border p-4" defaultOpen>
+    <Collapsible className="w-full max-w-md rounded-sm border-[0.5px] p-4" defaultOpen>
       <CollapsibleTrigger className="flex w-full items-center justify-between font-medium">
         Release notes
         <ChevronDownIcon className="size-4" />

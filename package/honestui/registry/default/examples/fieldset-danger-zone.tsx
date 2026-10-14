@@ -4,7 +4,7 @@ import { Fieldset, FieldsetLegend } from "@/registry/default/ui/fieldset"
 
 export default function FieldsetDangerZone() {
   return (
-    <Fieldset className="max-w-sm rounded-xl border border-destructive/30 p-4">
+    <Fieldset className="max-w-sm rounded-sm border-[0.5px] border-destructive/30 p-4">
       <FieldsetLegend>Danger zone</FieldsetLegend>
       <Field>
         <FieldLabel className="justify-between w-full">Require delete confirmation <Switch /></FieldLabel>

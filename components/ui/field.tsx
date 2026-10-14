@@ -21,7 +21,10 @@ function FieldLabel({ className, ...props }: FieldPrimitive.Label.Props) {
   return (
     <FieldPrimitive.Label
       data-slot="field-label"
-      className={cn("inline-flex items-center gap-2 text-sm/4", className)}
+      className={cn(
+        "inline-flex items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)]",
+        className
+      )}
       {...props}
     />
   )
@@ -55,13 +58,13 @@ function FieldControl({
       <FieldPrimitive.Control
         data-slot="field-control"
         className={cn(
-          "box-border h-[var(--hui-space-9)] w-full min-w-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:var(--hui-transition-interactive)] placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus:border-[var(--hui-color-border-accent-emphasis)] data-disabled:cursor-not-allowed data-disabled:opacity-40 data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)]",
+          "box-border h-[var(--hui-space-9)] w-full min-w-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:var(--hui-transition-interactive)] placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus:border-[var(--hui-color-border-accent-emphasis)] focus:[outline:var(--hui-focus-ring)] focus:outline-offset-[var(--hui-focus-ring-offset-inset-border)] data-disabled:cursor-not-allowed data-disabled:border-[var(--hui-color-border-base-primary)] data-disabled:bg-[var(--hui-color-background-base-secondary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)] data-invalid:focus:[outline-color:var(--hui-color-border-danger-emphasis)]",
           size === "sm" && "h-[var(--hui-space-8)]",
           size === "lg" && "h-[var(--hui-space-10)]",
           props.type === "search" &&
             "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
           props.type === "file" &&
-            "text-muted-foreground file:me-3 file:bg-transparent file:text-sm file:font-medium file:text-foreground"
+            "text-[var(--hui-color-foreground-base-secondary)] file:me-3 file:bg-transparent file:[font-size:var(--hui-font-size-control,13px)] file:[line-height:var(--hui-line-height-regular)] file:font-medium file:text-[var(--hui-color-foreground-base-primary)]"
         )}
         {...props}
       />
@@ -77,7 +80,7 @@ function FieldDescription({
     <FieldPrimitive.Description
       data-slot="field-description"
       className={cn(
-        "m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
+        "m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}
@@ -90,7 +93,7 @@ function FieldError({ className, ...props }: FieldPrimitive.Error.Props) {
     <FieldPrimitive.Error
       data-slot="field-error"
       className={cn(
-        "m-0 text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)] starting:opacity-0",
+        "m-0 text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] starting:opacity-0",
         className
       )}
       {...props}
@@ -137,11 +140,11 @@ function FieldSeparator({
       className={cn("relative flex items-center gap-2 py-2", className)}
       {...props}
     >
-      <div className="h-px flex-1 bg-border" />
+      <div className="h-px flex-1 bg-[var(--hui-color-border-base-primary)]" />
       {children && (
-        <span className="text-xs text-muted-foreground">{children}</span>
+        <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">{children}</span>
       )}
-      <div className="h-px flex-1 bg-border" />
+      <div className="h-px flex-1 bg-[var(--hui-color-border-base-primary)]" />
     </div>
   )
 }

@@ -20,6 +20,8 @@
   --hui-font-size-regular: 14px;
   --hui-font-size-large: 16px;
   --hui-font-size-base: var(--hui-font-size-regular);
+  /* Text inside a control: button labels, field values, tab labels. */
+  --hui-font-size-control: 13px;
 
   /* Body Line Heights */
   --hui-line-height-micro: 12px;
@@ -28,6 +30,7 @@
   --hui-line-height-regular: 20px;
   --hui-line-height-large: 24px;
   --hui-line-height-base: var(--hui-line-height-regular);
+  --hui-line-height-control: 16px;
 
   /* Body letter spacing — tuned for LoveSans, which is spaced generously already.
      Near-zero at small sizes, slightly negative as size grows. em-based so it
@@ -38,6 +41,7 @@
   --hui-letter-spacing-regular: -0.006em;
   --hui-letter-spacing-large: -0.011em;
   --hui-letter-spacing-base: var(--hui-letter-spacing-regular);
+  --hui-letter-spacing-control: -0.003em;
 
   /* Title Font Sizes */
   --hui-font-size-t1: 20px;
@@ -100,33 +104,36 @@ body {
   font-synthesis: none;
 }
 
-h1 {
+/* Heading defaults. The size, weight, and line height skip component parts
+   (anything with a data-slot, such as a dialog title rendered as an h2) and
+   everything inside a docs preview, so components and examples render at the
+   size their own classes ask for. */
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--hui-font-title);
+  text-wrap: balance;
+}
+h1:not([data-slot], [data-slot="preview"] *) {
   font-size: var(--hui-font-size-t4);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t4);
-  text-wrap: balance;
 }
-h2 {
-  font-family: var(--hui-font-title);
+h2:not([data-slot], [data-slot="preview"] *) {
   font-size: var(--hui-font-size-t3);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t3);
-  text-wrap: balance;
 }
-h3 {
-  font-family: var(--hui-font-title);
+h3:not([data-slot], [data-slot="preview"] *) {
   font-size: var(--hui-font-size-t2);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t2);
-  text-wrap: balance;
 }
-h4 {
-  font-family: var(--hui-font-title);
+h4:not([data-slot], [data-slot="preview"] *) {
   font-size: var(--hui-font-size-t1);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t1);
-  text-wrap: balance;
 }
 
 /* CSS for the text cursor */

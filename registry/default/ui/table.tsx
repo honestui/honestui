@@ -78,7 +78,7 @@ function TableHead({ className, ...props }: ComponentPropsWithoutRef<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-header-padding-block,var(--hui-space-3))] text-left align-middle text-[var(--hui-color-foreground-base-tertiary)] [font-size:var(--hui-font-size-small)] [font-style:normal] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+        "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-header-padding-block,var(--hui-space-3))] text-left align-middle text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-style:normal] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}

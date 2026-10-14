@@ -14,9 +14,9 @@ export default function AlertWithIcon() {
   const [generated, setGenerated] = React.useState(false)
 
   return (
-    <section className="grid w-full max-w-sm gap-4 rounded-xl border bg-card p-5">
+    <section className="grid w-full max-w-sm gap-4 rounded-sm border-[0.5px] bg-card p-5">
       <div className="space-y-1">
-        <h3 className="font-medium">Recovery codes</h3>
+        <h3 className="text-base font-medium text-foreground">Recovery codes</h3>
         <p className="text-sm text-muted-foreground">
           Use a recovery code if you lose access to your authenticator.
         </p>

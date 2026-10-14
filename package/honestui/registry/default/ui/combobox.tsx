@@ -48,7 +48,7 @@ function ComboboxInput({
       <ComboboxPrimitive.Input
         data-slot="combobox-input"
         className={cn(
-          "min-w-12 flex-1 text-base/5 outline-none sm:text-sm [[data-slot=combobox-chip]+&]:ps-0.5",
+          "min-w-12 flex-1 [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] outline-none [[data-slot=combobox-chip]+&]:ps-0.5",
           sizeValue === "sm" ? "ps-1.5" : "ps-2",
           className
         )}
@@ -60,7 +60,7 @@ function ComboboxInput({
   }
   // single mode
   return (
-    <div className="relative w-full has-disabled:opacity-64">
+    <div className="relative w-full has-disabled:text-[var(--hui-color-foreground-base-tertiary)]">
       <ComboboxPrimitive.Input
         data-slot="combobox-input"
         className={cn(
@@ -75,7 +75,7 @@ function ComboboxInput({
       {showTrigger && (
         <ComboboxTrigger
           className={cn(
-            "absolute top-1/2 inline-flex size-7 shrink-0 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md border border-transparent opacity-72 transition-opacity outline-none hover:opacity-100 has-[+[data-slot=combobox-clear]]:hidden pointer-coarse:after:absolute pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            "absolute top-1/2 inline-flex size-7 shrink-0 -translate-y-1/2 cursor-pointer items-center justify-center rounded-[var(--hui-radius-2)] border border-transparent opacity-72 transition-opacity outline-none hover:opacity-100 has-[+[data-slot=combobox-clear]]:hidden pointer-coarse:after:absolute pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
             sizeValue === "sm" ? "end-0" : "end-0.5"
           )}
         >
@@ -85,7 +85,7 @@ function ComboboxInput({
       {showClear && (
         <ComboboxClear
           className={cn(
-            "absolute top-1/2 inline-flex size-7 shrink-0 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md border border-transparent opacity-72 transition-opacity outline-none hover:opacity-100 has-[+[data-slot=combobox-clear]]:hidden pointer-coarse:after:absolute pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            "absolute top-1/2 inline-flex size-7 shrink-0 -translate-y-1/2 cursor-pointer items-center justify-center rounded-[var(--hui-radius-2)] border border-transparent opacity-72 transition-opacity outline-none hover:opacity-100 has-[+[data-slot=combobox-clear]]:hidden pointer-coarse:after:absolute pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
             sizeValue === "sm" ? "end-0" : "end-0.5"
           )}
         >
@@ -131,7 +131,7 @@ function ComboboxPopup({
           <ComboboxPrimitive.Popup
             data-slot="combobox-popup"
             className={cn(
-              "box-border flex max-h-[min(var(--available-height),320px)] min-w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) flex-col overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:scale-[0.97] data-ending-style:opacity-0 data-starting-style:scale-[0.97] data-starting-style:opacity-0 [&:has([data-slot=combobox-list]:empty)]:border-0",
+              "box-border flex max-h-[min(var(--available-height),320px)] min-w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) flex-col overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:scale-[0.97] data-ending-style:opacity-0 data-starting-style:scale-[0.97] data-starting-style:opacity-0 [&:has([data-slot=combobox-list]:empty)]:border-0",
               className
             )}
             {...props}
@@ -153,7 +153,7 @@ function ComboboxItem({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "relative flex items-center gap-[var(--hui-space-3)] whitespace-normal break-words rounded-[var(--hui-radius-2)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--hui-space-5)]",
+        "relative flex items-center gap-[var(--hui-space-3)] whitespace-normal break-words rounded-[var(--hui-radius-2)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none in-data-[side=none]:min-w-[calc(var(--anchor-width)+1.25rem)] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--hui-space-5)]",
         className
       )}
       {...props}
@@ -224,7 +224,7 @@ function ComboboxEmpty({ className, ...props }: ComboboxPrimitive.Empty.Props) {
   return (
     <ComboboxPrimitive.Empty
       className={cn(
-        "text-center text-sm text-muted-foreground not-empty:p-2",
+        "text-center [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] text-[var(--hui-color-foreground-base-secondary)] not-empty:p-2",
         className
       )}
       data-slot="combobox-empty"
@@ -280,7 +280,7 @@ function ComboboxStatus({
     <ComboboxPrimitive.Status
       data-slot="combobox-status"
       className={cn(
-        "px-3 py-2 text-xs font-medium text-muted-foreground empty:m-0 empty:p-0",
+        "px-3 py-2 [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] font-medium text-[var(--hui-color-foreground-base-secondary)] empty:m-0 empty:p-0",
         className
       )}
       {...props}
@@ -302,7 +302,7 @@ function ComboboxChips({ className, ...props }: ComboboxPrimitive.Chips.Props) {
       ref={chipsRef}
       data-slot="combobox-chips"
       className={cn(
-        "relative inline-flex min-h-8 w-full flex-wrap gap-1 rounded-lg border border-input bg-background bg-clip-padding p-[calc(--spacing(1)-1px)] text-base/5 shadow-xs ring-ring/24 transition-shadow outline-none *:min-h-6 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:border-ring focus-within:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-64 has-aria-invalid:border-destructive/36 focus-within:has-aria-invalid:border-destructive/64 focus-within:has-aria-invalid:ring-destructive/16 has-data-[size=lg]:min-h-9 has-data-[size=lg]:*:min-h-7 has-data-[size=sm]:min-h-7 has-data-[size=sm]:*:min-h-5 sm:text-sm dark:not-in-data-[slot=group]:bg-clip-border dark:not-has-disabled:bg-input/32 dark:not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] dark:has-aria-invalid:ring-destructive/24 [&:has(:disabled,:focus-within,[aria-invalid])]:shadow-none",
+        "relative inline-flex min-h-8 w-full flex-wrap gap-1 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] bg-clip-padding p-[calc(--spacing(1)-1px)] [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] *:min-h-6 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--hui-radius-2)-1px)] not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_1px_--theme(--color-black/4%)] focus-within:border-[var(--hui-color-border-accent-emphasis)] focus-within:[outline:var(--hui-focus-ring)] focus-within:outline-offset-[var(--hui-focus-ring-offset-inset-border)] has-disabled:pointer-events-none has-disabled:bg-[var(--hui-color-background-base-secondary)] has-aria-invalid:border-[var(--hui-color-border-danger-emphasis)] focus-within:has-aria-invalid:[outline-color:var(--hui-color-border-danger-emphasis)] has-data-[size=lg]:min-h-9 has-data-[size=lg]:*:min-h-7 has-data-[size=sm]:min-h-7 has-data-[size=sm]:*:min-h-5 dark:not-in-data-[slot=group]:bg-clip-border dark:not-has-disabled:not-focus-within:not-aria-invalid:before:shadow-[0_-1px_--theme(--color-white/8%)] [&:has(:disabled,:focus-within,[aria-invalid])]:shadow-none",
         className
       )}
       {...props}
@@ -314,7 +314,7 @@ function ComboboxChip({ children, ...props }: ComboboxPrimitive.Chip.Props) {
   return (
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
-      className="flex items-center rounded-md bg-accent ps-2 text-xs font-medium text-accent-foreground outline-none"
+      className="flex items-center rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary-hover)] ps-2 [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] font-medium text-[var(--hui-color-foreground-base-primary)] outline-none"
       {...props}
     >
       {children}

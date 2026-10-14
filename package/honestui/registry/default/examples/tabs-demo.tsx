@@ -2,25 +2,25 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from "@/registry/default/ui/tabs"
 
 export default function TabsDemo() {
   return (
-    <Tabs defaultValue="tab-1">
+    <Tabs defaultValue="profile">
       <TabsList>
-        <TabsTab value="tab-1">Tab 1</TabsTab>
-        <TabsTab value="tab-2">Tab 2</TabsTab>
-        <TabsTab value="tab-3">Tab 3</TabsTab>
+        <TabsTab value="profile">Profile</TabsTab>
+        <TabsTab value="notifications">Notifications</TabsTab>
+        <TabsTab value="billing">Billing</TabsTab>
       </TabsList>
-      <TabsPanel value="tab-1">
+      <TabsPanel value="profile">
         <p className="p-4 text-center text-xs text-muted-foreground">
-          Tab 1 content
+          Your name, photo, and public details.
         </p>
       </TabsPanel>
-      <TabsPanel value="tab-2">
+      <TabsPanel value="notifications">
         <p className="p-4 text-center text-xs text-muted-foreground">
-          Tab 2 content
+          Which updates reach you, and where.
         </p>
       </TabsPanel>
-      <TabsPanel value="tab-3">
+      <TabsPanel value="billing">
         <p className="p-4 text-center text-xs text-muted-foreground">
-          Tab 3 content
+          Your plan, payment method, and invoices.
         </p>
       </TabsPanel>
     </Tabs>

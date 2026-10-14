@@ -18,7 +18,12 @@ export default function MeterDemo() {
           <MeterIndicator />
         </MeterTrack>
       </Meter>
-      <Meter aria-label="Storage used" value={75} variant="circular" />
+      <Meter
+        aria-label="Storage used"
+        className="w-auto shrink-0"
+        value={75}
+        variant="circular"
+      />
     </div>
   );
 }

@@ -71,7 +71,7 @@ function PaginationLink({
       ? className
       : cn(
           buttonVariants({
-            variant: isActive ? "outline" : "ghost",
+            variant: isActive ? "secondary" : "ghost",
             size,
           }),
           className
@@ -93,7 +93,7 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn("max-sm:aspect-square max-sm:p-0", className)}
+      className={cn("max-sm:size-[var(--hui-density-control-height,2rem)] max-sm:p-0", className)}
       {...props}
     >
       <ChevronLeftIcon className="sm:-ms-1" />
@@ -110,7 +110,7 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn("max-sm:aspect-square max-sm:p-0", className)}
+      className={cn("max-sm:size-[var(--hui-density-control-height,2rem)] max-sm:p-0", className)}
       {...props}
     >
       <span className="max-sm:hidden">Next</span>

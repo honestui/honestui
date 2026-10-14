@@ -15,6 +15,9 @@
       0 0 0 / 0.04
     ), 0px 4px 30px 0px oklch(0 0 0 / 0.13); /* xl */
   --hui-shadow-inset: 0px 1px 1px 0px oklch(0 0 0 / 0.04) inset;
+  /* Key: the hard bottom edge under a raised control. */
+  --hui-shadow-key:
+    0px 1px 0px 0px oklch(0 0 0 / 0.14), 0px 2px 3px -1px oklch(0 0 0 / 0.1);
 }
 
 :root {
@@ -44,10 +47,10 @@
        chromeless text-entry surfaces that have no border to ring. Accent by
        default; a colored control (danger, success, …) overrides
        `outline-color` in its own :focus-visible rule to match. */
-  --hui-focus-ring: 1px solid var(--hui-color-border-accent-emphasis);
+  --hui-focus-ring: 2px solid var(--hui-color-border-accent-emphasis);
   /* Box-shadow form of the ring above, for borderless inputs with no border to
-     outline. Kept 1px + accent-emphasis so it matches the outline ring. */
-  --hui-focus-ring-shadow: 0 0 0 1px var(--hui-color-border-accent-emphasis);
+     outline. Kept 2px + accent-emphasis so it matches the outline ring. */
+  --hui-focus-ring-shadow: 0 0 0 2px var(--hui-color-border-accent-emphasis);
 
   /* Ring offset: rings sit flush (0) by default. A control adds one of these
        in its own :focus-visible rule when it needs to — accent-filled controls
@@ -96,6 +99,8 @@
       0 0 0 / 0.3
     ), 0px 4px 30px 0px oklch(0 0 0 / 0.4);
   --hui-shadow-inset: 0px 1px 1px 0px oklch(0 0 0 / 0.25) inset;
+  --hui-shadow-key:
+    0px 1px 0px 0px oklch(0 0 0 / 0.5), 0px 2px 3px -1px oklch(0 0 0 / 0.4);
 }
 
 @keyframes progress-indeterminate-sweep {

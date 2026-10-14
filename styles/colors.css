@@ -14,7 +14,7 @@
   /* Semantic Foreground Colors */
   --hui-color-foreground-accent-primary: var(--hui-accent-9);
   --hui-color-foreground-attention-primary: var(--hui-attention-9);
-  --hui-color-foreground-danger-primary: var(--hui-danger-9);
+  --hui-color-foreground-danger-primary: var(--hui-danger-11);
   --hui-color-foreground-success-primary: var(--hui-success-9);
 
   /* Base Background Colors */
@@ -42,7 +42,7 @@
   /* Foreground Hover Colors */
   --hui-color-foreground-accent-primary-hover: var(--hui-accent-11);
   --hui-color-foreground-attention-primary-hover: var(--hui-attention-11);
-  --hui-color-foreground-danger-primary-hover: var(--hui-danger-11);
+  --hui-color-foreground-danger-primary-hover: var(--hui-danger-12);
   --hui-color-foreground-success-primary-hover: var(--hui-success-11);
 
   /* Border Colors */

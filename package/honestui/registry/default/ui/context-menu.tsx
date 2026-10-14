@@ -283,7 +283,7 @@ function ContextMenuTrigger({ className, ...props }: ContextMenuTriggerProps) {
     <ContextMenuPrimitive.Trigger
       data-slot="context-menu-trigger"
       className={cn(
-        "outline-none focus-visible:ring-2 focus-visible:ring-[var(--hui-color-border-focus)] focus-visible:ring-offset-2",
+        "outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]",
         className
       )}
       {...props}
@@ -311,7 +311,7 @@ function ContextMenuCell({
       data-inset={inset || undefined}
       data-variant={variant}
       className={cn(
-        "relative flex items-center gap-[var(--hui-space-3)] p-[var(--hui-space-3)] outline-none select-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] aria-disabled:pointer-events-none aria-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:cursor-pointer data-highlighted:rounded-[var(--hui-radius-2)] data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-inset:ps-8 data-popup-open:cursor-pointer data-popup-open:rounded-[var(--hui-radius-2)] data-popup-open:bg-[var(--hui-color-background-base-primary-hover)] data-[variant=destructive]:text-[var(--hui-color-foreground-danger-primary)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--hui-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
+        "relative flex items-center gap-[var(--hui-space-3)] p-[var(--hui-space-3)] outline-none select-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] aria-disabled:pointer-events-none aria-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:cursor-pointer data-highlighted:rounded-[var(--hui-radius-2)] data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-inset:ps-8 data-popup-open:cursor-pointer data-popup-open:rounded-[var(--hui-radius-2)] data-popup-open:bg-[var(--hui-color-background-base-primary-hover)] data-[variant=destructive]:text-[var(--hui-color-foreground-danger-primary)] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-[var(--hui-color-foreground-base-secondary)] [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -507,7 +507,7 @@ function ContextMenuEmptyState({
     <div
       data-slot="context-menu-empty-state"
       className={cn(
-        "hidden p-[var(--hui-space-3)] text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] only:block",
+        "hidden p-[var(--hui-space-3)] text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-control,13px)] only:block",
         className
       )}
       {...props}
@@ -610,7 +610,7 @@ function ContextMenuContent({
           ref={ref}
           data-slot="context-menu-content"
           className={cn(
-            "box-border max-h-(--available-height) min-w-48 origin-(--transform-origin) overflow-x-hidden overflow-y-auto overscroll-contain rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] focus:outline-none focus-visible:outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
+            "box-border max-h-(--available-height) min-w-48 origin-(--transform-origin) overflow-x-hidden overflow-y-auto overscroll-contain rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] focus:outline-none focus-visible:outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
             className
           )}
           role={autocomplete ? "dialog" : "menu"}

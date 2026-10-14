@@ -3,7 +3,7 @@ import { Fieldset, FieldsetLegend } from "@/registry/default/ui/fieldset"
 
 export default function FieldsetBillingAddress() {
   return (
-    <Fieldset className="max-w-sm rounded-xl border p-4">
+    <Fieldset className="max-w-sm rounded-sm border-[0.5px] p-4">
       <FieldsetLegend>Billing address</FieldsetLegend>
       <Field><FieldLabel>Company</FieldLabel><FieldControl defaultValue="Acme Inc." /></Field>
       <Field><FieldLabel>ZIP code</FieldLabel><FieldControl defaultValue="94107" /></Field>

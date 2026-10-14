@@ -15,7 +15,7 @@ export function CodeBlockShowcase({
   hideHeader?: boolean
 }) {
   return (
-    <div className="w-full max-w-2xl rounded-lg border bg-background">
+    <div className="w-full max-w-2xl rounded-sm border-[0.5px] bg-background">
       {files.map((file) => (
         <div key={file.filename ?? file.code} className="border-b last:border-b-0">
           {file.filename && (

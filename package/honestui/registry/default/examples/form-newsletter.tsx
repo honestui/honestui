@@ -4,7 +4,7 @@ import { Form } from "@/registry/default/ui/form"
 
 export default function FormNewsletter() {
   return (
-    <Form className="grid w-full max-w-sm gap-4 rounded-xl border p-4">
+    <Form className="grid w-full max-w-sm gap-4 rounded-sm border-[0.5px] p-4">
       <Field>
         <FieldLabel>Newsletter</FieldLabel>
         <FieldControl type="email" placeholder="you@example.com" />

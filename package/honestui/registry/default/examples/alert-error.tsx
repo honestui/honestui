@@ -20,14 +20,14 @@ export default function AlertError() {
 
   return (
     <Form
-      className="grid w-full max-w-sm gap-4 rounded-xl border bg-card p-5"
+      className="grid w-full max-w-sm gap-4 rounded-sm border-[0.5px] bg-card p-5"
       onSubmit={(event) => {
         event.preventDefault()
         setConnected(isValid)
       }}
     >
       <div className="space-y-1">
-        <h3 className="font-medium">Webhook endpoint</h3>
+        <h3 className="text-base font-medium text-foreground">Webhook endpoint</h3>
         <p className="text-sm text-muted-foreground">
           Send workspace events to your server.
         </p>

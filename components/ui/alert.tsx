@@ -7,17 +7,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const alertVariants = cva(
-  "relative grid w-full items-start gap-x-2 gap-y-0.5 rounded-xl border px-3.5 py-3 text-sm text-card-foreground has-data-[slot=alert-action]:grid-cols-[1fr_auto] has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-2 has-[>svg]:has-data-[slot=alert-action]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] [&>svg]:h-[1lh] [&>svg]:w-4",
+  "relative grid w-full items-start gap-x-2 gap-y-0.5 rounded-[var(--hui-radius-2)] border-[0.5px] px-3.5 py-3 [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] text-[var(--hui-color-foreground-base-primary)] has-data-[slot=alert-action]:grid-cols-[1fr_auto] has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-2 has-[>svg]:has-data-[slot=alert-action]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] [&>svg]:h-[1lh] [&>svg]:w-4",
   {
     variants: {
       variant: {
         default:
-          "bg-transparent dark:bg-input/32 [&>svg]:text-muted-foreground",
-        info: "border-info/32 bg-info/4 [&>svg]:text-info",
-        success: "border-success/32 bg-success/4 [&>svg]:text-success",
-        warning: "border-warning/32 bg-warning/4 [&>svg]:text-warning",
+          "border-[var(--hui-color-border-base-secondary)] bg-transparent [&>svg]:text-[var(--hui-color-foreground-base-secondary)]",
+        info: "border-[var(--hui-color-border-accent-primary)] bg-[var(--hui-color-background-accent-primary)] [&>svg]:text-[var(--hui-color-foreground-accent-primary)]",
+        success:
+          "border-[var(--hui-color-border-success-primary)] bg-[var(--hui-color-background-success-primary)] [&>svg]:text-[var(--hui-color-foreground-success-primary-hover)]",
+        warning:
+          "border-[var(--hui-color-border-attention-primary)] bg-[var(--hui-color-background-attention-primary)] [&>svg]:text-[var(--hui-color-foreground-attention-primary-hover)]",
         error:
-          "border-destructive/32 bg-destructive/4 [&>svg]:text-destructive",
+          "border-[var(--hui-color-border-danger-primary)] bg-[var(--hui-color-background-danger-primary)] [&>svg]:text-[var(--hui-color-foreground-danger-primary)]",
       },
     },
     defaultVariants: {
@@ -59,7 +61,7 @@ function AlertDescription({
     <div
       data-slot="alert-description"
       className={cn(
-        "flex flex-col gap-2.5 text-muted-foreground [svg~&]:col-start-2",
+        "flex flex-col gap-2.5 text-[var(--hui-color-foreground-base-secondary)] [[data-slot=alert]:not([class*=bg-transparent])_&]:text-[var(--hui-color-foreground-base-primary)] [svg~&]:col-start-2",
         className
       )}
       {...props}
@@ -122,8 +124,8 @@ function AlertDialogPopup({
           <AlertDialogPrimitive.Popup
             data-slot="alert-dialog-popup"
             className={cn(
-              "row-start-2 grid w-full min-w-0 origin-top gap-0 border bg-popover bg-clip-padding p-0 text-popover-foreground shadow-lg transition-[scale,opacity,translate] duration-200 ease-in-out will-change-transform data-ending-style:opacity-0 data-starting-style:opacity-0 max-sm:overflow-y-auto max-sm:border-none max-sm:opacity-[calc(1-min(var(--nested-dialogs),1))] max-sm:data-ending-style:translate-y-4 max-sm:data-starting-style:translate-y-4 sm:max-w-lg sm:-translate-y-[calc(1.25rem*var(--nested-dialogs))] sm:scale-[calc(1-0.1*var(--nested-dialogs))] sm:rounded-2xl sm:data-ending-style:scale-98 sm:data-starting-style:scale-98 dark:bg-clip-border",
-              "relative before:pointer-events-none before:absolute before:inset-0 before:shadow-[0_1px_--theme(--color-black/4%)] max-sm:before:hidden sm:before:rounded-[calc(var(--radius-2xl)-1px)] sm:data-nested:data-ending-style:translate-y-8 sm:data-nested:data-starting-style:translate-y-8 dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
+              "row-start-2 grid w-full min-w-0 origin-top gap-0 border bg-[var(--hui-color-background-base-primary)] bg-clip-padding p-0 text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-floating)] transition-[scale,opacity,translate] duration-200 ease-in-out will-change-transform data-ending-style:opacity-0 data-starting-style:opacity-0 max-sm:overflow-y-auto max-sm:border-none max-sm:opacity-[calc(1-min(var(--nested-dialogs),1))] max-sm:data-ending-style:translate-y-4 max-sm:data-starting-style:translate-y-4 sm:max-w-lg sm:-translate-y-[calc(1.25rem*var(--nested-dialogs))] sm:scale-[calc(1-0.1*var(--nested-dialogs))] sm:rounded-[var(--hui-radius-2)] sm:data-ending-style:scale-98 sm:data-starting-style:scale-98 dark:bg-clip-border",
+              "relative before:pointer-events-none before:absolute before:inset-0 before:shadow-[0_1px_--theme(--color-black/4%)] max-sm:before:hidden sm:before:rounded-[calc(var(--hui-radius-2)-1px)] sm:data-nested:data-ending-style:translate-y-8 sm:data-nested:data-starting-style:translate-y-8 dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
               className
             )}
             {...props}
@@ -189,7 +191,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn("text-lg font-semibold", className)}
+      className={cn("[font-size:var(--hui-font-size-large)] [line-height:var(--hui-line-height-large)] font-semibold", className)}
       {...props}
     />
   )
@@ -202,7 +204,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("[font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] text-[var(--hui-color-foreground-base-secondary)]", className)}
       {...props}
     />
   )

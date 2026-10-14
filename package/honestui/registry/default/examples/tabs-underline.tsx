@@ -5,24 +5,24 @@ export default function TabsUnderline() {
     <Tabs defaultValue="tab-1">
       <div className="border-b">
         <TabsList variant="underline">
-          <TabsTab value="tab-1">Tab 1</TabsTab>
-          <TabsTab value="tab-2">Tab 2</TabsTab>
-          <TabsTab value="tab-3">Tab 3</TabsTab>
+          <TabsTab value="tab-1">Overview</TabsTab>
+          <TabsTab value="tab-2">Activity</TabsTab>
+          <TabsTab value="tab-3">Settings</TabsTab>
         </TabsList>
       </div>
       <TabsPanel value="tab-1">
         <p className="p-4 text-center text-xs text-muted-foreground">
-          Tab 1 content
+          Summary of the project.
         </p>
       </TabsPanel>
       <TabsPanel value="tab-2">
         <p className="p-4 text-center text-xs text-muted-foreground">
-          Tab 2 content
+          Recent changes and comments.
         </p>
       </TabsPanel>
       <TabsPanel value="tab-3">
         <p className="p-4 text-center text-xs text-muted-foreground">
-          Tab 3 content
+          Name, access, and integrations.
         </p>
       </TabsPanel>
     </Tabs>

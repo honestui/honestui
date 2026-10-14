@@ -9,7 +9,7 @@ const tasks = ["Invite teammates", "Create first project", "Connect billing"]
 
 export default function CollapsibleChecklist() {
   return (
-    <Collapsible className="w-full max-w-sm rounded-xl border p-4" defaultOpen>
+    <Collapsible className="w-full max-w-sm rounded-sm border-[0.5px] p-4" defaultOpen>
       <CollapsibleTrigger className="font-medium">Setup checklist</CollapsibleTrigger>
       <CollapsiblePanel className="pt-3">
         <div className="grid gap-2">
