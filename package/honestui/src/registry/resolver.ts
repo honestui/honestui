@@ -28,7 +28,7 @@ import {
 import { Config, getTargetStyleFromConfig } from "@/src/utils/get-config"
 import { getProjectTailwindVersionFromConfig } from "@/src/utils/get-project-info"
 import { buildTailwindThemeColorsFromCssVars } from "@/src/utils/updaters/update-tailwind-config"
-import deepmerge from "deepmerge"
+import { deepmerge } from "@/src/utils/deepmerge"
 import { z } from "zod/v3"
 
 export function resolveRegistryItemsFromRegistries(
@@ -310,10 +310,8 @@ export async function resolveRegistryTree(
   }
 
   const parsed = registryResolvedItemsTreeSchema.parse({
-    dependencies: deepmerge.all(payload.map((item) => item.dependencies ?? [])),
-    devDependencies: deepmerge.all(
-      payload.map((item) => item.devDependencies ?? [])
-    ),
+    dependencies: payload.flatMap((item) => item.dependencies ?? []),
+    devDependencies: payload.flatMap((item) => item.devDependencies ?? []),
     files: deduplicatedFiles,
     tailwind,
     cssVars,

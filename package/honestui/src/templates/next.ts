@@ -10,7 +10,7 @@ import { updateCssVars } from "@/src/utils/updaters/update-css-vars"
 import { updateDependencies } from "@/src/utils/updaters/update-dependencies"
 import { updateFonts } from "@/src/utils/updaters/update-fonts"
 import dedent from "dedent"
-import deepmerge from "deepmerge"
+import { deepmerge } from "@/src/utils/deepmerge"
 import fs from "fs-extra"
 
 import { createTemplate } from "./create-template"

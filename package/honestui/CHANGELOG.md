@@ -2,6 +2,13 @@
 
 Changes to the `honestui` npm package. Entries marked unreleased describe work prepared for the next publication.
 
+## 0.2.4 - 2026-11-02
+
+- Replace `deepmerge` with `@fastify/deepmerge` to prevent prototype poisoning in merged registry and project configuration. Preserve nested settings, concatenated dependency arrays, and Tailwind array replacement.
+- Update AG-UI to 1.0 while preserving existing binary input messages and text tool results. Convert multipart tool text into the stored text result.
+- Update release tooling. Release verification runs with Node 24.
+- Override vulnerable transitive minimatch and Undici versions in this repository. npm overrides apply to this repository's dependency tree; consumers manage their own transitive overrides.
+
 ## 0.2.3
 
 - Install AI components, prose, syntax, and generative UI by name: `honestui add prompt-bar`, `honestui add prose-syntax-react`, and `honestui add generative-chat`. The CLI ships the AI source and dependency metadata; core UI dependencies still come from the Honest UI registry. AI items also appear in first-party registry search.

@@ -9,7 +9,7 @@ import { ensureRegistriesInConfig } from "@/src/utils/registries"
 import { updateCss } from "@/src/utils/updaters/update-css"
 import { updateCssVars } from "@/src/utils/updaters/update-css-vars"
 import { updateDependencies } from "@/src/utils/updaters/update-dependencies"
-import deepmerge from "deepmerge"
+import { deepmerge } from "@/src/utils/deepmerge"
 import fs from "fs-extra"
 
 import type { TemplateInitOptions } from "./create-template"

@@ -40,6 +40,7 @@ import {
   getWorkspaceConfig,
   resolveConfigPaths,
   type Config,
+  type DeepPartial,
 } from "@/src/utils/get-config"
 import {
   formatMonorepoMessage,
@@ -58,7 +59,7 @@ import { logger } from "@/src/utils/logger"
 import { ensureRegistriesInConfig } from "@/src/utils/registries"
 import { spinner } from "@/src/utils/spinner"
 import { Command } from "commander"
-import deepmerge from "deepmerge"
+import { deepmerge } from "@/src/utils/deepmerge"
 import fsExtra from "fs-extra"
 import prompts from "prompts"
 import { z } from "zod/v3"
@@ -747,7 +748,7 @@ export async function runInit(
   const backupPath = `${targetPath}${FILE_BACKUP_SUFFIX}`
 
   // Merge and keep registries at the end.
-  const mergeConfig = (base: typeof config, override: object) => {
+  const mergeConfig = (base: typeof config, override: DeepPartial<typeof config>) => {
     const { registries, ...merged } = deepmerge(base, override)
     return { ...merged, registries } as typeof config
   }

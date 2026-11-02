@@ -9,7 +9,7 @@ import { Config } from "@/src/utils/get-config"
 import { TailwindVersion } from "@/src/utils/get-project-info"
 import { highlighter } from "@/src/utils/highlighter"
 import { spinner } from "@/src/utils/spinner"
-import deepmerge from "deepmerge"
+import { mergeWithArrayReplacement } from "@/src/utils/deepmerge"
 import objectToString from "stringify-object"
 import { type Config as TailwindConfig } from "tailwindcss"
 import {
@@ -216,9 +216,7 @@ async function addTailwindConfigTheme(
   if (themeInitializer?.isKind(SyntaxKind.ObjectLiteralExpression)) {
     const themeObjectString = themeInitializer.getText()
     const themeObject = await parseObjectLiteral(themeObjectString)
-    const result = deepmerge(themeObject, theme ?? {}, {
-      arrayMerge: (dst, src) => src,
-    })
+    const result = mergeWithArrayReplacement(themeObject, theme ?? {})
     const resultString = objectToString(result)
       .replace(/'\.\.\.(.*)'/g, "...$1") // Remove quote around spread element
       .replace(/'"/g, "'") // Replace `\" with "

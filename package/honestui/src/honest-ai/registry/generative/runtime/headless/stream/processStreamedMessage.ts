@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2024 Thesys Inc. MIT; see the generative source LICENSE.
 import { AssistantMessage, EventType, Message, StreamProtocolAdapter, ToolMessage } from "../types";
 import { agUIAdapter } from "./adapters";
+import { contentToText } from "@ag-ui/core";
 
 /**
  * @inline
@@ -217,6 +218,7 @@ export const processStreamedMessage = async ({
       }
 
       case EventType.TOOL_CALL_RESULT: {
+        const content = contentToText(event.content);
         // Result landed → no longer executing / in flight.
         clearToolExecuting(event.toolCallId);
         inFlightToolCallIds.delete(event.toolCallId);
@@ -230,7 +232,7 @@ export const processStreamedMessage = async ({
         const failed = event as unknown as { isError?: boolean; error?: string };
         const errorText =
           failed.isError === true || (typeof failed.error === "string" && failed.error.length > 0)
-            ? (failed.error ?? event.content)
+            ? (failed.error ?? content)
             : undefined;
 
         // Upsert the tool message for this toolCallId. First result → create;
@@ -240,7 +242,7 @@ export const processStreamedMessage = async ({
         if (existing) {
           const updated: ToolMessage = {
             ...existing,
-            content: event.content,
+            content,
             ...(errorText ? { error: errorText } : {}),
           };
           toolMessagesByCallId.set(event.toolCallId, updated);
@@ -250,7 +252,7 @@ export const processStreamedMessage = async ({
             id: crypto.randomUUID(),
             role: "tool",
             toolCallId: event.toolCallId,
-            content: event.content,
+            content,
             ...(errorText ? { error: errorText } : {}),
           };
           toolMessagesByCallId.set(event.toolCallId, toolMessage);
