@@ -13,7 +13,7 @@ Frame is lighter than Card. It draws one boundary around its children and gets o
 
 ## Anatomy
 
-A Frame is a rounded muted tray (`rounded-2xl` on a `bg-muted` background) that stacks its parts vertically. Inside it:
+A Frame is a rounded muted tray that stacks its parts vertically. Inside it:
 
 - **FrameHeader** renders a real `<header>` element and holds the title row.
 - **FrameTitle** is a semibold label naming what the frame contains.
@@ -168,6 +168,12 @@ Build logs and command output read as artifacts when they sit in a frame with a 
 Metrics keep their own boundary without inheriting card actions.
 
 <ComponentPreview name="frame-analytics-panel" />
+
+### Stat tiles
+
+Put several panels in a grid when each metric should read as its own tile on the tray. Under `data-style="soft"`, the tray's corners and padding are set so its radius stays concentric with the tiles.
+
+<ComponentPreview name="frame-stat-tiles" />
 
 ### Framed table
 

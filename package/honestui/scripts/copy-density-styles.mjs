@@ -10,3 +10,8 @@ await copyFile(
   path.join(packageRoot, "src", "density.css"),
   path.join(packageRoot, "dist", "density.css")
 )
+
+await copyFile(
+  path.join(packageRoot, "src", "soft.css"),
+  path.join(packageRoot, "dist", "soft.css")
+)

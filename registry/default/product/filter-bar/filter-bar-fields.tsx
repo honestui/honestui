@@ -711,7 +711,7 @@ function AmountInput({
       disabled={disabled || definition.disabled}
       className="w-full min-w-0"
     >
-      <div className="flex h-(--hui-space-10) w-full min-w-0 items-center overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] focus-within:border-[var(--hui-color-border-accent-emphasis)]">
+      <div className="flex h-(--hui-space-10) w-full min-w-0 items-center overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] focus-within:border-[var(--hui-color-border-accent-emphasis)]">
         {prefix ? (
           <span
             aria-hidden="true"

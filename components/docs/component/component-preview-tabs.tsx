@@ -50,7 +50,7 @@ export function ComponentPreviewTabs({
         <Tabs defaultValue="preview" className="relative w-full">
           <div
             className={cn(
-              "flex flex-col rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1",
+              "flex flex-col rounded-[var(--hui-radius-code-block,8px)] bg-[var(--hui-color-background-neutral-primary)] p-1",
               containerClassName,
             )}
           >
@@ -85,7 +85,7 @@ export function ComponentPreviewTabs({
               </div>
             </div>
 
-            <div className="bg-background overflow-hidden rounded-[5px] border-[0.5px] border-[var(--hui-color-border-base-primary)]">
+            <div className="bg-background overflow-hidden rounded-[var(--hui-radius-code-block-inner,5px)] border-[0.5px] border-[var(--hui-color-border-base-primary)]">
               <TabsPanel keepMounted={playground} value="preview">
                 <div
                   className={cn(

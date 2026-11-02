@@ -305,7 +305,7 @@ function ChatMessage({
                 void sendEdit()
               }
             }}
-            className="m-0 block w-full min-w-0 resize-none rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)] [overflow-wrap:anywhere] focus-visible:border-[var(--hui-color-border-accent-emphasis)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="m-0 block w-full min-w-0 resize-none rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)] [overflow-wrap:anywhere] focus-visible:border-[var(--hui-color-border-accent-emphasis)] disabled:cursor-not-allowed disabled:opacity-60"
           />
           {phase === "error" && (
             <p role="alert" className={cn("m-0 flex items-start gap-[var(--hui-space-2)]", smallText)}>

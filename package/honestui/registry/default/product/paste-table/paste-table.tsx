@@ -354,8 +354,7 @@ function PasteTable({
             data-slot="paste-table-preview"
             className="w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)]"
           >
-            {/* Table sets tabular figures, which also widens the spaces and points in names and emails. */}
-            <Table className="normal-nums">
+            <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead scope="col" className={cn("w-px whitespace-nowrap", headText)}>

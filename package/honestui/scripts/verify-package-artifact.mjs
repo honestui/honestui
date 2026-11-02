@@ -31,6 +31,7 @@ try {
     "dist/src/charts.d.ts",
     "dist/charts.css",
     "dist/density.css",
+    "dist/soft.css",
     "dist/icons.js",
     "dist/src/icons.d.ts",
     "dist/logos.js",

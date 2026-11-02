@@ -11,10 +11,10 @@
   border-radius: var(--hui-radius-2);
   border: 0;
   padding: var(--hui-space-3) var(--hui-space-4);
-  font-size: var(--hui-font-size-small);
+  font-size: var(--hui-font-size-control);
   font-weight: var(--hui-font-weight-medium);
-  letter-spacing: var(--hui-letter-spacing-small);
-  line-height: var(--hui-line-height-small);
+  letter-spacing: var(--hui-letter-spacing-control);
+  line-height: var(--hui-line-height-control);
   outline: none;
   transition: var(--hui-transition-interactive);
 }
@@ -53,15 +53,16 @@
 }
 
 .buttonOutline {
-  color: var(--hui-color-foreground-accent-primary);
+  color: var(--hui-color-foreground-base-primary);
   background: var(--hui-color-background-base-primary);
-  border: 0.5px solid var(--hui-color-border-accent-emphasis);
+  border: 0.5px solid var(--hui-color-border-base-tertiary);
   box-shadow: var(--hui-shadow-feather);
 }
 
 .buttonOutline:hover,
 .buttonOutline:active {
-  background: var(--hui-color-background-accent-primary);
+  border-color: var(--hui-color-border-base-focus);
+  background: var(--hui-color-background-base-primary-hover);
 }
 
 .buttonLarge {
@@ -430,10 +431,10 @@
   padding-inline: var(--hui-space-3);
   color: var(--hui-color-foreground-base-secondary);
   background: transparent;
-  font-size: var(--hui-font-size-small);
+  font-size: var(--hui-font-size-control);
   font-weight: var(--hui-font-weight-medium);
-  letter-spacing: var(--hui-letter-spacing-small);
-  line-height: var(--hui-line-height-small);
+  letter-spacing: var(--hui-letter-spacing-control);
+  line-height: var(--hui-line-height-control);
   outline: none;
 }
 

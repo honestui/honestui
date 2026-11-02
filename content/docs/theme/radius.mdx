@@ -5,7 +5,7 @@ description: Use Honest UI's modern and traditional radius scales for consistent
 
 Radius tokens keep corner decisions consistent across components and let a product change its overall character without rewriting component classes. Honest UI provides seven roles, from subtle rounding to a full pill or circle.
 
-Radius values are resolved by `data-style`, so set either `modern` or `traditional` on the same shared ancestor that owns the component theme.
+Radius values are resolved by `data-style`, so set `modern`, `traditional`, or `soft` on the same shared ancestor that owns the component theme.
 
 ## Modern style
 
@@ -51,9 +51,37 @@ Traditional keeps the same token names but resolves them to softer values. Compo
 
 <!-- Softer corners -->
 <html data-theme="light" data-style="traditional">
+
+<!-- Rounded controls and large cards; import honestui/soft.css after the theme -->
+<html data-theme="light" data-style="soft">
 ```
 
 The attribute is not decorative metadata: without a supported `data-style` value, the radius variables are not defined.
+
+## Soft style
+
+Soft sits between the other two scales: controls are clearly rounded and cards are large and calm. It also changes more than radius. Controls grow to 36px with 14px labels, hairlines get paler, fields gain a faint shadow, ghost buttons lose their resting border, elevation flattens to one faint shadow, and the default accent becomes blue. Cards use `--hui-radius-5`. An explicit `data-density` value still sets control height. A `data-accent-color` scope keeps its own accent.
+
+```css
+@import "honestui/theme.css";
+@import "honestui/soft.css";
+```
+
+<TokenTable
+  caption="Soft Honest UI radius tokens"
+  type="radius"
+  tokens={[
+    { name: "--hui-radius-1", value: "6px", description: "Small controls and subtle corner treatment" },
+    { name: "--hui-radius-2", value: "10px", description: "Buttons, inputs, menus, and badges" },
+    { name: "--hui-radius-3", value: "12px", description: "Grouped component containers" },
+    { name: "--hui-radius-4", value: "16px", description: "Dialogs, sheets, and larger surfaces" },
+    { name: "--hui-radius-5", value: "20px", description: "Cards and large panels" },
+    { name: "--hui-radius-6", value: "28px", description: "Extra-large or expressive surfaces" },
+    { name: "--hui-radius-full", value: "800px", description: "Pills, circular avatars, and round indicators" },
+    { name: "--hui-radius-frame-panel", value: "var(--hui-radius-3)", description: "FramePanel corners. Other styles fall back to --hui-radius-2" },
+    { name: "--hui-radius-frame", value: "calc(panel radius + 8px)", description: "Frame corners, concentric with the panels inside" },
+  ]}
+/>
 
 ## Tailwind usage
 
@@ -68,7 +96,7 @@ The attribute is not decorative metadata: without a supported `data-style` value
 </article>
 ```
 
-The class names stay the same when `data-style` changes; the browser resolves the radius token to the modern or traditional value.
+The class names stay the same when `data-style` changes; the browser resolves the radius token to the value for that style.
 
 ## Practical guidance
 

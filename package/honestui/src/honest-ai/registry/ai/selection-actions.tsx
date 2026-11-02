@@ -135,7 +135,7 @@ function SelectionActions({
                 aria-label={labels.prompt}
                 placeholder={labels.promptPlaceholder}
                 className={cn(
-                  "h-[var(--hui-space-7)] w-40 min-w-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-transparent px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus:border-[var(--hui-color-border-accent-emphasis)]",
+                  "h-[var(--hui-space-7)] w-40 min-w-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-transparent px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus:border-[var(--hui-color-border-accent-emphasis)]",
                   smallText
                 )}
               />

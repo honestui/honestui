@@ -387,6 +387,7 @@ import fieldset_danger_zone from "./default/examples/fieldset-danger-zone";
 import form_profile_card from "./default/examples/form-profile-card";
 import form_newsletter from "./default/examples/form-newsletter";
 import frame_analytics_panel from "./default/examples/frame-analytics-panel";
+import frame_stat_tiles from "./default/examples/frame-stat-tiles";
 import frame_device_preview from "./default/examples/frame-device-preview";
 import frame_code_output from "./default/examples/frame-code-output";
 import group_filter_actions from "./default/examples/group-filter-actions";
@@ -476,6 +477,7 @@ export const Index: Record<string, { component: ComponentType }> = {
   "form-profile-card": { component: form_profile_card },
   "form-newsletter": { component: form_newsletter },
   "frame-analytics-panel": { component: frame_analytics_panel },
+  "frame-stat-tiles": { component: frame_stat_tiles },
   "frame-device-preview": { component: frame_device_preview },
   "frame-code-output": { component: frame_code_output },
   "group-filter-actions": { component: group_filter_actions },

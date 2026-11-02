@@ -189,7 +189,7 @@ function SidebarNav({
             {labels.threads}
           </p>
           {threads.length > 0 && (
-            <label className="flex min-h-[var(--hui-space-9)] items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] focus-within:border-[var(--hui-color-border-accent-emphasis)]">
+            <label className="flex min-h-[var(--hui-space-9)] items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] focus-within:border-[var(--hui-color-border-accent-emphasis)]">
               <SearchIcon
                 aria-hidden="true"
                 className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"

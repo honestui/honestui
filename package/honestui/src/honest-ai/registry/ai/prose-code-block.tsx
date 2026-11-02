@@ -76,7 +76,7 @@ function ProseCodeBlock({
     <figure
       data-slot="prose-code-block"
       // `not-prose` keeps a prose around this figure from restyling its code.
-      className={cn("not-prose m-0 w-full min-w-0 rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1 text-[var(--hui-color-foreground-base-primary)]", className)}
+      className={cn("not-prose m-0 w-full min-w-0 rounded-[var(--hui-radius-code-block,8px)] bg-[var(--hui-color-background-neutral-primary)] p-1 text-[var(--hui-color-foreground-base-primary)]", className)}
       {...props}
     >
       <figcaption className="flex min-w-0 items-center gap-[var(--hui-space-2)] py-0.5 ps-2.5 pe-0.5">
@@ -97,9 +97,9 @@ function ProseCodeBlock({
         aria-label={label}
         {...codeProps}
         className={cn(
-          "m-0 mt-1 overflow-x-auto rounded-[5px] bg-[var(--hui-color-background-base-primary)] px-4 py-3.5 font-mono text-[0.8125rem] leading-[1.65] shadow-[inset_0_0_0_0.5px_var(--hui-color-border-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
+          "m-0 mt-1 overflow-x-auto rounded-[var(--hui-radius-code-block-inner,5px)] bg-[var(--hui-color-background-base-primary)] px-4 py-3.5 font-mono text-[0.8125rem] leading-[1.65] shadow-[inset_0_0_0_0.5px_var(--hui-color-border-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
           codeClassName,
-          "[&&]:border-0! [&&]:rounded-[5px]!"
+          "[&&]:border-0! [&&]:rounded-[var(--hui-radius-code-block-inner,5px)]!"
         )}
       >
         <code className="block w-max min-w-full">

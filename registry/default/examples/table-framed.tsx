@@ -38,7 +38,7 @@ export default function TableFramed() {
                 </Badge>
               </TableCell>
               <TableCell>Frontend Team</TableCell>
-              <TableCell className="text-right">$12,500</TableCell>
+              <TableCell className="text-right tabular-nums">$12,500</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Mobile App</TableCell>
@@ -52,7 +52,7 @@ export default function TableFramed() {
                 </Badge>
               </TableCell>
               <TableCell>Mobile Team</TableCell>
-              <TableCell className="text-right">$8,750</TableCell>
+              <TableCell className="text-right tabular-nums">$8,750</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">
@@ -68,7 +68,7 @@ export default function TableFramed() {
                 </Badge>
               </TableCell>
               <TableCell>Backend Team</TableCell>
-              <TableCell className="text-right">$5,200</TableCell>
+              <TableCell className="text-right tabular-nums">$5,200</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">
@@ -84,7 +84,7 @@ export default function TableFramed() {
                 </Badge>
               </TableCell>
               <TableCell>DevOps Team</TableCell>
-              <TableCell className="text-right">$3,800</TableCell>
+              <TableCell className="text-right tabular-nums">$3,800</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">
@@ -100,7 +100,7 @@ export default function TableFramed() {
                 </Badge>
               </TableCell>
               <TableCell>UX Team</TableCell>
-              <TableCell className="text-right">$7,200</TableCell>
+              <TableCell className="text-right tabular-nums">$7,200</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">
@@ -116,13 +116,13 @@ export default function TableFramed() {
                 </Badge>
               </TableCell>
               <TableCell>Security Team</TableCell>
-              <TableCell className="text-right">$2,100</TableCell>
+              <TableCell className="text-right tabular-nums">$2,100</TableCell>
             </TableRow>
           </TableBody>
           <TableFooter>
             <TableRow>
               <TableCell colSpan={3}>Total Budget</TableCell>
-              <TableCell className="text-right font-medium">$39,550</TableCell>
+              <TableCell className="text-right tabular-nums font-medium">$39,550</TableCell>
             </TableRow>
           </TableFooter>
         </Table>

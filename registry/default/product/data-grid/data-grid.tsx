@@ -573,7 +573,7 @@ function getResponsiveClass(hideBelow?: "sm" | "md" | "lg") {
 }
 
 function getAlignmentClass(align?: string) {
-  if (align === "right") return "text-right"
+  if (align === "right") return "text-right tabular-nums"
   if (align === "center") return "text-center"
   return "text-left"
 }

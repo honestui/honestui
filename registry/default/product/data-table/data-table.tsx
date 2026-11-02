@@ -467,7 +467,7 @@ export function DataTableContent({ className }: { className?: string }) {
 
   const alignClass = (align?: string) =>
     align === "right"
-      ? "text-right"
+      ? "text-right tabular-nums"
       : align === "center"
         ? "text-center"
         : undefined

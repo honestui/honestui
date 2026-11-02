@@ -7,8 +7,8 @@ export default function TableInvoiceList() {
       <Table className="text-sm">
         <TableHeader><TableRow><TableHead>Invoice</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
         <TableBody>
-          <TableRow><TableCell>INV-1042</TableCell><TableCell><Badge variant="success">Paid</Badge></TableCell><TableCell className="text-right">$240</TableCell></TableRow>
-          <TableRow><TableCell>INV-1043</TableCell><TableCell><Badge variant="warning">Due</Badge></TableCell><TableCell className="text-right">$180</TableCell></TableRow>
+          <TableRow><TableCell>INV-1042</TableCell><TableCell><Badge variant="success">Paid</Badge></TableCell><TableCell className="text-right tabular-nums">$240</TableCell></TableRow>
+          <TableRow><TableCell>INV-1043</TableCell><TableCell><Badge variant="warning">Due</Badge></TableCell><TableCell className="text-right tabular-nums">$180</TableCell></TableRow>
         </TableBody>
       </Table>
     </div>

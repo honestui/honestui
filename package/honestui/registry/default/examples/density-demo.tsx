@@ -121,7 +121,7 @@ export default function DensityDemo() {
                   <TableCell>{invoice.id}</TableCell>
                   <TableCell>{invoice.customer}</TableCell>
                   <TableCell>{invoice.status}</TableCell>
-                  <TableCell className="text-right">{invoice.amount}</TableCell>
+                  <TableCell className="text-right tabular-nums">{invoice.amount}</TableCell>
                   <TableCell className="w-px">
                     <Menu>
                       <MenuTrigger

@@ -15,7 +15,7 @@ A table has an optional caption, a header row, body rows, cells, an optional foo
 
 ## Formatting
 
-Keep numeric columns right-aligned so digits line up for comparison; the component already applies tabular figures, which keeps columns of numbers from wobbling as values change. Format consistently within a column — same currency, same precision, same date format on every row. Cells clip overflow onto one line with an ellipsis rather than wrapping; see [Accessibility](#accessibility) for how to keep clipped values reachable.
+Keep numeric columns right-aligned so digits line up for comparison; add `tabular-nums` to those cells, which keeps columns of numbers from wobbling as values change. Leave it off text cells, because in Love Sans it also widens spaces and punctuation. Format consistently within a column — same currency, same precision, same date format on every row. Cells clip overflow onto one line with an ellipsis rather than wrapping; see [Accessibility](#accessibility) for how to keep clipped values reachable.
 
 ## Accessibility
 
@@ -192,7 +192,7 @@ All Table parts accept props for their matching native HTML elements — `<table
 
 Notes:
 
-- `Table` wraps the native table in a horizontally scrollable container; the table itself uses `caption-bottom` and tabular figures.
+- `Table` wraps the native table in a horizontally scrollable container; the table itself uses `caption-bottom`.
 - `TableHeader` renders a sticky header (`top-0`) against vertical page scroll.
 - `TableSectionHeader` renders a `tr`; place one or more `TableHead` cells inside it with a `colSpan` covering the table's width and `scope="colgroup"` for correct announcement.
 - `data-state="selected"` on a `TableRow` applies the selected background, ready for controlled row selection.

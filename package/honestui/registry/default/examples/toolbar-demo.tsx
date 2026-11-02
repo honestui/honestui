@@ -1,3 +1,5 @@
+"use client";
+
 import {
   TextAlignCenter as AlignCenterIcon,
   TextAlignStart as AlignLeftIcon,

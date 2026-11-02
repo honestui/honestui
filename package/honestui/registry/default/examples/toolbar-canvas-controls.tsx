@@ -1,3 +1,5 @@
+"use client"
+
 import { MousePointer2 as MousePointer2Icon, Move as MoveIcon, PenLine as PenLineIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"

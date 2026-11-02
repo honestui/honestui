@@ -24,6 +24,7 @@
     },
     "./charts.css": "./dist/charts.css",
     "./density.css": "./dist/density.css",
+    "./soft.css": "./dist/soft.css",
     "./icons": {
       "types": "./dist/src/icons.d.ts",
       "default": "./dist/icons.js"

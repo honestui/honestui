@@ -1,3 +1,5 @@
+"use client"
+
 import { Pause as PauseIcon, Play as PlayIcon, SkipForward as SkipForwardIcon } from "honestui/icons"
 
 import { Button } from "@/registry/default/ui/button"

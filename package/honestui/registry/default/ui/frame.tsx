@@ -7,7 +7,7 @@ function Frame({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="frame"
       className={cn(
-        "relative flex flex-col rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-secondary)] p-1",
+        "relative flex flex-col rounded-[var(--hui-radius-frame,var(--hui-radius-2))] bg-[var(--hui-color-background-base-secondary)] p-[var(--hui-frame-padding,--spacing(1))]",
         className
       )}
       {...props}
@@ -20,7 +20,7 @@ function FramePanel({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="frame-panel"
       className={cn(
-        "relative bg-clip-padding not-has-[table]:rounded-[var(--hui-radius-2)] not-has-[table]:border not-has-[table]:bg-[var(--hui-color-background-base-primary)] not-has-[table]:p-5 not-has-[table]:shadow-[var(--hui-shadow-feather)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--hui-radius-2)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] has-[table]:before:hidden dark:bg-clip-border dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
+        "relative bg-clip-padding not-has-[table]:rounded-[var(--hui-radius-frame-panel,var(--hui-radius-2))] not-has-[table]:border-[length:var(--hui-border-width-surface,1px)] not-has-[table]:bg-[var(--hui-color-background-base-primary)] not-has-[table]:p-5 not-has-[table]:shadow-[var(--hui-shadow-feather)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--hui-radius-frame-panel,var(--hui-radius-2))-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] has-[table]:before:hidden dark:bg-clip-border dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
         className
       )}
       {...props}

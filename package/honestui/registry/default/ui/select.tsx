@@ -327,7 +327,7 @@ const selectTriggerVariants = cva(
       },
       variant: {
         outline:
-          "border-[0.5px] border-[var(--hui-color-border-base-tertiary)]",
+          "border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))]",
         text: "border-0",
       },
     },

@@ -516,7 +516,7 @@ function triggerClassNames({ invalid }: TriggerStyleInput): string {
     "inline-flex h-[var(--hui-space-10)] w-full min-w-0 items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] bg-[var(--hui-color-background-base-primary)] text-left text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [transition:var(--hui-transition-interactive)]",
     invalid
       ? "border-[var(--hui-color-border-danger-emphasis)]"
-      : "border-[var(--hui-color-border-base-tertiary)]"
+      : "border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))]"
   )
 }
 

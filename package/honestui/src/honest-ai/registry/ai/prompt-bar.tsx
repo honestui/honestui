@@ -389,7 +389,7 @@ function PromptBar({
 
       <div
         data-slot="prompt-bar-field"
-        className="flex flex-col gap-[var(--hui-space-2)] rounded-[var(--hui-radius-5)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:var(--hui-transition-interactive)] focus-within:border-[var(--hui-color-border-accent-emphasis)] in-data-disabled:opacity-60"
+        className="flex flex-col gap-[var(--hui-space-2)] rounded-[var(--hui-radius-5)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:var(--hui-transition-interactive)] focus-within:border-[var(--hui-color-border-accent-emphasis)] in-data-disabled:opacity-60"
       >
         {attachments.length > 0 && (
           <ul
