@@ -78,7 +78,17 @@ function PopoverDescription({
     />
   )
 }
+/**
+ * @deprecated Kept so existing imports keep working. It renders a plain `div`
+ * and does not change where the popup opens; the popup positions against its
+ * trigger.
+ */
+function PopoverAnchor({ ...props }: React.ComponentProps<"div">) {
+  return <div data-slot="popover-anchor" {...props} />
+}
+
 export {
+  PopoverAnchor,
   Popover,
   PopoverTrigger,
   PopoverPopup,
