@@ -20,7 +20,7 @@ function FramePanel({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="frame-panel"
       className={cn(
-        "relative bg-clip-padding not-has-[table]:rounded-[var(--hui-radius-frame-panel,var(--hui-radius-2))] not-has-[table]:border-[length:var(--hui-border-width-surface,1px)] not-has-[table]:bg-[var(--hui-color-background-base-primary)] not-has-[table]:p-5 not-has-[table]:shadow-[var(--hui-shadow-feather)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--hui-radius-frame-panel,var(--hui-radius-2))-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] has-[table]:before:hidden dark:bg-clip-border dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
+        "relative bg-clip-padding not-has-[table]:rounded-[var(--hui-radius-frame-panel,var(--hui-radius-2))] not-has-[table]:border-[length:var(--hui-border-width-surface,1px)] not-has-[table]:border-[var(--hui-color-border-base-primary)] not-has-[table]:bg-[var(--hui-color-background-panel,var(--hui-color-background-base-primary))] not-has-[table]:p-5 not-has-[table]:shadow-[var(--hui-shadow-feather)]",
         className
       )}
       {...props}
@@ -42,7 +42,7 @@ function FrameTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="frame-panel-title"
-      className={cn("[font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] font-semibold", className)}
+      className={cn("[font-size:var(--hui-font-size-large)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)] [font-weight:var(--hui-font-weight-medium)]", className)}
       {...props}
     />
   )

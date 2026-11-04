@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Slider as SliderPrimitive } from "@base-ui-components/react/slider"
+import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 import {
   clampChroma,
   clampRgb,
@@ -216,6 +216,18 @@ function hslToOklch(
 }
 
 function clampToSrgb(color: ColorObject): ColorObject {
+  // A round trip through OKLCH leaves sRGB edge colors (pure blue, cyan) a hair
+  // outside [0, 1]. Treat those as in gamut instead of cutting their chroma.
+  const rgb = toRgb({ mode: "oklch", l: color.l, c: color.c, h: color.h })
+  const epsilon = 1e-6
+  if (
+    [rgb.r, rgb.g, rgb.b].every(
+      (channel) => channel >= -epsilon && channel <= 1 + epsilon
+    )
+  ) {
+    return color
+  }
+
   const result = clampChroma(
     {
       mode: "oklch",
@@ -538,7 +550,7 @@ function OklchColorArea({
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 block size-[var(--hui-space-4)] rounded-full border-[3px] border-[var(--hui-color-foreground-base-emphasis)] shadow-[var(--hui-shadow-soft)]"
+        className="pointer-events-none absolute top-0 left-0 block size-3.5 rounded-full border-[3px] border-white shadow-[0_0_0_0.5px_oklch(0_0_0/0.3),var(--hui-shadow-soft)]"
         style={{
           backgroundColor: formatOklch({
             l: lightness,
@@ -699,7 +711,7 @@ function HslColorArea({
     >
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute block size-[var(--hui-space-4)] rounded-full border-[3px] border-[var(--hui-color-foreground-base-emphasis)] shadow-[var(--hui-shadow-soft)]"
+        className="pointer-events-none absolute block size-3.5 rounded-full border-[3px] border-white shadow-[0_0_0_0.5px_oklch(0_0_0/0.3),var(--hui-shadow-soft)]"
         style={{
           backgroundColor: `hsl(${round(hsl.h, 4)} ${round(hsl.s, 4)}% ${round(hsl.l, 4)}%)`,
           left: `${round(x * 100, 4)}%`,
@@ -716,11 +728,11 @@ const sliderRootClassName =
   "relative flex w-full touch-none items-center select-none data-disabled:opacity-50"
 const sliderControlClassName = "flex w-full items-center"
 const sliderTrackClassName =
-  "relative h-[var(--hui-space-4)] w-full grow overflow-hidden rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)]"
+  "relative h-[var(--hui-space-4)] w-full grow rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)]"
 const sliderIndicatorClassName =
   "absolute h-full rounded-[var(--hui-radius-full)] bg-transparent"
 const sliderThumbClassName =
-  "absolute block size-[var(--hui-space-4)] rounded-full border-[3px] border-[var(--hui-color-foreground-base-emphasis)] shadow-[var(--hui-shadow-soft)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]"
+  "absolute block size-3.5 rounded-full border-[3px] border-white shadow-[0_0_0_0.5px_oklch(0_0_0/0.3),var(--hui-shadow-soft)] outline-none has-focus-visible:[outline:var(--hui-focus-ring)] has-focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]"
 
 type ColorPickerHueProps = Omit<
   SliderPrimitive.Root.Props,
@@ -751,6 +763,8 @@ function ColorPickerHue({ className, ...props }: ColorPickerHueProps) {
 
   return (
     <SliderPrimitive.Root
+      // Keep the thumb inside the 192px column at 0 and 100%.
+      thumbAlignment="edge"
       {...props}
       className={cn(sliderRootClassName, className)}
       max={360}
@@ -780,7 +794,10 @@ function ColorPickerHue({ className, ...props }: ColorPickerHueProps) {
             className={sliderThumbClassName}
             aria-label={isOklch ? "OKLCH hue" : "HSL hue"}
             style={{
-              backgroundColor: `hsl(${round(value, 4)} 100% 50%)`,
+              // Match the track the thumb sits on.
+              backgroundColor: isOklch
+                ? `oklch(0.7 0.18 ${round(value, 4)})`
+                : `hsl(${round(value, 4)} 100% 50%)`,
             }}
             data-slot="color-picker-slider-thumb"
           />
@@ -803,6 +820,8 @@ function ColorPickerAlpha({ className, ...props }: ColorPickerAlphaProps) {
 
   return (
     <SliderPrimitive.Root
+      // Keep the thumb inside the 192px column at 0 and 100%.
+      thumbAlignment="edge"
       {...props}
       className={cn(sliderRootClassName, className)}
       max={100}
@@ -870,7 +889,7 @@ ColorPickerAlpha.displayName = "ColorPicker.Alpha"
 
 type ColorPickerInputProps = Omit<
   React.ComponentProps<typeof Input>,
-  "defaultValue" | "readOnly" | "value"
+  "defaultValue" | "value"
 > & {
   copyable?: boolean
 }
@@ -878,9 +897,19 @@ type ColorPickerInputProps = Omit<
 function ColorPickerInput({
   copyable = false,
   className,
+  onChange,
+  onBlur,
+  onKeyDown,
   ...props
 }: ColorPickerInputProps) {
-  const { l: lightness, c: chroma, h: hue, alpha, mode } = useColorPicker()
+  const {
+    l: lightness,
+    c: chroma,
+    h: hue,
+    alpha,
+    mode,
+    setColor,
+  } = useColorPicker()
   const [copied, setCopied] = React.useState(false)
   const copiedTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -897,9 +926,21 @@ function ColorPickerInput({
     []
   )
 
+  // Typed text is a draft tied to the value it started from. When the color
+  // changes elsewhere (area, sliders), the stale draft is dropped.
+  const [draft, setDraft] = React.useState<{ text: string; base: string }>()
+  const draftText = draft?.base === value ? draft.text : undefined
+  const invalid = draftText !== undefined && !parse(draftText.trim())
+
+  const commit = () => {
+    if (draftText === undefined || invalid) return
+    setColor(parseColor(draftText.trim()))
+    setDraft(undefined)
+  }
   const copyValue = async () => {
     try {
-      await navigator.clipboard.writeText(value)
+      // Copy what the field shows, including a valid draft not yet committed.
+      await navigator.clipboard.writeText((draftText ?? value).trim())
       setCopied(true)
       if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current)
       copiedTimerRef.current = setTimeout(() => setCopied(false), 1500)
@@ -911,11 +952,35 @@ function ColorPickerInput({
   return (
     <span className="relative flex min-w-0 flex-1" data-slot="color-picker-input-wrapper">
       <Input
+        aria-label="Color value"
+        spellCheck={false}
+        autoComplete="off"
         {...props}
-        value={value}
-        readOnly
+        value={draftText ?? value}
+        aria-invalid={invalid || undefined}
+        onChange={(event) => {
+          setDraft({ text: event.currentTarget.value, base: value })
+          onChange?.(event)
+        }}
+        onBlur={(event) => {
+          commit()
+          onBlur?.(event)
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") commit()
+          if (event.key === "Escape" && draftText !== undefined) {
+            // Revert the draft without also closing a surrounding overlay.
+            event.preventDefault()
+            event.stopPropagation()
+            // Overlays listen for Escape on document, where React also
+            // listens, so stop the native event's remaining listeners too.
+            event.nativeEvent.stopImmediatePropagation()
+            setDraft(undefined)
+          }
+          onKeyDown?.(event)
+        }}
         className={cn(
-          copyable && "[&_[data-slot=input]]:pr-[var(--hui-space-9)]",
+          copyable && "[&_[data-slot=color-picker-input]]:pe-9",
           className
         )}
         data-slot="color-picker-input"
@@ -926,7 +991,8 @@ function ColorPickerInput({
           aria-label={copied ? "Color copied" : "Copy color"}
           title={copied ? "Copied" : "Copy color"}
           onClick={copyValue}
-          className="absolute top-1/2 right-[var(--hui-space-2)] inline-flex size-[var(--hui-space-6)] -translate-y-1/2 cursor-pointer items-center justify-center rounded-[var(--hui-radius-1)] border-0 bg-transparent text-[var(--hui-color-foreground-base-secondary)] outline-none hover:bg-[var(--hui-color-background-base-primary-hover)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)]"
+          disabled={invalid}
+          className="absolute top-1/2 end-[var(--hui-space-2)] inline-flex size-7 -translate-y-1/2 cursor-pointer pointer-coarse:after:absolute pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 items-center justify-center rounded-[var(--hui-radius-1)] border-0 bg-transparent text-[var(--hui-color-foreground-base-secondary)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)] disabled:pointer-events-none disabled:opacity-50"
           data-slot="color-picker-copy"
         >
           {copied ? (
@@ -968,6 +1034,7 @@ function ColorPickerMode({
       }}
     >
       <Select.Trigger
+        aria-label="Color format"
         {...props}
         className={cn("min-w-[var(--hui-space-15)] shrink-0", className)}
         data-slot="color-picker-mode"

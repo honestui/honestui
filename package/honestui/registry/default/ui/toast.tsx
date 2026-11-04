@@ -18,7 +18,7 @@ import {
   type GooeyState,
 } from "./toast-gooey"
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/registry/default/ui/button"
 
 const standardToastManager = Toast.createToastManager()
 
@@ -106,7 +106,7 @@ function getGooeyButton(options: ToastOptions | ToastUpdateOptions) {
 
   return {
     title: children,
-    onClick: () => onClick({} as React.MouseEvent<HTMLButtonElement>),
+    onClick: (event: React.MouseEvent<HTMLButtonElement>) => onClick(event),
   }
 }
 
@@ -116,8 +116,11 @@ function toGooeyOptions(options: ToastOptions | ToastUpdateOptions): GooeyOption
     description: options.description,
     position: options.position,
     duration:
-      options.duration ??
-      (options.timeout === 0 ? null : options.timeout),
+      options.duration !== undefined
+        ? options.duration
+        : options.timeout === 0
+          ? null
+          : options.timeout,
     icon: options.icon,
     styles: options.styles,
     fill: options.fill,
@@ -132,8 +135,9 @@ function addGooeyToast(options: ToastOptions) {
   const config = toGooeyOptions(options)
 
   if (state === "loading") {
+    // A loading toast stays until it settles, unless the caller set a duration.
     return (gooey.show as (opts: GooeyOptions & { state: GooeyState }) => string)(
-      { ...config, state }
+      { ...config, duration: config.duration === undefined ? null : config.duration, state }
     )
   }
   return gooey[state](config)
@@ -177,11 +181,21 @@ const toastManager = {
     gooey.dismiss(id)
   },
   update(id: string, options: ToastUpdateOptions) {
-    if (options.variant === "gooey") {
-      gooey.dismiss(id)
-      addGooeyToast(options as ToastOptions)
+    // A gooey toast updates in place (same id and position); only the options
+    // passed here change, so unset fields are left out of the merge.
+    const gooeyOptions = Object.fromEntries(
+      Object.entries(toGooeyOptions(options)).filter(
+        ([, value]) => value !== undefined
+      )
+    ) as GooeyOptions
+    const state =
+      options.type || options.state
+        ? getGooeyState(options.type, options.state)
+        : undefined
+    if (gooey.update(id, state ? { ...gooeyOptions, state } : gooeyOptions)) {
       return
     }
+    if (options.variant === "gooey") return
 
     standardToastManager.update(id, toStandardOptions(options))
   },
@@ -271,7 +285,7 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
                     : ["right", isTop ? "up" : "down"]
               }
               className={cn(
-                "absolute box-border h-[var(--height)] w-full cursor-default overflow-clip rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] bg-clip-padding p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-lifted)] select-none [--height:var(--toast-frontmost-height,var(--toast-height))] [--peek:var(--hui-space-4)] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))] [transition:opacity_var(--hui-duration-slow)_var(--hui-ease-out)] z-[calc(var(--hui-z-index-toast)-var(--toast-index))] motion-safe:[transition:transform_var(--hui-duration-slow)_var(--hui-ease-out),opacity_var(--hui-duration-slow)_var(--hui-ease-out),height_var(--hui-duration-fast)_var(--hui-ease-out)] data-swiping:[transition:none]!",
+                "absolute box-border h-[var(--height)] w-full cursor-default overflow-clip rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] bg-clip-padding p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay)] select-none [--height:var(--toast-frontmost-height,var(--toast-height))] [--peek:var(--hui-space-4)] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))] [transition:opacity_var(--hui-duration-slow)_var(--hui-ease-out)] z-[calc(var(--hui-z-index-toast)-var(--toast-index))] motion-safe:[transition:transform_var(--hui-duration-slow)_var(--hui-ease-out),opacity_var(--hui-duration-slow)_var(--hui-ease-out),height_var(--hui-duration-fast)_var(--hui-ease-out)] data-swiping:[transition:none]!",
                 "data-[position*=right]:right-0 data-[position*=right]:left-auto data-[position*=left]:right-auto data-[position*=left]:left-0 data-[position*=center]:right-0 data-[position*=center]:left-0",
                 "data-[position*=bottom]:top-auto data-[position*=bottom]:bottom-0 data-[position*=bottom]:origin-bottom data-[position*=bottom]:[--offset-y:calc(var(--toast-offset-y)*-1+(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] data-[position*=bottom]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]",
                 "data-[position*=top]:top-0 data-[position*=top]:bottom-auto data-[position*=top]:origin-top data-[position*=top]:[--offset-y:calc(var(--toast-offset-y)+(var(--toast-index)*var(--gap))+var(--toast-swipe-movement-y))] data-[position*=top]:[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)+(var(--toast-index)*var(--peek))+(var(--shrink)*var(--height))))_scale(var(--scale))]",
@@ -317,10 +331,10 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
                       )}
                       <Toast.Close
                         aria-label="Dismiss notification"
-                        className={buttonVariants({
-                          variant: "link",
-                          size: "icon-sm",
-                        })}
+                        className={cn(
+                          buttonVariants({ variant: "link", size: "icon-sm" }),
+                          "text-[var(--hui-color-foreground-base-secondary)] not-disabled:hover:bg-[var(--hui-color-background-overlay-hover)] not-disabled:hover:text-[var(--hui-color-foreground-base-primary)]"
+                        )}
                         data-slot="toast-close"
                       >
                         <XIcon />
@@ -328,7 +342,7 @@ function ToastList({ position = "bottom-right" }: { position: ToastPosition }) {
                     </div>
                   </div>
                   <Toast.Description
-                    className="m-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+                    className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
                     data-slot="toast-description"
                   />
                 </div>

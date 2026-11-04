@@ -37,7 +37,7 @@ An item is `{ id, name, stage, action, note, age, booked? }`. The component is u
 
 Each item is a focusable button whose accessible name includes its current stage, e.g. "Ava Rodriguez, To call. Use arrow keys to move." Hidden instructions attached via `aria-describedby` explain the arrow-key model on first focus. Pickup and every completed move are announced through a polite live region ("… moved to Called, position 2."). Stage headers label their columns, and counts carry their own labels.
 
-Colors come from paired light/dark CSS variables, so boards render correctly in dark mode. Note two honest limits: cards are `<button>`s whose activation does nothing besides participate in moving — they are drag handles, not detail triggers, so put any "open item" affordance elsewhere. And the board scales its dimensions from container width, so very narrow containers shrink text below comfortable reading size; prefer list view with `columns` there. Arrow keys map physically rather than logically, so verify left/right feel in right-to-left locales before shipping one.
+Colors, type, radii and shadows come from Honest UI tokens, so boards follow the theme and dark mode like every other component. Note two honest limits: cards are `<button>`s whose activation does nothing besides participate in moving — they are drag handles, not detail triggers, so put any "open item" affordance elsewhere. And the board keeps fixed column and card sizes, so narrow containers scroll sideways instead of shrinking text; prefer list view with `columns` there. Arrow keys map physically rather than logically, so verify left/right feel in right-to-left locales before shipping one.
 
 ## Installation
 
@@ -150,7 +150,7 @@ return (
 </div>
 ```
 
-The board sizes itself from container width, so a 264-pixel column compresses cards until names and notes are unreadable. In sidebars, mobile sheets, and split panes, switch to `view="list"` and give the region a height so its internal scrolling works.
+Board columns keep their full width, so in a 264-pixel region people must scroll sideways to see a second stage. In sidebars, mobile sheets, and split panes, switch to `view="list"` and give the region a height so its internal scrolling works.
 
 ## Examples
 

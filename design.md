@@ -199,7 +199,7 @@ Write sentence-case headings that state the customer-specific claim or reader qu
 
 Begin with Honest UI's neutral canvas and semantic hierarchy. Use accent color deliberately for interaction, selection, identity, or a specific expressive moment; use status and visualization colors only for their documented roles. Pair every meaningful color with a non-color cue. Do not turn a recommendation, savings figure, cost component, or longer bar green merely because it is favorable or important. Use chart color only when it distinguishes series or encodes a sourced state. Support light and dark themes through the same semantic roles.
 
-For an official report, default to `data-style="modern"`, the built-in indigo accent, and gray neutrals. Use `traditional`, orange or mint accents, or mauve, slate, or sage neutrals only when the material earns a different tone. A palette switch is an art-direction decision, not variety for its own sake.
+For an official report, default to the built-in blue accent and gray neutrals. Use indigo, orange or mint accents, or mauve, slate, or sage neutrals only when the material earns a different tone. A palette switch is an art-direction decision, not variety for its own sake.
 
 The page is normally one continuous canvas. Earn a surface or boundary only when it communicates selection, interaction, warning, contrast, or a real grouping that spacing cannot express. Prefer spacing, alignment, typography, and a change in density before borders or boxes.
 
@@ -353,7 +353,7 @@ Page-owned CSS and Tailwind utilities may read these public token families:
 
 Use semantic color tokens in component code. Lower-level palette values such as `--hui-neutral-*`, `--hui-accent-*`, `--hui-danger-*`, `--hui-attention-*`, and `--hui-success-*` are inputs for building or overriding the theme, not component meaning.
 
-The shared theme scope uses `data-theme="light"` or `data-theme="dark"` and `data-style="modern"` or `data-style="traditional"`. Optional palette overrides are `data-accent-color="orange"` or `"mint"` and `data-gray-color="gray"`, `"mauve"`, `"slate"`, or `"sage"`. Preserve the host theme controller; Honest UI does not own persistence or system-theme detection.
+The shared theme scope uses `data-theme="light"` or `data-theme="dark"`. Honest UI has one component style, so there is no style attribute. Optional palette overrides are `data-accent-color="indigo"`, `"orange"`, or `"mint"` and `data-gray-color="gray"`, `"mauve"`, `"slate"`, or `"sage"`. Preserve the host theme controller; Honest UI does not own persistence or system-theme detection.
 
 Use exact token names with `var()`. Never invent or redeclare a `--hui-*` token. Prefer `currentColor`, `inherit`, or `transparent` when a custom mark needs no distinct semantic role. Use raw values only for real local exceptions such as a one-pixel rule or material-specific visualization geometry.
 

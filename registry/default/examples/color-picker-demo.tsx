@@ -6,7 +6,7 @@ export default function ColorPickerDemo() {
   return (
     <ColorPicker
       defaultValue="#3E63DD"
-      className="w-full max-w-[12rem] gap-[var(--hui-space-3)]"
+      className="w-full max-w-[13rem] gap-[var(--hui-space-3)]"
     >
       <ColorPicker.Area />
       <ColorPicker.Hue />

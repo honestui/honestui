@@ -69,7 +69,7 @@ Long titles and descriptions wrap inside the panel instead of overflowing it. At
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -244,6 +244,9 @@ All Sheet parts forward their matching Base UI Dialog props. `SheetOverlay` alia
 | Prop | Values | Default |
 | --- | --- | --- |
 | `side` | `top`, `right`, `bottom`, `left` | `right` |
+| `showBackdrop` | boolean | `true` |
 | `showCloseButton` | boolean | `true` |
+
+`showBackdrop={false}` hides the visual backdrop; it does not change the root's modal behavior. Keep a visible close action and choose modality on `Sheet` separately.
 
 It also accepts `initialFocus` and `finalFocus` to direct focus when the panel opens and closes. Treat the sheet as a modal dialog: provide a title, restore focus on close, and keep essential actions reachable at zoom. See the [Base UI Dialog API](https://base-ui.com/react/components/dialog#api-reference).

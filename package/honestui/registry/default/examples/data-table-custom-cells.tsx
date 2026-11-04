@@ -29,7 +29,7 @@ const deals: Deal[] = [
 const statusVariant = {
   Won: "success",
   "In progress": "info",
-  Lost: "neutral",
+  Lost: "secondary",
 } as const
 
 const currency = new Intl.NumberFormat("en-US", {

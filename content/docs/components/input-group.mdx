@@ -15,7 +15,7 @@ The group is visual structure, not a replacement for a field. Give the control a
 
 `InputGroup` is the outer container, rendered as a `div` with `role="group"`. Add one `InputGroupInput` or `InputGroupTextarea`, then place `InputGroupAddon` before or after it. An addon can contain `InputGroupText` for non-interactive context or `InputGroupButton` for an action.
 
-Inline addons sit at the start or end of a single-line input. Block addons sit above or below the control and let a textarea or input grow to its natural height — the container switches from a fixed 32 px line to an auto-height column whenever it detects a textarea or a block-aligned addon.
+Inline addons sit at the start or end of a single-line input. Block addons sit above or below the control and let a textarea or input grow to its natural height — the container switches from a single line at the control height to an auto-height column whenever it detects a textarea or a block-aligned addon.
 
 ## Behavior
 
@@ -31,7 +31,7 @@ Keep a visible label outside the group, connected through `htmlFor`/`id`. The co
 
 Decorative icons need `aria-hidden="true"`; icon-only buttons need an `aria-label` that names the action. Do not put required instructions or error messages only inside an addon, because they will not be associated with the control — pair the group with Field below it for descriptions and errors.
 
-Keyboard users reach the input with <kbd>Tab</kbd> and type normally; the clear button and any other addon buttons are ordinary tab stops. The single-line group stands 32 px tall, clearing the WCAG 2.2 minimum target size of 24 px, though addon buttons are smaller and should stay easy to hit with surrounding spacing. Colors come from theme tokens, so focus rings, danger states, and dimmed disabled groups adapt to dark mode automatically.
+Keyboard users reach the input with <kbd>Tab</kbd> and type normally; the clear button and any other addon buttons are ordinary tab stops. The single-line group matches the control height (36 px by default, and it follows density scopes), clearing the WCAG 2.2 minimum target size of 24 px, though addon buttons are smaller and should stay easy to hit with surrounding spacing. Colors come from theme tokens, so focus rings, danger states, and dimmed disabled groups adapt to dark mode automatically.
 
 Addon placement relies on flex ordering rather than fixed margins, so start and end addons swap sides correctly in right-to-left layouts; check the spacing next to each addon visually after localizing. Avoid stacking so many inline actions that the text entry area becomes too narrow — long values already scroll horizontally inside the control.
 

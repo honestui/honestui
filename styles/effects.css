@@ -27,7 +27,8 @@
     border-color var(--hui-duration-normal) var(--hui-ease-out),
     color var(--hui-duration-normal) var(--hui-ease-out),
     box-shadow var(--hui-duration-normal) var(--hui-ease-out),
-    opacity var(--hui-duration-normal) var(--hui-ease-out);
+    opacity var(--hui-duration-normal) var(--hui-ease-out),
+    scale var(--hui-duration-press) var(--hui-ease-out);
   /* Pressed states: acknowledge pointer-down near-instantly. Apply on
        `:active`; releasing falls back to --hui-transition-interactive (200ms). */
   --hui-transition-pressed:
@@ -36,7 +37,8 @@
     color var(--hui-duration-press) var(--hui-ease-out),
     box-shadow var(--hui-duration-press) var(--hui-ease-out),
     opacity var(--hui-duration-press) var(--hui-ease-out),
-    transform var(--hui-duration-press) var(--hui-ease-out);
+    transform var(--hui-duration-press) var(--hui-ease-out),
+    scale var(--hui-duration-press) var(--hui-ease-out);
 
   /* Pressed scale: a control shrinks slightly under the finger. Smaller
        targets need a larger delta to read, so there are two steps. */

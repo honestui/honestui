@@ -1,6 +1,6 @@
 "use client"
 
-import { Field as FieldPrimitive } from "@base-ui-components/react/field"
+import { Field as FieldPrimitive } from "@base-ui/react/field"
 
 import { cn } from "@/lib/utils"
 
@@ -56,11 +56,12 @@ function FieldControl({
       )}
     >
       <FieldPrimitive.Control
+        data-hui=""
         data-slot="field-control"
         className={cn(
-          "box-border h-[var(--hui-space-9)] w-full min-w-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:var(--hui-transition-interactive)] placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus:border-[var(--hui-color-border-accent-emphasis)] focus:[outline:var(--hui-focus-ring)] focus:outline-offset-[var(--hui-focus-ring-offset-inset-border)] data-disabled:cursor-not-allowed data-disabled:border-[var(--hui-color-border-base-primary)] data-disabled:bg-[var(--hui-color-background-base-secondary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)] data-invalid:focus:[outline-color:var(--hui-color-border-danger-emphasis)]",
-          size === "sm" && "h-[var(--hui-space-8)]",
-          size === "lg" && "h-[var(--hui-space-10)]",
+          "box-border h-[var(--hui-density-control-height,36px)] w-full min-w-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] px-[var(--hui-field-padding-inline,var(--hui-space-3))] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] motion-safe:[transition:var(--hui-transition-interactive)] not-focus:not-data-disabled:not-data-invalid:not-aria-invalid:not-read-only:hover:border-[var(--hui-color-border-field-hover,var(--hui-color-border-field,var(--hui-color-border-base-tertiary)))] placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus:border-[var(--hui-color-border-accent-emphasis)] focus:outline-2 focus:outline-solid focus:outline-transparent focus:shadow-[var(--hui-focus-ring-field)] focus:outline-offset-[var(--hui-focus-ring-offset-inset-border)] data-disabled:cursor-not-allowed data-disabled:border-[var(--hui-color-border-base-primary)] read-only:bg-[var(--hui-color-background-base-secondary)] data-disabled:bg-[var(--hui-color-background-base-secondary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)] data-invalid:focus:shadow-[var(--hui-focus-ring-field-danger)] aria-invalid:border-[var(--hui-color-border-danger-emphasis)] aria-invalid:focus:border-[var(--hui-color-border-danger-emphasis-hover)] aria-invalid:focus:shadow-[var(--hui-focus-ring-field-danger)]",
+          size === "sm" && "h-[var(--hui-control-height-sm,var(--hui-space-8))]",
+          size === "lg" && "h-[var(--hui-control-height-lg,44px)]",
           props.type === "search" &&
             "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
           props.type === "file" &&
@@ -109,7 +110,7 @@ function FieldHelperSlot({
     <div
       data-slot="field-helper-slot"
       className={cn(
-        "grid [&>*]:[grid-area:1/1] [&>[data-slot=field-description][data-invalid]]:invisible [&>[data-slot=field-description][data-invalid]]:opacity-0 motion-safe:[&>*]:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),visibility_var(--hui-duration-fast)_var(--hui-ease-out)]",
+        "grid [&>*]:[grid-area:1/1] [&:has(>[data-slot=field-error])>[data-slot=field-description]]:invisible [&:has(>[data-slot=field-error])>[data-slot=field-description]]:opacity-0 motion-safe:[&>*]:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),visibility_var(--hui-duration-fast)_var(--hui-ease-out)]",
         className
       )}
       {...props}
@@ -140,11 +141,11 @@ function FieldSeparator({
       className={cn("relative flex items-center gap-2 py-2", className)}
       {...props}
     >
-      <div className="h-px flex-1 bg-[var(--hui-color-border-base-primary)]" />
+      <div className="h-[0.5px] flex-1 bg-[var(--hui-color-border-base-primary)]" />
       {children && (
         <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">{children}</span>
       )}
-      <div className="h-px flex-1 bg-[var(--hui-color-border-base-primary)]" />
+      <div className="h-[0.5px] flex-1 bg-[var(--hui-color-border-base-primary)]" />
     </div>
   )
 }

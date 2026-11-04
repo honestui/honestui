@@ -15,15 +15,15 @@ A table has an optional caption, a header row, body rows, cells, an optional foo
 
 ## Formatting
 
-Keep numeric columns right-aligned so digits line up for comparison; add `tabular-nums` to those cells, which keeps columns of numbers from wobbling as values change. Leave it off text cells, because in Love Sans it also widens spaces and punctuation. Format consistently within a column — same currency, same precision, same date format on every row. Cells clip overflow onto one line with an ellipsis rather than wrapping; see [Accessibility](#accessibility) for how to keep clipped values reachable.
+Keep numeric columns right-aligned so digits line up for comparison; add `tabular-nums` to those cells, which keeps columns of numbers from wobbling as values change. Leave it off text cells, because in Love Sans it also widens spaces and punctuation. Format consistently within a column — same currency, same precision, same date format on every row. Cells wrap long content by default. Use `whitespace-nowrap` for short values such as dates or amounts. Apply `truncate` only when the full value is available through a visible, keyboard-accessible action.
 
 ## Accessibility
 
 Give the table a `TableCaption` or connect it to a visible heading so its purpose is announced before people enter the cell maze. Set `scope="col"` on every column header and `scope="row"` on row headers (`TableHead` used inside `TableBody`); use `scope="colgroup"` with a matching `colSpan` for `TableSectionHeader`. The components pass these attributes through but do not add them for you.
 
-Cell text truncated by the ellipsis is still announced fully by screen readers — clipping is visual only — but sighted users lose the ending silently. Copy the full value into a `title` attribute, or move long content out of dense tables entirely.
+Keep full cell values readable at narrow widths and enlarged text. If you opt into truncation, offer a link or button that reveals the complete value; a `title` tooltip alone does not reliably serve keyboard or touch users.
 
-`interactive` on `TableRow` adds hover, active, and cursor styling only. It adds no click handler and no keyboard semantics, so an "interactive-looking" row must still expose its actions through real controls inside the cells: a link on the primary value, a menu button per row, or a checkbox for selection paired with the built-in selected state. Colors come from theme tokens, so tables adapt to dark mode automatically, and the sticky header stays legible over scrolling body rows.
+Expose row actions through real controls inside the cells: a link on the primary value, a menu button per row, or a checkbox for selection paired with the built-in selected state. Colors come from theme tokens, so tables adapt to dark mode automatically, and the sticky header stays legible over scrolling body rows.
 
 ## Installation
 
@@ -121,7 +121,7 @@ Without explicit scopes, screen readers guess which headers describe which cells
 
 ```tsx
 // Bad
-<TableRow interactive onClick={() => router.push(`/invoices/${id}`)}>
+<TableRow onClick={() => router.push(`/invoices/${id}`)}>
   <TableCell>INV-1042</TableCell>
   <TableCell>$240</TableCell>
 </TableRow>
@@ -129,7 +129,7 @@ Without explicit scopes, screen readers guess which headers describe which cells
 
 ```tsx
 // Good
-<TableRow interactive>
+<TableRow>
   <TableCell>
     <Link className="underline-offset-4 hover:underline" href={`/invoices/${id}`}>
       INV-1042
@@ -139,7 +139,7 @@ Without explicit scopes, screen readers guess which headers describe which cells
 </TableRow>
 ```
 
-The click-only version cannot be focused or triggered by keyboard, cannot be opened in a new tab, and gives no hint of what clicking does. Keep the hover affordance if you like it, but put the destination on a real link — the invoice number is the natural place.
+The click-only version cannot be focused or triggered by keyboard, cannot be opened in a new tab, and gives no hint of what clicking does. Put the destination on a real link — the invoice number is the natural place.
 
 ### Numbers aligned left
 
@@ -184,11 +184,9 @@ A minimal two-column readout.
 
 ## API reference
 
-All Table parts accept props for their matching native HTML elements — `<table>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>`, `<td>`, `<caption>` — plus one addition:
+All Table parts accept props for their matching native HTML elements: `<table>`, `<thead>`, `<tbody>`, `<tfoot>`, `<tr>`, `<th>`, `<td>`, and `<caption>`.
 
-| Part | Prop | Values | Default |
-| --- | --- | --- | --- |
-| `TableRow` | `interactive` | boolean | `false` |
+The former `TableRow interactive` prop has been removed. Replace it with a real link or button inside a cell. Row selection still uses `data-state="selected"`.
 
 Notes:
 

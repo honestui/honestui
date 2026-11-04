@@ -22,8 +22,8 @@ import {
 } from "react"
 import { flushSync } from "react-dom"
 
-const FRAME_WIDTH = 1448
-const q = (px: number) => `${(px / FRAME_WIDTH) * 100}cqw`
+// Fixed pixel sizes, matching the rest of Honest UI; narrow containers scroll.
+const q = (px: number) => `${px}px`
 
 const LAND_EASE = [0.25, 0.7, 0.2, 1] as const
 const SLOT_EASE = [0.23, 1, 0.32, 1] as const
@@ -98,11 +98,11 @@ const STAGES: ReadonlyArray<{
   soft: string
   icon: "phone" | "outgoing" | "calendar" | "check" | "close"
 }> = [
-  { id: "to-call", name: "To call", tone: "#4F7CF7", soft: "#EAF0FF", icon: "phone" },
-  { id: "called", name: "Called", tone: "#A06CDC", soft: "#F3ECFB", icon: "outgoing" },
-  { id: "trial", name: "Trial booked", tone: "#D8863B", soft: "#FFF2E6", icon: "calendar" },
-  { id: "signed", name: "Signed", tone: "#2E9B68", soft: "#E6F6EE", icon: "check" },
-  { id: "dropped", name: "Dropped", tone: "#A1A1AA", soft: "#EFEFF1", icon: "close" },
+  { id: "to-call", name: "To call", tone: "var(--hui-color-viz-blue-11)", soft: "color-mix(in oklch, var(--hui-color-viz-blue-9) 14%, transparent)", icon: "phone" },
+  { id: "called", name: "Called", tone: "var(--hui-color-viz-purple-11)", soft: "color-mix(in oklch, var(--hui-color-viz-purple-9) 14%, transparent)", icon: "outgoing" },
+  { id: "trial", name: "Trial booked", tone: "var(--hui-color-viz-orange-11)", soft: "color-mix(in oklch, var(--hui-color-viz-orange-9) 14%, transparent)", icon: "calendar" },
+  { id: "signed", name: "Signed", tone: "var(--hui-color-viz-green-11)", soft: "color-mix(in oklch, var(--hui-color-viz-green-9) 14%, transparent)", icon: "check" },
+  { id: "dropped", name: "Dropped", tone: "var(--hui-color-foreground-base-secondary)", soft: "var(--hui-color-background-neutral-secondary)", icon: "close" },
 ]
 
 const DEFAULT_ITEMS: KanbanListItem[] = [
@@ -121,70 +121,68 @@ const DEFAULT_ITEMS: KanbanListItem[] = [
 ]
 
 const styles = `
-  .kanban-list { --kanban-list-ink: #171717; --kanban-list-muted: #737373; --kanban-list-note: #767676; --kanban-list-quiet: #9CA3AF; --kanban-list-marker: #9B9B9B; --kanban-list-marker-quiet: #BDBDBD; --kanban-list-tray: #FAFAFB; --kanban-list-card: #FFFFFF; --kanban-list-hover: #F5F5F6; --kanban-list-border: rgba(24, 24, 27, 0.08); --kanban-list-count: #ECECEF; --kanban-list-count-ink: #71717A; --kanban-list-fade: var(--background, #FFFFFF); position: relative; width: 100%; color: var(--kanban-list-ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
-  .dark .kanban-list, .kanban-list.dark { --kanban-list-ink: #F4F4F5; --kanban-list-muted: #B4B4BC; --kanban-list-note: #92929C; --kanban-list-quiet: #7D7D89; --kanban-list-marker: #8B8B95; --kanban-list-marker-quiet: #676771; --kanban-list-tray: #18181B; --kanban-list-card: #242427; --kanban-list-hover: #2B2B2F; --kanban-list-border: rgba(255, 255, 255, 0.085); --kanban-list-count: #2E2E33; --kanban-list-count-ink: #B4B4BC; --kanban-list-fade: var(--background, #101012); }
+  .kanban-list { --kanban-list-ink: var(--hui-color-foreground-base-primary); --kanban-list-muted: var(--hui-color-foreground-base-secondary); --kanban-list-note: var(--hui-color-foreground-base-secondary); --kanban-list-quiet: var(--hui-color-foreground-base-secondary); --kanban-list-marker: var(--hui-color-foreground-base-tertiary); --kanban-list-marker-quiet: var(--hui-color-foreground-base-tertiary); --kanban-list-tray: var(--hui-color-background-base-secondary); --kanban-list-card: var(--hui-color-background-panel, var(--hui-color-background-base-primary)); --kanban-list-hover: var(--hui-color-background-overlay-hover, var(--hui-color-background-base-primary-hover)); --kanban-list-border: var(--hui-color-border-base-primary); --kanban-list-count: var(--hui-color-background-neutral-secondary); --kanban-list-count-ink: var(--hui-color-foreground-base-secondary); --kanban-list-fade: var(--hui-color-background-base-primary); position: relative; width: 100%; color: var(--kanban-list-ink); font-family: var(--hui-font-body); }
   .kanban-list * { box-sizing: border-box; }
   .kanban-list__scroller { position: relative; overflow-x: auto; overflow-y: hidden; padding-inline: ${q(44)}; padding-block: ${q(10)} ${q(24)}; scrollbar-width: thin; scrollbar-color: var(--kanban-list-border) transparent; overscroll-behavior-inline: contain; }
   .kanban-list__board { position: relative; display: flex; align-items: flex-start; width: max-content; min-width: 100%; gap: ${q(12)}; }
-  .kanban-list__column { width: ${q(300)}; min-height: ${q(470)}; flex: 0 0 ${q(300)}; padding: ${q(6)}; border-radius: ${q(14)}; background: var(--kanban-list-tray); border: ${q(1)} solid var(--kanban-list-border); }
+  .kanban-list__column { width: ${q(300)}; min-height: ${q(470)}; flex: 0 0 ${q(300)}; padding: ${q(6)}; border-radius: var(--hui-radius-3); background: var(--kanban-list-tray); border: 0.5px solid var(--kanban-list-border); }
   .kanban-list--preview-two-columns .kanban-list__board { width: 100%; min-width: 0; }
   .kanban-list--preview-two-columns .kanban-list__column { width: calc((100% - ${q(12)}) / 2); flex-basis: calc((100% - ${q(12)}) / 2); }
   .kanban-list--preview-scroll { height: 100%; min-height: 0; }
   .kanban-list--preview-scroll[data-view="list"] .kanban-list__scroller { height: 100%; max-height: 100%; }
   .kanban-list__header { height: ${q(32)}; display: flex; align-items: center; gap: ${q(8)}; padding-inline: ${q(10)}; }
-  .kanban-list__stage-icon { width: ${q(16)}; height: ${q(16)}; display: grid; place-items: center; flex: 0 0 auto; border-radius: ${q(5)}; }
+  .kanban-list__stage-icon { width: ${q(18)}; height: ${q(18)}; display: grid; place-items: center; flex: 0 0 auto; border-radius: var(--hui-radius-1); }
   .kanban-list__stage-icon svg { width: ${q(10)}; height: ${q(10)}; }
-  .kanban-list__stage-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: ${q(12)}; line-height: ${q(16)}; font-weight: 600; }
-  .kanban-list__count-wrap { position: relative; margin-left: auto; width: ${q(18)}; height: ${q(18)}; overflow: hidden; border-radius: ${q(9)}; background: var(--kanban-list-count); color: var(--kanban-list-count-ink); }
-  .kanban-list__count { position: absolute; inset: 0; display: grid; place-items: center; font-size: ${q(9.5)}; line-height: ${q(12)}; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .kanban-list__stage-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--hui-font-size-small); line-height: var(--hui-line-height-small); font-weight: var(--hui-font-weight-medium); }
+  .kanban-list__count-wrap { position: relative; margin-inline-start: auto; min-width: ${q(20)}; height: ${q(18)}; overflow: hidden; border-radius: var(--hui-radius-full); background: var(--kanban-list-count); color: var(--kanban-list-count-ink); }
+  .kanban-list__count { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--hui-font-size-mini); line-height: var(--hui-line-height-mini); font-weight: var(--hui-font-weight-medium); font-variant-numeric: tabular-nums; }
   .kanban-list__list { position: relative; min-height: ${q(420)}; }
   .kanban-list__slot { width: 100%; pointer-events: none; }
   .kanban-list__item { width: 100%; }
-  .kanban-list__card { position: relative; display: block; width: 100%; min-width: 0; appearance: none; border: 0; margin: 0; padding: ${q(12)} ${q(16)} ${q(15)}; border-radius: ${q(10)}; background: var(--kanban-list-card); color: inherit; text-align: left; cursor: grab; touch-action: none; user-select: none; box-shadow: 0 ${q(1)} ${q(2)} rgba(0, 0, 0, 0.08), 0 ${q(4)} ${q(12)} rgba(0, 0, 0, 0.055), inset 0 0 0 ${q(1)} var(--kanban-list-border); transition: box-shadow 160ms cubic-bezier(0.19, 1, 0.22, 1), background-color 160ms cubic-bezier(0.19, 1, 0.22, 1); }
-  .kanban-list__card:hover { box-shadow: 0 ${q(2)} ${q(4)} rgba(0, 0, 0, 0.1), 0 ${q(7)} ${q(16)} rgba(0, 0, 0, 0.08), inset 0 0 0 ${q(1)} var(--kanban-list-border); }
+  .kanban-list__card { position: relative; display: block; width: 100%; min-width: 0; appearance: none; border: 0; margin: 0; padding: ${q(12)} ${q(14)} ${q(14)}; border-radius: var(--hui-radius-2); background: var(--kanban-list-card); color: inherit; text-align: start; cursor: grab; touch-action: none; user-select: none; box-shadow: var(--hui-shadow-feather), inset 0 0 0 0.5px var(--kanban-list-border); transition: box-shadow var(--hui-duration-fast) var(--hui-ease-out), background-color var(--hui-duration-fast) var(--hui-ease-out); }
+  .kanban-list__card:hover { box-shadow: var(--hui-shadow-key, var(--hui-shadow-feather)), inset 0 0 0 0.5px var(--hui-color-border-base-secondary); }
   .kanban-list__card:active { cursor: grabbing; }
-  .kanban-list__card:focus-visible { outline: ${q(2)} solid #4F7CF7; outline-offset: ${q(2)}; }
+  .kanban-list__card:focus-visible { outline: var(--hui-focus-ring); outline-offset: var(--hui-focus-ring-offset-accent); }
   .kanban-list__row { display: grid; min-width: 0; grid-template-columns: ${q(16)} minmax(0, 1fr); column-gap: ${q(8)}; align-items: center; }
-  .kanban-list__row + .kanban-list__row--action { margin-top: ${q(10)}; }
+  .kanban-list__name + .kanban-list__row--action { margin-top: ${q(8)}; }
   .kanban-list__row--note { margin-top: ${q(8)}; }
   .kanban-list__marker { width: ${q(16)}; height: ${q(16)}; display: grid; place-items: center; }
   .kanban-list__marker svg { display: block; width: ${q(13)}; height: ${q(13)}; color: var(--kanban-list-marker); }
   .kanban-list__row--note .kanban-list__marker svg { width: ${q(12)}; height: ${q(12)}; color: var(--kanban-list-marker-quiet); }
-  .kanban-list__name { min-width: 0; padding-right: ${q(34)}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: ${q(14)}; line-height: ${q(17.5)}; font-weight: 500; color: var(--kanban-list-ink); }
-  .kanban-list__action { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: ${q(12)}; line-height: ${q(18)}; font-weight: 400; color: var(--kanban-list-muted); font-variant-numeric: tabular-nums; }
-  .kanban-list__note { min-width: 0; display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; font-size: ${q(11.5)}; line-height: ${q(17.4)}; font-weight: 400; color: var(--kanban-list-note); }
-  .kanban-list__age { position: absolute; top: ${q(13)}; right: ${q(16)}; font-size: ${q(10)}; line-height: ${q(14)}; font-weight: 400; color: var(--kanban-list-quiet); font-variant-numeric: tabular-nums; }
+  .kanban-list__name { display: block; min-width: 0; padding-inline-end: ${q(34)}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--hui-font-size-regular); line-height: var(--hui-line-height-regular); font-weight: var(--hui-font-weight-medium); color: var(--kanban-list-ink); }
+  .kanban-list__action { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--hui-font-size-small); line-height: var(--hui-line-height-small); font-weight: var(--hui-font-weight-regular); color: var(--kanban-list-muted); font-variant-numeric: tabular-nums; }
+  .kanban-list__note { min-width: 0; display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; font-size: var(--hui-font-size-small); line-height: var(--hui-line-height-small); font-weight: var(--hui-font-weight-regular); color: var(--kanban-list-note); }
+  .kanban-list__age { position: absolute; top: ${q(14)}; inset-inline-end: ${q(14)}; font-size: var(--hui-font-size-mini); line-height: var(--hui-line-height-mini); font-weight: var(--hui-font-weight-regular); color: var(--kanban-list-quiet); font-variant-numeric: tabular-nums; }
   .kanban-list__overlay-layer { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: visible; }
   .kanban-list__overlay { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; will-change: transform; }
   .kanban-list__overlay .kanban-list__card { height: 100%; cursor: grabbing; box-shadow: none; }
-  .kanban-list__tone-ring { position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 0 ${q(1.5)} color-mix(in srgb, var(--kanban-list-ink) 18%, transparent); }
-  .kanban-list__signed-mark { position: absolute; z-index: 3; right: ${q(12)}; bottom: ${q(10)}; width: ${q(20)}; height: ${q(20)}; display: grid; place-items: center; border-radius: 50%; color: #39AD79; background: color-mix(in srgb, currentColor 15%, var(--kanban-list-card)); box-shadow: 0 ${q(2)} ${q(6)} rgba(46, 155, 104, 0.16); }
+  .kanban-list__tone-ring { position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--hui-color-border-accent-emphasis); }
+  .kanban-list__signed-mark { position: absolute; z-index: 3; inset-inline-end: ${q(12)}; bottom: ${q(10)}; width: ${q(20)}; height: ${q(20)}; display: grid; place-items: center; border-radius: 50%; color: var(--hui-color-foreground-success-primary-hover); background: var(--hui-color-background-success-primary); }
   .kanban-list__signed-mark svg { width: ${q(12)}; height: ${q(12)}; }
-  .kanban-list__fade { position: absolute; z-index: 10; top: 0; bottom: 0; width: ${q(38)}; pointer-events: none; opacity: 0; transition: opacity 160ms cubic-bezier(0.19, 1, 0.22, 1); }
+  .kanban-list__fade { position: absolute; z-index: 10; top: 0; bottom: 0; width: ${q(38)}; pointer-events: none; opacity: 0; transition: opacity var(--hui-duration-fast) var(--hui-ease-out); }
   .kanban-list__fade[data-visible="true"] { opacity: 1; }
   .kanban-list__fade--left { left: 0; background: linear-gradient(90deg, var(--kanban-list-fade), transparent); }
   .kanban-list__fade--right { right: 0; background: linear-gradient(270deg, var(--kanban-list-fade), transparent); }
   .kanban-list[data-view="list"] .kanban-list__scroller { max-height: var(--kanban-list-list-max-height, ${q(840)}); overflow-x: hidden; overflow-y: auto; overscroll-behavior-inline: auto; overscroll-behavior-block: contain; }
   .kanban-list[data-view="list"] .kanban-list__board { width: 100%; min-width: 0; flex-direction: column; gap: ${q(10)}; }
   .kanban-list[data-view="list"] .kanban-list__column { width: 100%; min-height: 0; flex: none; }
-  .kanban-list[data-view="list"] .kanban-list__list { min-height: 0; overflow: hidden; border-radius: ${q(10)}; background: var(--kanban-list-card); box-shadow: inset 0 0 0 ${q(1)} var(--kanban-list-border); }
-  .kanban-list[data-view="list"] .kanban-list__card { height: ${q(44)}; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 2fr) ${q(60)}; align-items: center; gap: ${q(12)}; padding: 0 ${q(16)}; border-radius: 0; background: transparent; box-shadow: inset 0 -${q(1)} 0 var(--kanban-list-border); }
+  .kanban-list[data-view="list"] .kanban-list__list { min-height: 0; overflow: hidden; border-radius: var(--hui-radius-2); background: var(--kanban-list-card); box-shadow: inset 0 0 0 0.5px var(--kanban-list-border); }
+  .kanban-list[data-view="list"] .kanban-list__card { height: ${q(44)}; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 2fr) ${q(60)}; align-items: center; gap: ${q(12)}; padding: 0 ${q(16)}; border-radius: 0; background: transparent; box-shadow: inset 0 -0.5px 0 var(--kanban-list-border); }
   .kanban-list[data-view="list"] [data-last="true"] .kanban-list__card { box-shadow: none; }
-  .kanban-list[data-view="list"] .kanban-list__card:hover { background: var(--kanban-list-hover); box-shadow: inset 0 -${q(1)} 0 var(--kanban-list-border); }
+  .kanban-list[data-view="list"] .kanban-list__card:hover { background: var(--kanban-list-hover); box-shadow: inset 0 -0.5px 0 var(--kanban-list-border); }
   .kanban-list[data-view="list"] [data-last="true"] .kanban-list__card:hover { box-shadow: none; }
   .kanban-list[data-view="list"] .kanban-list__overlay .kanban-list__card { border-radius: inherit; background: var(--kanban-list-card); box-shadow: none; }
-  .kanban-list[data-view="list"] .kanban-list__name { padding-right: 0; font-size: ${q(13)}; line-height: ${q(17)}; }
-  .kanban-list[data-view="list"] .kanban-list__action, .kanban-list[data-view="list"] .kanban-list__note { display: flex; align-items: center; min-width: 0; gap: ${q(8)}; font-size: ${q(12.5)}; line-height: ${q(17)}; }
+  .kanban-list[data-view="list"] .kanban-list__name { padding-inline-end: 0; font-size: var(--hui-font-size-regular); line-height: var(--hui-line-height-regular); }
+  .kanban-list[data-view="list"] .kanban-list__action, .kanban-list[data-view="list"] .kanban-list__note { display: flex; align-items: center; min-width: 0; gap: ${q(8)}; font-size: var(--hui-font-size-small); line-height: var(--hui-line-height-small); }
   .kanban-list[data-view="list"] .kanban-list__note { color: var(--kanban-list-note); }
   .kanban-list[data-view="list"] .kanban-list__cell-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .kanban-list[data-view="list"] .kanban-list__marker { flex: 0 0 ${q(16)}; }
   .kanban-list[data-view="list"] .kanban-list__marker svg { width: ${q(12)}; height: ${q(12)}; }
   .kanban-list[data-view="list"] .kanban-list__note .kanban-list__marker svg { width: ${q(12)}; height: ${q(12)}; color: var(--kanban-list-marker-quiet); }
-  .kanban-list[data-view="list"] .kanban-list__age { position: static; justify-self: end; min-width: 0; font-size: ${q(10)}; line-height: ${q(14)}; text-align: right; }
+  .kanban-list[data-view="list"] .kanban-list__age { position: static; justify-self: end; min-width: 0; font-size: var(--hui-font-size-mini); line-height: var(--hui-line-height-mini); text-align: end; }
   .kanban-list[data-view="list"] .kanban-list__fade { left: 0; right: 0; width: auto; height: ${q(28)}; }
   .kanban-list[data-view="list"] .kanban-list__fade--left { top: 0; bottom: auto; background: linear-gradient(180deg, var(--kanban-list-fade), transparent); }
   .kanban-list[data-view="list"] .kanban-list__fade--right { top: auto; bottom: 0; background: linear-gradient(0deg, var(--kanban-list-fade), transparent); }
-  .dark .kanban-list__stage-icon, .kanban-list.dark .kanban-list__stage-icon { background: color-mix(in srgb, currentColor 15%, transparent) !important; }
   .kanban-list__instructions, .kanban-list__live { position: absolute; width: ${q(1)}; height: ${q(1)}; padding: 0; margin: -${q(1)}; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   @media (prefers-reduced-motion: reduce) { .kanban-list__card { transition: none; } }
 `
@@ -224,7 +222,13 @@ function PhoneGlyph({ booked }: { booked?: boolean }) {
 function NoteGlyph() {
   return (
     <svg viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M3 3.2h10v7.4H7l-3.2 2.2v-2.2H3z" fill="currentColor" />
+      <path
+        d="M3.5 3.5h9v6.6H7.2l-2.9 2.1v-2.1H3.5z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -250,10 +254,7 @@ function KanbanListCardContent({ lead, view }: { lead: KanbanListItem; view: Kan
   return (
     <>
       <span className="kanban-list__age">{lead.age}</span>
-      <span className="kanban-list__row">
-        <span className="kanban-list__marker" aria-hidden="true" />
-        <span className="kanban-list__name">{lead.name}</span>
-      </span>
+      <span className="kanban-list__name">{lead.name}</span>
       <span className="kanban-list__row kanban-list__row--action">
         <span className="kanban-list__marker"><PhoneGlyph booked={lead.booked} /></span>
         <span className="kanban-list__action">{lead.action}</span>
@@ -317,7 +318,7 @@ function DragOverlay({
   const tilt = useTransform(() => (reduce ? 0 : tiltSpring.get() * tiltGain.get()))
   const shadow = useTransform(lift, (value) => {
     const a = Math.max(0, Math.min(1, value))
-    return `0 ${q(2 + a * 8)} ${q(5 + a * 21)} rgba(0,0,0,${0.08 + a * 0.12}), 0 ${q(1 + a * 2)} ${q(2 + a * 6)} rgba(0,0,0,${0.06 + a * 0.06}), inset 0 0 0 ${q(1)} var(--kanban-list-border)`
+    return `0 ${q(2 + a * 8)} ${q(5 + a * 21)} rgba(0,0,0,${0.08 + a * 0.12}), 0 ${q(1 + a * 2)} ${q(2 + a * 6)} rgba(0,0,0,${0.06 + a * 0.06}), inset 0 0 0 0.5px var(--kanban-list-border)`
   })
   return (
     <motion.div
@@ -459,10 +460,8 @@ export function KanbanList({
     return () => controls.stop()
   }, [reduce, ringOpacity, target])
 
-  const scale = useCallback((value: number) => {
-    const width = rootRef.current?.getBoundingClientRect().width ?? FRAME_WIDTH
-    return (value / FRAME_WIDTH) * width
-  }, [])
+  // Sizes are fixed pixels, so design values map 1:1.
+  const scale = useCallback((value: number) => value, [])
 
   useEffect(() => {
     const scroller = scrollerRef.current

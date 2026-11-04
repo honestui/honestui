@@ -66,7 +66,7 @@ const date = new Intl.DateTimeFormat("en-US", {
 const statusVariant = {
   Active: "success",
   Pending: "warning",
-  Inactive: "neutral",
+  Inactive: "secondary",
 } as const
 
 function initials(name: string) {

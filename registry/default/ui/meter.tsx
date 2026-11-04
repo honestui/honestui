@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Meter as MeterPrimitive } from "@base-ui-components/react/meter"
+import { Meter as MeterPrimitive } from "@base-ui/react/meter"
 
 import { cn } from "@/lib/utils"
 
@@ -62,7 +62,7 @@ function MeterLabel({ className, ...props }: MeterPrimitive.Label.Props) {
     <MeterPrimitive.Label
       data-slot="meter-label"
       className={cn(
-        "text-[var(--hui-color-foreground-base-primary)] [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
+        "text-[var(--hui-color-foreground-base-primary)] [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}
@@ -75,7 +75,7 @@ function MeterTrack({ className, ...props }: MeterPrimitive.Track.Props) {
     <MeterPrimitive.Track
       data-slot="meter-track"
       className={cn(
-        "relative block h-[var(--hui-space-2)] w-full overflow-clip rounded-[1px] bg-[var(--hui-color-background-neutral-secondary)]",
+        "relative block h-[var(--hui-space-2)] w-full overflow-clip rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-secondary)]",
         className
       )}
       {...props}
@@ -92,7 +92,7 @@ function MeterIndicator({
     <MeterPrimitive.Indicator
       data-slot="meter-indicator"
       className={cn(
-        "h-full origin-left bg-[var(--hui-color-background-accent-emphasis)] [transform:scaleX(calc(var(--hui-meter-percentage,0)/100))] motion-safe:[transition:transform_var(--hui-duration-moderate)_linear]",
+        "h-full rounded-[inherit] bg-[var(--hui-color-background-accent-emphasis)] [transform:translateX(calc((var(--hui-meter-percentage,0)-100)*1%))] rtl:[transform:translateX(calc((100-var(--hui-meter-percentage,0))*1%))] motion-safe:[transition:transform_var(--hui-duration-moderate)_var(--hui-ease-out)]",
         className
       )}
       style={(state) => ({
@@ -109,7 +109,7 @@ function MeterValue({ className, ...props }: MeterPrimitive.Value.Props) {
     <MeterPrimitive.Value
       data-slot="meter-value"
       className={cn(
-        "text-right text-[var(--hui-color-foreground-base-primary)] tabular-nums [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)] group-data-[variant=circular]/meter:absolute group-data-[variant=circular]/meter:top-1/2 group-data-[variant=circular]/meter:left-1/2 group-data-[variant=circular]/meter:-translate-x-1/2 group-data-[variant=circular]/meter:-translate-y-1/2 group-data-[variant=circular]/meter:whitespace-nowrap group-data-[variant=circular]/meter:text-center group-data-[variant=circular]/meter:[font-weight:var(--hui-font-weight-medium)]",
+        "text-end text-[var(--hui-color-foreground-base-primary)] tabular-nums [font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] group-data-[variant=circular]/meter:absolute group-data-[variant=circular]/meter:top-1/2 group-data-[variant=circular]/meter:left-1/2 group-data-[variant=circular]/meter:-translate-x-1/2 group-data-[variant=circular]/meter:-translate-y-1/2 group-data-[variant=circular]/meter:whitespace-nowrap group-data-[variant=circular]/meter:text-center group-data-[variant=circular]/meter:[font-weight:var(--hui-font-weight-medium)]",
         className
       )}
       {...props}
@@ -137,7 +137,6 @@ function MeterCircularTrack({
         cy="36"
         data-slot="meter-circular-track-circle"
         r="32"
-        vectorEffect="non-scaling-stroke"
         className="fill-none stroke-[var(--hui-color-background-neutral-secondary)] [stroke-width:var(--hui-meter-track-size)]"
       />
       <circle
@@ -147,8 +146,7 @@ function MeterCircularTrack({
         pathLength="100"
         r="32"
         strokeDasharray="100"
-        vectorEffect="non-scaling-stroke"
-        className="fill-none stroke-[var(--hui-color-background-accent-emphasis)] [stroke-dashoffset:calc(100-var(--hui-meter-percentage,0))] [stroke-linecap:butt] [stroke-width:var(--hui-meter-track-size)] motion-safe:[transition:stroke-dashoffset_var(--hui-duration-moderate)_linear]"
+        className="fill-none stroke-[var(--hui-color-background-accent-emphasis)] [stroke-dashoffset:calc(100-var(--hui-meter-percentage,0))] [stroke-linecap:butt] [stroke-width:var(--hui-meter-track-size)] motion-safe:[transition:stroke-dashoffset_var(--hui-duration-moderate)_var(--hui-ease-out)]"
       />
     </svg>
   )

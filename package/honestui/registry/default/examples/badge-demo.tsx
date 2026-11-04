@@ -8,7 +8,7 @@ export default function BadgeDemo() {
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center gap-2">
         <Badge>Default</Badge>
-        <Badge variant="neutral">Neutral</Badge>
+        <Badge variant="secondary">Secondary</Badge>
         <Badge variant="info">Info</Badge>
         <Badge variant="success">
           <CheckIcon aria-hidden="true" />
@@ -16,7 +16,6 @@ export default function BadgeDemo() {
         </Badge>
         <Badge variant="warning">Needs review</Badge>
         <Badge variant="error">Failed</Badge>
-        <Badge variant="gradient">Experimental</Badge>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Badge size="sm">Small</Badge>

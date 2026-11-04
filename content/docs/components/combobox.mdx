@@ -51,6 +51,8 @@ Long labels wrap inside the popup; chips truncate with ellipsis and expose their
 
 The input carries its accessible name from your visible label. The filtered list is a proper listbox: screen readers announce option count as you type, which option is highlighted, and each chip's name for removal ("Remove Riya Patel"). Nothing depends on color or position — selected options are marked by state, not styling alone.
 
+`ComboboxTrigger` and `ComboboxClear` get a default name ("Show options", "Clear") only when they have no content of their own; if you pass icon-only content, give it an `aria-label`.
+
 Typeahead plus count announcements make large lists workable non-visually, but option copy still matters: put distinguishing words first ("Invoice INV-2042", not "INV-2042 — an invoice").
 
 ## Installation
@@ -74,7 +76,7 @@ Typeahead plus count announcements make large lists workable non-visually, but o
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -181,5 +183,7 @@ An unexplained blank list mid-fetch announces "no such person exists", and users
 | `value` / `defaultValue` | item or item[] | — |
 
 Parts: `ComboboxInput`, `ComboboxTrigger`, `ComboboxPopup`, `ComboboxList`, `ComboboxItem`, `ComboboxChip(s)`, `ComboboxGroup(Label)`, `ComboboxEmpty`, `ComboboxStatus`, `ComboboxClear`, `ComboboxValue`.
+
+`ComboboxInput` adds `showTrigger` (default `true`), `showClear` (default `false`), and `triggerProps` / `clearProps`, which pass through to the built-in buttons. Use them to translate the default names, for example `triggerProps={{ "aria-label": "Afficher les options" }}`. `ComboboxChip` adds `removeLabel` (default `"Remove"`), the verb read before the chip's label.
 
 See the [Base UI Combobox API](https://base-ui.com/react/components/combobox#api-reference).

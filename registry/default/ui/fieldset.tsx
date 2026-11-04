@@ -1,6 +1,6 @@
 "use client"
 
-import { Fieldset as FieldsetPrimitive } from "@base-ui-components/react/fieldset"
+import { Fieldset as FieldsetPrimitive } from "@base-ui/react/fieldset"
 
 import { cn } from "@/lib/utils"
 
@@ -24,7 +24,7 @@ function FieldsetLegend({
     <FieldsetPrimitive.Legend
       data-slot="fieldset-legend"
       className={cn(
-        "mb-[var(--hui-space-2)] p-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-base)] [font-weight:var(--hui-font-weight-semibold)] [letter-spacing:var(--hui-letter-spacing-base)] [line-height:var(--hui-line-height-base)]",
+        "mb-[var(--hui-space-2)] p-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-base)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-base)] [line-height:var(--hui-line-height-base)]",
         className
       )}
       {...props}

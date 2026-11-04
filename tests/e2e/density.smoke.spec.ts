@@ -36,7 +36,7 @@ test.describe("Density docs previews", () => {
 
     await preview.getByRole("button", { name: "Default", exact: true }).click()
     await expect(tableScope).toHaveAttribute("data-density", "default")
-    expect(await height(exportButton)).toBe(32)
+    expect(await height(exportButton)).toBe(36)
     expect(await height(firstRow)).toBeGreaterThan(compactRowHeight)
 
     await preview.getByRole("button", { name: "Comfortable", exact: true }).click()
@@ -112,6 +112,10 @@ test.describe("Density on a coarse pointer", () => {
     expect(await height(tableScope.getByRole("row", { name: /INV-1042/ }))).toBeGreaterThanOrEqual(44)
 
     await tableScope.getByRole("button", { name: "Actions for INV-1042" }).tap()
+    // The popup scales in from 0.97, so measure once the open transition ends.
+    await page
+      .getByRole("menu")
+      .evaluate((menu) => Promise.all(menu.getAnimations().map((animation) => animation.finished)))
     expect(
       await height(page.getByRole("menuitem", { name: "View invoice" }))
     ).toBeGreaterThanOrEqual(44)

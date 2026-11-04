@@ -533,13 +533,13 @@ export function AssetBrowser({
           side={isCompact ? "bottom" : "right"}
           showBackdrop={isCompact}
           className={cn(
-            "no-scrollbar gap-0 overflow-y-auto",
+            "gap-0 [&>[data-slot=sheet-scroll-viewport]]:no-scrollbar",
             isCompact
               ? "max-h-[85dvh]"
               : "top-12 right-5 bottom-auto h-auto max-h-[calc(100dvh-4.25rem)] w-80 rounded-xl border shadow-xl",
           )}
         >
-          <SheetHeader className="pr-10">
+          <SheetHeader>
             <SheetTitle className="text-base! leading-6!">{selected?.asset.name}</SheetTitle>
             <SheetDescription className="sr-only">
               Preview, styles, and copyable code for this {labels.singular}.

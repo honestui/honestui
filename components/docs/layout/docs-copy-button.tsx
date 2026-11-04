@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Popover, PopoverAnchor } from "@/components/ui/popover";
+import { Popover } from "@/components/ui/popover";
 import { CheckIcon, CopyIcon } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
 import { CaretDown } from "@carbon/icons-react";
@@ -234,7 +234,6 @@ export function DocsCopyPage({ url, path }: { url: string; path: string }) {
   return (
     <Popover>
       <div className="group/buttons relative flex overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] select-none *:data-[slot=button]:focus-visible:relative *:data-[slot=button]:focus-visible:z-10">
-        <PopoverAnchor />
         <Button
           aria-busy={copyState === "loading"}
           disabled={copyState === "loading"}

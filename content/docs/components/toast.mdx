@@ -29,7 +29,7 @@ The stack collapses behind the frontmost toast: older notifications peek out und
 
 **Statuses.** Pass `type` to match the result: `success`, `error`, `warning`, `info`, or `loading`. The icon and its color follow automatically. Use promise helpers when an async action moves through loading, success, and error — see the [promise example](#promise).
 
-**Timers.** By default a toast auto-dismisses after 5 seconds (gooey after 6). The timer pauses while you point at the stack, while keyboard focus is inside it, and while the browser window is unfocused, then resumes where it left off. Set `timeout: 0` (standard) or `duration: null` (gooey) to keep a toast until dismissed.
+**Timers.** By default a toast auto-dismisses after 5 seconds (gooey after 6). The timer pauses while you point at the stack, while keyboard focus is inside it, and while the browser window is unfocused, then resumes where it left off. Gooey toasts pause on pointer and focus only, and restart their timer when you leave. Set `timeout: 0` (standard) or `duration: null` (gooey) to keep a toast until dismissed.
 
 **Stack limits.** The provider keeps at most 3 toasts (`limit`). When the limit is reached, the oldest toast is removed to make room — one more reason critical information does not belong here.
 
@@ -43,7 +43,7 @@ The viewport is a region with an implicit polite live region: new toasts are ann
 
 Keyboard users can reach toasts without hunting: pressing <kbd>F6</kbd> anywhere moves focus into the viewport and pauses all timers, <kbd>Tab</kbd> reaches each toast's action and dismiss buttons, and <kbd>Escape</kbd> closes the focused toast.
 
-Keep titles short and put recovery detail in the description. Because timers pause on hover and focus rather than resetting, reading time extends naturally — but never rely on that for long content.
+Keep titles short and put recovery detail in the description. Because timers pause on hover and focus (standard toasts resume where they left off; gooey toasts restart), reading time extends naturally — but never rely on that for long content.
 
 A toast is supplemental feedback. Errors that affect form content must also appear inline near the field or section they belong to, in dark mode and light, since the toast may expire before anyone acts on it. Messages use theme tokens and wrap rather than truncate; localized descriptions longer than two lines are a signal to shorten them.
 
@@ -92,7 +92,7 @@ export default function RootLayout({ children }) {
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>

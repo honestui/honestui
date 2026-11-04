@@ -13,6 +13,8 @@
 }
 
 [data-density="compact"] {
+  --hui-control-height-sm: 24px;
+  --hui-control-height-lg: 36px;
   --hui-density-control-height: var(--hui-space-8);
   --hui-density-control-padding-block: var(--hui-space-2);
   --hui-density-control-padding-inline: var(--hui-space-3);
@@ -25,6 +27,8 @@
 }
 
 [data-density="default"] {
+  --hui-control-height-sm: 28px;
+  --hui-control-height-lg: 40px;
   --hui-density-control-height: var(--hui-space-9);
   --hui-density-control-padding-block: var(--hui-space-3);
   --hui-density-control-padding-inline: var(--hui-space-4);
@@ -37,6 +41,8 @@
 }
 
 [data-density="comfortable"] {
+  --hui-control-height-sm: 32px;
+  --hui-control-height-lg: 48px;
   --hui-density-control-height: var(--hui-space-10);
   --hui-density-control-padding-block: var(--hui-space-4);
   --hui-density-control-padding-inline: var(--hui-space-5);
@@ -57,6 +63,8 @@
 @media (pointer: coarse) {
   [data-density] {
     --hui-density-control-height: var(--hui-density-touch-target);
+    --hui-control-height-sm: var(--hui-density-touch-target);
+    --hui-control-height-lg: 48px;
     --hui-density-item-min-height: var(--hui-density-touch-target);
     --hui-density-row-min-height: var(--hui-density-touch-target);
   }

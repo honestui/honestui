@@ -51,14 +51,14 @@ function CliBlock({ commands }: CliBlockProps) {
             )}
           >
             <TabsTab
-              className="h-5! gap-1 px-1.5 hover:bg-transparent! data-active:text-[#C3292F] sm:gap-2"
+              className="h-5! gap-1 px-1.5 hover:bg-transparent! data-active:text-[#C3292F] dark:data-active:text-[#FF6B6B] sm:gap-2"
               value="npm"
             >
               <NpmIcon className="hidden size-3 sm:block" />
               npm
             </TabsTab>
             <TabsTab
-              className="h-5! gap-1 px-1.5 hover:bg-transparent! data-active:text-[#3592BD] sm:gap-2"
+              className="h-5! gap-1 px-1.5 hover:bg-transparent! data-active:text-[#1F6F94] dark:data-active:text-[#3592BD] sm:gap-2"
               value="yarn"
             >
               <YarnIcon className="hidden size-3 sm:block" />
@@ -72,7 +72,7 @@ function CliBlock({ commands }: CliBlockProps) {
               bun
             </TabsTab>
             <TabsTab
-              className="h-5! gap-1 px-1.5 hover:bg-transparent! data-active:text-[#FAAF18] sm:gap-2"
+              className="h-5! gap-1 px-1.5 hover:bg-transparent! data-active:text-[#8A5D00] dark:data-active:text-[#FAAF18] sm:gap-2"
               value="pnpm"
             >
               <PnpmIcon className="hidden size-3 sm:block" />

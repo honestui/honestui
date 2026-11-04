@@ -1,74 +1,14 @@
 ---
 title: Radius
-description: Use Honest UI's modern and traditional radius scales for consistent corners, pills, and circular shapes.
+description: Use Honest UI's radius scale for consistent corners, pills, and circular shapes.
 ---
 
 Radius tokens keep corner decisions consistent across components and let a product change its overall character without rewriting component classes. Honest UI provides seven roles, from subtle rounding to a full pill or circle.
 
-Radius values are resolved by `data-style`, so set `modern`, `traditional`, or `soft` on the same shared ancestor that owns the component theme.
-
-## Modern style
-
-Modern is the restrained, compact option. It uses small radii so boundaries remain clear in dense product interfaces.
+The scale applies wherever the theme is loaded. There is no attribute to set: controls are clearly rounded, and cards are large and calm.
 
 <TokenTable
-  caption="Modern Honest UI radius tokens"
-  type="radius"
-  tokens={[
-    { name: "--hui-radius-1", value: "2px", description: "Small controls and subtle corner treatment" },
-    { name: "--hui-radius-2", value: "4px", description: "Buttons, inputs, menus, badges, and compact cards" },
-    { name: "--hui-radius-3", value: "6px", description: "Cards and grouped component containers" },
-    { name: "--hui-radius-4", value: "8px", description: "Dialogs, sheets, and larger surfaces" },
-    { name: "--hui-radius-5", value: "12px", description: "Large panels and prominent containers" },
-    { name: "--hui-radius-6", value: "16px", description: "Extra-large or expressive surfaces" },
-    { name: "--hui-radius-full", value: "800px", description: "Pills, circular avatars, and round indicators" },
-  ]}
-/>
-
-## Traditional style
-
-Traditional keeps the same token names but resolves them to softer values. Component code does not need to change.
-
-<TokenTable
-  caption="Traditional Honest UI radius tokens"
-  type="radius"
-  tokens={[
-    { name: "--hui-radius-1", value: "8px", description: "Small controls and subtle corner treatment" },
-    { name: "--hui-radius-2", value: "16px", description: "Buttons, inputs, menus, badges, and compact cards" },
-    { name: "--hui-radius-3", value: "20px", description: "Cards and grouped component containers" },
-    { name: "--hui-radius-4", value: "24px", description: "Dialogs, sheets, and larger surfaces" },
-    { name: "--hui-radius-5", value: "32px", description: "Large panels and prominent containers" },
-    { name: "--hui-radius-6", value: "40px", description: "Extra-large or expressive surfaces" },
-    { name: "--hui-radius-full", value: "1600px", description: "Pills, circular avatars, and round indicators" },
-  ]}
-/>
-
-## Switch styles
-
-```html
-<!-- Compact corners -->
-<html data-theme="light" data-style="modern">
-
-<!-- Softer corners -->
-<html data-theme="light" data-style="traditional">
-
-<!-- Rounded controls and large cards; import honestui/soft.css after the theme -->
-<html data-theme="light" data-style="soft">
-```
-
-The attribute is not decorative metadata: without a supported `data-style` value, the radius variables are not defined.
-
-## Soft style
-
-Soft sits between the other two scales: controls are clearly rounded and cards are large and calm. It also changes more than radius. Controls grow to 36px with 14px labels, hairlines get paler, fields gain a faint shadow, ghost buttons lose their resting border, elevation flattens to one faint shadow, and the default accent becomes blue. Cards use `--hui-radius-5`. An explicit `data-density` value still sets control height. A `data-accent-color` scope keeps its own accent.
-
-```css
-@import "honestui/theme.css";
-@import "honestui/soft.css";
-```
-
-<TokenTable
-  caption="Soft Honest UI radius tokens"
+  caption="Honest UI radius tokens"
   type="radius"
   tokens={[
     { name: "--hui-radius-1", value: "6px", description: "Small controls and subtle corner treatment" },
@@ -78,10 +18,16 @@ Soft sits between the other two scales: controls are clearly rounded and cards a
     { name: "--hui-radius-5", value: "20px", description: "Cards and large panels" },
     { name: "--hui-radius-6", value: "28px", description: "Extra-large or expressive surfaces" },
     { name: "--hui-radius-full", value: "800px", description: "Pills, circular avatars, and round indicators" },
-    { name: "--hui-radius-frame-panel", value: "var(--hui-radius-3)", description: "FramePanel corners. Other styles fall back to --hui-radius-2" },
+    { name: "--hui-radius-frame-panel", value: "var(--hui-radius-3)", description: "FramePanel corners" },
     { name: "--hui-radius-frame", value: "calc(panel radius + 8px)", description: "Frame corners, concentric with the panels inside" },
   ]}
 />
+
+## Earlier styles
+
+Honest UI used to offer `modern`, `traditional`, and `soft` values for `data-style`. They are merged into the one style above. Existing `data-style` attributes are ignored, so you can remove them when convenient. `honestui/theme.css` now includes the style, and `honestui/soft.css` remains as a copy so existing imports keep building.
+
+For denser screens, use a `compact` [density scope](/docs/components/density) instead of a smaller radius scale.
 
 ## Tailwind usage
 
@@ -96,12 +42,12 @@ Soft sits between the other two scales: controls are clearly rounded and cards a
 </article>
 ```
 
-The class names stay the same when `data-style` changes; the browser resolves the radius token to the value for that style.
+To round a product differently, override the radius tokens on `:root` after the theme. Component classes do not need to change.
 
 ## Practical guidance
 
 - Pick a token by the element's role and reuse it. Similar controls should not have slightly different corners.
 - Keep nested radii visually related. An inner element normally uses the same or a smaller token than its container.
 - Use `--hui-radius-full` for pills and circles rather than choosing an arbitrarily large number.
-- Radius does not make an element interactive. Preserve visible boundaries, affordances, labels, and focus indicators in both styles.
+- Radius does not make an element interactive. Preserve visible boundaries, affordances, labels, and focus indicators.
 - Test clipped focus rings and content near rounded corners. Use the focus-ring offset tokens documented in [Effects](/docs/theme/effects) when a container would otherwise cut the indicator off.

@@ -46,14 +46,14 @@ function CommandBlock({ commands }: CommandBlockProps) {
             )}
           >
             <TabsTab
-              className="h-5! gap-2 px-1.5 hover:bg-transparent! data-active:text-[#C3292F]"
+              className="h-5! gap-2 px-1.5 hover:bg-transparent! data-active:text-[#C3292F] dark:data-active:text-[#FF6B6B]"
               value="npm"
             >
               <NpmIcon className="size-3" />
               npm
             </TabsTab>
             <TabsTab
-              className="h-5! gap-2 px-1.5 hover:bg-transparent! data-active:text-[#3592BD]"
+              className="h-5! gap-2 px-1.5 hover:bg-transparent! data-active:text-[#1F6F94] dark:data-active:text-[#3592BD]"
               value="yarn"
             >
               <YarnIcon className="size-3" />
@@ -67,7 +67,7 @@ function CommandBlock({ commands }: CommandBlockProps) {
               bun
             </TabsTab>
             <TabsTab
-              className="h-5! gap-2 px-1.5 hover:bg-transparent! data-active:text-[#FAAF18]"
+              className="h-5! gap-2 px-1.5 hover:bg-transparent! data-active:text-[#8A5D00] dark:data-active:text-[#FAAF18]"
               value="pnpm"
             >
               <PnpmIcon className="size-3" />

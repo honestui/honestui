@@ -7,6 +7,41 @@ This page summarizes user-facing changes to Honest UI in reverse chronological o
 
 Entries are maintained by hand alongside each change. Until the first stable release, dates refer to commits on the main branch rather than numbered versions.
 
+## November 4, 2026
+
+- **Breaking:** Removed Button's `appearance` prop (`glossy`, `glow`, `bevel`); buttons use the flat treatment only. Removed Badge's `gradient` variant and the alias names `accent` (use `default`), `neutral` (use `secondary`), `danger` (use `error`), and sizes `micro` (`sm`), `small` (`default`), `regular` (`lg`).
+- `PopoverAnchor` is exported again so existing imports keep working. It is deprecated: it renders a plain `div` and does not affect positioning.
+- Examples, product blocks, and Honest AI components import Base UI from `@base-ui/react`; `@base-ui-components/react` is no longer a dependency.
+- Gooey toasts: `toastManager.update` updates a gooey toast in place instead of replacing it, and toasts narrow to fit small screens. `duration: null` keeps a gooey toast until it is dismissed.
+- Love Sans keeps tabular widths for digits only, so `tabular-nums` no longer spreads commas, periods, and percent signs (`$12,500` instead of `$12 , 500`).
+- Dark mode: fields inside dialogs, sheets, and popovers share the overlay surface instead of reading as darker wells, and Frame panels sit above their frame. New tokens `--hui-color-background-field` and `--hui-color-background-panel`.
+- Multi-select Combobox: Escape with the popup closed no longer clears every chip. `ComboboxInput` and `AutocompleteInput` accept `triggerProps` and `clearProps`, and `ComboboxChip` accepts `removeLabel`, to translate the default names.
+- Progress and Meter bars slide in with rounded ends; the circular Progress uses the same construction as Meter. Number Field steppers share the field surface with hover and press states, and Scroll Area thumbs respond to hover and drag.
+- Alert Dialog docks as a bottom sheet on small screens with rounded top corners, a hairline edge, safe-area padding, and full-width actions.
+- Kanban List uses Honest UI tokens for color, type, radius, shadow and focus, with hairline borders and outline icons. Boards keep fixed sizes and scroll in narrow containers instead of shrinking text.
+- Right-to-left: Switch, Input Group addons, Avatar groups and badges, Breadcrumb and Pagination chevrons, Dropdown submenus, Progress, and text alignment follow the writing direction.
+
+## November 3, 2026
+
+- Field borders use a translucent hairline that adapts to the surface beneath it. Focused fields keep the accent border and add a soft halo instead of a solid outline; buttons keep their keyboard focus ring.
+- Popups (Select, Combobox, Autocomplete, Menu, Dropdown Menu, Popover, Preview Card, Tooltip) share one surface: a translucent edge on all four sides, a layered shadow, and in dark mode a surface lighter than the page. Highlighted rows use a translucent fill.
+- Select marks the chosen option with a trailing check, and Combobox moves its check to the end of the row so labels no longer shift. Combobox popups line up with the field edge. Separators stay inside the popup, and group labels share one muted 12px style. The outlined Select trigger no longer fills on hover.
+- Honest UI now has one component style. The `modern`, `traditional`, and `soft` values of `data-style` are merged into it: 36px controls with 14px labels, 10px control corners, 20px cards, pale hairlines, faint shadows, and a blue default accent. Remove `data-style` when convenient; it no longer changes anything. `honestui/theme.css` includes the style, and `honestui/soft.css` remains as a copy for existing imports. Use a `compact` density scope where you used `modern` for denser screens, and `data-accent-color="indigo"` to keep the previous accent.
+- `data-density="default"` now matches controls outside a scope: 36px, with 28px small and 44px large controls.
+- Field and Number Field default controls now follow density scopes, including the 36px default. Explicit small and large sizes remain available.
+- Table cells wrap long values by default. Add `whitespace-nowrap` for compact values or opt into truncation with an accessible way to reveal the full value.
+- Removed the styling-only `TableRow interactive` prop. Put navigation and actions on links or buttons inside cells.
+- Button press scaling now respects reduced-motion preferences. Installed sheets support the same `showBackdrop` option as the site.
+- Soft fields share one treatment: 0.5px hairlines on Input Group and Combobox chips, a slightly darker border on hover, a 12px text inset, and a faint shadow on Number Field. Select now shows the invalid state inside an invalid Field, and Input keeps its invalid and disabled styles when Autocomplete, Combobox or Input Group renders it.
+- Dialog, Alert Dialog and Sheet share one surface: a hairline edge, the dialog radius, and a 16px medium title. Close buttons use the control radius again.
+- Autocomplete and Dropdown Menu popups and items now match Menu, including density-aware row height. Combobox items follow density too.
+- Toggle, Toggle Group and Tabs use concentric corners. Tooltips use 12px text. Long popover content scrolls instead of clipping.
+- Components import Base UI from `@base-ui/react`, replacing `@base-ui-components/react`.
+- Toggle, Input `sm`, and icon Button sizes now use the shared control heights: 28, 36 and 44 px.
+- Dialog, Alert Dialog and Sheet share one backdrop, including the reduced-transparency fallback.
+- Dialog and Sheet content scrolls between a pinned header and footer, and the close button stays in place. Headers leave room for the close button, so long titles no longer run under it.
+- Autocomplete and Dropdown Menu popups open above sheets and dialogs.
+
 ## November 2, 2026
 
 - Added an opt-in `soft` value for `data-style`, shipped as `honestui/soft.css`. It uses rounder corners, 36px controls with 14px labels, paler hairlines, softly shadowed fields, borderless ghost buttons at rest, concentric Frame corners, flatter elevation, and a blue default accent. The `modern` and `traditional` styles are unchanged.

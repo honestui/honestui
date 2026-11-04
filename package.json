@@ -63,17 +63,17 @@
     "verify:component-docs": "node scripts/verify-component-docs.mjs",
     "verify:theme-docs": "node scripts/verify-theme-docs.mjs",
     "verify:tokens": "node scripts/verify-token-prefix.mjs",
-    "verify:site": "npm run lint && npm run typecheck && npm run verify:docs && npm run verify:tokens && npm run build",
+    "verify:site": "npm run lint && npm run typecheck && npm run verify:docs && npm run verify:ui && npm run verify:tokens && npm run build",
     "verify:release": "npm run verify:site && npm run test:e2e && npm audit",
     "verify:production-docs": "node scripts/verify-production-docs.mjs",
     "verify:production-registry": "node scripts/verify-production-registry.mjs",
     "registry:animated": "node scripts/generate-animated-index.mjs",
     "registry:charts": "node scripts/generate-chart-index.mjs",
     "registry:shaders": "node scripts/generate-shader-index.mjs",
-    "prepack": "npm run build:package"
+    "prepack": "npm run build:package",
+    "verify:ui": "node scripts/verify-ui-parity.mjs"
   },
   "dependencies": {
-    "@base-ui-components/react": "^1.0.0-rc.0",
     "@base-ui/react": "^1.6.0",
     "@carbon/icons-react": "^11.84.0",
     "@hugeicons/core-free-icons": "^4.2.3",

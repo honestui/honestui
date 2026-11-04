@@ -1,6 +1,6 @@
 "use client"
 
-import { Accordion as AccordionPrimitive } from "@base-ui-components/react/accordion"
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { ChevronDown as ChevronDownIcon } from "honestui/icons"
 
 import { cn } from "../../lib/utils.js"

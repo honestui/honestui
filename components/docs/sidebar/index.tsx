@@ -55,7 +55,7 @@ export function DocsSidebar({
           >
             <span className="flex items-center gap-2 text-sm font-medium">
               Honest AI
-              <Badge size="sm" variant="accent">
+              <Badge size="sm" variant="default">
                 New
               </Badge>
               <ArrowUpRight

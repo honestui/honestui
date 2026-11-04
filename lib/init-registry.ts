@@ -392,7 +392,7 @@ export function buildRegistryBase(
       tailwind: { baseColor: config.baseColor },
     },
     dependencies: [
-      "@base-ui-components/react",
+      "@base-ui/react",
       "@base-ui/react",
       "class-variance-authority",
       "clsx",

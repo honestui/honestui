@@ -6,9 +6,9 @@ import {
   Select as SelectPrimitive,
 } from "@base-ui/react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronDown as ChevronDownIcon } from "honestui/icons"
+import { Check as CheckIcon, ChevronDown as ChevronDownIcon } from "honestui/icons"
 
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/registry/default/ui/checkbox"
 import { cn } from "@/lib/utils"
 import { useDensity } from "@/registry/default/ui/density"
 
@@ -316,19 +316,20 @@ function SelectRoot(props: SelectRootProps) {
 SelectRoot.displayName = "Select"
 
 const selectTriggerVariants = cva(
-  "flex items-center justify-between rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] outline-none select-none [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] motion-safe:[transition:var(--hui-transition-interactive)] not-data-disabled:hover:cursor-pointer not-data-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] not-data-disabled:active:bg-[var(--hui-color-background-neutral-secondary)] focus:not-focus-visible:outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] data-disabled:pointer-events-none data-disabled:bg-[var(--hui-color-background-base-secondary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] disabled:pointer-events-none disabled:bg-[var(--hui-color-background-base-secondary)] disabled:text-[var(--hui-color-foreground-base-tertiary)] data-[multiselectable=true]:py-[var(--hui-space-2)]",
+  "flex items-center justify-between rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] text-[var(--hui-color-foreground-base-primary)] outline-none select-none [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] motion-safe:[transition:var(--hui-transition-interactive)] not-data-disabled:not-data-readonly:hover:cursor-pointer data-readonly:bg-[var(--hui-color-background-base-secondary)] data-invalid:border-[var(--hui-color-border-danger-emphasis)] aria-invalid:border-[var(--hui-color-border-danger-emphasis)] data-invalid:focus-visible:shadow-[var(--hui-focus-ring-field-danger)] aria-invalid:focus-visible:shadow-[var(--hui-focus-ring-field-danger)] data-invalid:focus-visible:border-[var(--hui-color-border-danger-emphasis-hover)] aria-invalid:focus-visible:border-[var(--hui-color-border-danger-emphasis-hover)] focus:not-focus-visible:outline-none focus-visible:border-[var(--hui-color-border-accent-emphasis)] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent focus-visible:shadow-[var(--hui-focus-ring-field)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] data-disabled:pointer-events-none data-disabled:bg-[var(--hui-color-background-base-secondary)] data-disabled:text-[var(--hui-color-foreground-base-tertiary)] disabled:pointer-events-none disabled:bg-[var(--hui-color-background-base-secondary)] disabled:text-[var(--hui-color-foreground-base-tertiary)] data-[multiselectable=true]:py-[var(--hui-space-2)]",
   {
     variants: {
       size: {
         small:
-          "min-h-[var(--hui-space-7)] overflow-hidden p-[var(--hui-space-2)]",
+          "min-h-[var(--hui-control-height-sm,var(--hui-space-8))] overflow-hidden px-[var(--hui-field-padding-inline,var(--hui-space-3))] py-[var(--hui-space-1)]",
         medium:
-          "min-h-[var(--hui-density-control-height,var(--hui-space-9))] overflow-hidden px-[var(--hui-space-3)] py-[var(--hui-density-control-padding-block,var(--hui-space-3))]",
+          "min-h-[var(--hui-density-control-height,36px)] overflow-hidden px-[var(--hui-field-padding-inline,var(--hui-space-3))] py-[calc(var(--hui-density-control-padding-block,var(--hui-space-3))-1px)]",
+        large: "min-h-[var(--hui-control-height-lg,44px)] overflow-hidden px-[var(--hui-space-4)] py-[var(--hui-space-3)]",
       },
       variant: {
         outline:
-          "border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))]",
-        text: "border-0",
+          "border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] not-data-disabled:not-data-readonly:hover:border-[var(--hui-color-border-field-hover,var(--hui-color-border-field,var(--hui-color-border-base-tertiary)))] data-disabled:border-[var(--hui-color-border-base-primary)]",
+        text: "border-0 not-data-disabled:not-data-readonly:hover:bg-[var(--hui-color-background-base-primary-hover)] not-data-disabled:not-data-readonly:active:bg-[var(--hui-color-background-neutral-secondary)] data-readonly:bg-transparent",
       },
     },
     defaultVariants: {
@@ -357,7 +358,7 @@ function SelectTrigger({
   ...props
 }: SelectTriggerProps) {
   const { multiple, autocomplete } = useSelectContext()
-  const resolvedSize = size === "sm" || size === "small" ? "small" : "medium"
+  const resolvedSize = size === "sm" || size === "small" ? "small" : size === "lg" ? "large" : "medium"
   const TriggerPrimitive = autocomplete
     ? ComboboxPrimitive.Trigger
     : SelectPrimitive.Trigger
@@ -367,20 +368,21 @@ function SelectTrigger({
       ref={ref}
       data-multiselectable={multiple ? true : undefined}
       data-size={resolvedSize}
+      data-hui=""
       data-slot="select-trigger"
       data-variant={variant ?? "outline"}
       className={cn(
         selectTriggerVariants({ size: resolvedSize, variant }),
         className
       )}
-      aria-label={ariaLabel || "Select option"}
+      aria-label={ariaLabel}
       {...props}
     >
       <span
         className={cn(
-          "flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap [font-style:normal] [font-weight:var(--hui-font-weight-medium)]",
+          "flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap [font-style:normal] [font-weight:var(--hui-font-weight-regular)]",
           resolvedSize === "small"
-            ? "gap-[var(--hui-space-1)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
+            ? "gap-[var(--hui-space-1)] [font-size:var(--hui-font-size-control-sm,var(--hui-font-size-small))] [letter-spacing:var(--hui-letter-spacing-control)] [line-height:var(--hui-line-height-control)]"
             : "gap-[var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]"
         )}
         data-slot="select-trigger-content"
@@ -603,7 +605,7 @@ function SelectContent({
   const { autocomplete, multiple } = useSelectContext()
   const density = useDensity()
   const contentClassName = cn(
-    "relative box-border max-h-[320px] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] [--apsara-select-padding:var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
+    "relative box-border max-h-[min(320px,var(--available-height))] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] shadow-[var(--hui-shadow-overlay,var(--hui-shadow-soft))] [--hui-select-padding:var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),scale_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] data-[side=none]:data-starting-style:scale-100 data-[side=none]:data-starting-style:opacity-100 data-[side=none]:data-starting-style:transition-none data-[side=none]:data-ending-style:transition-none has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
     className
   )
 
@@ -620,18 +622,19 @@ function SelectContent({
           <ComboboxPrimitive.Popup
             className={contentClassName}
             data-multiselectable={multiple ? true : undefined}
-            data-slot="select-content"
+            data-hui=""
+          data-slot="select-content"
             data-density={density}
             {...props}
           >
             <ComboboxPrimitive.Input
               placeholder={searchPlaceholder}
-              className="sticky top-0 z-2 w-full rounded-t-[var(--hui-radius-2)] border-0 border-b-[0.5px] border-b-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]"
+              className="sticky top-0 z-2 w-full rounded-t-[var(--hui-radius-2)] border-0 border-b-[0.5px] border-b-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]"
               size={12}
               data-slot="select-search"
             />
             <ComboboxPrimitive.List
-              className="p-[var(--apsara-select-padding)] empty:p-0 [&:not(:has([data-slot=select-item]:not([data-hidden=true])))]:p-0"
+              className="p-[var(--hui-select-padding)] empty:p-0 [&:not(:has([data-slot=select-item]:not([data-hidden=true])))]:p-0"
               data-slot="select-list"
             >
               {children}
@@ -655,12 +658,13 @@ function SelectContent({
         <SelectPrimitive.Popup
           className={contentClassName}
           data-multiselectable={multiple ? true : undefined}
+          data-hui=""
           data-slot="select-content"
           data-density={density}
           {...props}
         >
           <SelectPrimitive.List
-            className="p-[var(--apsara-select-padding)]"
+            className="p-[var(--hui-select-padding)]"
             data-slot="select-list"
           >
             {children}
@@ -746,7 +750,7 @@ function SelectItem({
     )
 
   const itemClassName = cn(
-    "relative flex items-center gap-[var(--hui-space-3)] min-h-[var(--hui-density-item-min-height,0px)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-density-item-padding-block,var(--hui-space-3))] text-[var(--hui-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-[hidden=true]:hidden",
+    "relative flex items-center gap-[var(--hui-space-3)] min-h-[var(--hui-density-item-min-height,0px)] rounded-[var(--hui-radius-item,var(--hui-radius-2))] px-[var(--hui-space-3)] py-[var(--hui-density-item-padding-block,var(--hui-space-3))] text-[var(--hui-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-overlay-hover)] data-[hidden=true]:hidden",
     className
   )
   const renderItem = (
@@ -764,6 +768,12 @@ function SelectItem({
         />
       )}
       {element}
+      {!multiple && state.selected && (
+        <CheckIcon
+          aria-hidden="true"
+          className="ms-auto size-4 shrink-0 text-[var(--hui-color-foreground-base-primary)]"
+        />
+      )}
     </div>
   )
 
@@ -834,7 +844,7 @@ function SelectLabel({ className, ...props }: SelectLabelProps) {
   return (
     <LabelPrimitive
       className={cn(
-        "px-[var(--hui-space-3)] py-[var(--hui-space-2)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)]",
+        "px-[var(--hui-space-3)] py-[var(--hui-space-2)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] [font-weight:var(--hui-font-weight-medium)] text-[var(--hui-color-foreground-base-secondary)]",
         className
       )}
       data-slot="select-label"
@@ -859,7 +869,7 @@ function SelectSeparator({ className, ...props }: SelectSeparatorProps) {
   return (
     <SeparatorPrimitive
       className={cn(
-        "my-[var(--hui-space-2)] h-px bg-[var(--hui-color-border-base-primary)] [margin-inline:calc(var(--hui-space-3)*-1)]",
+        "my-[var(--hui-space-2)] h-0 border-t-[0.5px] border-[var(--hui-color-border-overlay)] [margin-inline:calc(var(--hui-space-2)*-1)]",
         className
       )}
       data-slot="select-separator"

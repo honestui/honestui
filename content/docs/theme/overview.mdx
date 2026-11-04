@@ -16,15 +16,15 @@ Running `init` installs the shared style setup into the global stylesheet record
 npx honestui@latest init
 ```
 
-Set a color theme and style on a shared ancestor. The document element is the simplest place for an application-wide theme:
+Set a color theme on a shared ancestor. The document element is the simplest place for an application-wide theme:
 
 ```html
-<html data-theme="light" data-style="modern">
+<html data-theme="light">
   <!-- Your application -->
 </html>
 ```
 
-Use `data-theme="dark"` for the dark color theme. Honest UI supplies `modern` and `traditional` style values; they currently change the radius scale while keeping the same type roles.
+Use `data-theme="dark"` for the dark color theme. Honest UI has one component style, so there is no style attribute to choose: controls are 36px with 14px labels, corners are rounded, hairlines are pale, and fields carry a faint shadow. For denser screens, use a `compact` [density scope](/docs/components/density).
 
 If a theme library controls your application, configure it to write `light` or `dark` to `data-theme`. Honest UI does not manage persistence, system-theme detection, or hydration for you.
 
@@ -77,13 +77,12 @@ Use semantic tokens in component code. Palette values are implementation details
 
 ## Theme attributes
 
-The shared styles respond to four attributes. Put attributes that belong to one scope on the same element.
+The shared styles respond to three attributes. Put attributes that belong to one scope on the same element.
 
 | Attribute | Supported values | Default behavior |
 | --- | --- | --- |
 | `data-theme` | `light`, `dark` | Required to resolve theme colors; also sets `color-scheme` for native controls |
-| `data-style` | `modern`, `traditional`, `soft` | Required to resolve radius tokens. `soft` needs `honestui/soft.css` |
-| `data-accent-color` | `orange`, `mint` | Without an override, the theme uses the built-in indigo accent |
+| `data-accent-color` | `indigo`, `orange`, `mint` | Without an override, the theme uses the built-in blue accent |
 | `data-gray-color` | `gray`, `mauve`, `slate`, `sage` | Without an override, the theme uses gray |
 
 For example, this scope uses the dark theme with a mint accent and sage neutrals:
@@ -91,7 +90,6 @@ For example, this scope uses the dark theme with a mint accent and sage neutrals
 ```html
 <section
   data-theme="dark"
-  data-style="traditional"
   data-accent-color="mint"
   data-gray-color="sage"
 >
@@ -99,7 +97,7 @@ For example, this scope uses the dark theme with a mint accent and sage neutrals
 </section>
 ```
 
-Nested scopes work through normal CSS inheritance. A child scope can preview a different theme without changing the rest of the page. Keep all four attributes together when a scope changes more than one dimension so its behavior is obvious in the markup.
+Nested scopes work through normal CSS inheritance. A child scope can preview a different theme without changing the rest of the page. Keep all three attributes together when a scope changes more than one dimension so its behavior is obvious in the markup.
 
 ## Choose the right theme page
 
@@ -107,7 +105,7 @@ Nested scopes work through normal CSS inheritance. A child scope can preview a d
 - [Tailwind CSS](/docs/theme/tailwind) shows how to use tokens in utilities and register shorter aliases.
 - [Typography](/docs/theme/typography) covers the LoveSans family, body and title scales, weights, line heights, and tracking.
 - [Spacing](/docs/theme/spacing) documents the 17-step spacing scale and how to choose a step.
-- [Radius](/docs/theme/radius) compares the modern and traditional radius scales.
+- [Radius](/docs/theme/radius) documents the radius scale and what replaced the earlier `data-style` values.
 - [Effects](/docs/theme/effects) covers shadows, focus rings, pressed feedback, motion, and blur.
 
 ## Customize without losing meaning

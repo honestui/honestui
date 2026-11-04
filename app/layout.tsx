@@ -220,7 +220,6 @@ export default function RootLayout({
       lang="en"
       className={`${loveSans.variable} ${jetbrainsMono.variable}`}
       data-scroll-behavior="smooth"
-      data-style="soft"
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">

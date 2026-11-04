@@ -29,7 +29,7 @@ const statusVariant = {
   Paid: "success",
   Open: "info",
   Overdue: "error",
-  Draft: "neutral",
+  Draft: "secondary",
 } as const
 
 const columns: DataTableProps<Invoice>["columns"] = [

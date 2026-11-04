@@ -52,6 +52,8 @@ Long suggestions wrap inside the popup; long *typed* values scroll horizontally 
 
 The visible label names the input. The popup is a real listbox: screen-reader users hear how many suggestions matched, which is highlighted, and can ignore the popup entirely without losing their typed text. Because the field's whole model is "typed text is the truth", nothing in the suggestion UI overwrites input silently — acceptance happens only through explicit selection.
 
+`AutocompleteTrigger` and `AutocompleteClear` get a default name ("Show options", "Clear") only when they have no content of their own; if you pass icon-only content, give it an `aria-label`.
+
 Suggestion copy matters more than usual here: people scan fragments mid-typing. Put the distinguishing part of each label first, and include enough context ("Springfield, Illinois") that similar entries are tellable apart.
 
 ## Installation
@@ -75,7 +77,7 @@ Suggestion copy matters more than usual here: people scan fragments mid-typing. 
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -181,5 +183,7 @@ When suggestions disappear without explanation, people stop typing to wait or as
 | `value` / `defaultValue` | item | — |
 
 Parts: `AutocompleteInput`, `AutocompleteTrigger`, `AutocompletePopup`, `AutocompleteList`, `AutocompleteItem`, `AutocompleteGroup(Label)`, `AutocompleteEmpty`, `AutocompleteStatus`, `AutocompleteClear`, `AutocompleteValue`.
+
+`AutocompleteInput` adds `showTrigger` and `showClear` (both default `false`), and `triggerProps` / `clearProps`, which pass through to the built-in buttons. Use them to translate the default names ("Show options", "Clear").
 
 See the [Base UI Autocomplete API](https://base-ui.com/react/components/autocomplete#api-reference).

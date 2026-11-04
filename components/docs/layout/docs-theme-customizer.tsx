@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Dialog } from "@base-ui/react/dialog";
 
 import { BrushIcon, HistoryIcon } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type ColorChoice = "indigo" | "orange" | "mint" | "red" | "green" | "amber";
+type ColorChoice = "blue" | "orange" | "mint" | "red" | "green" | "amber";
 type TypographyChoice =
   "love-sans" | "system" | "mono" | "editorial" | "serif" | "technical";
 type SpacingChoice =
@@ -59,6 +60,9 @@ type SelectOption = {
   swatch?: string;
 };
 
+// A detached trigger keeps the docs page outside the customizer's dialog tree,
+// so demo dialogs are not treated as nested and keep their backdrop.
+const customizerHandle = Dialog.createHandle();
 const STORAGE_KEY = "honestui:docs-theme-customization:v1";
 const PREVIEW_SELECTOR = '[data-slot="preview"]';
 const PREVIEW_SCOPE_ATTRIBUTE = "data-docs-theme-preview";
@@ -76,14 +80,14 @@ const PORTAL_CONTENT_SELECTOR = [
 
 const STYLE_PRESETS: Record<ThemeStyle, ThemeCustomization> = {
   default: {
-    color: "indigo",
+    color: "blue",
     typography: "love-sans",
     spacing: "balanced",
     radius: "medium",
     effects: "balanced",
   },
   crisp: {
-    color: "indigo",
+    color: "blue",
     typography: "system",
     spacing: "compact",
     radius: "small",
@@ -119,7 +123,7 @@ const STYLE_OPTIONS: SelectOption[] = [
 ];
 
 const COLOR_OPTIONS: SelectOption[] = [
-  { value: "indigo", label: "Indigo", swatch: "oklch(0.5438 0.191 267.01)" },
+  { value: "blue", label: "Blue", swatch: "oklch(0.5465 0.2455 262.87)" },
   { value: "orange", label: "Orange", swatch: "oklch(0.6908 0.1909 45.02)" },
   { value: "mint", label: "Mint", swatch: "oklch(0.8696 0.0999 177.98)" },
   { value: "red", label: "Red", swatch: "oklch(0.6256 0.1933 23.03)" },
@@ -165,7 +169,7 @@ const COLOR_ATTRIBUTES: Record<
   ColorChoice,
   { accent?: string; gray?: string }
 > = {
-  indigo: {},
+  blue: {},
   orange: { accent: "orange", gray: "mauve" },
   mint: { accent: "mint", gray: "sage" },
   red: {},
@@ -184,7 +188,7 @@ function semanticAccentProperties(source: "danger" | "success" | "attention") {
 }
 
 const COLOR_PROPERTIES: Record<ColorChoice, Record<string, string>> = {
-  indigo: {},
+  blue: {},
   orange: {},
   mint: {},
   red: semanticAccentProperties("danger"),
@@ -476,7 +480,7 @@ function applyCustomization(
   } else {
     delete target.dataset.accentColor;
   }
-  if (customization.color !== "indigo") {
+  if (customization.color !== "blue") {
     target.dataset.theme = document.documentElement.dataset.theme ?? "light";
   } else {
     delete target.dataset.theme;
@@ -660,13 +664,14 @@ export function DocsThemeCustomizationProvider({
 
   return (
     <ThemeCustomizationContext.Provider value={value}>
+      {children}
       <Sheet
+        handle={customizerHandle}
         open={isCustomizerOpen}
         onOpenChange={setIsCustomizerOpen}
         modal={false}
         disablePointerDismissal
       >
-        {children}
         <DocsThemeCustomizationSheet />
       </Sheet>
     </ThemeCustomizationContext.Provider>
@@ -762,7 +767,7 @@ function CustomizerSelect({
 export function DocsThemeCustomizer() {
   return (
     <Button
-      render={<SheetTrigger />}
+      render={<SheetTrigger handle={customizerHandle} />}
       id="docs-theme-customizer-trigger"
       variant="secondary"
       size="sm"
@@ -797,7 +802,7 @@ function DocsThemeCustomizationSheet() {
       }
       className="gap-0 border-l border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-floating)] sm:max-w-[380px]"
     >
-      <SheetHeader className="gap-[var(--hui-space-2)] border-b border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-7)] py-[var(--hui-space-6)] pe-[var(--hui-space-12)]">
+      <SheetHeader className="gap-[var(--hui-space-2)] border-b border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-7)] py-[var(--hui-space-6)]">
         <SheetTitle className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-large)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)]">
           Customize theme
         </SheetTitle>

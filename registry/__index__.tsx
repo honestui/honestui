@@ -63,7 +63,6 @@ import breadcrumb_buttons from "./default/examples/breadcrumb-buttons";
 import breadcrumb_card from "./default/examples/breadcrumb-card";
 import breadcrumb_custom_separator from "./default/examples/breadcrumb-custom-separator";
 import breadcrumb_demo from "./default/examples/breadcrumb-demo";
-import button_appearances from "./default/examples/button-appearances";
 import button_async_action from "./default/examples/button-async-action";
 import button_default from "./default/examples/button-default";
 import button_default_icons from "./default/examples/button-default-icons";
@@ -129,6 +128,8 @@ import data_grid_columns from "./default/examples/data-grid-columns";
 import data_grid_controlled from "./default/examples/data-grid-controlled";
 import data_grid_demo from "./default/examples/data-grid-demo";
 import data_grid_density from "./default/examples/data-grid-density";
+import card_customization from "./default/examples/card-customization";
+import control_size_comparison from "./default/examples/control-size-comparison";
 import density_demo from "./default/examples/density-demo";
 import density_nested from "./default/examples/density-nested";
 import data_grid_editing from "./default/examples/data-grid-editing";
@@ -582,7 +583,6 @@ export const Index: Record<string, { component: ComponentType }> = {
   "breadcrumb-card": { component: breadcrumb_card },
   "breadcrumb-custom-separator": { component: breadcrumb_custom_separator },
   "breadcrumb-demo": { component: breadcrumb_demo },
-  "button-appearances": { component: button_appearances },
   "button-async-action": { component: button_async_action },
   "button-default": { component: button_default },
   "button-default-icons": { component: button_default_icons },
@@ -650,6 +650,8 @@ export const Index: Record<string, { component: ComponentType }> = {
   "data-grid-controlled": { component: data_grid_controlled },
   "data-grid-demo": { component: data_grid_demo },
   "data-grid-density": { component: data_grid_density },
+  "card-customization": { component: card_customization },
+  "control-size-comparison": { component: control_size_comparison },
   "density-demo": { component: density_demo },
   "density-nested": { component: density_nested },
   "data-grid-editing": { component: data_grid_editing },

@@ -40,7 +40,7 @@ The root generates an id for the input and shares it through context, so `Number
 
 Keyboard support on the input: <kbd>Arrow Up</kbd>/<kbd>Arrow Down</kbd> step by `step` (<kbd>Shift</kbd> applies `largeStep`, <kbd>Alt</kbd> applies `smallStep`), <kbd>Home</kbd> jumps to `min` and <kbd>End</kbd> jumps to `max` when those bounds are set, and ordinary editing keys behave natively. The stepper buttons are regular focusable buttons with visible focus rings, so keyboard users are never forced through the scrub gesture.
 
-On touch devices an invisible layer expands each stepper's hit area to at least 44 × 44 px, even though the visible button is 24 px square. The scrub area is pointer-driven by design; keyboard and touch users have equivalent paths through typing and steppers, which is why it stays optional.
+Default controls follow the nearest density scope, including its 44px coarse-pointer minimum. Without an explicit density, controls are 36px. Explicit `sm` and `lg` sizes retain their own dimensions; place small steppers with enough spacing for touch use. The scrub area is pointer-driven by design; keyboard and touch users have equivalent paths through typing and steppers, which is why it stays optional.
 
 Setting invalid state (for example `aria-invalid` via `Field`) turns the input border toward the danger color, including on focus. Colors come from `--hui-*` tokens, so borders, backgrounds, and disabled states adapt to dark mode. The layout is direction-aware: the decrement sits at the inline start and the increment at the inline end via logical border radii, so groups mirror correctly under right-to-left locales. Long formatted values widen the input within the group; keep the surrounding column wide enough for the largest plausible value at 200% zoom so nothing truncates mid-edit.
 
@@ -65,7 +65,7 @@ Setting invalid state (for example `aria-invalid` via `Field`) turns the input b
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>

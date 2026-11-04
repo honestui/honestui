@@ -614,7 +614,6 @@ export function CrmCustomerList() {
                 <TableRow
                   key={row.company}
                   className="group motion-reduce:transition-none"
-                  interactive
                 >
                   <TableCell className="h-11 min-w-0 border-r-[0.5px] border-r-[var(--hui-color-border-base-primary)] p-[var(--hui-space-3)]">
                     <div className="flex min-w-0 items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-space-3)]">

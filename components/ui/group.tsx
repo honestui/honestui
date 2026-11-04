@@ -1,6 +1,6 @@
 import * as React from "react"
-import { mergeProps } from "@base-ui-components/react/merge-props"
-import { useRender } from "@base-ui-components/react/use-render"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
 
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
@@ -14,7 +14,7 @@ function Group({
     <div
       data-slot="group"
       className={cn(
-        "isolate inline-flex w-fit items-stretch overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)] has-[[data-slot=input-control]:focus-within]:border-[var(--hui-color-border-accent-emphasis)] *:pointer-coarse:after:min-w-auto",
+        "isolate inline-flex w-fit items-stretch overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] shadow-[var(--hui-shadow-feather)] motion-safe:[transition:var(--hui-transition-interactive)] has-[[data-slot=input-control]]:not-focus-within:not-has-[input:is([data-invalid],[aria-invalid=true],[data-disabled],:read-only)]:hover:border-[var(--hui-color-border-field-hover,var(--hui-color-border-field,var(--hui-color-border-base-tertiary)))] has-[[data-slot=input-control]:focus-within]:border-[var(--hui-color-border-accent-emphasis)] has-[[data-slot=input-control]:focus-within]:shadow-[var(--hui-focus-ring-field)] *:pointer-coarse:after:min-w-auto",
         className
       )}
       role="group"
@@ -32,7 +32,7 @@ function GroupItem({
 }: useRender.ComponentProps<"div">) {
   const defaultProps = {
     className: cn(
-      "relative min-w-0 self-stretch rounded-none! border-0! shadow-none! focus-visible:z-10 focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] has-focus-visible:z-10 data-[slot=input-control]:bg-[var(--hui-color-background-base-primary)]",
+      "relative min-w-0 self-stretch rounded-none! border-0! shadow-none! focus-visible:z-10 focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset-border)] has-focus-visible:z-10 data-[slot=input-control]:bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))]",
       className
     ),
   }

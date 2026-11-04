@@ -321,9 +321,10 @@ const selectTriggerVariants = cva(
     variants: {
       size: {
         small:
-          "min-h-[var(--hui-space-7)] overflow-hidden p-[var(--hui-space-2)]",
+          "min-h-[var(--hui-control-height-sm,var(--hui-space-8))] overflow-hidden px-[var(--hui-space-3)] py-[var(--hui-space-1)]",
         medium:
-          "min-h-[var(--hui-density-control-height,var(--hui-space-9))] overflow-hidden px-[var(--hui-space-3)] py-[var(--hui-density-control-padding-block,var(--hui-space-3))]",
+          "min-h-[var(--hui-density-control-height,var(--hui-space-9))] overflow-hidden px-[var(--hui-space-3)] py-[calc(var(--hui-density-control-padding-block,var(--hui-space-3))-1px)]",
+        large: "min-h-[var(--hui-control-height-lg,var(--hui-space-10))] overflow-hidden px-[var(--hui-space-4)] py-[var(--hui-space-3)]",
       },
       variant: {
         outline:
@@ -357,7 +358,7 @@ function SelectTrigger({
   ...props
 }: SelectTriggerProps) {
   const { multiple, autocomplete } = useSelectContext()
-  const resolvedSize = size === "sm" || size === "small" ? "small" : "medium"
+  const resolvedSize = size === "sm" || size === "small" ? "small" : size === "lg" ? "large" : "medium"
   const TriggerPrimitive = autocomplete
     ? ComboboxPrimitive.Trigger
     : SelectPrimitive.Trigger
@@ -367,20 +368,21 @@ function SelectTrigger({
       ref={ref}
       data-multiselectable={multiple ? true : undefined}
       data-size={resolvedSize}
+      data-hui=""
       data-slot="select-trigger"
       data-variant={variant ?? "outline"}
       className={cn(
         selectTriggerVariants({ size: resolvedSize, variant }),
         className
       )}
-      aria-label={ariaLabel || "Select option"}
+      aria-label={ariaLabel}
       {...props}
     >
       <span
         className={cn(
           "flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap [font-style:normal] [font-weight:var(--hui-font-weight-medium)]",
           resolvedSize === "small"
-            ? "gap-[var(--hui-space-1)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
+            ? "gap-[var(--hui-space-1)] [font-size:var(--hui-font-size-control-sm,var(--hui-font-size-small))] [letter-spacing:var(--hui-letter-spacing-control)] [line-height:var(--hui-line-height-control)]"
             : "gap-[var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]"
         )}
         data-slot="select-trigger-content"
@@ -603,7 +605,7 @@ function SelectContent({
   const { autocomplete, multiple } = useSelectContext()
   const density = useDensity()
   const contentClassName = cn(
-    "relative box-border max-h-[320px] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] [--apsara-select-padding:var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
+    "relative box-border max-h-[320px] min-w-(--anchor-width) origin-(--transform-origin) overflow-auto rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-overlay,var(--hui-shadow-soft))] [--apsara-select-padding:var(--hui-space-2)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] [transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out),transform_var(--hui-duration-fast)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] has-[[data-slot=select-list]:empty]:[&_[data-slot=select-search]]:border-b-0 has-[[data-slot=select-list]:not(:has([data-slot=select-item]:not([data-hidden=true])))]:[&_[data-slot=select-search]]:border-b-0",
     className
   )
 
@@ -746,7 +748,7 @@ function SelectItem({
     )
 
   const itemClassName = cn(
-    "relative flex items-center gap-[var(--hui-space-3)] min-h-[var(--hui-density-item-min-height,0px)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-density-item-padding-block,var(--hui-space-3))] text-[var(--hui-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-[hidden=true]:hidden",
+    "relative flex items-center gap-[var(--hui-space-3)] min-h-[var(--hui-density-item-min-height,0px)] rounded-[var(--hui-radius-item,var(--hui-radius-2))] px-[var(--hui-space-3)] py-[var(--hui-density-item-padding-block,var(--hui-space-3))] text-[var(--hui-color-foreground-base-primary)] whitespace-normal outline-none [word-break:break-word] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:cursor-pointer data-highlighted:bg-[var(--hui-color-background-base-primary-hover)] data-[hidden=true]:hidden",
     className
   )
   const renderItem = (

@@ -3,11 +3,11 @@
 @import "./honest-ai/styles/primitives/appearance.css";
 @import "./honest-ai/styles/primitives/z-index.css";
 @import "./honest-ai/styles/colors.css";
-@import "./honest-ai/styles/radius.css";
 @import "./honest-ai/styles/spacing.css";
-@import "./honest-ai/styles/density.css";
+@import "./density.css";
 @import "./honest-ai/styles/effects.css";
 @import "./honest-ai/styles/typography.css";
+@import "./style.css";
 
 :root {
   --font-love-sans: Arial, sans-serif;

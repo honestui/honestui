@@ -111,7 +111,7 @@ function PageGroup({ label, pages }: { label: string; pages: PageItem[] }) {
                 {icon}
                 <span className="min-w-0 truncate">{page.name}</span>
                 {isNew && (
-                  <Badge className="ms-auto" size="micro" variant="neutral">
+                  <Badge className="ms-auto" size="sm" variant="secondary">
                     New
                   </Badge>
                 )}

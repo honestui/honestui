@@ -85,16 +85,24 @@ const timeoutKey = (t: GooeyItem) => `${t.id}:${t.instanceId}`;
 
 /* ------------------------------- Toast API -------------------------------- */
 
-const dismissToast = (id: string) => {
-	const item = store.toasts.find((t) => t.id === id);
-	if (!item || item.exiting) return;
+// Dismisses one instance. Toasts share the default id, so matching on id alone
+// would also remove a follow-up toast shown during the exit animation.
+const dismissToast = (id: string, instanceId?: string) => {
+	const item = store.toasts.find(
+		(t) =>
+			t.id === id &&
+			!t.exiting &&
+			(instanceId === undefined || t.instanceId === instanceId),
+	);
+	if (!item) return;
+	const target = item.instanceId;
 
 	store.update((prev) =>
-		prev.map((t) => (t.id === id ? { ...t, exiting: true } : t)),
+		prev.map((t) => (t.instanceId === target ? { ...t, exiting: true } : t)),
 	);
 
 	setTimeout(
-		() => store.update((prev) => prev.filter((t) => t.id !== id)),
+		() => store.update((prev) => prev.filter((t) => t.instanceId !== target)),
 		EXIT_DURATION,
 	);
 };
@@ -123,7 +131,8 @@ const buildGooeyItem = (
 	id: string,
 	fallbackPosition?: GooeyPosition,
 ): GooeyItem => {
-	const duration = merged.duration ?? DEFAULT_DURATION;
+	const duration =
+		merged.duration === undefined ? DEFAULT_DURATION : merged.duration;
 	const auto = resolveAutopilot(merged, duration);
 	return {
 		...merged,
@@ -148,16 +157,48 @@ const createToast = (options: InternalGooeyOptions) => {
 	} else {
 		store.update((p) => [...p.filter((t) => t.id !== id), item]);
 	}
-	return { id, duration: merged.duration ?? DEFAULT_DURATION };
+	return {
+		id,
+		duration:
+			merged.duration === undefined ? DEFAULT_DURATION : merged.duration,
+	};
 };
 
+// Updates a live toast in place: new options merge over the current ones, and
+// the toast keeps its id and position. Returns whether a toast was found.
 const updateToast = (id: string, options: InternalGooeyOptions) => {
-	const existing = store.toasts.find((t) => t.id === id);
-	if (!existing) return;
+	const existing = store.toasts.find((t) => t.id === id && !t.exiting);
+	if (!existing) return false;
 
-	const item = buildGooeyItem(mergeOptions(options), id, existing.position);
-	store.update((prev) => prev.map((t) => (t.id === id ? item : t)));
+	// Leaving the loading state without a duration restores the default timer.
+	const settles =
+		existing.state === "loading" &&
+		options.state !== undefined &&
+		options.state !== "loading" &&
+		options.duration === undefined;
+
+	const item = buildGooeyItem(
+		mergeOptions({
+			...existing,
+			...options,
+			styles: { ...existing.styles, ...options.styles },
+			...(settles ? { duration: DEFAULT_DURATION } : {}),
+			// An update never moves the toast.
+			position: existing.position,
+		}),
+		id,
+		existing.position,
+	);
+	store.update((prev) =>
+		prev.map((t) => (t.instanceId === existing.instanceId ? item : t)),
+	);
+	return true;
 };
+
+// The loading state never times out; a settled one falls back to the default
+// unless the caller set its own duration.
+const settledDuration = (opts: GooeyOptions) =>
+	opts.duration === undefined ? DEFAULT_DURATION : opts.duration;
 
 export interface GooeyPromiseOptions<T = unknown> {
 	loading: Pick<GooeyOptions, "title" | "icon">;
@@ -194,22 +235,25 @@ export const gooey = {
 			if (opts.action) {
 				const actionOpts =
 					typeof opts.action === "function" ? opts.action(data) : opts.action;
-				updateToast(id, { ...actionOpts, state: "action", id });
+				updateToast(id, { ...actionOpts, duration: settledDuration(actionOpts), state: "action", id });
 			} else {
 				const successOpts =
 					typeof opts.success === "function"
 						? opts.success(data)
 						: opts.success;
-				updateToast(id, { ...successOpts, state: "success", id });
+				updateToast(id, { ...successOpts, duration: settledDuration(successOpts), state: "success", id });
 			}
 		}).catch((err) => {
 			const errorOpts =
 				typeof opts.error === "function" ? opts.error(err) : opts.error;
-			updateToast(id, { ...errorOpts, state: "error", id });
+			updateToast(id, { ...errorOpts, duration: settledDuration(errorOpts), state: "error", id });
 		});
 
 		return p;
 	},
+
+	update: (id: string, opts: GooeyOptions & { state?: GooeyState }) =>
+		updateToast(id, opts),
 
 	dismiss: dismissToast,
 
@@ -230,7 +274,10 @@ export function Toaster({
 	const [toasts, setToasts] = useState<GooeyItem[]>(store.toasts);
 	const [hoveredId, setHoveredId] = useState<string>();
 
-	const hoverRef = useRef(false);
+	// Timers pause while the pointer or keyboard focus is inside; each is tracked
+	// separately so leaving one does not resume while the other remains.
+	const pointerInsideRef = useRef(false);
+	const focusInsideRef = useRef(false);
 	const timersRef = useRef(new Map<string, number>());
 	const listRef = useRef(toasts);
 
@@ -245,19 +292,28 @@ export function Toaster({
 	}, []);
 
 	const schedule = useCallback((items: GooeyItem[]) => {
-		if (hoverRef.current) return;
+		// An action button that unmounts while focused fires no blur, so check
+		// where focus actually is before treating the viewport as focused.
+		if (
+			focusInsideRef.current &&
+			!document.activeElement?.closest("[data-gooey-viewport]")
+		) {
+			focusInsideRef.current = false;
+		}
+		if (pointerInsideRef.current || focusInsideRef.current) return;
 
 		for (const item of items) {
 			if (item.exiting) continue;
 			const key = timeoutKey(item);
 			if (timersRef.current.has(key)) continue;
 
-			const dur = item.duration ?? DEFAULT_DURATION;
+			const dur =
+				item.duration === undefined ? DEFAULT_DURATION : item.duration;
 			if (dur === null || dur <= 0) continue;
 
 			timersRef.current.set(
 				key,
-				window.setTimeout(() => dismissToast(item.id), dur),
+				window.setTimeout(() => dismissToast(item.id, item.instanceId), dur),
 			);
 		}
 	}, []);
@@ -284,21 +340,25 @@ export function Toaster({
 		schedule(toasts);
 	}, [toasts, schedule]);
 
-	const handleMouseEnter = useCallback<
-		MouseEventHandler<HTMLButtonElement>
-	>(() => {
-		if (hoverRef.current) return;
-		hoverRef.current = true;
-		clearAllTimers();
-	}, [clearAllTimers]);
+	const pause = useCallback(
+		(ref: { current: boolean }) => {
+			ref.current = true;
+			clearAllTimers();
+		},
+		[clearAllTimers],
+	);
 
-	const handleMouseLeave = useCallback<
-		MouseEventHandler<HTMLButtonElement>
-	>(() => {
-		if (!hoverRef.current) return;
-		hoverRef.current = false;
-		schedule(listRef.current);
-	}, [schedule]);
+	const resume = useCallback(
+		(ref: { current: boolean }) => {
+			if (!ref.current) return;
+			ref.current = false;
+			schedule(listRef.current);
+		},
+		[schedule],
+	);
+
+	const handleMouseEnter = useCallback(() => pause(pointerInsideRef), [pause]);
+	const handleMouseLeave = useCallback(() => resume(pointerInsideRef), [resume]);
 
 	const latest = useMemo(() => {
 		for (let i = toasts.length - 1; i >= 0; i--) {
@@ -311,14 +371,14 @@ export function Toaster({
 
 	const getHandlers = useCallback(
 		(toastId: string) => ({
-			enter: ((e) => {
+			enter: (() => {
 				setHoveredId(toastId);
-				handleMouseEnter(e);
-			}) as MouseEventHandler<HTMLButtonElement>,
-			leave: ((e) => {
+				handleMouseEnter();
+			}) as MouseEventHandler<HTMLDivElement>,
+			leave: (() => {
 				setHoveredId(undefined);
-				handleMouseLeave(e);
-			}) as MouseEventHandler<HTMLButtonElement>,
+				handleMouseLeave();
+			}) as MouseEventHandler<HTMLDivElement>,
 			dismiss: () => dismissToast(toastId),
 		}),
 		[handleMouseEnter, handleMouseLeave],
@@ -377,6 +437,11 @@ export function Toaster({
 						data-gooey-viewport
 						data-position={pos}
 						aria-live="polite"
+						aria-label="Notifications"
+						onFocus={() => pause(focusInsideRef)}
+						onBlur={(e) => {
+							if (!e.currentTarget.contains(e.relatedTarget)) resume(focusInsideRef);
+						}}
 						style={getViewportStyle(pos)}
 					>
 						{items.map((item) => {

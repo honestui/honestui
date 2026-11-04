@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Slider as SliderPrimitive } from "@base-ui-components/react/slider"
+import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
 
@@ -31,6 +31,7 @@ function Slider({
 
   return (
     <SliderPrimitive.Root
+      data-slot="slider"
       thumbAlignment="center"
       data-size={size}
       data-variant={_values.length > 1 ? "range" : "single"}
@@ -65,12 +66,12 @@ function Slider({
               data-size={size}
               index={index}
               key={index}
-              className="group/slider-thumb absolute flex cursor-grab items-center justify-center outline-none active:cursor-grabbing active:outline-none has-focus-visible:[&_[data-slot=slider-thumb-visual]]:[outline:var(--hui-focus-ring)] hover:[&_[data-slot=slider-thumb-visual]]:bg-[var(--hui-color-background-base-secondary)] active:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] active:[&_[data-slot=slider-thumb-visual]]:shadow-[var(--hui-shadow-lifted)] data-dragging:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] data-dragging:[&_[data-slot=slider-thumb-visual]]:shadow-[var(--hui-shadow-lifted)] [&_input:focus-visible]:outline-none"
+              className="group/slider-thumb absolute flex cursor-grab items-center justify-center outline-none active:cursor-grabbing active:outline-none has-focus-visible:[&_[data-slot=slider-thumb-visual]]:[outline:var(--hui-focus-ring)] hover:[&_[data-slot=slider-thumb-visual]]:bg-[oklch(0.97_0_0)] motion-safe:active:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] motion-safe:data-dragging:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] [&_input:focus-visible]:outline-none"
             >
               <span
                 data-slot="slider-thumb-visual"
                 className={cn(
-                  "relative flex items-center justify-center border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:transform_var(--hui-duration-press)_var(--hui-ease-out),box-shadow_var(--hui-duration-press)_var(--hui-ease-out)]",
+                  "relative flex items-center justify-center border-[0.5px] border-[var(--hui-alpha-a7)] bg-white shadow-[var(--hui-shadow-soft)] motion-safe:[transition:scale_var(--hui-duration-press)_var(--hui-ease-out),box-shadow_var(--hui-duration-press)_var(--hui-ease-out)]",
                   size === "large"
                     ? "h-[var(--hui-space-6)] w-[var(--hui-space-7)] gap-[3px] rounded-[var(--hui-radius-2)]"
                     : "h-[var(--hui-space-5)] w-[var(--hui-space-3)] rounded-[var(--hui-radius-full)]"
@@ -87,7 +88,7 @@ function Slider({
                 <SliderPrimitive.Value
                   data-slot="slider-thumb-label"
                   className={cn(
-                    "absolute top-[calc(-1*(var(--hui-space-8)+1px))] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)]",
+                    "absolute top-[calc(-1*(var(--hui-space-8)+1px))] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] tabular-nums shadow-[var(--hui-shadow-overlay)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]",
                     size === "small" && "top-[calc(-1*var(--hui-space-7))]"
                   )}
                 >

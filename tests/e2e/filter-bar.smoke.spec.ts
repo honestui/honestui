@@ -108,6 +108,12 @@ test.describe("Filter Bar docs previews", () => {
     )
     const rule = amount.getByRole("combobox", { name: "Amount rule" })
     const value = amount.locator('[data-slot="number-field"]')
+    // The panel scales in from 0.97, so measure once the open transition ends.
+    await page
+      .locator('[data-slot="popover-content"]:has([data-slot="filter-bar-panel"])')
+      .evaluate((popup) =>
+        Promise.all(popup.getAnimations().map((animation) => animation.finished))
+      )
     const ruleBounds = await rule.boundingBox()
     const valueBounds = await value.boundingBox()
 

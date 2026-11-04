@@ -1,6 +1,6 @@
 import * as React from "react"
-import { mergeProps } from "@base-ui-components/react/merge-props"
-import { useRender } from "@base-ui-components/react/use-render"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronRight, Ellipsis as MoreHorizontal } from "honestui/icons"
 
@@ -66,7 +66,7 @@ function BreadcrumbLink({
   const defaultProps = {
     "data-slot": "breadcrumb-link",
     className: cn(
-      "flex cursor-pointer items-center gap-[var(--hui-space-2)] whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] no-underline outline-none motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:text-[var(--hui-color-foreground-base-secondary)] focus-visible:rounded-[var(--hui-radius-1)] focus-visible:[outline:var(--hui-focus-ring)] aria-disabled:pointer-events-none aria-disabled:text-[var(--hui-color-foreground-base-tertiary)]",
+      "flex cursor-pointer items-center gap-[var(--hui-space-2)] whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] no-underline outline-none motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:rounded-[var(--hui-radius-1)] focus-visible:[outline:var(--hui-focus-ring)] aria-disabled:pointer-events-none aria-disabled:text-[var(--hui-color-foreground-base-tertiary)]",
       className
     ),
   }
@@ -105,7 +105,7 @@ function BreadcrumbSeparator({
       role="presentation"
       aria-hidden="true"
       className={cn(
-        "flex items-center text-[var(--hui-color-foreground-base-secondary)] [&>svg]:size-4",
+        "flex items-center text-[var(--hui-color-foreground-base-tertiary)] [&>svg]:size-4 rtl:[&>svg]:rotate-180",
         className
       )}
       {...props}
@@ -122,15 +122,13 @@ function BreadcrumbEllipsis({
   return (
     <span
       data-slot="breadcrumb-ellipsis"
-      role="presentation"
-      aria-hidden="true"
       className={cn(
         "flex items-center text-[var(--hui-color-foreground-base-secondary)]",
         className
       )}
       {...props}
     >
-      <MoreHorizontal className="size-4" />
+      <MoreHorizontal aria-hidden="true" className="size-4" />
       <span className="sr-only">More</span>
     </span>
   )
@@ -155,7 +153,7 @@ function BreadcrumbDropdownTrigger({
     "data-slot": "breadcrumb-dropdown-trigger",
     type: "button" as const,
     className: cn(
-      "flex cursor-pointer items-center border-0 bg-transparent p-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:inherit] [font-weight:inherit] outline-none focus-visible:rounded-[var(--hui-radius-1)] focus-visible:[outline:var(--hui-focus-ring)] [&_svg]:h-[var(--hui-space-3)]",
+      "flex cursor-pointer items-center border-0 bg-transparent p-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:inherit] [font-weight:inherit] outline-none motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:rounded-[var(--hui-radius-1)] data-popup-open:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)] [&_svg:not([class*='size-'])]:size-4",
       className
     ),
   }
@@ -175,7 +173,7 @@ function BreadcrumbDropdownItem({
   const defaultProps = {
     "data-slot": "breadcrumb-dropdown-item",
     className: cn(
-      "block w-full cursor-pointer border-0 bg-transparent p-[var(--hui-space-3)] text-left text-[var(--hui-color-foreground-base-primary)] no-underline [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] hover:rounded-[var(--hui-radius-2)] hover:bg-[var(--hui-color-background-base-primary-hover)]",
+      "block w-full cursor-pointer border-0 bg-transparent p-[var(--hui-space-3)] text-start text-[var(--hui-color-foreground-base-primary)] no-underline [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] rounded-[var(--hui-radius-item,var(--hui-radius-2))] outline-none hover:bg-[var(--hui-color-background-overlay-hover)] data-highlighted:bg-[var(--hui-color-background-overlay-hover)]",
       className
     ),
   }

@@ -17,10 +17,6 @@ A button has a visible label, an optional icon, a variant, a size, and a state. 
 
 Use one default button per view for the primary action. Use secondary or outline for supporting actions, ghost for low-emphasis controls in toolbars and cards, and link for inline actions inside text. Reserve destructive and destructive-outline for actions that are hard to reverse, such as deleting data. A destructive action that is merely prominent is not a destructive action; it must actually destroy something.
 
-## Appearances
-
-Use the `appearance` prop to change a button's surface treatment without changing its semantic variant or color: `flat` keeps the original treatment, `glossy` adds a polished sheen, `glow` lights the surface from within, and `bevel` makes it feel like an extruded key. Appearances compose with every variant, so `variant="destructive" appearance="glossy"` stays destructive while gaining depth. Treat appearances as emphasis for hero surfaces, not as a replacement for variants; they change how heavy a button looks, never what it does.
-
 ## Behavior
 
 **Loading.** While work runs in the background, keep the label stable and show a spinner next to it. The label is the only thing telling people which action is pending; swapping it to `Loading…` removes that information and shifts layout at the same time. Disable the button while pending so duplicate submissions cannot fire.
@@ -41,7 +37,7 @@ Long labels never wrap. The button grows to fit its label on one line. Keep labe
 
 In right-to-left layouts, spacing and order mirror automatically because the component uses logical flexbox spacing. Directional arrow icons do not flip on their own; choose direction-neutral icons or flip them intentionally.
 
-Colors come from theme tokens, so buttons adapt to dark mode automatically. The glossy, glow, and bevel appearances overlay fixed light and dark gradients tuned against accent surfaces; re-check legibility if you place them on unusual backgrounds.
+Colors come from theme tokens, so buttons adapt to dark mode automatically.
 
 ## Installation
 
@@ -64,7 +60,7 @@ Colors come from theme tokens, so buttons adapt to dark mode automatically. The 
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Import the following variables into your CSS file</Step>
@@ -138,7 +134,7 @@ The bad version looks like a link to no one. Browsers treat it as a button: it c
 
 ```tsx
 // Good
-<Button disabled={pending}>
+<Button disabled={pending} aria-busy={pending}>
   {pending && <LoaderCircleIcon className="animate-spin" aria-hidden="true" />}
   Save changes
 </Button>
@@ -165,12 +161,6 @@ Replacing the label erases the only information about what is happening, changes
 An icon-only button has no accessible name, so screen readers announce just "button" and voice-control users have nothing to say to activate it. Name every icon-only control.
 
 ## Examples
-
-### Surface appearances
-
-Use appearance sparingly. It changes visual depth, not the action's meaning or priority.
-
-<ComponentPreview name="button-appearances" />
 
 ### Loading state
 
@@ -210,7 +200,6 @@ Spacing and order mirror automatically under `dir="rtl"`.
 | --- | --- | --- |
 | `variant` | `default`, `outline`, `secondary`, `destructive`, `destructive-outline`, `ghost`, `link` | `default` |
 | `size` | `xs`, `sm`, `default`, `lg`, `xl`, `icon`, `icon-sm`, `icon-lg` | `default` |
-| `appearance` | `flat`, `glossy`, `glow`, `bevel` | `flat` |
 | `asChild` | boolean | `false` |
 
 The native default is `type="button"`; set `type="submit"` explicitly inside a form. With `render` or `asChild`, the type attribute is left off so the rendered element decides its own semantics.

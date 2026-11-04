@@ -36,7 +36,7 @@ The label is a real `<label>` associated with the control automatically; clickin
 
 While a description is rendered, its id is attached to the control's `aria-describedby`. A rendered error joins the same list, and the control receives `aria-invalid="true"`, so screen readers announce the failure state and the instructions together when focus moves to the field. An unrendered `FieldError` contributes nothing to the accessibility tree, which is why errors appear only when they are true.
 
-Keyboard users reach the control with <kbd>Tab</kbd> and edit with normal text keys; pressing <kbd>Enter</kbd> commits validation. The control stands 28 px (`sm`), 32 px (`default`), or 40 px (`lg`) tall, clearing the WCAG 2.2 minimum target size of 24 px; leave extra room around fields that are primary touch targets on mobile.
+Keyboard users reach the control with <kbd>Tab</kbd> and edit with normal text keys; pressing <kbd>Enter</kbd> commits validation. The control stands 28 px (`sm`), 36 px (`default`), or 44 px (`lg`) tall, clearing the WCAG 2.2 minimum target size of 24 px; leave extra room around fields that are primary touch targets on mobile.
 
 Colors come from theme tokens, so descriptions, errors, borders, and disabled dimming adapt to dark mode automatically. Control padding uses logical properties, so the layout mirrors in right-to-left locales. The helper slot reserves one space for description and error, so swapping between them does not shift the surrounding form, and its transitions are wrapped in `motion-safe`.
 
@@ -61,7 +61,7 @@ Colors come from theme tokens, so descriptions, errors, borders, and disabled di
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -187,6 +187,12 @@ Disabled controls are skipped by keyboard focus, dimmed, and excluded from submi
 
 These examples cover the Field states and relationships that are independent of a specific control. For composition with Autocomplete, Checkbox, Combobox, Number Field, Radio Group, Select, Slider, Switch, or Textarea, use that control's page.
 
+### Select with a field label
+
+The Select uses the Field's label and description, so its accessible name stays specific to the form.
+
+<ComponentPreview name="field-select" />
+
 ### Required field
 
 The asterisk marks the field visually; the `required` attribute enforces it and announces it.
@@ -244,6 +250,6 @@ All parts forward their matching Base UI Field props plus the `render` compositi
 | `dirty` | boolean; overrides the built-in changed-from-initial tracking | — |
 | `touched` | boolean; overrides the built-in touch tracking | — |
 
-`FieldControl` adds Honest UI's `size`: `"sm"` (28 px), `"default"` (32 px), `"lg"` (40 px), or a number of characters. `FieldError` accepts `match`: pass `true` to always render its children, or a `ValidityState` key such as `"typeMismatch"` to gate visibility. `FieldHelperSlot`, `FieldGroup`, and `FieldSeparator` accept native `div` props; only the group and separator change layout, none of them add semantics.
+`FieldControl` adds Honest UI's `size`: `"sm"` (28 px), `"default"` (36 px), `"lg"` (44 px), or a number of characters. `FieldError` accepts `match`: pass `true` to always render its children, or a `ValidityState` key such as `"typeMismatch"` to gate visibility. `FieldHelperSlot`, `FieldGroup`, and `FieldSeparator` accept native `div` props; only the group and separator change layout, none of them add semantics.
 
 See the [Base UI Field API](https://base-ui.com/react/components/field#api-reference) for validation internals and control composition.

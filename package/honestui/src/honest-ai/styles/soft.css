@@ -26,6 +26,11 @@
 
   --hui-font-title: var(--hui-font-love-sans);
   --hui-font-body: var(--hui-font-love-sans);
+  --hui-radius-card: var(--hui-radius-5);
+  --hui-radius-dialog: var(--hui-radius-5);
+  --hui-radius-item: calc(var(--hui-radius-2) - var(--hui-space-2));
+  --hui-shadow-overlay: var(--hui-shadow-lifted);
+
   --hui-font-size-control: 14px;
   --hui-letter-spacing-control: 0;
   --hui-font-size-control-sm: 13px;
@@ -40,6 +45,8 @@
 
 /* Zero specificity so a data-density value on the same element still wins. */
 :where([data-style="soft"]) {
+  --hui-control-height-sm: 28px;
+  --hui-control-height-lg: 44px;
   --hui-density-control-height: 36px;
   --hui-density-control-padding-inline: 14px;
 }
@@ -55,6 +62,7 @@
   /* A pale hairline plus the field shadow below, not a dark outline. */
   --hui-color-border-field: var(--hui-neutral-7);
   --hui-color-border-field-hover: var(--hui-neutral-8);
+  --hui-color-border-choice: var(--hui-neutral-10);
   --hui-color-border-ghost: transparent;
   --hui-color-border-ghost-hover: transparent;
 }
@@ -110,18 +118,17 @@
   --hui-color-foreground-accent-primary: var(--hui-accent-11);
 }
 
-/* Set here, not on Card, so every other style ships no extra class bytes. */
-:where([data-style="soft"]) [data-slot="card"] {
-  border-radius: var(--hui-radius-5);
-  border-width: var(--hui-border-width-surface);
-}
-
-:where([data-style="soft"])
-  :is(
-    [data-slot="input-control"]:not([data-variant="borderless"]),
-    [data-slot="textarea"],
-    [data-slot="input-group"],
-    [data-slot="select-trigger"]:not(.border-0)
-  ) {
-  box-shadow: var(--hui-shadow-feather);
+/* Component defaults stay below consumer utilities in the cascade. The marker
+   prevents soft styling from targeting another library's shared slot names. */
+@layer components {
+  :where([data-style="soft"])
+    :is(
+      [data-hui][data-slot="input-control"]:not([data-variant="borderless"]),
+      [data-hui][data-slot="field-control"],
+      [data-hui][data-slot="textarea"]:not([data-variant="borderless"]),
+      [data-hui][data-slot="input-group"],
+      [data-hui][data-slot="select-trigger"]:not([data-variant="text"])
+    ) {
+    box-shadow: var(--hui-shadow-feather);
+  }
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Avatar as AvatarPrimitive } from "@base-ui-components/react/avatar"
+import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -36,22 +36,23 @@ const avatarVariants = cva(
         gold: "[--avatar-hue:var(--hui-color-viz-gold-9)] [--avatar-color:var(--hui-color-viz-gold-11)]",
       },
       size: {
-        "1": "size-[var(--hui-space-5,16px)] rounded-[var(--hui-radius-2)] [--fallback-font-size:calc(var(--hui-space-5,16px)*0.4)] [--fallback-letter-spacing:0.05em]",
-        "2": "size-[var(--hui-space-6,20px)] rounded-[var(--hui-radius-2)] [--fallback-font-size:calc(var(--hui-space-6,20px)*0.4)] [--fallback-letter-spacing:0.05em]",
-        "3": "size-[var(--hui-space-7,24px)] rounded-[var(--hui-radius-2)] [--fallback-font-size:calc(var(--hui-space-7,24px)*0.4)] [--fallback-letter-spacing:0.04em]",
-        "4": "size-[var(--hui-space-8,28px)] rounded-[var(--hui-radius-2)] [--fallback-font-size:calc(var(--hui-space-8,28px)*0.35)] [--fallback-letter-spacing:0.04em]",
-        "5": "size-[var(--hui-space-9,32px)] rounded-[var(--hui-radius-2)] [--fallback-font-size:calc(var(--hui-space-9,32px)*0.4)] [--fallback-letter-spacing:0.03em]",
-        "6": "size-[var(--hui-space-10,40px)] rounded-[var(--hui-radius-4)] [--fallback-font-size:calc(var(--hui-space-10,40px)*0.35)] [--fallback-letter-spacing:0.02em]",
-        "7": "size-[var(--hui-space-11,48px)] rounded-[var(--hui-radius-4)] [--fallback-font-size:calc(var(--hui-space-11,48px)*0.35)] [--fallback-letter-spacing:0.01em]",
-        "8": "size-[var(--hui-space-12,56px)] rounded-[var(--hui-radius-4)] [--fallback-font-size:calc(var(--hui-space-12,56px)*0.3)] [--fallback-letter-spacing:0.01em]",
-        "9": "size-[var(--hui-space-13,64px)] rounded-[var(--hui-radius-4)] [--fallback-font-size:calc(var(--hui-space-13,64px)*0.3)] [--fallback-letter-spacing:0em]",
-        "10": "size-[var(--hui-space-14,72px)] rounded-[var(--hui-radius-5)] [--fallback-font-size:calc(var(--hui-space-14,72px)*0.3)] [--fallback-letter-spacing:0em]",
-        "11": "size-[var(--hui-space-15,80px)] rounded-[var(--hui-radius-5)] [--fallback-font-size:calc(var(--hui-space-15,80px)*0.3)] [--fallback-letter-spacing:0em]",
-        "12": "size-[var(--hui-space-16,96px)] rounded-[var(--hui-radius-5)] [--fallback-font-size:calc(var(--hui-space-16,96px)*0.3)] [--fallback-letter-spacing:-0.005em]",
-        "13": "size-[var(--hui-space-17,120px)] rounded-[var(--hui-radius-5)] [--fallback-font-size:calc(var(--hui-space-17,120px)*0.3)] [--fallback-letter-spacing:-0.01em]",
+        "1": "size-[var(--hui-space-5,16px)] [--fallback-font-size:calc(var(--hui-space-5,16px)*0.4)] [--fallback-letter-spacing:0.05em]",
+        "2": "size-[var(--hui-space-6,20px)] [--fallback-font-size:calc(var(--hui-space-6,20px)*0.4)] [--fallback-letter-spacing:0.05em]",
+        "3": "size-[var(--hui-space-7,24px)] [--fallback-font-size:calc(var(--hui-space-7,24px)*0.4)] [--fallback-letter-spacing:0.04em]",
+        "4": "size-[var(--hui-space-8,28px)] [--fallback-font-size:calc(var(--hui-space-8,28px)*0.35)] [--fallback-letter-spacing:0.04em]",
+        "5": "size-[var(--hui-space-9,32px)] [--fallback-font-size:calc(var(--hui-space-9,32px)*0.4)] [--fallback-letter-spacing:0.03em]",
+        "6": "size-[var(--hui-space-10,40px)] [--fallback-font-size:calc(var(--hui-space-10,40px)*0.35)] [--fallback-letter-spacing:0.02em]",
+        "7": "size-[var(--hui-space-11,48px)] [--fallback-font-size:calc(var(--hui-space-11,48px)*0.35)] [--fallback-letter-spacing:0.01em]",
+        "8": "size-[var(--hui-space-12,56px)] [--fallback-font-size:calc(var(--hui-space-12,56px)*0.3)] [--fallback-letter-spacing:0.01em]",
+        "9": "size-[var(--hui-space-13,64px)] [--fallback-font-size:calc(var(--hui-space-13,64px)*0.3)] [--fallback-letter-spacing:0em]",
+        "10": "size-[var(--hui-space-14,72px)] [--fallback-font-size:calc(var(--hui-space-14,72px)*0.3)] [--fallback-letter-spacing:0em]",
+        "11": "size-[var(--hui-space-15,80px)] [--fallback-font-size:calc(var(--hui-space-15,80px)*0.3)] [--fallback-letter-spacing:0em]",
+        "12": "size-[var(--hui-space-16,96px)] [--fallback-font-size:calc(var(--hui-space-16,96px)*0.3)] [--fallback-letter-spacing:-0.005em]",
+        "13": "size-[var(--hui-space-17,120px)] [--fallback-font-size:calc(var(--hui-space-17,120px)*0.3)] [--fallback-letter-spacing:-0.01em]",
       },
       shape: {
-        rounded: null,
+        // A percentage keeps the corner proportional at every size.
+        rounded: "rounded-[25%]",
         full: "rounded-[var(--hui-radius-full)]",
       },
       disabled: {
@@ -70,73 +71,75 @@ const avatarVariants = cva(
         variant: "solid",
         color: "orange",
         className:
-          "bg-[var(--hui-color-background-attention-emphasis)] text-[var(--hui-color-foreground-attention-primary-hover)]",
+          "bg-[var(--hui-color-background-attention-emphasis)] text-[var(--hui-color-foreground-attention-emphasis)]",
       },
       {
         variant: "solid",
         color: "mint",
         className:
-          "bg-[var(--hui-color-background-success-emphasis)] text-[var(--hui-color-foreground-success-primary-hover)]",
+          "bg-[var(--hui-color-background-success-emphasis)] text-[var(--hui-color-foreground-success-emphasis)]",
       },
       {
         variant: "solid",
         color: "neutral",
         className:
-          "bg-[var(--hui-color-background-neutral-emphasis)] text-[var(--hui-color-foreground-base-primary)]",
+          "bg-[var(--hui-color-background-neutral-emphasis)] text-[var(--hui-color-foreground-base-emphasis)]",
       },
+      // Viz 9 fills are mid-lightness in both themes, so the label is a fixed
+      // near-black or white chosen per hue for at least 4.5:1.
       {
         variant: "solid",
         color: "sky",
         className:
-          "bg-[var(--hui-color-viz-sky-9)] text-[var(--hui-color-viz-sky-11)]",
+          "bg-[var(--hui-color-viz-sky-9)] text-[oklch(0.2435_0_0)]",
       },
       {
         variant: "solid",
         color: "lime",
         className:
-          "bg-[var(--hui-color-viz-lime-9)] text-[var(--hui-color-viz-lime-11)]",
+          "bg-[var(--hui-color-viz-lime-9)] text-[oklch(0.2435_0_0)]",
       },
       {
         variant: "solid",
         color: "grass",
         className:
-          "bg-[var(--hui-color-viz-grass-8)] text-[var(--hui-color-viz-grass-11)]",
+          "bg-[var(--hui-color-viz-grass-9)] text-[oklch(0.2435_0_0)]",
       },
       {
         variant: "solid",
         color: "cyan",
         className:
-          "bg-[var(--hui-color-viz-cyan-8)] text-[var(--hui-color-viz-cyan-11)]",
+          "bg-[var(--hui-color-viz-cyan-9)] text-[oklch(0.2435_0_0)]",
       },
       {
         variant: "solid",
         color: "iris",
         className:
-          "bg-[var(--hui-color-viz-iris-8)] text-[var(--hui-color-viz-iris-11)]",
+          "bg-[var(--hui-color-viz-iris-9)] text-white",
       },
       {
         variant: "solid",
         color: "purple",
         className:
-          "bg-[var(--hui-color-viz-purple-8)] text-[var(--hui-color-viz-purple-11)]",
+          "bg-[var(--hui-color-viz-purple-9)] text-white",
       },
       {
         variant: "solid",
         color: "pink",
         className:
-          "bg-[var(--hui-color-viz-pink-8)] text-[var(--hui-color-viz-pink-11)]",
+          "bg-[var(--hui-color-viz-pink-9)] text-[oklch(0.17_0_0)]",
       },
       {
         variant: "solid",
         color: "crimson",
         className:
-          "bg-[var(--hui-color-viz-crimson-8)] text-[var(--hui-color-viz-crimson-11)]",
+          "bg-[var(--hui-color-viz-crimson-9)] text-[oklch(0.2_0_0)]",
       },
       {
         variant: "solid",
         color: "gold",
         className:
-          "bg-[var(--hui-color-viz-gold-8)] text-[var(--hui-color-viz-gold-11)]",
+          "bg-[var(--hui-color-viz-gold-9)] text-[oklch(0.2_0_0)]",
       },
       {
         variant: "soft",
@@ -273,7 +276,7 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
     <span
       data-slot="avatar-badge"
       className={cn(
-        "absolute right-0 bottom-0 flex size-3.5 items-center justify-center rounded-full border-2 border-[var(--hui-color-background-base-primary)] bg-[var(--hui-color-background-accent-emphasis)] text-[0.5rem] text-[var(--hui-color-foreground-accent-emphasis)] [&_svg]:size-2.5",
+        "absolute end-0 bottom-0 flex size-3.5 items-center justify-center rounded-full border-2 border-[var(--hui-color-background-base-primary)] bg-[var(--hui-color-background-accent-emphasis)] text-[0.5rem] text-[var(--hui-color-foreground-accent-emphasis)] [&_svg]:size-2.5",
         className
       )}
       {...props}
@@ -286,7 +289,7 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="avatar-group"
       className={cn(
-        "flex flex-row items-center [--avatar-overlap:1.2em] [&>*:not(:first-child)]:ml-[calc(-0.5*var(--avatar-overlap))] [&>[data-slot=avatar]]:box-content [&>[data-slot=avatar]]:border [&>[data-slot=avatar]]:border-[var(--hui-color-background-base-primary)] [&>[data-slot=avatar]]:![outline:none]",
+        "flex flex-row items-center [--avatar-overlap:1.2em] [&>*:not(:first-child)]:-ms-[calc(0.5*var(--avatar-overlap))] [&>[data-slot=avatar]]:box-content [&>[data-slot=avatar]]:border [&>[data-slot=avatar]]:border-[var(--hui-color-background-base-primary)] [&>[data-slot=avatar]]:![outline:none]",
         className
       )}
       {...props}

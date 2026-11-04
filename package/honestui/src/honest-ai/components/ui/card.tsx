@@ -4,17 +4,17 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils.js"
 
 const cardVariants = cva(
-  "relative flex flex-col gap-[var(--hui-space-7)] rounded-[var(--hui-radius-2)] py-[var(--hui-space-7)] text-[var(--hui-color-foreground-base-primary)]",
+  "relative flex flex-col gap-[var(--hui-space-7)] rounded-[var(--hui-radius-card,var(--hui-radius-2))] py-[var(--hui-space-7)] text-[var(--hui-color-foreground-base-primary)]",
   {
     variants: {
       variant: {
         default:
-          "border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)]",
+          "border-[length:var(--hui-border-width-surface,1px)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)]",
         soft: "bg-[var(--hui-color-background-base-secondary)]",
         mixed:
-          "border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)]",
+          "border-[length:var(--hui-border-width-surface,1px)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)]",
         outline:
-          "border border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)]",
+          "border-[length:var(--hui-border-width-surface,1px)] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)]",
       },
     },
     defaultVariants: {
@@ -30,7 +30,9 @@ export interface CardProps
 function Card({ className, variant, ...props }: CardProps) {
   return (
     <div
+      data-hui=""
       data-slot="card"
+      data-variant={variant ?? "default"}
       className={cn(cardVariants({ variant, className }))}
       {...props}
     />

@@ -8,9 +8,7 @@ export default function ToggleDemo() {
       <div className="flex flex-wrap items-center gap-3">
         <Toggle defaultPressed>Preview</Toggle>
         <Toggle size="sm">Compact</Toggle>
-        <Toggle size="lg" variant="outline">
-          Outline
-        </Toggle>
+        <Toggle size="lg">Large</Toggle>
         <Toggle disabled>Unavailable</Toggle>
       </div>
       <ToggleGroup

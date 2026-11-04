@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 
 export type GooeyState =
 	| "success"
@@ -17,7 +17,7 @@ export interface GooeyStyles {
 
 export interface GooeyButton {
 	title: string;
-	onClick: () => void;
+	onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const GOOEY_POSITIONS = [

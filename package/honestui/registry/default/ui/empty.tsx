@@ -7,7 +7,7 @@ function Empty({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="empty"
       className={cn(
-        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-[var(--hui-radius-2)] border border-dashed border-[var(--hui-color-border-base-secondary)] p-6 text-center text-balance md:p-12",
+        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-[var(--hui-radius-2)] border-[0.5px] border-dashed border-[var(--hui-color-border-base-tertiary)] p-6 text-center text-balance md:p-12",
         className
       )}
       {...props}
@@ -34,7 +34,7 @@ const emptyMediaVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent",
-        icon: "relative flex size-9 shrink-0 items-center justify-center rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--hui-radius-2)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/8%)] [&_svg:not([class*='size-'])]:size-4.5",
+        icon: "relative flex size-9 shrink-0 items-center justify-center rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] [&_svg:not([class*='size-'])]:size-4.5",
       },
     },
     defaultVariants: {
@@ -49,32 +49,31 @@ function EmptyMedia({
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) {
   return (
-    <div
-      data-slot="empty-media"
-      data-variant={variant}
-      className={cn("relative mb-6", className)}
-      {...props}
-    >
+    // Props and className belong to the visible tile; the wrapper only
+    // positions the two decorative tiles fanned out behind it.
+    <div className="relative mb-[var(--hui-space-7)]">
       {variant === "icon" && (
         <>
           <div
             className={cn(
-              emptyMediaVariants({ variant, className }),
-              "pointer-events-none absolute bottom-px origin-bottom-left -translate-x-0.5 scale-84 -rotate-10 shadow-none"
+              emptyMediaVariants({ variant }),
+              "pointer-events-none absolute bottom-px border-[var(--hui-color-border-base-tertiary)] origin-bottom-left -translate-x-0.5 scale-84 -rotate-10 shadow-none"
             )}
             aria-hidden="true"
           />
           <div
             className={cn(
-              emptyMediaVariants({ variant, className }),
-              "pointer-events-none absolute bottom-px origin-bottom-right translate-x-0.5 scale-84 rotate-10 shadow-none"
+              emptyMediaVariants({ variant }),
+              "pointer-events-none absolute bottom-px border-[var(--hui-color-border-base-tertiary)] origin-bottom-right translate-x-0.5 scale-84 rotate-10 shadow-none"
             )}
             aria-hidden="true"
           />
         </>
       )}
       <div
-        className={cn(emptyMediaVariants({ variant, className }))}
+        data-slot="empty-media"
+        data-variant={variant}
+        className={cn(emptyMediaVariants({ variant }), className)}
         {...props}
       />
     </div>
@@ -85,7 +84,7 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="empty-title"
-      className={cn("[font-weight:var(--hui-font-weight-semibold)] [font-size:var(--hui-font-size-large)] [line-height:var(--hui-line-height-large)] leading-none", className)}
+      className={cn("[font-weight:var(--hui-font-weight-medium)] [font-size:var(--hui-font-size-large)] [line-height:var(--hui-line-height-large)]", className)}
       {...props}
     />
   )

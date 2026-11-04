@@ -2,6 +2,13 @@
 
 Changes to the `honestui` npm package. Entries marked unreleased describe work prepared for the next publication.
 
+## Unreleased
+
+- Breaking: Button's `appearance` prop and Badge's `gradient` variant and alias names (`accent`, `neutral`, `danger`, sizes `micro`, `small`, `regular`) are removed. `PopoverAnchor` is restored as a deprecated export.
+- Kanban List uses Honest UI tokens and fixed sizes; boards scroll in narrow containers instead of shrinking text.
+- Honest AI components import `@base-ui/react`; `@base-ui-components/react` is no longer a dependency.
+- `honestui/theme.css` now includes Honest UI's one component style: 36px controls with 14px labels, rounded corners, pale hairlines, faint shadows, and a blue default accent. The `modern`, `traditional`, and `soft` values of `data-style` are merged into it and no longer change anything. `honestui/soft.css` remains as a copy so existing imports keep building. `data-density="default"` now matches controls outside a scope.
+
 ## 0.2.4 - 2026-11-02
 
 - Replace `deepmerge` with `@fastify/deepmerge` to prevent prototype poisoning in merged registry and project configuration. Preserve nested settings, concatenated dependency arrays, and Tailwind array replacement.

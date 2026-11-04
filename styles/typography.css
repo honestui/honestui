@@ -21,7 +21,7 @@
   --hui-font-size-large: 16px;
   --hui-font-size-base: var(--hui-font-size-regular);
   /* Text inside a control: button labels, field values, tab labels. */
-  --hui-font-size-control: 13px;
+  --hui-font-size-control: 14px;
 
   /* Body Line Heights */
   --hui-line-height-micro: 12px;
@@ -41,7 +41,7 @@
   --hui-letter-spacing-regular: -0.006em;
   --hui-letter-spacing-large: -0.011em;
   --hui-letter-spacing-base: var(--hui-letter-spacing-regular);
-  --hui-letter-spacing-control: -0.003em;
+  --hui-letter-spacing-control: 0;
 
   /* Title Font Sizes */
   --hui-font-size-t1: 20px;
@@ -80,13 +80,7 @@
   --hui-letter-spacing-mono-large: 0px;
 }
 
-[data-style="modern"] {
-  --hui-font-title: var(--hui-font-love-sans);
-  --hui-font-body: var(--hui-font-love-sans);
-  font-family: var(--hui-font-body);
-}
-
-[data-style="traditional"] {
+:root {
   --hui-font-title: var(--hui-font-love-sans);
   --hui-font-body: var(--hui-font-love-sans);
   font-family: var(--hui-font-body);

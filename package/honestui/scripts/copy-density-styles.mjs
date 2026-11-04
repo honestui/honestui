@@ -11,7 +11,9 @@ await copyFile(
   path.join(packageRoot, "dist", "density.css")
 )
 
+// theme.css already includes the component style. soft.css stays as a copy so
+// apps that imported it before the styles were merged keep building.
 await copyFile(
-  path.join(packageRoot, "src", "soft.css"),
+  path.join(packageRoot, "src", "style.css"),
   path.join(packageRoot, "dist", "soft.css")
 )

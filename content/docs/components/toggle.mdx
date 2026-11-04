@@ -15,7 +15,7 @@ Use Switch instead when the control reads as a setting that applies elsewhere, a
 
 A single toggle is a native `<button>` wrapping a content span that carries the pressed surface treatment. Styling reacts to a `data-pressed` attribute, and the underlying Base UI primitive always emits `aria-pressed`, so assistive technology hears "pressed" or "not pressed" without you writing any ARIA yourself.
 
-A toggle group is a container (`role="group"`) holding several toggles plus optional separators. Inside a group, items inherit the group's `variant` and `size` through context and lose their own borders and radius so they read as one segmented control.
+A toggle group is a container (`role="group"`) holding several toggles plus optional separators. Inside a group, items inherit the group's `variant` and `size` through context and drop their own borders, and their corners sit concentric with the group's, so they read as one segmented control.
 
 ## Pressed state
 
@@ -27,7 +27,7 @@ Standalone toggles accept `pressed` / `defaultPressed` and report `onPressedChan
 
 ## Sizes and variants
 
-Sizes map to the design system's space scale: `"1"` is 12 px tall, `"2"` is 16 px, `"3"` is 20 px, and `"4"` is 24 px. The named aliases are `sm` (matches `"3"` at 20 px) and `default` (24 px) — and `lg` is currently identical in height to `default`, a quirk we document rather than hide, so don't reach for `lg` expecting a bigger control. The `outline` variant swaps the filled surface for a bordered one; inside a group it outlines the whole container instead of each item.
+The named sizes share the control heights used by Button, Input and Select: `sm` is 28 px, `default` is 36 px and `lg` is 44 px. `default` follows the nearest density scope. The numeric sizes map to the space scale for dense toolbars: `"1"` is 12 px tall, `"2"` is 16 px, `"3"` is 20 px and `"4"` is 24 px. The `outline` variant is currently an alias of `default` and renders the same surface.
 
 ## Accessibility
 
@@ -60,7 +60,7 @@ Target sizes are honest about their limits: sizes `"1"`–`"3"` render 12–20 p
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui-components/react
+npm install @base-ui/react
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -167,9 +167,9 @@ Independent pressed values, like formatting controls.
 
 <ComponentPreview name="toggle-group-multiple" />
 
-### Outline variant with separators
+### Group with separators
 
-The outline style draws one border around the whole group; separators divide items that need visual distinction.
+Every group draws one border around all its items; separators divide items that need visual distinction.
 
 <ComponentPreview name="toggle-group-outline-with-separator" />
 

@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { mergeProps } from "@base-ui-components/react/merge-props"
-import { useRender } from "@base-ui-components/react/use-render"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
 import {
   CircleCheck as CircleCheckIcon,
   File as FileGlyph,
@@ -1340,7 +1340,7 @@ function StatusLine({ item }: { item: FileUploadItem }) {
 function FileUploadItemProgress({
   className,
   ...props
-}: Omit<React.ComponentProps<typeof Progress>, "value">) {
+}: React.ComponentProps<"div">) {
   const item = useFileUploadItem("FileUploadItemProgress")
 
   if (item.status !== "uploading") {

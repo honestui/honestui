@@ -1,6 +1,6 @@
 "use client"
 
-import { Popover as PopoverPrimitive } from "@base-ui-components/react/popover"
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 
 import { cn } from "../../lib/utils.js"
 
@@ -34,7 +34,7 @@ function PopoverPopup({
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            "box-border max-h-(--available-height) min-w-[var(--hui-space-17)] max-w-[18rem] origin-(--transform-origin) overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] outline-0 [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out),transform_var(--hui-duration-normal)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
+            "box-border max-h-(--available-height) min-w-[var(--hui-space-17)] max-w-[18rem] origin-(--transform-origin) overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay,var(--hui-shadow-soft))] outline-0 [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out),transform_var(--hui-duration-normal)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
             className
           )}
           {...props}
@@ -78,13 +78,8 @@ function PopoverDescription({
     />
   )
 }
-function PopoverAnchor({ ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="popover-anchor" {...props} />;
-}
-
 export {
   Popover,
-  PopoverAnchor,
   PopoverTrigger,
   PopoverPopup,
   PopoverPopup as PopoverContent,

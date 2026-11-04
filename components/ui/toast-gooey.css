@@ -55,14 +55,15 @@
 }
 
 /* Dark mode colors - light toast on dark background */
-.dark {
+.dark,
+[data-theme="dark"] {
 	--gooey-bg: oklch(0.98 0.01 264);
 	--gooey-text: oklch(0.2 0.01 264);
 	--gooey-description: oklch(0.35 0.01 264);
 }
 
 @media (prefers-color-scheme: dark) {
-	:root:not(.light) {
+	:root:not(.light, [data-theme="light"]) {
 		--gooey-bg: oklch(0.98 0.01 264);
 		--gooey-text: oklch(0.2 0.01 264);
 		--gooey-description: oklch(0.35 0.01 264);
@@ -73,13 +74,15 @@
 
 [data-gooey-toast] {
 	position: relative;
-	cursor: pointer;
+	cursor: default;
 	pointer-events: auto;
 	touch-action: none;
 	border: 0;
 	background: transparent;
 	padding: 0;
-	width: var(--gooey-width);
+	/* Narrow screens: never wider than the viewport minus its gutters. The SVG
+	   follows the measured width. */
+	width: min(var(--gooey-width), calc(100vw - 1.5rem));
 	height: var(--_h, var(--gooey-height));
 	opacity: 0;
 	transform: translateZ(0) scale(0.95);
@@ -255,6 +258,11 @@
 	animation: gooey-header-exit 300ms ease forwards;
 }
 
+[data-gooey-button]:focus-visible {
+	outline: 2px solid var(--_c, currentColor);
+	outline-offset: 2px;
+}
+
 /* ---------------------------------- Badge --------------------------------- */
 
 [data-gooey-badge] {
@@ -277,7 +285,6 @@
 	font-size: 0.825rem;
 	line-height: 1rem;
 	font-weight: 500;
-	text-transform: capitalize;
 	color: var(--gooey-tone, var(--gooey-text));
 }
 
@@ -318,10 +325,6 @@
 	width: 100%;
 	pointer-events: none;
 	opacity: var(--_co, 0);
-}
-
-[data-gooey-content]:not([data-visible="true"]) {
-	content-visibility: hidden;
 }
 
 [data-gooey-toast][data-ready="true"] [data-gooey-content] {
@@ -449,9 +452,10 @@
 	z-index: 50;
 	display: flex;
 	gap: 0.75rem;
-	padding: 0.75rem;
+	padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
+		max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
 	pointer-events: none;
-	max-width: calc(100vw - 1.5rem);
+	max-width: 100vw;
 	contain: layout style;
 }
 
@@ -501,11 +505,30 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0.01ms;
-		animation-iteration-count: 1;
-		transition-duration: 0.01ms;
+	[data-gooey-viewport] *,
+	[data-gooey-viewport] *::before,
+	[data-gooey-viewport] *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+
+	/* The loading spinner signals progress, so it keeps turning. */
+	[data-gooey-viewport] [data-gooey-icon="spin"] {
+		animation-duration: 1s !important;
+		animation-iteration-count: infinite !important;
+	}
+}
+/* Forced colors: the pill and body take the system surface with an outline,
+   and icons follow the system text color. */
+@media (forced-colors: active) {
+	[data-gooey-canvas] rect {
+		fill: Canvas !important;
+		stroke: CanvasText;
+		stroke-width: 1;
+	}
+
+	[data-gooey-toast] svg:not([data-gooey-svg]) {
+		color: CanvasText;
 	}
 }

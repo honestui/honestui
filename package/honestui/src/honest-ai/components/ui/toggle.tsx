@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Toggle as TogglePrimitive } from "@base-ui-components/react/toggle"
-import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui-components/react/toggle-group"
+import { Toggle as TogglePrimitive } from "@base-ui/react/toggle"
+import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils.js"
@@ -21,9 +21,9 @@ const toggleVariants = cva(
         "2": "h-[var(--hui-space-5)] min-w-[var(--hui-space-5)]",
         "3": "h-[var(--hui-space-6)] min-w-[var(--hui-space-6)]",
         "4": "h-[var(--hui-space-7)] min-w-[var(--hui-space-7)]",
-        sm: "h-[var(--hui-space-6)] min-w-[var(--hui-space-6)]",
-        default: "h-[var(--hui-space-7)] min-w-[var(--hui-space-7)]",
-        lg: "h-[var(--hui-space-7)] min-w-[var(--hui-space-7)]",
+        sm: "h-[var(--hui-control-height-sm,var(--hui-space-8))] min-w-[var(--hui-control-height-sm,var(--hui-space-8))]",
+        default: "h-[var(--hui-density-control-height,var(--hui-space-9))] min-w-[var(--hui-density-control-height,var(--hui-space-9))]",
+        lg: "h-[var(--hui-control-height-lg,var(--hui-space-10))] min-w-[var(--hui-control-height-lg,var(--hui-space-10))]",
       },
     },
     defaultVariants: {

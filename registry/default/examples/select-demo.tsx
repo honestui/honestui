@@ -1,3 +1,4 @@
+import { Field, FieldLabel } from "@/registry/default/ui/field"
 import {
   Select,
   SelectItem,
@@ -15,7 +16,8 @@ const items = [
 
 export default function SelectDemo() {
   return (
-    <div className="w-full max-w-64">
+    <Field className="w-full max-w-64">
+      <FieldLabel>Framework</FieldLabel>
       <Select items={items} defaultValue="next">
         <SelectTrigger className="w-full">
           <SelectValue />
@@ -28,6 +30,6 @@ export default function SelectDemo() {
           ))}
         </SelectPopup>
       </Select>
-    </div>
+    </Field>
   )
 }

@@ -64,8 +64,8 @@ interface GooeyProps {
 	canExpand?: boolean;
 	interruptKey?: string;
 	refreshKey?: string;
-	onMouseEnter?: MouseEventHandler<HTMLButtonElement>;
-	onMouseLeave?: MouseEventHandler<HTMLButtonElement>;
+	onMouseEnter?: MouseEventHandler<HTMLDivElement>;
+	onMouseLeave?: MouseEventHandler<HTMLDivElement>;
 	onDismiss?: () => void;
 }
 
@@ -117,7 +117,8 @@ export const Gooey = memo(function Gooey({
 	id,
 	fill,
 	state = "success",
-	title = state,
+	// Only the fallback state name is capitalized; supplied titles keep their casing.
+	title = state.charAt(0).toUpperCase() + state.slice(1),
 	description,
 	position = "left",
 	expand = "bottom",
@@ -146,6 +147,7 @@ export const Gooey = memo(function Gooey({
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [ready, setReady] = useState(false);
 	const [pillWidth, setPillWidth] = useState(0);
+	const [width, setWidth] = useState(WIDTH);
 	const [contentHeight, setContentHeight] = useState(0);
 	const hasDesc = Boolean(view.description) || Boolean(view.button);
 	const isLoading = view.state === "loading";
@@ -333,10 +335,12 @@ export const Gooey = memo(function Gooey({
 		}
 
 		if (collapseDelay > 0) {
-			autoCollapseRef.current = window.setTimeout(
-				() => setIsExpanded(false),
-				collapseDelay,
-			);
+			autoCollapseRef.current = window.setTimeout(() => {
+				// Stay open while the action holds keyboard focus.
+				if (!rootRef.current?.contains(document.activeElement)) {
+					setIsExpanded(false);
+				}
+			}, collapseDelay);
 		}
 
 		return () => {
@@ -372,9 +376,9 @@ export const Gooey = memo(function Gooey({
 
 	const pillX =
 		position === "right"
-			? WIDTH - resolvedPillWidth
+			? width - resolvedPillWidth
 			: position === "center"
-				? (WIDTH - resolvedPillWidth) / 2
+				? (width - resolvedPillWidth) / 2
 				: 0;
 
 	/* ------------------------------- Inline styles ---------------------------- */
@@ -395,7 +399,7 @@ export const Gooey = memo(function Gooey({
 
 	/* -------------------------------- Handlers -------------------------------- */
 
-	const handleEnter: MouseEventHandler<HTMLButtonElement> = useCallback(
+	const handleEnter: MouseEventHandler<HTMLDivElement> = useCallback(
 		(e) => {
 			onMouseEnter?.(e);
 			if (hasDesc) setIsExpanded(true);
@@ -403,15 +407,15 @@ export const Gooey = memo(function Gooey({
 		[hasDesc, onMouseEnter],
 	);
 
-	const handleLeave: MouseEventHandler<HTMLButtonElement> = useCallback(
+	const handleLeave: MouseEventHandler<HTMLDivElement> = useCallback(
 		(e) => {
 			onMouseLeave?.(e);
-			setIsExpanded(false);
+			if (!rootRef.current?.contains(document.activeElement)) setIsExpanded(false);
 		},
 		[onMouseLeave],
 	);
 
-	const handleTransitionEnd: TransitionEventHandler<HTMLButtonElement> =
+	const handleTransitionEnd: TransitionEventHandler<HTMLDivElement> =
 		useCallback(
 			(e) => {
 				if (e.propertyName !== "height" && e.propertyName !== "transform")
@@ -434,13 +438,25 @@ export const Gooey = memo(function Gooey({
 
 	const SWIPE_DISMISS = 30;
 	const SWIPE_MAX = 20;
-	const buttonRef = useRef<HTMLButtonElement>(null);
+	const rootRef = useRef<HTMLDivElement>(null);
+
+	// The SVG geometry follows the rendered width, which CSS caps on narrow screens.
+	useLayoutEffect(() => {
+		const el = rootRef.current;
+		if (!el) return;
+		const observer = new ResizeObserver(([entry]) => {
+			const next = Math.round(entry.contentRect.width);
+			if (next > 0) setWidth(next);
+		});
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, []);
 	const pointerStartRef = useRef<number | null>(null);
 	const onDismissRef = useRef(onDismiss);
 	onDismissRef.current = onDismiss;
 
 	useEffect(() => {
-		const el = buttonRef.current;
+		const el = rootRef.current;
 		if (!el) return;
 
 		const onMove = (e: PointerEvent) => {
@@ -470,7 +486,7 @@ export const Gooey = memo(function Gooey({
 	}, []);
 
 	const handlePointerDown = useCallback(
-		(e: React.PointerEvent<HTMLButtonElement>) => {
+		(e: React.PointerEvent<HTMLDivElement>) => {
 			if (exiting || !onDismiss) return;
 			const target = e.target as HTMLElement;
 			if (target.closest("[data-gooey-button]")) return;
@@ -483,9 +499,10 @@ export const Gooey = memo(function Gooey({
 	/* --------------------------------- Render --------------------------------- */
 
 	return (
-		<button
-			ref={buttonRef}
-			type="button"
+		// A container, not a button: it has no action of its own and holds the
+		// action button. Focus inside expands it the way hover does.
+		<div
+			ref={rootRef}
 			data-gooey-toast
 			data-ready={ready}
 			data-expanded={open}
@@ -499,15 +516,26 @@ export const Gooey = memo(function Gooey({
 			onMouseLeave={handleLeave}
 			onTransitionEnd={handleTransitionEnd}
 			onPointerDown={handlePointerDown}
+			onFocus={() => {
+				if (hasDesc) setIsExpanded(true);
+			}}
+			onBlur={(e) => {
+				if (
+					!e.currentTarget.contains(e.relatedTarget) &&
+					!e.currentTarget.matches(":hover")
+				) {
+					setIsExpanded(false);
+				}
+			}}
 		>
 			<div data-gooey-canvas data-edge={expand}>
 				<svg
 					data-gooey-svg
-					width={WIDTH}
+					aria-hidden="true"
+					width={width}
 					height={svgHeight}
-					viewBox={`0 0 ${WIDTH} ${svgHeight}`}
+					viewBox={`0 0 ${width} ${svgHeight}`}
 				>
-					<title>Gooey Notification</title>
 					<GooeyDefs filterId={filterId} blur={blur} />
 					<g filter={`url(#${filterId})`}>
 						<rect
@@ -520,7 +548,7 @@ export const Gooey = memo(function Gooey({
 						<rect
 							data-gooey-body
 							y={HEIGHT}
-							width={WIDTH}
+							width={width}
 							height={expandedContent}
 							rx={resolvedRoundness}
 							ry={resolvedRoundness}
@@ -540,6 +568,7 @@ export const Gooey = memo(function Gooey({
 					>
 						<div
 							data-gooey-badge
+							aria-hidden="true"
 							data-state={headerLayer.current.view.state}
 							className={headerLayer.current.view.styles?.badge}
 						>
@@ -560,9 +589,11 @@ export const Gooey = memo(function Gooey({
 							data-gooey-header-inner
 							data-layer="prev"
 							data-exiting="true"
+							aria-hidden="true"
 						>
 							<div
 								data-gooey-badge
+								aria-hidden="true"
 								data-state={headerLayer.prev.view.state}
 								className={headerLayer.prev.view.styles?.badge}
 							>
@@ -590,9 +621,7 @@ export const Gooey = memo(function Gooey({
 					>
 						{view.description}
 						{view.button && (
-							// biome-ignore lint/a11y/useValidAnchor: cannot use button inside a button
-							<a
-								href="#"
+							<button
 								type="button"
 								data-gooey-button
 								data-state={view.state}
@@ -600,15 +629,15 @@ export const Gooey = memo(function Gooey({
 								onClick={(e) => {
 									e.preventDefault();
 									e.stopPropagation();
-									view.button?.onClick();
+									view.button?.onClick(e);
 								}}
 							>
 								{view.button.title}
-							</a>
+							</button>
 						)}
 					</div>
 				</div>
 			)}
-		</button>
+		</div>
 	);
 });

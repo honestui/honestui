@@ -154,6 +154,8 @@ test.describe("Paste Table docs previews", () => {
     const sku = importer.getByRole("combobox", { name: "Field for Artikelnummer" })
     await sku.click()
     await page.getByRole("option", { name: "Do not import" }).click()
+    // Each popup fades out before the next one opens.
+    await expect(page.getByRole("listbox")).toHaveCount(0)
     await expect(importer.getByRole("alert")).toHaveText(
       "No column is mapped to SKU. Choose SKU for one of the columns."
     )
@@ -161,6 +163,7 @@ test.describe("Paste Table docs previews", () => {
     // Choosing a field that another column holds moves it.
     await importer.getByRole("combobox", { name: "Field for Notiz" }).click()
     await page.getByRole("option", { name: "Status" }).click()
+    await expect(page.getByRole("listbox")).toHaveCount(0)
     await expect(importer.getByRole("combobox", { name: "Field for Status" })).toHaveText("Do not import")
 
     await sku.click()

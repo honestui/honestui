@@ -23,10 +23,10 @@ function Table({
         variant === "surface" && surfaceContainer
       )}
     >
+      {/* No table-wide tabular-nums: in Love Sans it also widens spaces and
+          punctuation to figure width. Apply it to numeric cells only. */}
       <table
         data-slot="table"
-        // No table-wide tabular-nums: in Love Sans it also widens spaces and
-        // punctuation to figure width. Apply it to numeric cells only.
         className={cn(
           "w-full caption-bottom border-collapse overflow-visible text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]",
           className
@@ -72,16 +72,13 @@ function TableFooter({ className, ...props }: ComponentPropsWithoutRef<"tfoot">)
 
 function TableRow({
   className,
-  interactive = false,
   ...props
-}: ComponentPropsWithoutRef<"tr"> & { interactive?: boolean }) {
+}: ComponentPropsWithoutRef<"tr">) {
   return (
     <tr
       data-slot="table-row"
       className={cn(
         "h-[var(--hui-density-row-min-height,auto)] bg-[var(--hui-color-background-base-primary)] [&>[data-slot=table-cell]]:bg-inherit data-[state=selected]:bg-[var(--hui-color-background-accent-primary)] data-[state=selected]:hover:bg-[var(--hui-color-background-accent-primary)] data-[state=selected]:active:bg-[var(--hui-color-background-accent-primary)]",
-        interactive &&
-          "cursor-pointer hover:bg-[var(--hui-color-background-base-primary-hover)] active:bg-[var(--hui-color-background-neutral-secondary)]",
         className
       )}
       {...props}
@@ -107,7 +104,7 @@ function TableCell({ className, ...props }: ComponentPropsWithoutRef<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "overflow-hidden border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-cell-padding-block,var(--hui-space-4))] text-ellipsis whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-regular)] [font-style:normal] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
+        "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-cell-padding-block,var(--hui-space-4))] whitespace-normal [overflow-wrap:anywhere] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-regular)] [font-style:normal] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
         className
       )}
       {...props}
