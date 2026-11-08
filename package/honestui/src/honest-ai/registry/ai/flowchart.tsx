@@ -18,7 +18,7 @@ function Flowchart({ label, className, ...props }: FlowchartProps) {
       aria-label={label}
       data-slot="flowchart"
       className={cn(
-        "m-0 flex w-full min-w-0 list-none flex-col items-center gap-[var(--hui-space-9)] rounded-[var(--hui-radius-4)] bg-[var(--hui-color-background-base-secondary)] bg-[radial-gradient(var(--hui-color-border-base-secondary)_1px,transparent_1px)] p-[var(--hui-space-7)] [background-size:16px_16px]",
+        "m-0 flex w-full min-w-0 list-none flex-col items-center gap-[var(--hui-space-9)] rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[color-mix(in_oklch,var(--hui-color-background-neutral-primary)_60%,var(--hui-color-background-base-primary))] p-[var(--hui-space-7)]",
         className
       )}
       {...props}
@@ -27,7 +27,7 @@ function Flowchart({ label, className, ...props }: FlowchartProps) {
 }
 
 export type FlowStepProps = Omit<React.ComponentProps<"li">, "title"> & {
-  /** The step's role in the flow, such as "Trigger" or "If / Else". */
+  /** The step's role in the flow, such as "Trigger", "Condition", or "Action". */
   kind: string
   title?: React.ReactNode
   /** One line under the title. */
@@ -40,28 +40,26 @@ function FlowStep({ kind, title, caption, className, children, ...props }: FlowS
     <li
       data-slot="flow-step"
       className={cn(
-        // The connector is drawn above every step but the first.
-        "relative flex w-full max-w-sm min-w-0 flex-col gap-[var(--hui-space-2)] before:absolute before:bottom-full before:left-1/2 before:h-[var(--hui-space-9)] before:w-px before:bg-[var(--hui-color-border-base-emphasis)] first:before:hidden",
+        // A connector with an arrowhead is drawn above every step but the
+        // first, pointing into the step it leads to. It stays 1px wide: at
+        // the surface hairline width it would disappear on the canvas.
+        "relative flex w-full max-w-sm min-w-0 flex-col before:absolute before:bottom-full before:left-1/2 before:h-[var(--hui-space-9)] before:w-px before:-translate-x-1/2 before:bg-[var(--hui-color-foreground-base-tertiary)] after:absolute after:bottom-full after:left-1/2 after:mb-[var(--hui-space-1)] after:size-[var(--hui-space-3)] after:-translate-x-1/2 after:rotate-45 after:border-e after:border-b after:border-[var(--hui-color-foreground-base-tertiary)] first:before:hidden first:after:hidden forced-colors:before:bg-[CanvasText] forced-colors:after:border-[CanvasText]",
         className
       )}
       {...props}
     >
-      <span className="w-fit rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-3)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-mini)]">
-        {kind}
-      </span>
-      <div className="flex min-w-0 flex-col gap-[var(--hui-space-3)] rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">
-        {(title || caption) && (
-          <div className="flex min-w-0 flex-col gap-[var(--hui-space-1)]">
-            {title && (
-              <p className="m-0 break-words [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-regular)]">
-                {title}
-              </p>
-            )}
-            {caption && (
-              <p className="m-0 break-words text-[var(--hui-color-foreground-base-secondary)]">{caption}</p>
-            )}
-          </div>
-        )}
+      <div className="flex min-w-0 flex-col gap-[var(--hui-space-3)] rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-panel)] p-[var(--hui-space-5)] [--hui-color-background-field:var(--hui-color-background-panel)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]">
+        <div className="flex min-w-0 flex-col gap-[var(--hui-space-1)]">
+          <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+            {kind}
+          </p>
+          {title && <p className="m-0 break-words [font-weight:var(--hui-font-weight-medium)]">{title}</p>}
+          {caption && (
+            <p className="m-0 break-words text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+              {caption}
+            </p>
+          )}
+        </div>
         {children}
       </div>
     </li>

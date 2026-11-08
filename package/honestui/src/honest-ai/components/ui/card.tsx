@@ -44,7 +44,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-[var(--hui-space-2)] px-[var(--hui-space-7)] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:border-[var(--hui-color-border-base-primary)] [.border-b]:pb-[var(--hui-space-7)]",
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-[var(--hui-space-2)] px-[var(--hui-space-7)] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:border-b-[length:var(--hui-border-width-surface,1px)] [.border-b]:border-[var(--hui-color-border-base-primary)] [.border-b]:pb-[var(--hui-space-7)]",
         className
       )}
       {...props}
@@ -57,7 +57,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-title"
       className={cn(
-        "[font-size:var(--hui-font-size-large)] [font-weight:var(--hui-font-weight-semibold)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)]",
+        "[font-size:var(--hui-font-size-large)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)]",
         className
       )}
       {...props}
@@ -105,7 +105,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center px-[var(--hui-space-7)] [.border-t]:border-[var(--hui-color-border-base-primary)] [.border-t]:pt-[var(--hui-space-7)]", className)}
+      className={cn("flex items-center px-[var(--hui-space-7)] [.border-t]:border-t-[length:var(--hui-border-width-surface,1px)] [.border-t]:border-[var(--hui-color-border-base-primary)] [.border-t]:pt-[var(--hui-space-7)]", className)}
       {...props}
     />
   )

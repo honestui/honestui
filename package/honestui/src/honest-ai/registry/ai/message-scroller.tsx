@@ -353,18 +353,18 @@ function DefaultPreview({ item }: { item: PreviewRailItem }) {
   return (
     <div
       data-slot="preview-rail-card"
-      className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+      className="rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] p-[var(--hui-space-5)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay)]"
     >
       <p
         data-slot="preview-rail-title"
-        className="font-medium text-card-foreground"
+        className="m-0 [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
       >
         {item.label}
       </p>
       {item.description ? (
         <div
           data-slot="preview-rail-description"
-          className="mt-1 text-sm leading-6 text-muted-foreground"
+          className="mt-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
         >
           {item.description}
         </div>
@@ -477,13 +477,15 @@ export function PreviewRail({
           const highlighted = item.id === highlightedId;
           const distance =
             displayedIndex < 0 ? Number.POSITIVE_INFINITY : Math.abs(index - displayedIndex);
+          // Distant ticks shrink but keep at least half their length, so
+          // every message stays visible on the rail.
           const scale = highlighted
             ? 1
             : distance === 1
-              ? 0.68
+              ? 0.8
               : distance === 2
-                ? 0.44
-                : 0.25;
+                ? 0.65
+                : 0.5;
 
           const itemContent = (
             <>
@@ -497,14 +499,16 @@ export function PreviewRail({
                   isHorizontal
                     ? "h-12 w-0.5 origin-bottom"
                     : "h-0.5 w-12 origin-left",
-                  highlighted ? "text-foreground" : undefined,
+                  highlighted
+                    ? "text-[var(--hui-color-foreground-base-primary)]"
+                    : undefined,
                 )}
               />
             </>
           );
 
           const sharedClassName = cn(
-            "relative flex text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "relative flex rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-tertiary)] outline-none motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:text-[var(--hui-color-foreground-base-secondary)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]",
             isHorizontal
               ? "h-12 w-6 items-end justify-center"
               : "h-6 w-12 items-center",
@@ -645,12 +649,12 @@ export function PreviewRail({
                         initial={
                           reduce
                             ? { opacity: 0 }
-                            : { opacity: 0, y: 4, filter: "blur(6px)" }
+                            : { opacity: 0, y: 4 }
                         }
                         animate={
                           reduce
                             ? { opacity: 1 }
-                            : { opacity: 1, y: 0, filter: "blur(0px)" }
+                            : { opacity: 1, y: 0 }
                         }
                         exit={
                           reduce
@@ -658,7 +662,6 @@ export function PreviewRail({
                             : {
                                 opacity: 0,
                                 y: -2,
-                                filter: "blur(4px)",
                                 transition: {
                                   duration: 0.12,
                                   ease: EASE_OUT,
@@ -994,6 +997,27 @@ export function MessageScroller({
     };
   }, [followOutput, scrollToEnd]);
 
+  // Focus that carries the view away from the end, such as a form taking the
+  // reader back to its first error, means they have left the live edge, and
+  // following would scroll the control back out of view as content grows.
+  // This reads the position at focusin, so a caller that moves focus far
+  // should scroll to the target before focusing it; engines differ on when
+  // focus() itself scrolls.
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const handleFocusIn = () => {
+      const distance =
+        viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight;
+      if (distance > followThreshold) {
+        programmaticScrollRef.current = false;
+        setFollowing(false);
+      }
+    };
+    viewport.addEventListener("focusin", handleFocusIn);
+    return () => viewport.removeEventListener("focusin", handleFocusIn);
+  }, [followThreshold, setFollowing]);
+
   useEffect(() => {
     const content = contentRef.current;
     if (!content || typeof ResizeObserver === "undefined") return;
@@ -1114,7 +1138,11 @@ export function MessageScroller({
         onViewportKeyDown?.(event);
       }}
       className={cn(
-        "h-full overflow-y-auto overscroll-contain outline-none [overflow-anchor:none] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+        // A fade at the top shows earlier messages sit above. It is driven by
+        // scroll position, so it is hidden at the start of the thread and
+        // where scroll-driven animation is unsupported. Set
+        // --message-scroller-surface to the background behind the scroller.
+        "h-full overflow-y-auto overscroll-contain outline-none [overflow-anchor:none] before:pointer-events-none before:sticky before:top-0 before:z-[1] before:-mb-6 before:block before:h-6 before:bg-[linear-gradient(to_bottom,var(--message-scroller-surface,var(--hui-color-background-base-primary)),transparent)] before:opacity-0 before:content-[''] before:[animation:hui-scroll-cue_linear_both_reverse] before:[animation-timeline:scroll(nearest)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
         navigation === "rail"
           ? "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           : "[scrollbar-gutter:stable]",
@@ -1153,9 +1181,9 @@ export function MessageScroller({
           itemSize={14}
           className="h-full min-h-0 overflow-hidden"
           previewContainerClassName="right-8 left-3"
-          previewClassName="mr-1 w-64 max-w-full [&_[data-slot=preview-rail-card]]:h-20 [&_[data-slot=preview-rail-card]]:overflow-hidden [&_[data-slot=preview-rail-card]]:p-3 [&_[data-slot=preview-rail-title]]:line-clamp-1 [&_[data-slot=preview-rail-title]]:text-xs [&_[data-slot=preview-rail-title]]:leading-4 [&_[data-slot=preview-rail-description]]:line-clamp-2 [&_[data-slot=preview-rail-description]]:text-xs [&_[data-slot=preview-rail-description]]:leading-4"
+          previewClassName="mr-1 w-64 max-w-full [&_[data-slot=preview-rail-card]]:overflow-hidden [&_[data-slot=preview-rail-card]]:p-[var(--hui-space-4)] [&_[data-slot=preview-rail-title]]:line-clamp-1 [&_[data-slot=preview-rail-description]]:line-clamp-2"
           railClassName={cn(
-            "absolute inset-y-3 right-1 w-7 content-center py-1 [&_[data-slot=preview-rail-item]]:w-7 [&_[data-slot=preview-rail-item]]:justify-end [&_[data-slot=preview-rail-tick]]:h-px [&_[data-slot=preview-rail-tick]]:w-4 [&_[data-slot=preview-rail-tick]]:origin-right",
+            "absolute inset-y-3 right-1 w-7 content-center py-1 [&_[data-slot=preview-rail-item]]:w-7 [&_[data-slot=preview-rail-item]]:justify-end [&_[data-slot=preview-rail-tick]]:h-0.5 [&_[data-slot=preview-rail-tick]]:w-4 [&_[data-slot=preview-rail-tick]]:rounded-full [&_[data-slot=preview-rail-tick]]:origin-right",
             railOverflowing
               ? "pointer-events-auto opacity-100"
               : "pointer-events-none opacity-0",

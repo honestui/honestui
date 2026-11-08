@@ -66,8 +66,24 @@ export const defaultDiffTableLabels: DiffTableLabels = {
 // Table's own header color is too light for small text, so these headers use the secondary foreground.
 const headText = "text-[var(--hui-color-foreground-base-secondary)]!"
 
-const smallText =
-  "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+const regularText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
+
+// The title, footer, and the first and last cells keep clear of the card's
+// rounded corners; inner cells keep the density's own padding.
+const edgePadding = "px-[var(--hui-space-5)]"
+const edgeCells = "[&_tr>*:first-child]:ps-[var(--hui-space-5)] [&_tr>*:last-child]:pe-[var(--hui-space-5)]"
+
+// A half-strength tint keeps the values the focus; the change word carries the full color.
+const rowTone = {
+  added: "bg-[color-mix(in_oklch,var(--hui-color-background-success-primary)_50%,var(--hui-color-background-base-primary))]",
+  removed: "bg-[color-mix(in_oklch,var(--hui-color-background-danger-primary)_50%,var(--hui-color-background-base-primary))]",
+} as const
+
+const changeText = {
+  added: "text-[var(--hui-color-foreground-success-primary-hover)]",
+  removed: "text-[var(--hui-color-foreground-danger-primary)]",
+} as const
 
 export type DiffTableProps = Omit<React.ComponentProps<"div">, "children" | "title"> & {
   /** What the edit is, such as "Proposed menu cleanup". */
@@ -102,6 +118,16 @@ function DiffTable({
   const [excluded, setExcluded] = React.useState<ReadonlySet<string>>(new Set())
   const [phase, setPhase] = React.useState<"editing" | "applying" | "applied" | "error">("editing")
   const titleId = React.useId()
+  const statusRef = React.useRef<HTMLParagraphElement>(null)
+  const applyRef = React.useRef<HTMLButtonElement>(null)
+  // Apply goes away once the changes are in. If it had focus, hand focus to
+  // the summary that replaces it rather than letting it fall to the page.
+  const refocusStatus = React.useRef(false)
+  React.useEffect(() => {
+    if (phase !== "applied" || !refocusStatus.current) return
+    refocusStatus.current = false
+    statusRef.current?.focus()
+  }, [phase])
 
   const changedRows = rows.filter((row) => row.change !== "unchanged")
   const included = changedRows.filter((row) => !excluded.has(row.id))
@@ -113,6 +139,7 @@ function DiffTable({
     setPhase("applying")
     try {
       await onApply(included.map((row) => row.id))
+      refocusStatus.current = document.activeElement === applyRef.current
       setPhase("applied")
     } catch {
       setPhase("error")
@@ -124,19 +151,24 @@ function DiffTable({
       data-slot="diff-table"
       data-phase={phase}
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
-        smallText,
+        "@container/diff-table w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
+        regularText,
+        edgeCells,
         className
       )}
       {...props}
     >
       <p
         id={titleId}
-        className="m-0 border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] [font-weight:var(--hui-font-weight-medium)]"
+        className={cn(
+          "m-0 border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-4)] [font-weight:var(--hui-font-weight-medium)]",
+          edgePadding
+        )}
       >
         {title}
       </p>
-      <Table aria-labelledby={titleId}>
+      {/* Short values such as "EMEA" wrap between words, never mid-word. */}
+      <Table aria-labelledby={titleId} className="[&_td]:[overflow-wrap:break-word]">
         <TableHeader>
           <TableRow>
             <TableHead scope="col" className={headText}>{labels.change}</TableHead>
@@ -156,10 +188,7 @@ function DiffTable({
                 key={row.id}
                 data-change={row.change}
                 data-included={isIncluded ? "" : undefined}
-                className={cn(
-                  isIncluded && row.change === "added" && "bg-[var(--hui-color-background-success-primary)]",
-                  isIncluded && row.change === "removed" && "bg-[var(--hui-color-background-danger-primary)]"
-                )}
+                className={cn(isIncluded && row.change !== "unchanged" && rowTone[row.change])}
               >
                 <TableCell>
                   {isChange ? (
@@ -167,6 +196,8 @@ function DiffTable({
                       <Checkbox
                         size="small"
                         disabled={isLocked}
+                        // Once applied, the checks read as a record, not as controls to change.
+                        className="data-disabled:border-[var(--hui-color-border-base-secondary)]! data-disabled:bg-[var(--hui-color-background-neutral-secondary)]! data-disabled:shadow-none! data-disabled:[&_*]:text-[var(--hui-color-foreground-base-secondary)]!"
                         checked={isIncluded}
                         aria-label={
                           row.change === "added"
@@ -184,20 +215,32 @@ function DiffTable({
                         }}
                       />
                       {/* The word carries the change, so the row tint is never the only cue. */}
-                      <span aria-hidden="true" className="[font-weight:var(--hui-font-weight-medium)]">
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "whitespace-nowrap [font-weight:var(--hui-font-weight-medium)]",
+                          isIncluded ? changeText[row.change as "added" | "removed"] : "text-[var(--hui-color-foreground-base-secondary)]"
+                        )}
+                      >
                         {row.change === "added" ? `+ ${labels.added}` : `− ${labels.removed}`}
                       </span>
                     </label>
                   ) : (
-                    <span className="text-[var(--hui-color-foreground-base-secondary)]">
+                    // The spacer holds a checkbox's width, so every change word starts on one line.
+                    <span className="flex items-center gap-[var(--hui-space-3)] whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)]">
+                      <span aria-hidden="true" className="size-[var(--hui-space-4)] shrink-0" />
                       {labels.unchanged}
                     </span>
                   )}
                 </TableCell>
-                {columns.map((column) => (
+                {columns.map((column, index) => (
                   <TableCell
                     key={column.id}
-                    className={cn(isIncluded && row.change === "removed" && "line-through")}
+                    className={cn(
+                      // The row's name is struck through; the other values stay readable for review.
+                      isIncluded && row.change === "removed" && index === 0 && "line-through decoration-[var(--hui-color-foreground-danger-primary)]",
+                      row.change !== "unchanged" && "text-[var(--hui-color-foreground-base-primary)]"
+                    )}
                   >
                     {row.cells[column.id]}
                   </TableCell>
@@ -208,16 +251,19 @@ function DiffTable({
         </TableBody>
       </Table>
 
-      <div className="flex flex-wrap items-center justify-end gap-[var(--hui-space-3)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)]">
+      {/* On a narrow card the summary sits above the button, so neither clips. */}
+      <div className={cn("flex flex-col items-start gap-[var(--hui-space-3)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-3)] @sm/diff-table:flex-row @sm/diff-table:items-center", edgePadding)}>
         <p
+          ref={statusRef}
+          tabIndex={-1}
           role={phase === "error" ? "alert" : "status"}
-          className="m-0 me-auto flex min-w-0 items-start gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)]"
+          className="m-0 flex min-w-0 items-start @sm/diff-table:me-auto gap-[var(--hui-space-3)] rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)]"
         >
           {phase === "applied" ? (
             <>
               <CircleCheckIcon
                 aria-hidden="true"
-                className="mt-px size-3.5 shrink-0 text-[var(--hui-color-foreground-success-primary)]"
+                className="mt-[3px] size-3.5 shrink-0 text-[var(--hui-color-foreground-success-primary)]"
               />
               <span className="text-[var(--hui-color-foreground-base-primary)]">
                 {labels.applied(included.length)}
@@ -227,7 +273,7 @@ function DiffTable({
             <>
               <CircleAlertIcon strokeWidth={1.5} strokeLinecap="round"
                 aria-hidden="true"
-                className="mt-px size-3.5 shrink-0 text-[var(--hui-color-foreground-danger-primary)]"
+                className="mt-[3px] size-3.5 shrink-0 text-[var(--hui-color-foreground-danger-primary)]"
               />
               <span className="min-w-0 text-[var(--hui-color-foreground-base-primary)]">{labels.error}</span>
             </>
@@ -235,8 +281,18 @@ function DiffTable({
             labels.summary(additions, removals)
           )}
         </p>
-        {(
-          <Button size="sm" disabled={included.length === 0 || isLocked} onClick={() => void apply()}>
+        {phase !== "applied" && (
+          // aria-disabled while applying, so the pressed button keeps focus.
+          <Button
+            ref={applyRef}
+            size="sm"
+            disabled={included.length === 0}
+            aria-disabled={phase === "applying" || undefined}
+            className="aria-disabled:cursor-progress"
+            onClick={() => {
+              if (phase !== "applying") void apply()
+            }}
+          >
             {phase === "applying" && (
               <LoaderCircleIcon aria-hidden="true" className="size-3.5 motion-safe:animate-spin" />
             )}

@@ -22,9 +22,10 @@ export const Table = defineComponent({
   name: "Table",
   props: z.object({
     columns: z.array(Col.ref),
+    title: z.string().optional(),
   }),
   description:
-    "Data table — column-oriented. Each Col holds its own data array.",
+    "Data table — column-oriented. Each Col holds its own data array. The optional title names what the table shows, in sentence case (\"Largest urban areas\").",
   component: ({ props, renderNode }) =>
     createElement(GeneratedComponent, { name: "Table", props, renderNode }),
 });

@@ -219,11 +219,28 @@ const ChatSectionBlock = defineComponent({
     }),
 });
 
+// ── HtmlVisual — freeform HTML/SVG, run in an isolated sandboxed frame ──
+
+const HtmlVisual = defineComponent({
+  name: "HtmlVisual",
+  props: z.object({
+    title: z.string(),
+    html: z.string(),
+    description: z.string().optional(),
+    height: z.number().optional(),
+  }),
+  description:
+    "A freeform interactive visual written as self-contained HTML, inline CSS, SVG and inline JavaScript, for an explanation no other component can draw (an animated process, a custom interactive diagram, a small simulation). It runs in an isolated frame that loads nothing from outside: no external scripts, fonts, images or requests; draw with SVG or canvas. Keep state in variables: no localStorage, sessionStorage or cookies. Use in-page controls, never alert, confirm or prompt. Don't link out of the visual. Use the CSS variables --foreground, --muted, --border, --surface, --accent, --chart-1 to --chart-5 so it matches the page in light and dark; a canvas accepts them too, as ctx.fillStyle = 'var(--chart-1)'. Plain button, input, select and label elements are already styled to match the app, so don't restyle them. Keep everything inside the visual: before drawing, work out the extent of what the current inputs produce (for a trajectory, its range and peak height) and scale it to fit the canvas or viewBox with a margin, recomputing the scale whenever an input changes; never use a fixed pixels-per-unit scale. Size a canvas from its displayed width times devicePixelRatio so lines stay sharp. Label everything in visible text. title names it; description says in one line what it shows; height is the starting height in px.",
+  component: ({ props, renderNode }) =>
+    createElement(GeneratedComponent, { name: "HtmlVisual", props, renderNode }),
+});
+
 const ChatCardChildUnion = z.union([
   ...ChatNestedContentUnion.options,
   ChatSectionBlock.ref,
   ChatTabs.ref,
   ChatCarousel.ref,
+  HtmlVisual.ref,
 ]);
 
 const CardSourceSchema = z.object({
@@ -261,13 +278,30 @@ const ChatModal = defineComponent({
     createElement(GeneratedComponent, { name: "Modal", props, renderNode }),
 });
 
+// ── Artifact — a deliverable that opens in the panel beside the chat ──
+
+const Artifact = defineComponent({
+  name: "Artifact",
+  props: z.object({
+    title: z.string(),
+    children: z.array(z.union([...ChatCardChildUnion.options, ChatCard.ref])),
+    description: z.string().optional(),
+  }),
+  description:
+    "A deliverable the user will keep, revise or reuse — a document, a plan, a report, a code file, a long table or a set of charts. It shows as a card in the reply and opens its content in a panel beside the conversation. children is the content, top to bottom. description is a short note such as \"Markdown · 6 sections\" or \"TypeScript\". To revise, send a new Artifact with the same title.",
+  component: ({ props, renderNode }) =>
+    createElement(GeneratedComponent, { name: "Artifact", props, renderNode }),
+});
+
 // ── Chat Stack — the unframed root of a generated block, always vertical ──
 
 const ChatStack = defineComponent({
   name: "Stack",
   props: z.object({
     // A Card holds no Card, so frames never nest.
-    children: z.array(z.union([...ChatCardChildUnion.options, ChatCard.ref, ChatModal.ref])),
+    children: z.array(
+      z.union([...ChatCardChildUnion.options, ChatCard.ref, ChatModal.ref, Artifact.ref]),
+    ),
   }),
   description:
     "Root of a generated block. Children stack top to bottom with no frame, so the block reads as part of the reply.",
@@ -442,6 +476,15 @@ export const honestaiChatComponentGroups: ComponentGroup[] = [
     ],
   },
   {
+    name: "Artifacts & visuals",
+    components: ["Artifact", "HtmlVisual"],
+    notes: [
+      '- Artifact(title, [content], description) holds a deliverable the user keeps or edits: a document (MarkDownRenderer), code (CodeBlock), a plan, a report. Example: doc = Artifact("Onboarding plan", [md], "Markdown · 4 weeks")  md = MarkDownRenderer("## Week 1\\n...")',
+      "- Keep short answers, single charts and quick forms inline; reach for an Artifact when the output is long or meant to be kept.",
+      "- HtmlVisual is the last resort: use a catalog component (chart, Diagram, Calculator, Quiz, Map) whenever one fits. Its html must be self-contained, with no external URLs.",
+    ],
+  },
+  {
     name: "Data Display",
     components: ["TagBlock", "Tag", "EntityList"],
     notes: [
@@ -497,6 +540,9 @@ export const honestChatLibrary = createLibrary({
   components: [
     // Root
     ChatStack,
+    // Deliverables and freeform visuals
+    Artifact,
+    HtmlVisual,
     // Optional frame
     ChatCard,
     CardHeader,

@@ -2,8 +2,19 @@
 
 Changes to the `honestui` npm package. Entries marked unreleased describe work prepared for the next publication.
 
-## Unreleased
+## 0.3.1 - 2026-11-07
 
+- Sync Honest AI components, generative UI, and prose from honest-ai commit `7786392`.
+- Generative UI: add artifact and HTML visual renderers, per-block actions, canvas fitting, and HTML formatting. Expand chart, specialized chart, and generated component renderers. Update the chat shell, standard library prompt options, and the chat spec.
+- Generative parser: unescape quotes inside strings, handle line-continuation backslashes, keep JSON escapes, and drop a lone trailing backslash.
+- Honest AI: update records-table, message-scroller, prose-code-block, markdown, code-view, and artifact-panel.
+- Prose: refresh `honestui/prose.css` and the prose Tailwind utilities.
+- `selectTriggerVariants` is exported from Select.
+
+## 0.3.0 - 2026-11-04
+
+- Sync all 26 Honest AI components and their bundled UI dependencies from honest-ai commit `c394386`. Package imports and CLI-installed AI source now include the updated layouts, action controls, tooltips, status messages, and recovery actions.
+- Update prose and code styling, including inline code and disabled code ligatures, and refresh the AI theme snapshot with the unified radius, density, typography, and component styles.
 - Breaking: Button's `appearance` prop and Badge's `gradient` variant and alias names (`accent`, `neutral`, `danger`, sizes `micro`, `small`, `regular`) are removed. `PopoverAnchor` is restored as a deprecated export.
 - Kanban List uses Honest UI tokens and fixed sizes; boards scroll in narrow containers instead of shrinking text.
 - Honest AI components import `@base-ui/react`; `@base-ui-components/react` is no longer a dependency.

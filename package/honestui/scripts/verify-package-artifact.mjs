@@ -19,7 +19,11 @@ try {
     ["pack", "--ignore-scripts", "--json", "--pack-destination", tempRoot],
     { cwd: packageRoot, encoding: "utf8", maxBuffer: 10 * 1024 * 1024 }
   )
-  const [packResult] = JSON.parse(stdout)
+  // npm 11 prints an array of results; npm 12 prints an object keyed by package name.
+  const packOutput = JSON.parse(stdout)
+  const packResult = Array.isArray(packOutput)
+    ? packOutput[0]
+    : packOutput[packageJson.name]
   const packedFiles = new Set(packResult.files.map((file) => file.path))
   const requiredFiles = [
     "README.md",

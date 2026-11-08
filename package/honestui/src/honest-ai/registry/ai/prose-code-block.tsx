@@ -13,7 +13,7 @@ export type ProseCodeBlockLabels = {
 }
 
 export const defaultProseCodeBlockLabels: ProseCodeBlockLabels = {
-  copy: "Copy code",
+  copy: "Copy",
   copied: "Copied",
   copyFailed: "Copy failed",
 }
@@ -72,50 +72,98 @@ function ProseCodeBlock({
   }
 
   const lines = code.split("\n")
+  const [preRef, overflowing] = useOverflowing<HTMLPreElement>()
   return (
     <figure
       data-slot="prose-code-block"
       // `not-prose` keeps a prose around this figure from restyling its code.
-      className={cn("not-prose m-0 w-full min-w-0 rounded-[var(--hui-radius-code-block,8px)] bg-[var(--hui-color-background-neutral-primary)] p-1 text-[var(--hui-color-foreground-base-primary)]", className)}
+      // A shell with the header, around a panel with the code, shared with Code View.
+      className={cn("not-prose m-0 w-full min-w-0 rounded-[var(--hui-radius-code-block)] bg-[var(--hui-color-background-neutral-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]", className)}
       {...props}
     >
-      <figcaption className="flex min-w-0 items-center gap-[var(--hui-space-2)] py-0.5 ps-2.5 pe-0.5">
-        <span className="min-w-0 truncate font-mono text-xs text-[var(--hui-color-foreground-base-secondary)]">{label}</span>
+      <figcaption className="flex min-h-[var(--hui-control-height-sm)] min-w-0 items-center gap-[var(--hui-space-3)] ps-[var(--hui-space-4)]">
+        <span className="min-w-0 truncate font-mono text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-small)]">{label}</span>
         <div className="ms-auto flex shrink-0 items-center gap-[var(--hui-space-2)]">
           {actions}
-          <Button type="button" variant="ghost" size="icon" className="h-6 w-6 rounded" aria-label={labels.copy} onClick={() => void copy()}>
-            {copyState === "copied" ? <CheckIcon aria-hidden="true" /> : <CopyIcon aria-hidden="true" />}
+          {/* Icon only: the header already says what is copied. The name stays
+              the same while the check shows; the status below announces it. */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={labels.copy}
+            title={labels.copy}
+            className="text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)] [&_svg]:size-3.5"
+            onClick={() => void copy()}
+          >
+            {copyState === "copied" ? (
+              <CheckIcon aria-hidden="true" className="text-[var(--hui-color-foreground-success-primary)]" />
+            ) : (
+              <CopyIcon aria-hidden="true" />
+            )}
           </Button>
         </div>
         <span role="status" className="sr-only">
           {copyState === "copied" ? labels.copied : copyState === "failed" ? labels.copyFailed : ""}
         </span>
       </figcaption>
-      {/* Focusable so a keyboard user can scroll long lines. The shell is the frame, so the panel keeps only its hairline. */}
-      <pre
-        tabIndex={0}
-        aria-label={label}
-        {...codeProps}
-        className={cn(
-          "m-0 mt-1 overflow-x-auto rounded-[var(--hui-radius-code-block-inner,5px)] bg-[var(--hui-color-background-base-primary)] px-4 py-3.5 font-mono text-[0.8125rem] leading-[1.65] shadow-[inset_0_0_0_0.5px_var(--hui-color-border-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
-          codeClassName,
-          "[&&]:border-0! [&&]:rounded-[var(--hui-radius-code-block-inner,5px)]!"
-        )}
-      >
-        <code className="block w-max min-w-full">
-          {lines.map((line, index) => (
-            <React.Fragment key={index}>
-              {renderLine ? renderLine(line, index) : line}
-              {index < lines.length - 1 ? "\n" : null}
-            </React.Fragment>
-          ))}
-        </code>
-      </pre>
+      {/* A thin scrollbar and a fade at the end edge show there is more to scroll. The fade follows the
+          panel's scroll position and clears at the end; where scroll-driven
+          animation is unsupported, or nothing overflows, it stays hidden. */}
+      <div className="relative mt-[var(--hui-space-2)] min-w-0 [timeline-scope:--prose-code-scroll]">
+        {/* A tab stop only while it overflows, so a keyboard user can scroll long lines. The shell is the frame, so the panel keeps only its hairline. */}
+        <pre
+          tabIndex={overflowing ? 0 : undefined}
+          aria-label={label}
+          {...codeProps}
+          ref={preRef}
+          className={cn(
+            "m-0 overflow-x-auto [scroll-timeline:--prose-code-scroll_inline] supports-[selector(::-webkit-scrollbar)]:[scrollbar-color:auto]! supports-[selector(::-webkit-scrollbar)]:[scrollbar-width:auto]! [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-[var(--hui-space-4)] [&::-webkit-scrollbar-track]:mb-[var(--hui-space-1)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--hui-color-overlay-base-a5)] rounded-[var(--hui-radius-code-block-inner)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)] font-mono shadow-[inset_0_0_0_var(--hui-border-width-surface)_var(--hui-color-border-base-primary)] outline-none [font-variant-ligatures:none] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-regular)] [--prose-syntax-leading:var(--hui-line-height-mono-regular)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
+            codeClassName,
+            // A syntax theme brings its own frame and size; the shell already frames the panel.
+            "[&&]:border-0! [&&]:rounded-[var(--hui-radius-code-block-inner)]! [&&]:px-[var(--hui-space-5)]! [&&]:py-[var(--hui-space-4)]! [&&]:[font-size:var(--hui-font-size-mono-small)]!"
+          )}
+        >
+          <code className="block w-max min-w-full">
+            {lines.map((line, index) => (
+              <React.Fragment key={index}>
+                {renderLine ? renderLine(line, index) : line}
+                {index < lines.length - 1 ? "\n" : null}
+              </React.Fragment>
+            ))}
+          </code>
+        </pre>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-[var(--hui-border-width-surface)] end-[var(--hui-border-width-surface)] w-[var(--hui-space-8)] rounded-e-[var(--hui-radius-code-block-inner)] bg-[linear-gradient(to_left,var(--hui-color-background-base-primary),transparent)] opacity-0 rtl:bg-[linear-gradient(to_right,var(--hui-color-background-base-primary),transparent)]"
+          style={{ animation: "hui-scroll-cue linear both", animationTimeline: "--prose-code-scroll" }}
+        />
+      </div>
       {copyState === "failed" && (
-        <p className="m-0 px-2.5 pt-1.5 pb-0.5 text-xs">{labels.copyFailed}</p>
+        <p className="m-0 px-[var(--hui-space-4)] pt-[var(--hui-space-3)] pb-[var(--hui-space-2)] text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">{labels.copyFailed}</p>
       )}
     </figure>
   )
+}
+
+/**
+ * Whether an element overflows, so it is a keyboard tab stop only while it has
+ * something to scroll. The observer reports once on `observe`, then on resize.
+ */
+function useOverflowing<T extends HTMLElement>() {
+  const ref = React.useRef<T>(null)
+  const [overflowing, setOverflowing] = React.useState(false)
+  React.useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    if (typeof ResizeObserver === "undefined") return
+    const update = () => setOverflowing(node.scrollWidth > node.clientWidth + 1)
+    const observer = new ResizeObserver(update)
+    observer.observe(node)
+    if (node.firstElementChild) observer.observe(node.firstElementChild)
+    return () => observer.disconnect()
+  }, [])
+  return [ref, overflowing] as const
 }
 
 export { ProseCodeBlock }

@@ -223,33 +223,67 @@ function MarkdownImage({ src, alt }: React.ComponentProps<"img">) {
   return typeof src === "string" && src !== "" ? <a href={src}>{text}</a> : <span>{text}</span>
 }
 
+// True while the element is wider than its box, so it only takes a Tab stop when there is something to scroll.
+function useOverflows(ref: React.RefObject<HTMLElement | null>) {
+  const [overflows, setOverflows] = React.useState(false)
+  React.useEffect(() => {
+    const element = ref.current
+    if (!element) return
+    if (typeof ResizeObserver === "undefined") return
+    const measure = () => setOverflows(element.scrollWidth > element.clientWidth)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(element)
+    if (element.firstElementChild) observer.observe(element.firstElementChild)
+    return () => observer.disconnect()
+  }, [ref])
+  return overflows
+}
+
 function MarkdownTable({ children }: React.ComponentProps<"table">) {
   const { labels } = useMarkdownSettings()
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+  const overflows = useOverflows(scrollRef)
   return (
-    // Focusable so a keyboard user can scroll a wide table.
+    // Focusable while it overflows, so a keyboard user can scroll a wide table.
     <div
+      ref={scrollRef}
       role="group"
       aria-label={labels.table}
-      tabIndex={0}
+      tabIndex={overflows ? 0 : undefined}
       data-slot="markdown-table"
-      className="prose-scroll outline-none focus-visible:[outline:var(--hui-focus-ring)]"
+      className="prose-scroll rounded-[var(--hui-radius-code-block)] outline-none focus-visible:[outline:var(--hui-focus-ring)]"
     >
       <table>{children}</table>
     </div>
   )
 }
 
-// A task list item's checkbox is a record of the text, not a control.
+// A task list item's checkbox is a record of the text, not a control. A
+// disabled checkbox looks unavailable, so the box is drawn as a static mark
+// and the checkbox stays for assistive technology.
 function MarkdownTaskCheckbox({ type, checked }: React.ComponentProps<"input">) {
   const { labels } = useMarkdownSettings()
   return (
-    <input
-      type={type}
-      checked={checked}
-      disabled
-      readOnly
-      aria-label={checked ? labels.taskDone : labels.taskOpen}
-    />
+    <span
+      data-slot="markdown-task-mark"
+      data-checked={checked ? "" : undefined}
+      className="relative inline-flex size-[1em] items-center justify-center rounded-[calc(var(--hui-radius-1)/2)] border-[length:var(--hui-border-width-surface)] border-solid border-[var(--hui-color-border-base-secondary)] text-[var(--hui-color-foreground-base-secondary)] data-checked:border-transparent data-checked:bg-[var(--hui-color-background-neutral-secondary)]"
+    >
+      <input
+        type={type}
+        checked={checked}
+        disabled
+        readOnly
+        aria-label={checked ? labels.taskDone : labels.taskOpen}
+        className="sr-only"
+      />
+      {checked && (
+        <svg aria-hidden="true" viewBox="0 0 12 12" fill="none" className="size-[0.75em]">
+          <path d="M2.5 6.25 5 8.5l4.5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+    </span>
   )
 }
 

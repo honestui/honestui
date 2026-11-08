@@ -5,6 +5,7 @@ import { format, isValid, parseISO } from "date-fns";
 import { Calendar as CalendarIcon } from "honestui/icons";
 import { Button } from "../../../components/ui/button.js";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover.js";
+import { selectTriggerVariants } from "../../../components/ui/select.js";
 import { cn } from "../../../lib/utils.js";
 import { DayPicker } from "react-day-picker";
 import { ChevronLeft, ChevronRight } from "honestui/icons";
@@ -38,11 +39,17 @@ export function SingleDatePicker({
           <Button
             {...props}
             type="button"
-            variant="secondary"
+            variant="link"
             aria-required={required || undefined}
             aria-label={selected ? `${props["aria-label"] ?? "Date"}, ${format(selected, "MMM d, yyyy")}` : props["aria-label"]}
             disabled={disabled}
-            className={cn("w-full justify-between text-left", !selected && "text-muted-foreground", className)}
+            // A field, not an action: it matches the Select and Input beside it.
+            className={cn(
+              selectTriggerVariants(),
+              "w-full font-normal text-left not-disabled:hover:bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] motion-safe:not-disabled:active:scale-100",
+              !selected && "text-muted-foreground",
+              className,
+            )}
           />
         }
       >

@@ -34,7 +34,7 @@ function PopoverPopup({
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            "box-border max-h-(--available-height) min-w-[var(--hui-space-17)] max-w-[18rem] origin-(--transform-origin) overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay,var(--hui-shadow-soft))] outline-0 [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out),transform_var(--hui-duration-normal)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
+            "box-border max-h-(--available-height) min-w-[var(--hui-space-17)] max-w-[min(20rem,var(--available-width))] origin-(--transform-origin) overflow-x-hidden overflow-y-auto overscroll-contain rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] p-[var(--hui-space-5)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay,var(--hui-shadow-soft))] outline-0 [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)] [transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 motion-safe:[transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out),scale_var(--hui-duration-normal)_var(--hui-ease-out)] motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97]",
             className
           )}
           {...props}
@@ -71,7 +71,7 @@ function PopoverDescription({
     <PopoverPrimitive.Description
       data-slot="popover-description"
       className={cn(
-        "m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-style:normal] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+        "m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-control,13px)] [font-style:normal] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
         className
       )}
       {...props}

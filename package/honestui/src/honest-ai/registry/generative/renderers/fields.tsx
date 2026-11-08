@@ -113,6 +113,8 @@ export function GeneratedField({
       [label?.hintId, error && `${id}-error`].filter(Boolean).join(" ") ||
       undefined,
     "aria-invalid": !!error,
+    // Announced before a submit, not only after one fails.
+    "aria-required": record(props.rules).required === true || undefined,
   };
   const change = (next: unknown) => {
     field.setValue(next);
@@ -153,7 +155,15 @@ export function GeneratedField({
         props.mode === "range" ? (
           <DateRangePicker
             {...common}
-            value={{ from: parseDate(date.from), to: parseDate(date.to) }}
+            // No range is no value, so the picker offers nothing to clear.
+            value={
+              date.from || date.to
+                ? { from: parseDate(date.from), to: parseDate(date.to) }
+                : undefined
+            }
+            // A field like the Select and Input beside it: their height,
+            // border, fill and regular-weight control text.
+            className="h-[var(--hui-density-control-height,36px)] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)]"
             onValueChange={(range) =>
               change(
                 range

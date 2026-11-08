@@ -119,7 +119,7 @@ function NestedParts({ parts, depth = 0 }: { parts: Part[]; depth?: number }) {
   const inner = depth + 1 < parts.length;
   return (
     <li
-      className={`grid gap-3 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] p-3 @md:p-4 ${
+      className={`grid gap-3 rounded-[var(--hui-radius-4)] border border-[var(--hui-color-border-base-primary)] p-3 @md:p-4 ${
         depth % 2 === 0
           ? "bg-[var(--hui-color-background-base-secondary)]"
           : "bg-[var(--hui-color-background-base-primary)]"

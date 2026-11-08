@@ -13,7 +13,7 @@ function Toolbar({
     <ToolbarPrimitive.Root
       data-slot="toolbar"
       className={cn(
-        "flex items-center gap-[var(--hui-density-group-gap,var(--hui-space-1))] max-w-full overflow-x-auto overflow-y-clip rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] p-[var(--hui-density-group-gap,var(--hui-space-1))] data-[orientation=vertical]:flex-col data-[orientation=vertical]:[&_[data-slot=toolbar-button]]:w-full data-[orientation=vertical]:[&_[data-slot=toolbar-group]]:flex-col [&>*]:border-0",
+        "flex items-center gap-[var(--hui-density-group-gap,var(--hui-space-1))] max-w-full overflow-x-auto overflow-y-clip rounded-[calc(var(--hui-radius-2)+var(--hui-density-group-gap,var(--hui-space-1)))] border-[0.5px] border-[var(--hui-color-border-base-primary)] p-[var(--hui-density-group-gap,var(--hui-space-1))] data-[orientation=vertical]:flex-col data-[orientation=vertical]:[&_[data-slot=toolbar-button]]:w-full data-[orientation=vertical]:[&_[data-slot=toolbar-group]]:flex-col [&>*]:border-0",
         className
       )}
       {...props}
@@ -72,7 +72,7 @@ function ToolbarSeparator({
     <ToolbarPrimitive.Separator
       data-slot="toolbar-separator"
       className={cn(
-        "shrink-0 bg-[var(--hui-color-border-base-primary)] data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-[calc(100%-var(--hui-space-3))] data-[orientation=vertical]:h-[var(--hui-space-5)] data-[orientation=vertical]:w-px",
+        "shrink-0 bg-[var(--hui-color-border-base-primary)] data-[orientation=horizontal]:h-[0.5px] data-[orientation=horizontal]:w-[calc(100%-var(--hui-space-3))] data-[orientation=vertical]:h-[var(--hui-space-5)] data-[orientation=vertical]:w-[0.5px]",
         className
       )}
       {...props}

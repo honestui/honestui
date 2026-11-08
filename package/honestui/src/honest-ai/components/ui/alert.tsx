@@ -104,7 +104,7 @@ function AlertDialogBackdrop({
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-backdrop"
       className={cn(
-        "fixed inset-0 z-[var(--hui-z-index-portal)] bg-black/32 backdrop-blur-sm transition-all duration-200 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0",
+        "fixed inset-0 z-[var(--hui-z-index-portal)] bg-[var(--hui-color-overlay-black-a5)] [backdrop-filter:var(--hui-blur-lg)] [transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out)] data-ending-style:opacity-0 data-starting-style:opacity-0 [@media(prefers-reduced-transparency:reduce)]:bg-[var(--hui-color-overlay-black-a9)] [@media(prefers-reduced-transparency:reduce)]:[backdrop-filter:none]",
         className
       )}
       {...props}
@@ -124,8 +124,8 @@ function AlertDialogPopup({
           <AlertDialogPrimitive.Popup
             data-slot="alert-dialog-popup"
             className={cn(
-              "row-start-2 grid w-full min-w-0 origin-top gap-0 border bg-[var(--hui-color-background-base-primary)] bg-clip-padding p-0 text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-floating)] transition-[scale,opacity,translate] duration-200 ease-in-out will-change-transform data-ending-style:opacity-0 data-starting-style:opacity-0 max-sm:overflow-y-auto max-sm:border-none max-sm:opacity-[calc(1-min(var(--nested-dialogs),1))] max-sm:data-ending-style:translate-y-4 max-sm:data-starting-style:translate-y-4 sm:max-w-lg sm:-translate-y-[calc(1.25rem*var(--nested-dialogs))] sm:scale-[calc(1-0.1*var(--nested-dialogs))] sm:rounded-[var(--hui-radius-2)] sm:data-ending-style:scale-98 sm:data-starting-style:scale-98 dark:bg-clip-border",
-              "relative before:pointer-events-none before:absolute before:inset-0 before:shadow-[0_1px_--theme(--color-black/4%)] max-sm:before:hidden sm:before:rounded-[calc(var(--hui-radius-2)-1px)] sm:data-nested:data-ending-style:translate-y-8 sm:data-nested:data-starting-style:translate-y-8 dark:before:shadow-[0_-1px_--theme(--color-white/8%)]",
+              "row-start-2 grid w-full min-w-0 origin-top gap-0 border-[length:var(--hui-border-width-surface,1px)] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] p-0 text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-floating)] [transition:opacity_var(--hui-duration-normal)_var(--hui-ease-out)] motion-safe:[transition:scale_var(--hui-duration-normal)_var(--hui-ease-out),opacity_var(--hui-duration-normal)_var(--hui-ease-out),translate_var(--hui-duration-normal)_var(--hui-ease-out)] will-change-transform data-ending-style:opacity-0 data-starting-style:opacity-0 max-sm:max-h-[90dvh] max-sm:overflow-y-auto max-sm:rounded-t-[var(--hui-radius-dialog,var(--hui-radius-2))] max-sm:border-x-0 max-sm:border-b-0 max-sm:pb-[env(safe-area-inset-bottom)] max-sm:opacity-[calc(1-min(var(--nested-dialogs),1))] max-sm:data-ending-style:translate-y-4 max-sm:data-starting-style:translate-y-4 sm:max-w-[400px] sm:-translate-y-[calc(1.25rem*var(--nested-dialogs))] sm:scale-[calc(1-0.1*var(--nested-dialogs))] sm:rounded-[var(--hui-radius-dialog,var(--hui-radius-2))] sm:data-ending-style:scale-[0.97] sm:data-starting-style:scale-[0.97]",
+              "relative sm:data-nested:data-ending-style:translate-y-8 sm:data-nested:data-starting-style:translate-y-8",
               className
             )}
             {...props}
@@ -144,7 +144,7 @@ function AlertDialogHeader({
     <div
       data-slot="alert-dialog-header"
       className={cn(
-        "flex flex-col gap-2 border-b-0 p-[var(--hui-space-7)] text-center [&:has(+_[data-slot=alert-dialog-body])]:pb-[var(--hui-space-5)] sm:text-left",
+        "flex flex-col gap-[var(--hui-space-2)] border-b-0 p-[var(--hui-space-7)] text-start [&:has(+_[data-slot=alert-dialog-body])]:pb-[var(--hui-space-5)]",
         className
       )}
       {...props}
@@ -176,7 +176,7 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-2 border-t-0 px-[var(--hui-space-7)] pb-[var(--hui-space-7)] sm:flex-row sm:justify-end",
+        "flex flex-col-reverse gap-2 border-t-0 px-[var(--hui-space-7)] pb-[var(--hui-space-7)] max-sm:*:w-full sm:flex-row sm:justify-end",
         className
       )}
       {...props}
@@ -191,7 +191,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn("[font-size:var(--hui-font-size-large)] [line-height:var(--hui-line-height-large)] font-semibold", className)}
+      className={cn("[font-size:var(--hui-font-size-large)] [line-height:var(--hui-line-height-large)] [letter-spacing:var(--hui-letter-spacing-large)] [font-weight:var(--hui-font-weight-medium)]", className)}
       {...props}
     />
   )

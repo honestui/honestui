@@ -1,10 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { Check as CheckIcon, Code as CodeIcon, Copy as CopyIcon } from "honestui/icons"
+import { Check as CheckIcon, Copy as CopyIcon } from "honestui/icons"
 
 import { cn } from "../../lib/utils.js"
 import { Button } from "../../components/ui/button.js"
+import { SyntaxLine, useSyntax } from "../lib/prose-syntax-react.js"
 
 export type CodeDiffLine = {
   text: string
@@ -30,11 +31,18 @@ export const defaultCodeViewLabels: CodeViewLabels = {
 
 const COPIED_MILLISECONDS = 1500
 
-// Changed lines keep the primary text color on a tint, which stays readable at this size.
+// A half-strength tint marks the line, and a full-strength sign column carries
+// the change, so the code stays the brightest thing on the line in both themes.
 const lineTone: Record<NonNullable<CodeDiffLine["kind"]>, string> = {
   context: "",
-  added: "bg-[var(--hui-color-background-success-primary)]",
-  removed: "bg-[var(--hui-color-background-danger-primary)]",
+  added: "bg-[color-mix(in_oklch,var(--hui-color-background-success-primary)_50%,transparent)]",
+  removed: "bg-[color-mix(in_oklch,var(--hui-color-background-danger-primary)_50%,transparent)]",
+}
+
+const signTone: Record<NonNullable<CodeDiffLine["kind"]>, string> = {
+  context: "",
+  added: "bg-[var(--hui-color-background-success-primary)] text-[var(--hui-color-foreground-success-primary-hover)]",
+  removed: "bg-[var(--hui-color-background-danger-primary)] text-[var(--hui-color-foreground-danger-primary)]",
 }
 
 const lineSign: Record<NonNullable<CodeDiffLine["kind"]>, string> = {
@@ -50,7 +58,12 @@ export type CodeViewProps = Omit<React.ComponentProps<"figure">, "children" | "o
   code?: string
   /** A unified diff. Each changed line is marked with a sign and a tint. */
   diff?: CodeDiffLine[]
-  /** Colors one line. `index` counts the listed lines from zero. Without it, lines are plain text. */
+  /**
+   * The language to highlight with Honest Prose Syntax, such as `"ts"`.
+   * Defaults to the file name's extension. Pass `"plaintext"` for no colors.
+   */
+  language?: string
+  /** Colors one line with your own highlighter. `index` counts the listed lines from zero. It replaces the built-in highlighting. */
   renderLine?: (text: string, index: number) => React.ReactNode
   /** Controls for the header, placed before Copy. */
   actions?: React.ReactNode
@@ -61,14 +74,21 @@ export type CodeViewProps = Omit<React.ComponentProps<"figure">, "children" | "o
   labels?: Partial<CodeViewLabels>
 }
 
+/** The extension after the last dot, or nothing for names such as "Terminal". */
+function languageFromFilename(filename: string) {
+  const dot = filename.lastIndexOf(".")
+  return dot > 0 && dot < filename.length - 1 ? filename.slice(dot + 1).toLowerCase() : undefined
+}
+
 /**
- * A file's code, or a diff of it, with a copy button. It does not highlight
- * syntax itself; pass `renderLine` to use the highlighter you already have.
+ * A file's code, or a diff of it, with line numbers and a copy button. Lines
+ * are highlighted with Honest Prose Syntax unless `renderLine` supplies colors.
  */
 function CodeView({
   filename,
   code = "",
   diff,
+  language: languageProp,
   renderLine,
   actions,
   onCopy,
@@ -93,6 +113,13 @@ function CodeView({
         .map((line) => line.text)
         .join("\n")
     : code
+  const language = languageProp ?? languageFromFilename(filename)
+  // A diff is highlighted as one listing, removed lines included, so each line keeps its colors.
+  const syntax = useSyntax(
+    diff ? diff.map((line) => line.text).join("\n") : code,
+    language,
+    !renderLine
+  )
   const addedCount = diff?.filter((line) => line.kind === "added").length ?? 0
   const removedCount = diff?.filter((line) => line.kind === "removed").length ?? 0
 
@@ -115,77 +142,46 @@ function CodeView({
     lineNumbers.push(line.kind === "removed" ? null : previous + 1)
   }
 
-  return (
-    <figure
-      data-slot="code-view"
-      data-embedded={embedded ? "" : undefined}
-      className={cn(
-        // `not-prose` keeps a prose around this figure from restyling its code.
-        "not-prose m-0 w-full min-w-0 text-[var(--hui-color-foreground-base-primary)]",
-        !embedded &&
-          "overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)]",
-        className
-      )}
-      {...props}
-    >
-      {!embedded && (
-        <figcaption className="flex min-w-0 items-center gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-2)] ps-[var(--hui-space-4)] pe-[var(--hui-space-2)] [font-size:var(--hui-font-size-small)]">
-          <CodeIcon
-            aria-hidden="true"
-            className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)]"
-          />
-          <span className="min-w-0 truncate font-mono [font-size:var(--hui-font-size-mono-small)]">
-            {filename}
-          </span>
-          {diff && (
-            <span className="shrink-0 font-mono tabular-nums [font-size:var(--hui-font-size-mono-mini)]">
-              <span className="text-[var(--hui-color-foreground-success-primary-hover)]">
-                <span aria-hidden="true">+{addedCount}</span>
-                <span className="sr-only">{labels.added(addedCount)}</span>
-              </span>{" "}
-              <span className="text-[var(--hui-color-foreground-danger-primary-hover)]">
-                <span aria-hidden="true">−{removedCount}</span>
-                <span className="sr-only">{labels.removed(removedCount)}</span>
-              </span>
-            </span>
-          )}
-          <div className="ms-auto flex shrink-0 items-center gap-[var(--hui-space-2)]">
-            {actions}
-            <Button variant="link" size="sm" onClick={() => void copy()}>
-              {copyState === "copied" ? <CheckIcon aria-hidden="true" /> : <CopyIcon aria-hidden="true" />}
-              {labels.copy}
-            </Button>
-          </div>
-          <span role="status" className="sr-only">
-            {copyState === "copied" ? labels.copied : copyState === "failed" ? labels.copyFailed : ""}
-          </span>
-        </figcaption>
-      )}
-      {!embedded && copyState === "failed" && (
-        <p className="m-0 border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-2)] [font-size:var(--hui-font-size-small)]">
-          {labels.copyFailed}
-        </p>
-      )}
-      {/* Focusable so a keyboard user can scroll long lines. */}
+  const [preRef, overflowing] = useOverflowing<HTMLPreElement>()
+
+  const listing = (
+    // A thin scrollbar and a fade at the end edge show there is more to scroll.
+    // The fade follows the block's scroll position and clears at the end;
+    // where scroll-driven animation is unsupported, or nothing overflows, it
+    // stays hidden.
+    <div className="relative min-w-0 [timeline-scope:--code-view-scroll]">
+      {/* A tab stop only while it overflows, so a keyboard user can scroll long lines. */}
       <pre
-        tabIndex={0}
+        ref={preRef}
+        tabIndex={overflowing ? 0 : undefined}
         aria-label={filename}
-        className="m-0 overflow-x-auto py-[var(--hui-space-3)] font-mono outline-none [font-size:var(--hui-font-size-mono-small)] [line-height:1.65] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]"
+        className="m-0 overflow-x-auto py-[var(--hui-space-4)] font-mono outline-none [font-variant-ligatures:none] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-regular)] [scroll-timeline:--code-view-scroll_inline] supports-[selector(::-webkit-scrollbar)]:[scrollbar-color:auto]! supports-[selector(::-webkit-scrollbar)]:[scrollbar-width:auto]! [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-[var(--hui-space-4)] [&::-webkit-scrollbar-track]:mb-[var(--hui-space-1)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--hui-color-overlay-base-a5)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]"
       >
-        <code className="block w-max min-w-full">
+        <code
+          className={cn(
+            "block w-max min-w-full",
+            // The theme colors the tokens; the surface and line height stay the block's own.
+            !renderLine && "honest-syntax overflow-visible [--prose-syntax-background:transparent] [--prose-syntax-leading:var(--hui-line-height-mono-regular)]"
+          )}
+        >
           {lines.map((line, index) => {
             const kind = line.kind ?? "context"
+            const tokens = syntax?.lines[index]
             return (
               <span key={index} data-kind={kind} className={cn("flex", lineTone[kind])}>
                 <span
                   aria-hidden="true"
-                  className="w-10 shrink-0 select-none pe-[var(--hui-space-3)] text-end tabular-nums text-[var(--hui-color-foreground-base-secondary)]"
+                  className="w-11 shrink-0 select-none pe-[var(--hui-space-4)] text-end tabular-nums text-[var(--hui-color-foreground-base-secondary)]"
                 >
                   {lineNumbers[index] ?? ""}
                 </span>
-                {diff && <span className="w-[2ch] shrink-0 select-none">{lineSign[kind]}</span>}
-                <span className="pe-[var(--hui-space-4)] whitespace-pre">
-                  {renderLine ? renderLine(line.text, index) : line.text}
+                {diff && (
+                  <span className={cn("me-[var(--hui-space-3)] w-[3ch] shrink-0 select-none text-center", signTone[kind])}>
+                    {lineSign[kind]}
+                  </span>
+                )}
+                <span className="pe-[var(--hui-space-6)] whitespace-pre">
+                  {renderLine ? renderLine(line.text, index) : tokens ? <SyntaxLine tokens={tokens} /> : line.text}
                   {"\n"}
                 </span>
               </span>
@@ -193,8 +189,108 @@ function CodeView({
           })}
         </code>
       </pre>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 end-0 w-[var(--hui-space-8)] bg-[linear-gradient(to_left,var(--hui-color-background-base-primary),transparent)] opacity-0 rtl:bg-[linear-gradient(to_right,var(--hui-color-background-base-primary),transparent)]"
+        style={{ animation: "hui-scroll-cue linear both", animationTimeline: "--code-view-scroll" }}
+      />
+    </div>
+  )
+
+  if (embedded) {
+    return (
+      <figure
+        data-slot="code-view"
+        data-embedded=""
+        // `not-prose` keeps a prose around this figure from restyling its code.
+        className={cn("not-prose m-0 w-full min-w-0 text-[var(--hui-color-foreground-base-primary)]", className)}
+        {...props}
+      >
+        {listing}
+      </figure>
+    )
+  }
+
+  return (
+    <figure
+      data-slot="code-view"
+      className={cn(
+        // A shell with the header, around a panel with the code, shared with Prose Code Block.
+        "not-prose m-0 w-full min-w-0 rounded-[var(--hui-radius-code-block)] bg-[var(--hui-color-background-neutral-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]",
+        className
+      )}
+      {...props}
+    >
+      <figcaption className="flex min-h-[var(--hui-control-height-sm)] min-w-0 items-center gap-[var(--hui-space-3)] ps-[var(--hui-space-4)]">
+        <span className="min-w-0 truncate font-mono text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-small)]">
+          {filename}
+        </span>
+        {diff && (
+          <span className="shrink-0 [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+            <span className="text-[var(--hui-color-foreground-success-primary-hover)]">
+              <span aria-hidden="true">+<span className="tabular-nums">{addedCount}</span></span>
+              <span className="sr-only">{labels.added(addedCount)}</span>
+            </span>{" "}
+            <span className="text-[var(--hui-color-foreground-danger-primary)]">
+              <span aria-hidden="true">−<span className="tabular-nums">{removedCount}</span></span>
+              <span className="sr-only">{labels.removed(removedCount)}</span>
+            </span>
+          </span>
+        )}
+        <div className="ms-auto flex shrink-0 items-center gap-[var(--hui-space-2)]">
+          {actions}
+          {/* Icon only: the header already says what is copied. The name stays
+              the same while the check shows; the status below announces it. */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={labels.copy}
+            title={labels.copy}
+            className="text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)] [&_svg]:size-3.5"
+            onClick={() => void copy()}
+          >
+            {copyState === "copied" ? (
+              <CheckIcon aria-hidden="true" className="text-[var(--hui-color-foreground-success-primary)]" />
+            ) : (
+              <CopyIcon aria-hidden="true" />
+            )}
+          </Button>
+        </div>
+        <span role="status" className="sr-only">
+          {copyState === "copied" ? labels.copied : copyState === "failed" ? labels.copyFailed : ""}
+        </span>
+      </figcaption>
+      <div className="mt-[var(--hui-space-2)] overflow-hidden rounded-[var(--hui-radius-code-block-inner)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)]">
+        {listing}
+      </div>
+      {copyState === "failed" && (
+        <p className="m-0 px-[var(--hui-space-4)] pt-[var(--hui-space-3)] pb-[var(--hui-space-2)] text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+          {labels.copyFailed}
+        </p>
+      )}
     </figure>
   )
+}
+
+/**
+ * Whether an element overflows, so it is a keyboard tab stop only while it has
+ * something to scroll. The observer reports once on `observe`, then on resize.
+ */
+function useOverflowing<T extends HTMLElement>() {
+  const ref = React.useRef<T>(null)
+  const [overflowing, setOverflowing] = React.useState(false)
+  React.useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    if (typeof ResizeObserver === "undefined") return
+    const update = () => setOverflowing(node.scrollWidth > node.clientWidth + 1)
+    const observer = new ResizeObserver(update)
+    observer.observe(node)
+    if (node.firstElementChild) observer.observe(node.firstElementChild)
+    return () => observer.disconnect()
+  }, [])
+  return [ref, overflowing] as const
 }
 
 export { CodeView }

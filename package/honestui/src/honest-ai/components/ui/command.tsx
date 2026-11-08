@@ -161,7 +161,7 @@ function CommandInput({
           autoFocus={autoFocus}
           placeholder={placeholder}
           className={cn(
-            "m-0 w-full min-w-0 border-0 bg-transparent p-0 text-[var(--hui-color-foreground-base-primary)] shadow-none outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus-visible:ring-0 focus-visible:outline-none [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
+            "m-0 w-full min-w-0 border-0 bg-transparent p-0 text-[var(--hui-color-foreground-base-primary)] shadow-none outline-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] placeholder:text-[var(--hui-color-foreground-base-tertiary)] focus-visible:ring-0 focus-visible:outline-none [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
             size === "sm" && "h-[var(--hui-space-7)]",
             size === "default" && "h-[var(--hui-space-9)]",
             size === "lg" && "h-[var(--hui-space-11)]",
@@ -223,7 +223,7 @@ function CommandItem({
       data-slot="command-item"
       value={value}
       className={cn(
-        "flex min-h-9 cursor-pointer scroll-my-[var(--hui-space-2)] items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none select-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-[var(--hui-color-background-base-primary-hover)]",
+        "flex min-h-9 cursor-pointer scroll-my-[var(--hui-space-2)] items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none select-none [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:var(--hui-line-height-control,16px)] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] data-highlighted:bg-[var(--hui-color-background-base-primary-hover)]",
         className
       )}
       {...props}
@@ -246,7 +246,7 @@ function CommandItem({
       {trailingIcon ? (
         <span
           data-slot="command-item-trailing-icon"
-          className="ms-auto inline-flex shrink-0 items-center justify-center text-[var(--hui-color-foreground-base-tertiary)] [&_svg]:size-[var(--hui-space-5)]"
+          className="ms-auto inline-flex shrink-0 items-center justify-center text-[var(--hui-color-foreground-base-secondary)] [&_svg]:size-[var(--hui-space-5)]"
         >
           {trailingIcon}
         </span>
@@ -262,7 +262,7 @@ function CommandEmpty({ className, ...props }: CommandEmptyProps) {
     <div
       data-slot="command-empty"
       className={cn(
-        "px-[var(--hui-space-3)] py-[var(--hui-space-7)] text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]",
+        "px-[var(--hui-space-3)] py-[var(--hui-space-7)] text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-control,16px)]",
         className
       )}
       {...props}
@@ -302,7 +302,7 @@ function CommandLabel({ className, ...props }: CommandLabelProps) {
     <AutocompletePrimitive.GroupLabel
       data-slot="command-label"
       className={cn(
-        "flex items-center px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-tertiary)] [font-size:var(--hui-font-size-micro)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-micro)] [line-height:var(--hui-line-height-micro)]",
+        "flex items-center px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-micro)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-micro)] [line-height:var(--hui-line-height-micro)]",
         className
       )}
       {...props}

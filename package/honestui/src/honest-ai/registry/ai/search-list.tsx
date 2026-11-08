@@ -47,7 +47,9 @@ function SearchList({
     <div
       data-slot="search-list"
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)]",
+        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)]",
+        // A hairline under the field separates what is typed from what matches.
+        "[&_[data-slot=command-input-container]]:border-b-[length:var(--hui-border-width-surface)] [&_[data-slot=command-input-container]]:border-[var(--hui-color-border-base-primary)]",
         className
       )}
     >
@@ -58,6 +60,7 @@ function SearchList({
           aria-expanded
           placeholder={placeholder}
           leadingIcon={<SearchIcon />}
+          className="placeholder:text-[var(--hui-color-foreground-base-secondary)]"
         />
         <CommandContent>
           <CommandEmpty>{emptyMessage}</CommandEmpty>
@@ -67,11 +70,17 @@ function SearchList({
               value={item.label}
               leadingIcon={item.icon}
               onClick={() => onSelect(item)}
+              // The highlight is stronger than a hover tint, so the row Enter
+              // would choose is clear whether it was reached by key or pointer.
+              className="items-start data-highlighted:bg-[var(--hui-color-background-neutral-secondary)] [&>[data-slot=command-item-label]]:whitespace-normal"
             >
               <span className="flex min-w-0 flex-1 items-baseline justify-between gap-[var(--hui-space-4)]">
-                <span className="min-w-0 truncate">{item.label}</span>
+                {/* Long labels wrap to two lines before truncating, so close matches stay comparable. */}
+                <span title={item.label} className="line-clamp-2 min-w-0 break-words">
+                  {item.label}
+                </span>
                 {item.description && (
-                  <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)]">
+                  <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
                     {item.description}
                   </span>
                 )}

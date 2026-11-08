@@ -188,14 +188,14 @@ export function GeneratedMap({ props }: { props: Props }) {
         className={cn(
           inCard
             ? "grid gap-3"
-            : "overflow-hidden rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)]",
+            : "overflow-hidden rounded-[var(--hui-radius-4)] border border-[var(--hui-color-border-base-primary)]",
         )}
       >
         <div
           className={cn(
             "empty:hidden",
             inCard
-              ? "overflow-hidden rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)]"
+              ? "overflow-hidden rounded-[var(--hui-radius-4)] border border-[var(--hui-color-border-base-primary)]"
               : "border-b border-[var(--hui-color-border-base-primary)]",
           )}
         >

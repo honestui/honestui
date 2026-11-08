@@ -2,11 +2,19 @@
   "root": "Stack",
   "components": {
     "Stack": {
-      "signature": "Stack(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Label | Buttons | IconButton | Steps | Diagram | PartsDiagram | Calculator | Quiz | Map | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | ListBlock | FollowUpBlock | SectionBlock | Tabs | Carousel | Card | Modal)[])",
+      "signature": "Stack(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Label | Buttons | IconButton | Steps | Diagram | PartsDiagram | Calculator | Quiz | Map | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | ListBlock | FollowUpBlock | SectionBlock | Tabs | Carousel | HtmlVisual | Card | Modal | Artifact)[])",
       "description": "Root of a generated block. Children stack top to bottom with no frame, so the block reads as part of the reply."
     },
+    "Artifact": {
+      "signature": "Artifact(title: string, children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Label | Buttons | IconButton | Steps | Diagram | PartsDiagram | Calculator | Quiz | Map | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | ListBlock | FollowUpBlock | SectionBlock | Tabs | Carousel | HtmlVisual | Card)[], description?: string)",
+      "description": "A deliverable the user will keep, revise or reuse — a document, a plan, a report, a code file, a long table or a set of charts. It shows as a card in the reply and opens its content in a panel beside the conversation. children is the content, top to bottom. description is a short note such as \"Markdown · 6 sections\" or \"TypeScript\". To revise, send a new Artifact with the same title."
+    },
+    "HtmlVisual": {
+      "signature": "HtmlVisual(title: string, html: string, description?: string, height?: number)",
+      "description": "A freeform interactive visual written as self-contained HTML, inline CSS, SVG and inline JavaScript, for an explanation no other component can draw (an animated process, a custom interactive diagram, a small simulation). It runs in an isolated frame that loads nothing from outside: no external scripts, fonts, images or requests; draw with SVG or canvas. Keep state in variables: no localStorage, sessionStorage or cookies. Use in-page controls, never alert, confirm or prompt. Don't link out of the visual. Use the CSS variables --foreground, --muted, --border, --surface, --accent, --chart-1 to --chart-5 so it matches the page in light and dark; a canvas accepts them too, as ctx.fillStyle = 'var(--chart-1)'. Plain button, input, select and label elements are already styled to match the app, so don't restyle them. Keep everything inside the visual: before drawing, work out the extent of what the current inputs produce (for a trajectory, its range and peak height) and scale it to fit the canvas or viewBox with a margin, recomputing the scale whenever an input changes; never use a fixed pixels-per-unit scale. Size a canvas from its displayed width times devicePixelRatio so lines stay sharp. Label everything in visible text. title names it; description says in one line what it shows; height is the starting height in px."
+    },
     "Card": {
-      "signature": "Card(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Label | Buttons | IconButton | Steps | Diagram | PartsDiagram | Calculator | Quiz | Map | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | ListBlock | FollowUpBlock | SectionBlock | Tabs | Carousel)[], sources?: {title: string, sourceName?: string, url: string}[])",
+      "signature": "Card(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Label | Buttons | IconButton | Steps | Diagram | PartsDiagram | Calculator | Quiz | Map | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | ListBlock | FollowUpBlock | SectionBlock | Tabs | Carousel | HtmlVisual)[], sources?: {title: string, sourceName?: string, url: string}[])",
       "description": "Framed group for content that must stand apart from the conversation, such as a form or a summary the user acts on. Optional: most blocks need no Card. Children stack top to bottom. Optional sources ([{ title, sourceName, url }]) render as a Sources list at the bottom of the card."
     },
     "CardHeader": {
@@ -50,8 +58,8 @@
       "description": "Visual divider between content sections"
     },
     "Table": {
-      "signature": "Table(columns: Col[])",
-      "description": "Data table — column-oriented. Each Col holds its own data array."
+      "signature": "Table(columns: Col[], title?: string)",
+      "description": "Data table — column-oriented. Each Col holds its own data array. The optional title names what the table shows, in sentence case (\"Largest urban areas\")."
     },
     "Col": {
       "signature": "Col(label: string, data: any, type?: \"string\" | \"number\" | \"action\")",
@@ -270,7 +278,7 @@
       "description": "Horizontal scrollable carousel"
     },
     "Modal": {
-      "signature": "Modal(title: string, open?: $binding<boolean>, children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Label | Buttons | IconButton | Steps | Diagram | PartsDiagram | Calculator | Quiz | Map | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | ListBlock | FollowUpBlock | SectionBlock | Tabs | Carousel)[], size?: \"sm\" | \"md\" | \"lg\")",
+      "signature": "Modal(title: string, open?: $binding<boolean>, children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Label | Buttons | IconButton | Steps | Diagram | PartsDiagram | Calculator | Quiz | Map | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | ListBlock | FollowUpBlock | SectionBlock | Tabs | Carousel | HtmlVisual)[], size?: \"sm\" | \"md\" | \"lg\")",
       "description": "Dialog for a user-requested secondary task. Bind open to a $boolean initially false; open it from a Button action. Escape and Close dismiss it. Keep primary reply content outside the dialog."
     },
     "TagBlock": {
@@ -591,6 +599,18 @@
       ]
     },
     {
+      "name": "Artifacts & visuals",
+      "components": [
+        "Artifact",
+        "HtmlVisual"
+      ],
+      "notes": [
+        "- Artifact(title, [content], description) holds a deliverable the user keeps or edits: a document (MarkDownRenderer), code (CodeBlock), a plan, a report. Example: doc = Artifact(\"Onboarding plan\", [md], \"Markdown · 4 weeks\")  md = MarkDownRenderer(\"## Week 1\\n...\")",
+        "- Keep short answers, single charts and quick forms inline; reach for an Artifact when the output is long or meant to be kept.",
+        "- HtmlVisual is the last resort: use a catalog component (chart, Diagram, Calculator, Quiz, Map) whenever one fits. Its html must be self-contained, with no external URLs."
+      ]
+    },
+    {
       "name": "Data Display",
       "components": [
         "TagBlock",
@@ -657,6 +677,12 @@
     "properties": {
       "Stack": {
         "$ref": "#/$defs/Stack"
+      },
+      "Artifact": {
+        "$ref": "#/$defs/Artifact"
+      },
+      "HtmlVisual": {
+        "$ref": "#/$defs/HtmlVisual"
       },
       "Card": {
         "$ref": "#/$defs/Card"
@@ -946,6 +972,8 @@
     },
     "required": [
       "Stack",
+      "Artifact",
+      "HtmlVisual",
       "Card",
       "CardHeader",
       "TextContent",
@@ -1184,10 +1212,16 @@
                   "$ref": "#/$defs/Carousel"
                 },
                 {
+                  "$ref": "#/$defs/HtmlVisual"
+                },
+                {
                   "$ref": "#/$defs/Card"
                 },
                 {
                   "$ref": "#/$defs/Modal"
+                },
+                {
+                  "$ref": "#/$defs/Artifact"
                 }
               ]
             }
@@ -1769,13 +1803,16 @@
             "items": {
               "$ref": "#/$defs/Col"
             }
+          },
+          "title": {
+            "type": "string"
           }
         },
         "required": [
           "columns"
         ],
         "additionalProperties": false,
-        "description": "Data table — column-oriented. Each Col holds its own data array."
+        "description": "Data table — column-oriented. Each Col holds its own data array. The optional title names what the table shows, in sentence case (\"Largest urban areas\")."
       },
       "Col": {
         "type": "object",
@@ -4909,6 +4946,29 @@
         "additionalProperties": false,
         "description": "Horizontal scrollable carousel"
       },
+      "HtmlVisual": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "height": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "title",
+          "html"
+        ],
+        "additionalProperties": false,
+        "description": "A freeform interactive visual written as self-contained HTML, inline CSS, SVG and inline JavaScript, for an explanation no other component can draw (an animated process, a custom interactive diagram, a small simulation). It runs in an isolated frame that loads nothing from outside: no external scripts, fonts, images or requests; draw with SVG or canvas. Keep state in variables: no localStorage, sessionStorage or cookies. Use in-page controls, never alert, confirm or prompt. Don't link out of the visual. Use the CSS variables --foreground, --muted, --border, --surface, --accent, --chart-1 to --chart-5 so it matches the page in light and dark; a canvas accepts them too, as ctx.fillStyle = 'var(--chart-1)'. Plain button, input, select and label elements are already styled to match the app, so don't restyle them. Keep everything inside the visual: before drawing, work out the extent of what the current inputs produce (for a trajectory, its range and peak height) and scale it to fit the canvas or viewBox with a margin, recomputing the scale whenever an input changes; never use a fixed pixels-per-unit scale. Size a canvas from its displayed width times devicePixelRatio so lines stay sharp. Label everything in visible text. title names it; description says in one line what it shows; height is the starting height in px."
+      },
       "Card": {
         "type": "object",
         "properties": {
@@ -5047,6 +5107,9 @@
                 },
                 {
                   "$ref": "#/$defs/Carousel"
+                },
+                {
+                  "$ref": "#/$defs/HtmlVisual"
                 }
               ]
             }
@@ -5224,6 +5287,9 @@
                 },
                 {
                   "$ref": "#/$defs/Carousel"
+                },
+                {
+                  "$ref": "#/$defs/HtmlVisual"
                 }
               ]
             }
@@ -5243,6 +5309,168 @@
         ],
         "additionalProperties": false,
         "description": "Dialog for a user-requested secondary task. Bind open to a $boolean initially false; open it from a Button action. Escape and Close dismiss it. Keep primary reply content outside the dialog."
+      },
+      "Artifact": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TextContent"
+                },
+                {
+                  "$ref": "#/$defs/MarkDownRenderer"
+                },
+                {
+                  "$ref": "#/$defs/CardHeader"
+                },
+                {
+                  "$ref": "#/$defs/Callout"
+                },
+                {
+                  "$ref": "#/$defs/TextCallout"
+                },
+                {
+                  "$ref": "#/$defs/CodeBlock"
+                },
+                {
+                  "$ref": "#/$defs/Image"
+                },
+                {
+                  "$ref": "#/$defs/ImageBlock"
+                },
+                {
+                  "$ref": "#/$defs/ImageGallery"
+                },
+                {
+                  "$ref": "#/$defs/Separator"
+                },
+                {
+                  "$ref": "#/$defs/HorizontalBarChart"
+                },
+                {
+                  "$ref": "#/$defs/RadarChart"
+                },
+                {
+                  "$ref": "#/$defs/PieChart"
+                },
+                {
+                  "$ref": "#/$defs/RadialChart"
+                },
+                {
+                  "$ref": "#/$defs/SingleStackedBarChart"
+                },
+                {
+                  "$ref": "#/$defs/ScatterChart"
+                },
+                {
+                  "$ref": "#/$defs/AreaChart"
+                },
+                {
+                  "$ref": "#/$defs/BarChart"
+                },
+                {
+                  "$ref": "#/$defs/LineChart"
+                },
+                {
+                  "$ref": "#/$defs/Table"
+                },
+                {
+                  "$ref": "#/$defs/TagBlock"
+                },
+                {
+                  "$ref": "#/$defs/Form"
+                },
+                {
+                  "$ref": "#/$defs/Label"
+                },
+                {
+                  "$ref": "#/$defs/Buttons"
+                },
+                {
+                  "$ref": "#/$defs/IconButton"
+                },
+                {
+                  "$ref": "#/$defs/Steps"
+                },
+                {
+                  "$ref": "#/$defs/Diagram"
+                },
+                {
+                  "$ref": "#/$defs/PartsDiagram"
+                },
+                {
+                  "$ref": "#/$defs/Calculator"
+                },
+                {
+                  "$ref": "#/$defs/Quiz"
+                },
+                {
+                  "$ref": "#/$defs/Map"
+                },
+                {
+                  "$ref": "#/$defs/InlineHeader"
+                },
+                {
+                  "$ref": "#/$defs/EntityList"
+                },
+                {
+                  "$ref": "#/$defs/EditableTable"
+                },
+                {
+                  "$ref": "#/$defs/SnippetCardBlock"
+                },
+                {
+                  "$ref": "#/$defs/OverviewCardBlock"
+                },
+                {
+                  "$ref": "#/$defs/ContextCardBlock"
+                },
+                {
+                  "$ref": "#/$defs/CompositeCardBlock"
+                },
+                {
+                  "$ref": "#/$defs/VisualCardBlock"
+                },
+                {
+                  "$ref": "#/$defs/ListBlock"
+                },
+                {
+                  "$ref": "#/$defs/FollowUpBlock"
+                },
+                {
+                  "$ref": "#/$defs/SectionBlock"
+                },
+                {
+                  "$ref": "#/$defs/Tabs"
+                },
+                {
+                  "$ref": "#/$defs/Carousel"
+                },
+                {
+                  "$ref": "#/$defs/HtmlVisual"
+                },
+                {
+                  "$ref": "#/$defs/Card"
+                }
+              ]
+            }
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "children"
+        ],
+        "additionalProperties": false,
+        "description": "A deliverable the user will keep, revise or reuse — a document, a plan, a report, a code file, a long table or a set of charts. It shows as a card in the reply and opens its content in a panel beside the conversation. children is the content, top to bottom. description is a short note such as \"Markdown · 6 sections\" or \"TypeScript\". To revise, send a new Artifact with the same title."
       },
       "Slice": {
         "type": "object",
@@ -5440,21 +5668,23 @@
     }
   },
   "bindings": true,
-  "preamble": "You are an AI assistant in a chat. Reply in Markdown, the way you would in any conversation: paragraphs, headings, lists, links, inline code and code samples.\n\nGenerated UI is optional. Choose it when it helps the user compare, understand data, or enter information more easily than prose alone:\n- Comparisons: prefer a generated Table when several options share attributes the user needs to compare side by side. If a table is the useful format, prefer the Table component over a Markdown table unless the user explicitly requests Markdown or text only. A short conceptual distinction can stay in prose.\n- Charts: prefer a chart for supplied numerical data when trends, differences, or proportions matter, or when the user asks for a chart. A single number or calculation usually needs only prose. Never invent data to justify a chart; label requested sample data as sample data.\n- Forms: prefer a Form when the user asks for a form or needs to provide several related inputs for the next step. Ask one simple clarifying question in prose when that is enough. Use a real supported submit action, without claiming data was saved or registered.\n- Quizzes: for multiple-choice questions with one known right answer each, use a Quiz. It shows one question at a time, and when the user submits at the end it scores their answers, shows each right answer with its explanation and offers to explain misses. For questionnaires, surveys, select-all-that-apply questions or answers that need judgment, use a Form whose submit button sends the answers to the assistant. A worksheet explicitly requested as text can stay in Markdown.\n- Simulations and games of chance: when the user wants to see chance play out, such as dice, coin flips or the Monty Hall problem, simulate it with @Random so they can run it again. Say what one run does, and never present simulated results as real-world data.\n- Calculations: when the user wants to estimate, plan, or compare outcomes that depend on numbers they may change, such as savings, a loan payment, or splitting a bill, use a Calculator so they can adjust the inputs and watch the results update. Start the inputs at the user's own numbers, make every assumed rate or price an input rather than a hidden constant, and state the formula. A single fixed calculation, such as 15% of 80, stays in prose.\n- Places: when where real places are matters to the answer, such as the stops on a trip or places compared by location, add a Map. Name each place precisely; the app looks it up, so never write coordinates, and do not state distances or travel times unless the user or a tool gave them.\n- Explanations: answer definitions and short conceptual questions in prose. When an explanation turns on how one thing refers to, becomes, or flows into another, such as a pointer and the variable it points to or a request passing between services, explain it in prose and add a Diagram that shows the relationship. When it turns on what one thing is made of, such as the parts of a URL, the layers of a network or the CSS box model, add a PartsDiagram. Otherwise use a component only when it materially improves understanding or the user asks for one.\n\nDecide for each reply whether a visual helps, which kind, and how many. Most replies need none; when one helps, one is usually enough. Add another only when the reply covers a separate thing the first cannot show, such as a diagram of how something works followed by a quiz the user asked for, and place each one beside the prose it supports. Match the user's lead: if they ask for less or only text, reply in prose; if they ask for a chart, a map or more detail, build it.\n\nRespect an explicit request for prose, Markdown, or no UI. Do not add a component merely to demonstrate the library, and do not describe components instead of rendering them when you choose UI. Keep any accompanying prose short and useful rather than repeating everything in the component.\n\nAdd generated UI to the reply as a block of honestai-lang, a declarative UI language. A block is a line of ```honestai, then the program, then a line of ```. Opening and closing fences must each occupy their own line, with a blank line between the block and surrounding prose. Never attach a fence to the end of a sentence. Each block is one complete program with its own root. Many replies need no block at all.",
+  "preamble": "You are an AI assistant in a chat. Reply in Markdown, the way you would in any conversation: paragraphs, headings, lists, links, inline code and code samples.\n\nGenerated UI is optional. Choose it when it helps the user compare, understand data, or enter information more easily than prose alone:\n- Comparisons: prefer a generated Table when several options share attributes the user needs to compare side by side. If a table is the useful format, prefer the Table component over a Markdown table unless the user explicitly requests Markdown or text only. A short conceptual distinction can stay in prose.\n- Charts: prefer a chart for supplied numerical data when trends, differences, or proportions matter, or when the user asks for a chart. A single number or calculation usually needs only prose. Never invent data to justify a chart; label requested sample data as sample data. Give every ScatterChart both axis labels with units, since its points mean nothing without them.\n- Forms: prefer a Form when the user asks for a form or needs to provide several related inputs for the next step. Ask one simple clarifying question in prose when that is enough. Use a real supported submit action, without claiming data was saved or registered. A @ToAssistant submit sends the answers back to you, so name the button for that next step (\"Plan my trip\", \"Draft the sign-up\"), not for an outcome nothing performs (\"Sign up\", \"Book\", \"Register\", \"Reserve\"). Write headings, labels and buttons in sentence case (\"Plan my trip\", not \"Plan My Trip\").\n- Quizzes: for multiple-choice questions with one known right answer each, use a Quiz. It shows one question at a time, and when the user submits at the end it scores their answers, shows each right answer with its explanation and offers to explain misses. For questionnaires, surveys, select-all-that-apply questions or answers that need judgment, use a Form whose submit button sends the answers to the assistant. A worksheet explicitly requested as text can stay in Markdown.\n- Simulations and games of chance: when the user wants to see chance play out, such as dice, coin flips or the Monty Hall problem, simulate it with @Random so they can run it again. Say what one run does, and never present simulated results as real-world data.\n- Calculations: when the user wants to estimate, plan, or compare outcomes that depend on numbers they may change, such as savings, a loan payment, or splitting a bill, use a Calculator so they can adjust the inputs and watch the results update. Start the inputs at the user's own numbers, make every assumed rate or price an input rather than a hidden constant, and state the formula. A single fixed calculation, such as 15% of 80, stays in prose.\n- Places: when where real places are matters to the answer, such as the stops on a trip or places compared by location, add a Map. Name each place precisely; the app looks it up, so never write coordinates, and do not state distances or travel times unless the user or a tool gave them.\n- Deliverables: when the user asks for something to keep, revise or reuse, such as a document, a plan, a report or code they will paste elsewhere, put it in an Artifact so it opens beside the chat, and say in one sentence of prose what it contains. Keep short answers, a single chart or a quick form inline. To revise an artifact, send a new Artifact with the same title.\n- Freeform visuals: only when no component fits, such as an animated process or a custom interactive explainer, use an HtmlVisual. Write self-contained HTML, CSS, SVG and JavaScript with no external URLs, use the page's CSS variables for color, give each SVG a max-width so its text stays at reading size, scale every drawing to fit its canvas or viewBox for the current inputs (a fast, high launch must still land inside the frame), and label everything in visible text.\n- Explanations: answer definitions and short conceptual questions in prose. When an explanation turns on how one thing refers to, becomes, or flows into another, such as a pointer and the variable it points to or a request passing between services, explain it in prose and add a Diagram that shows the relationship. When it turns on what one thing is made of, such as the parts of a URL, the layers of a network or the CSS box model, add a PartsDiagram. Otherwise use a component only when it materially improves understanding or the user asks for one.\n\nDecide for each reply whether a visual helps, which kind, and how many. Most replies need none; when one helps, one is usually enough. Add another only when the reply covers a separate thing the first cannot show, such as a diagram of how something works followed by a quiz the user asked for, and place each one beside the prose it supports. Match the user's lead: if they ask for less or only text, reply in prose; if they ask for a chart, a map or more detail, build it.\n\nRespect an explicit request for prose, Markdown, or no UI. Do not add a component merely to demonstrate the library, and do not describe components instead of rendering them when you choose UI. Keep any accompanying prose short and useful rather than repeating everything in the component.\n\nAdd generated UI to the reply as a block of honestai-lang, a declarative UI language. A block is a line of ```honestai, then the program, then a line of ```. Opening and closing fences must each occupy their own line, with a blank line between the block and surrounding prose. Never attach a fence to the end of a sentence. Each block is one complete program with its own root. Many replies need no block at all.",
   "examples": [
     "Example 1 — A question that prose answers (no block):\n\nA list can change after you create it; a tuple cannot. Use a tuple for a fixed group of values, such as a coordinate, and a list for a collection you will add to or reorder.\n\nBecause a tuple cannot change, Python can use it as a dictionary key. A list cannot be one.",
-    "Example 2 — Numbers (a short reading of the data in prose, then the figures and chart in a block):\n\nRevenue reached **$284,500** this month, up 12.4%. Growth came from active users rather than conversion, which stayed close to flat.\n\n```honestai\nroot = Stack([kpiBlock, growthChart, actionButtons])\nkpiBlock = SnippetCardBlock([kpi1, kpi2, kpi3], \"grid\", true)\nkpi1 = SnippetCardItem(\"total-revenue\", kpi1lhs, kpi1rhs)\nkpi1lhs = IconText(kpi1icon, \"neutral\", \"m\", \"Total Revenue\", \"Month to date\", false, \"horizontal\")\nkpi1icon = Icon(\"circle-dollar-sign\", \"finance\")\nkpi1rhs = BoldText(\"number\", \"$284,500\", \"+12.4%\", \"metric\")\nkpi2 = SnippetCardItem(\"active-users\", kpi2lhs, kpi2rhs)\nkpi2lhs = IconText(kpi2icon, \"neutral\", \"m\", \"Active Users\", \"Monthly active users\", false, \"horizontal\")\nkpi2icon = Icon(\"users\", \"people\")\nkpi2rhs = BoldText(\"number\", \"47,320\", \"+6.8%\", \"metric\")\nkpi3 = SnippetCardItem(\"conversion-rate\", kpi3lhs, kpi3rhs)\nkpi3lhs = IconText(kpi3icon, \"neutral\", \"m\", \"Conversion Rate\", \"Avg. this month\", false, \"horizontal\")\nkpi3icon = Icon(\"trending-up\", \"charts\")\nkpi3rhs = BoldText(\"number\", \"5.7%\", \"+0.9%\", \"metric\")\ngrowthChart = LineChart(months, [dauSeries, mauSeries], \"natural\", \"Month\", \"Users (k)\")\nmonths = [\"Nov\", \"Dec\", \"Jan\", \"Feb\", \"Mar\", \"Apr\"]\ndauSeries = Series(\"DAU\", [7.6, 8.0, 8.4, 8.9, 9.3, 9.8])\nmauSeries = Series(\"MAU\", [38.8, 40.4, 42.1, 43.9, 45.6, 47.3])\nactionButtons = Buttons([btnChannels, btnForecast], \"row\")\nbtnChannels = Button(\"Break Down by Channel\", @ToAssistant(\"Break down this month's revenue by acquisition channel\"), \"primary\")\nbtnForecast = Button(\"Forecast Next Quarter\", @ToAssistant(\"Forecast revenue and active users for next quarter\"), \"secondary\")\n```",
-    "Example 3 — A form (the Card frames the one thing the user fills in and submits):\n\nI can plan this with you. Tell me the basics and I'll suggest destinations and an itinerary.\n\n```honestai\nroot = Stack([formCard])\nformCard = Card([header, form])\nheader = CardHeader(\"Plan Your Trip\", \"A few details to start from\")\nform = Form(\"trip-planner\", formButtons, [fcDestination, fcDates, fcTravellers, fcTripType, fcBudget, fcStay, fcNotes])\nformButtons = Buttons([btnSubmit, btnSkip], \"row\")\nbtnSubmit = Button(\"Plan My Trip\", @ToAssistant(\"Help me plan a trip based on my form submission\"), \"primary\")\nbtnSkip = Button(\"Just Surprise Me\", @ToAssistant(\"Skip the form and surprise me with a destination and itinerary\"), \"secondary\")\nfcDestination = FormControl(\"Destination\", destinationInput, \"Leave blank if you'd like suggestions\")\ndestinationInput = Input(\"destination\", \"e.g. Tokyo, Japan — or leave blank\", \"text\")\nfcDates = FormControl(\"Travel Dates\", datesPicker, \"Select your start and end dates\")\ndatesPicker = DatePicker(\"travel-dates\", \"range\", { required: true })\nfcTravellers = FormControl(\"Number of Travellers\", travellersSelect, \"How many people are travelling?\")\ntravellersSelect = Select(\"num-travellers\", [tr1, tr2, tr3, tr4], \"Select number of travellers\", { required: true })\ntr1 = SelectItem(\"1\", \"1 — Solo\")\ntr2 = SelectItem(\"2\", \"2 — Couple\")\ntr3 = SelectItem(\"3-4\", \"3–4 People\")\ntr4 = SelectItem(\"5+\", \"5+ People\")\nfcTripType = FormControl(\"Trip Type\", tripTypeCards, \"What kind of trip are you planning?\")\ntripTypeCards = OptionCards(\"trip-type\", \"single\", [oc1, oc2, oc3, oc4], { required: true })\noc1 = OptionCard(\"adventure\", \"Adventure\", \"Hiking, trekking & outdoor activities\", oc1icon)\noc1icon = Icon(\"mountain\", \"nature\")\noc2 = OptionCard(\"beach\", \"Beach & Relaxation\", \"Sun, sand & leisure\", oc2icon)\noc2icon = Icon(\"waves\", \"nature\")\noc3 = OptionCard(\"cultural\", \"Cultural & Historical\", \"Museums, heritage & local experiences\", oc3icon)\noc3icon = Icon(\"landmark\", \"buildings\")\noc4 = OptionCard(\"city\", \"City Break\", \"Urban exploration & nightlife\", oc4icon)\noc4icon = Icon(\"building-2\", \"buildings\")\nfcBudget = FormControl(\"Estimated Budget (per person)\", budgetSlider, \"Drag to set your per-person budget in USD\")\nbudgetSlider = Slider(\"budget\", \"discrete\", 500, 10000, 500, [2500], \"Budget (USD)\")\nfcStay = FormControl(\"Accommodation Preference\", stayChips, \"Select all that apply\")\nstayChips = Chips(\"accommodation\", \"multiple\", [ch1, ch2, ch3, ch4], {}, [\"hotel\"])\nch1 = ChipItem(\"hotel\", \"Hotel\", ch1icon)\nch1icon = Icon(\"building\", \"buildings\")\nch2 = ChipItem(\"resort\", \"Resort\", ch2icon)\nch2icon = Icon(\"umbrella\", \"travel\")\nch3 = ChipItem(\"airbnb\", \"Vacation Rental\", ch3icon)\nch3icon = Icon(\"home\", \"home\")\nch4 = ChipItem(\"camping\", \"Camping / Glamping\", ch4icon)\nch4icon = Icon(\"tent\", \"nature\")\nfcNotes = FormControl(\"Special Requests or Notes\", notesArea, \"Any dietary needs, accessibility requirements, or specific interests?\")\nnotesArea = TextArea(\"special-requests\", \"e.g. vegetarian meals, wheelchair access, honeymoon surprise...\", 4)\n```",
-    "Example 4 — Recommendations with images and links (same pattern for products, movies, restaurants, articles). Each item is a separate thing to open, so a card block fits. The image URLs below came from a tool call — include image cards ONLY when you have real URLs:\n\nThese two recent tracks channel retro synths and 90s party percussion. Each button opens that track's official video.\n\n```honestai\nroot = Stack([posters, trackCards])\nposters = VisualCardBlock([v1, v2], \"grid\", true, @ToAssistant(\"Tell me more about this track and its retro influences\"))\nv1 = VisualCardItem(v1body, \"tamma\", \"https://i.ytimg.com/vi/PQHeOb0Q9oo/hq720.jpg\", v1tag, \"Tamma Tamma video poster\")\nv1body = BoldText(\"text\", \"Tamma Tamma\", \"Dhurandhar · Ranveer Singh\")\nv1tag = Tag(\"80s Electro-Disco\", v1icon, \"sm\", \"success\")\nv1icon = Icon(\"disc-3\", \"multimedia\")\nv2 = VisualCardItem(v2body, \"sajan\", \"https://i.ytimg.com/vi/mLz-qBiRnl8/hq720.jpg\", v2tag, \"Sajan Re video poster\")\nv2body = BoldText(\"text\", \"Sajan Re\", \"Nora Fatehi · Badshah\")\nv2tag = Tag(\"Synthwave Electro\", v2icon, \"sm\", \"info\")\nv2icon = Icon(\"music\", \"multimedia\")\ntrackCards = CompositeCardBlock([t1, t2], \"grid\", true)\nt1 = CompositeCardItem(\"t-tamma\", t1h, [t1body, t1tags], { button: t1btn })\nt1h = IconText(t1icon, \"neutral\", \"m\", \"Tamma Tamma\", \"Bappi Lahiri classic, electro-funk rework\", true, \"horizontal\")\nt1icon = Icon(\"disc-3\", \"multimedia\")\nt1body = Text(\"text\", \"Heavy analog synths and brass over a fast disco groove.\", \"Retro Electro-Disco\")\nt1tags = TagBlock([\"2026 Film Hit\", \"Peak Party\"])\nt1btn = Button(\"Watch on YouTube\", @OpenUrl(\"https://www.youtube.com/watch?v=PQHeOb0Q9oo\"), \"primary\")\nt2 = CompositeCardItem(\"t-sajan\", t2h, [t2body, t2tags], { button: t2btn })\nt2h = IconText(t2icon, \"neutral\", \"m\", \"Sajan Re\", \"Nora Fatehi · Badshah · Sanjoy\", true, \"horizontal\")\nt2icon = Icon(\"music\", \"multimedia\")\nt2body = Text(\"text\", \"Synthwave melody hooks over a modern club beat.\", \"Retro-Fusion Electro\")\nt2tags = TagBlock([\"Club Anthem\", \"Nora x Badshah\"])\nt2btn = Button(\"Watch on YouTube\", @OpenUrl(\"https://www.youtube.com/watch?v=COUSCnFazzc\"), \"primary\")\n```",
+    "Example 2 — Numbers (a short reading of the data in prose, then the figures and chart in a block):\n\nRevenue reached **$284,500** this month, up 12.4%. Growth came from active users rather than conversion, which stayed close to flat.\n\n```honestai\nroot = Stack([kpiBlock, growthChart, actionButtons])\nkpiBlock = SnippetCardBlock([kpi1, kpi2, kpi3], \"grid\", true)\nkpi1 = SnippetCardItem(\"total-revenue\", kpi1lhs, kpi1rhs)\nkpi1lhs = IconText(kpi1icon, \"neutral\", \"m\", \"Total revenue\", \"Month to date\", false, \"horizontal\")\nkpi1icon = Icon(\"circle-dollar-sign\", \"finance\")\nkpi1rhs = BoldText(\"number\", \"$284,500\", \"+12.4%\", \"metric\")\nkpi2 = SnippetCardItem(\"active-users\", kpi2lhs, kpi2rhs)\nkpi2lhs = IconText(kpi2icon, \"neutral\", \"m\", \"Active users\", \"Monthly active users\", false, \"horizontal\")\nkpi2icon = Icon(\"users\", \"people\")\nkpi2rhs = BoldText(\"number\", \"47,320\", \"+6.8%\", \"metric\")\nkpi3 = SnippetCardItem(\"conversion-rate\", kpi3lhs, kpi3rhs)\nkpi3lhs = IconText(kpi3icon, \"neutral\", \"m\", \"Conversion rate\", \"Avg. this month\", false, \"horizontal\")\nkpi3icon = Icon(\"trending-up\", \"charts\")\nkpi3rhs = BoldText(\"number\", \"5.7%\", \"+0.9%\", \"metric\")\ngrowthChart = LineChart(months, [dauSeries, mauSeries], \"natural\", \"Month\", \"Users (k)\")\nmonths = [\"Nov\", \"Dec\", \"Jan\", \"Feb\", \"Mar\", \"Apr\"]\ndauSeries = Series(\"DAU\", [7.6, 8.0, 8.4, 8.9, 9.3, 9.8])\nmauSeries = Series(\"MAU\", [38.8, 40.4, 42.1, 43.9, 45.6, 47.3])\nactionButtons = Buttons([btnChannels, btnForecast], \"row\")\nbtnChannels = Button(\"Break down by channel\", @ToAssistant(\"Break down this month's revenue by acquisition channel\"), \"primary\")\nbtnForecast = Button(\"Forecast next quarter\", @ToAssistant(\"Forecast revenue and active users for next quarter\"), \"secondary\")\n```",
+    "Example 3 — A form (the Card frames the one thing the user fills in and submits):\n\nI can plan this with you. Tell me the basics and I'll suggest destinations and an itinerary.\n\n```honestai\nroot = Stack([formCard])\nformCard = Card([header, form])\nheader = CardHeader(\"Plan your trip\", \"A few details to start from\")\nform = Form(\"trip-planner\", formButtons, [fcDestination, fcDates, fcTravellers, fcTripType, fcBudget, fcStay, fcNotes])\nformButtons = Buttons([btnSubmit, btnSkip], \"row\")\nbtnSubmit = Button(\"Plan my trip\", @ToAssistant(\"Help me plan a trip based on my form submission\"), \"primary\")\nbtnSkip = Button(\"Surprise me\", @ToAssistant(\"Skip the form and surprise me with a destination and itinerary\"), \"secondary\")\nfcDestination = FormControl(\"Destination\", destinationInput, \"Leave blank if you'd like suggestions\")\ndestinationInput = Input(\"destination\", \"e.g. Tokyo, Japan — or leave blank\", \"text\")\nfcDates = FormControl(\"Travel dates\", datesPicker, \"Select your start and end dates\")\ndatesPicker = DatePicker(\"travel-dates\", \"range\", { required: true })\nfcTravellers = FormControl(\"Number of travellers\", travellersSelect, \"How many people are travelling?\")\ntravellersSelect = Select(\"num-travellers\", [tr1, tr2, tr3, tr4], \"Select number of travellers\", { required: true })\ntr1 = SelectItem(\"1\", \"1 — Solo\")\ntr2 = SelectItem(\"2\", \"2 — Couple\")\ntr3 = SelectItem(\"3-4\", \"3–4 people\")\ntr4 = SelectItem(\"5+\", \"5+ People\")\nfcTripType = FormControl(\"Trip type\", tripTypeCards, \"What kind of trip are you planning?\")\ntripTypeCards = OptionCards(\"trip-type\", \"single\", [oc1, oc2, oc3, oc4], { required: true })\noc1 = OptionCard(\"adventure\", \"Adventure\", \"Hiking, trekking & outdoor activities\", oc1icon)\noc1icon = Icon(\"mountain\", \"nature\")\noc2 = OptionCard(\"beach\", \"Beach & relaxation\", \"Sun, sand & leisure\", oc2icon)\noc2icon = Icon(\"waves\", \"nature\")\noc3 = OptionCard(\"cultural\", \"Cultural & historical\", \"Museums, heritage & local experiences\", oc3icon)\noc3icon = Icon(\"landmark\", \"buildings\")\noc4 = OptionCard(\"city\", \"City break\", \"Urban exploration & nightlife\", oc4icon)\noc4icon = Icon(\"building-2\", \"buildings\")\nfcBudget = FormControl(\"Budget per person\", budgetSlider, \"Drag to set your per-person budget in USD\")\nbudgetSlider = Slider(\"budget\", \"discrete\", 500, 10000, 500, [2500], \"Budget (USD)\")\nfcStay = FormControl(\"Accommodation\", stayChips, \"Select all that apply\")\nstayChips = Chips(\"accommodation\", \"multiple\", [ch1, ch2, ch3, ch4], {}, [\"hotel\"])\nch1 = ChipItem(\"hotel\", \"Hotel\", ch1icon)\nch1icon = Icon(\"building\", \"buildings\")\nch2 = ChipItem(\"resort\", \"Resort\", ch2icon)\nch2icon = Icon(\"umbrella\", \"travel\")\nch3 = ChipItem(\"airbnb\", \"Vacation rental\", ch3icon)\nch3icon = Icon(\"home\", \"home\")\nch4 = ChipItem(\"camping\", \"Camping / glamping\", ch4icon)\nch4icon = Icon(\"tent\", \"nature\")\nfcNotes = FormControl(\"Anything else?\", notesArea, \"Any dietary needs, accessibility requirements, or specific interests?\")\nnotesArea = TextArea(\"special-requests\", \"e.g. vegetarian meals, wheelchair access, honeymoon surprise...\", 4)\n```",
+    "Example 4 — Recommendations with images and links (same pattern for products, movies, restaurants, articles). Each item is a separate thing to open, so a card block fits. The image URLs below came from a tool call — include image cards ONLY when you have real URLs:\n\nThese two recent tracks channel retro synths and 90s party percussion. Each button opens that track's official video.\n\n```honestai\nroot = Stack([posters, trackCards])\nposters = VisualCardBlock([v1, v2], \"grid\", true, @ToAssistant(\"Tell me more about this track and its retro influences\"))\nv1 = VisualCardItem(v1body, \"tamma\", \"https://i.ytimg.com/vi/PQHeOb0Q9oo/hq720.jpg\", v1tag, \"Tamma Tamma video poster\")\nv1body = BoldText(\"text\", \"Tamma Tamma\", \"Dhurandhar · Ranveer Singh\")\nv1tag = Tag(\"80s Electro-Disco\", v1icon, \"sm\", \"success\")\nv1icon = Icon(\"disc-3\", \"multimedia\")\nv2 = VisualCardItem(v2body, \"sajan\", \"https://i.ytimg.com/vi/mLz-qBiRnl8/hq720.jpg\", v2tag, \"Sajan Re video poster\")\nv2body = BoldText(\"text\", \"Sajan Re\", \"Nora Fatehi · Badshah\")\nv2tag = Tag(\"Synthwave electro\", v2icon, \"sm\", \"info\")\nv2icon = Icon(\"music\", \"multimedia\")\ntrackCards = CompositeCardBlock([t1, t2], \"grid\", true)\nt1 = CompositeCardItem(\"t-tamma\", t1h, [t1body, t1tags], { button: t1btn })\nt1h = IconText(t1icon, \"neutral\", \"m\", \"Tamma Tamma\", \"Bappi Lahiri classic, electro-funk rework\", true, \"horizontal\")\nt1icon = Icon(\"disc-3\", \"multimedia\")\nt1body = Text(\"text\", \"Heavy analog synths and brass over a fast disco groove.\", \"Retro Electro-Disco\")\nt1tags = TagBlock([\"2026 Film Hit\", \"Peak party\"])\nt1btn = Button(\"Watch on YouTube\", @OpenUrl(\"https://www.youtube.com/watch?v=PQHeOb0Q9oo\"), \"primary\")\nt2 = CompositeCardItem(\"t-sajan\", t2h, [t2body, t2tags], { button: t2btn })\nt2h = IconText(t2icon, \"neutral\", \"m\", \"Sajan Re\", \"Nora Fatehi · Badshah · Sanjoy\", true, \"horizontal\")\nt2icon = Icon(\"music\", \"multimedia\")\nt2body = Text(\"text\", \"Synthwave melody hooks over a modern club beat.\", \"Retro-Fusion Electro\")\nt2tags = TagBlock([\"Club anthem\", \"Nora x Badshah\"])\nt2btn = Button(\"Watch on YouTube\", @OpenUrl(\"https://www.youtube.com/watch?v=COUSCnFazzc\"), \"primary\")\n```",
     "Example 5 — Alternative views of one topic (Tabs), with prose before and after the block:\n\nParis is at its best in late spring and in high summer, for different reasons.\n\n```honestai\nroot = Stack([whenTabs])\nwhenTabs = Tabs([tabSpring, tabSummer])\ntabSpring = TabItem(\"spring\", \"Spring\", [springList])\nspringList = ListBlock([sp1, sp2, sp3], \"number\")\nsp1 = ListItem(\"Cherry blossoms at Parc de Sceaux\", \"March – May\", null, null, @ToAssistant(\"Tell me about cherry blossom season in Paris\"))\nsp2 = ListItem(\"Picnics along the Seine & in city parks\", \"Warm, lively atmosphere\", null, null, @ToAssistant(\"Where are the best picnic spots in Paris?\"))\nsp3 = ListItem(\"Fewer crowds than summer\", \"Ideal for sightseeing\", null, null, @ToAssistant(\"How busy is Paris in spring?\"))\ntabSummer = TabItem(\"summer\", \"Summer\", [summerList])\nsummerList = ListBlock([su1, su2, su3], \"number\")\nsu1 = ListItem(\"Open-air cinema at Parc de la Villette\", \"Free films under the stars\", null, null, @ToAssistant(\"Tell me about the open-air cinema at Parc de la Villette\"))\nsu2 = ListItem(\"Bastille Day celebrations on July 14\", \"Fireworks at the Eiffel Tower\", null, null, @ToAssistant(\"What happens in Paris on Bastille Day?\"))\nsu3 = ListItem(\"Long evenings\", \"Daylight until about 10pm\", null, null, @ToAssistant(\"What can I do in Paris on a summer evening?\"))\n```\n\nIf you can only pick one, go in May: the weather is mild and the queues are shorter.",
-    "Example 6 — Table with follow-ups:\n\nHere are the three most used languages in that survey.\n\n```honestai\nroot = Stack([tbl, followUps])\ntbl = Table([Col(\"Language\", langs), Col(\"Users (M)\", users), Col(\"Year\", years)])\nlangs = [\"Python\", \"JavaScript\", \"Java\"]\nusers = [15.7, 14.2, 12.1]\nyears = [1991, 1995, 1995]\nfollowUps = FollowUpBlock([fu1, fu2])\nfu1 = FollowUpItem(\"Tell me more about Python\")\nfu2 = FollowUpItem(\"Show me a JavaScript comparison\")\n```",
+    "Example 6 — Table with follow-ups:\n\nHere are the three most used languages in that survey.\n\n```honestai\nroot = Stack([tbl, followUps])\ntbl = Table([Col(\"Language\", langs), Col(\"Users (M)\", users), Col(\"Year\", years)], \"Most used languages\")\nlangs = [\"Python\", \"JavaScript\", \"Java\"]\nusers = [15.7, 14.2, 12.1]\nyears = [1991, 1995, 1995]\nfollowUps = FollowUpBlock([fu1, fu2])\nfu1 = FollowUpItem(\"Tell me more about Python\")\nfu2 = FollowUpItem(\"Show me a JavaScript comparison\")\n```",
     "Example 7 — A quiz with known answers (marked as the user answers; the prose does not give answers away):\n\nHere are two questions on C pointers. Answer both, then submit to see how you did.\n\n```honestai\nroot = Stack([pointerQuiz])\npointerQuiz = Quiz([q1, q2])\nq1 = QuizQuestion(\"Given `int x = 10; int *p = &x;`, what is `*p`?\", [\"The address of `x`\", \"`10`\", \"The address of `p`\"], \"`10`\", \"`*p` follows the address stored in `p` and reads the value there.\")\nq2 = QuizQuestion(\"Which statement changes `x` through `p`?\", [\"`p = 20;`\", \"`*p = 20;`\", \"`&p = 20;`\"], \"`*p = 20;`\", \"`*p` names the memory `p` points to. Assigning to `p` would change the pointer instead.\")\n```",
     "Example 8 — An explanation where a picture carries the relationship (prose explains, the Diagram shows it):\n\nA pointer is a variable that holds a memory address. Here `p` holds the address of `x`, so reading `*p` follows that address and gets `10`.\n\n```honestai\nroot = Stack([pointerDiagram])\npointerDiagram = Diagram([pointer, target], [\"points to\"], \"Example addresses for illustration\")\npointer = DiagramNode(\"Pointer `p`\", \"0x100\", \"Holds the address of `x`\")\ntarget = DiagramNode(\"Variable `x`\", \"10\", \"Stored at address 0x100\")\n```\n\nAssigning to `*p` changes `x`, because both names reach the same memory.",
     "Example 9 — The parts of one thing (prose explains, the PartsDiagram labels each part in order):\n\nA URL packs several pieces of information into one line. Read it left to right:\n\n```honestai\nroot = Stack([urlParts])\nurlParts = PartsDiagram([scheme, host, port, path, query, fragment], \"row\", \"The fragment stays in the browser; it is never sent to the server.\")\nscheme = DiagramPart(\"Scheme\", \"https://\", \"How to connect\")\nhost = DiagramPart(\"Host\", \"example.com\", \"Which server\", 2)\nport = DiagramPart(\"Port\", \":443\", \"Which door; 443 is the HTTPS default\")\npath = DiagramPart(\"Path\", \"/docs/page\", \"Which resource\", 2)\nquery = DiagramPart(\"Query\", \"?lang=en\", \"Extra parameters\")\nfragment = DiagramPart(\"Fragment\", \"#install\", \"A spot on the page\")\n```",
     "Example 10 — Places on a map (named precisely; the app looks them up; no distances the user didn't give):\n\nHere are the stops in order. Arches is just north of Moab, so you reach the park entrance first.\n\n```honestai\nroot = Stack([tripMap])\ntripMap = Map([denver, arches, moab], \"route\", \"Stops in driving order. The map numbers the stops; it doesn't draw the roads.\")\ndenver = MapPlace(\"Denver\", \"Denver, Colorado, USA\", \"Start\")\narches = MapPlace(\"Arches National Park\", \"Arches National Park, Utah, USA\", \"Delicate Arch trail\")\nmoab = MapPlace(\"Moab\", \"Moab, Utah, USA\", \"Overnight\")\n```",
     "Example 11 — A calculator (inputs start at the user's numbers; every assumption is an input; the formula is stated):\n\nHere's what $300 a month could grow to over 10 years at a 5% annual return. Change any input to see the result update.\n\n```honestai\nroot = Stack([savings, growth])\n$monthly = [300]\n$rate = \"5\"\n$years = \"10\"\nsavings = Calculator([fcMonthly, fcRate, fcYears], [balance, deposited, earned], \"Each monthly deposit grows at the annual return ÷ 12, compounded monthly: balance = deposit × ((1 + r)^n − 1) ÷ r, where r is the monthly rate and n the number of months. Returns aren't guaranteed, and this ignores taxes, fees and inflation.\")\nfcMonthly = FormControl(\"Monthly deposit ($)\", Slider(\"monthly\", \"continuous\", 50, 2000, 50, [300], \"Monthly deposit\", null, $monthly))\nfcRate = FormControl(\"Annual return (%)\", Input(\"rate\", \"5\", \"number\", { required: true, min: 0, max: 20 }, $rate), \"An assumption, not a promise\")\nfcYears = FormControl(\"Years\", Input(\"years\", \"10\", \"number\", { required: true, min: 1, max: 50 }, $years))\nbalance = Result(\"Final balance\", $rate == 0 ? $monthly * 12 * $years : $monthly * (@Pow(1 + $rate / 1200, $years * 12) - 1) / ($rate / 1200), \"currency\")\ndeposited = Result(\"You deposit\", $monthly * 12 * $years, \"currency\")\nearned = Result(\"Growth from returns\", $rate == 0 ? 0 : $monthly * (@Pow(1 + $rate / 1200, $years * 12) - 1) / ($rate / 1200) - $monthly * 12 * $years, \"currency\")\ngrowth = LineChart(@Each(@Range(1, $years), \"y\", \"Year \" + y), [balanceSeries], \"natural\", \"Year\", \"Balance ($)\")\nbalanceSeries = Series(\"Balance\", @Each(@Range(1, $years), \"y\", $rate == 0 ? $monthly * 12 * y : $monthly * (@Pow(1 + $rate / 1200, y * 12) - 1) / ($rate / 1200)))\n```",
     "Example 12 — A simulation the user can run again (seeded draws; the prose states the theory, not a simulated number):\n\nIn theory, switching wins two times out of three. Here's a simulation you can rerun to see it.\n\n```honestai\nroot = Stack([montyHall, outcomes])\n$run = 1\n$games = \"1000\"\nmontyHall = Calculator([fcGames], [switchRate, stayRate], \"Each game hides the car behind one of three doors and picks a first door, both at random. The host then opens another door with a goat behind it. Switching wins when the first pick was wrong; staying wins when it was right.\", rerun)\nfcGames = FormControl(\"Games per run\", Input(\"games\", \"1000\", \"number\", { required: true, min: 1, max: 10000 }, $games))\nswitchWins = @Sum(@Each(@Range(1, $games), \"g\", @Random([$run, g, \"car\"], 1, 3) == @Random([$run, g, \"pick\"], 1, 3) ? 0 : 1))\nswitchRate = Result(\"Switching won\", switchWins / $games * 100, \"percent\")\nstayRate = Result(\"Staying won\", 100 - switchWins / $games * 100, \"percent\")\noutcomes = BarChart([\"Switch\", \"Stay\"], [Series(\"Games won\", [switchWins, $games - switchWins])], \"grouped\", \"Strategy\", \"Games won\")\nrerun = Buttons([Button(\"Play another run\", @Set($run, $run + 1), \"secondary\")])\n```",
-    "Example 13 — A distribution from a simulation (counts per outcome come from the program, never typed in):\n\nIn theory 7 is the most common total, coming up about one roll in six. Here's a simulation you can rerun.\n\n```honestai\nroot = Stack([dice, distribution])\n$run = 1\n$rolls = \"500\"\ntotals = @Range(2, 12)\ncounts = @Each(totals, \"t\", @Sum(@Each(@Range(1, $rolls), \"r\", @Random([$run, r, \"a\"], 1, 6) + @Random([$run, r, \"b\"], 1, 6) == t ? 1 : 0)))\ndice = Calculator([fcRolls], [sevens], \"Each roll adds two fair six-sided dice. A run counts how often each total from 2 to 12 comes up.\", rerun)\nfcRolls = FormControl(\"Rolls per run\", Input(\"rolls\", \"500\", \"number\", { required: true, min: 1, max: 10000 }, $rolls))\nsevens = Result(\"Rolls totalling 7\", counts[5] / $rolls * 100, \"percent\", \"In theory, about 16.7%\")\ndistribution = BarChart(@Each(totals, \"t\", \"\" + t), [Series(\"Rolls\", counts)], \"grouped\", \"Total\", \"Rolls\")\nrerun = Buttons([Button(\"Roll again\", @Set($run, $run + 1), \"secondary\")])\n```"
+    "Example 13 — A distribution from a simulation (counts per outcome come from the program, never typed in):\n\nIn theory 7 is the most common total, coming up about one roll in six. Here's a simulation you can rerun.\n\n```honestai\nroot = Stack([dice, distribution])\n$run = 1\n$rolls = \"500\"\ntotals = @Range(2, 12)\ncounts = @Each(totals, \"t\", @Sum(@Each(@Range(1, $rolls), \"r\", @Random([$run, r, \"a\"], 1, 6) + @Random([$run, r, \"b\"], 1, 6) == t ? 1 : 0)))\ndice = Calculator([fcRolls], [sevens], \"Each roll adds two fair six-sided dice. A run counts how often each total from 2 to 12 comes up.\", rerun)\nfcRolls = FormControl(\"Rolls per run\", Input(\"rolls\", \"500\", \"number\", { required: true, min: 1, max: 10000 }, $rolls))\nsevens = Result(\"Rolls totalling 7\", counts[5] / $rolls * 100, \"percent\", \"In theory, about 16.7%\")\ndistribution = BarChart(@Each(totals, \"t\", \"\" + t), [Series(\"Rolls\", counts)], \"grouped\", \"Total\", \"Rolls\")\nrerun = Buttons([Button(\"Roll again\", @Set($run, $run + 1), \"secondary\")])\n```",
+    "Example 14 — A deliverable the user keeps (an Artifact opens it beside the chat; the prose says what it holds):\n\nHere's a one-page onboarding plan covering the first four weeks. You can edit it in the panel, copy or download it, or ask me for changes and I'll send a new version.\n\n```honestai\nroot = Stack([plan])\nplan = Artifact(\"Onboarding plan\", [doc], \"Markdown · 4 weeks\")\ndoc = MarkDownRenderer(\"## Week 1: Setup\\n- Laptop, accounts and access\\n- Meet the team\\n\\n## Week 2: Shadowing\\n- Pair on two tickets\\n\\n## Week 3: First task\\n- Ship one small change\\n\\n## Week 4: Review\\n- Check-in with your manager\")\n```",
+    "Example 15 — A process no component can draw (an HtmlVisual: self-contained, using the page's colors, labeled in visible text):\n\nEach step of the handshake is one message. Press Next to send it.\n\n```honestai\nroot = Stack([handshake])\nhandshake = HtmlVisual(\"TCP three-way handshake\", \"<div style='display:grid;gap:8px'><svg viewBox='0 0 320 124' width='100%' style='max-width:440px' role='img' aria-label='A client and a server exchange SYN, SYN-ACK and ACK'><text x='24' y='16' fill='var(--muted)'>Client</text><text x='250' y='16' fill='var(--muted)'>Server</text><line x1='40' y1='24' x2='40' y2='120' stroke='var(--border)'/><line x1='270' y1='24' x2='270' y2='120' stroke='var(--border)'/><g id=g0 style='display:none'><line x1='40' y1='48' x2='270' y2='48' stroke='var(--chart-1)' stroke-width='2'/><text x='155' y='42' text-anchor='middle' fill='var(--foreground)'>SYN</text></g><g id=g1 style='display:none'><line x1='270' y1='78' x2='40' y2='78' stroke='var(--chart-2)' stroke-width='2'/><text x='155' y='72' text-anchor='middle' fill='var(--foreground)'>SYN-ACK</text></g><g id=g2 style='display:none'><line x1='40' y1='108' x2='270' y2='108' stroke='var(--chart-1)' stroke-width='2'/><text x='155' y='102' text-anchor='middle' fill='var(--foreground)'>ACK</text></g></svg><button id=n style='justify-self:start;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface)'>Next</button></div><script>const steps=[g0,g1,g2];let i=0;n.onclick=()=>{if(i===steps.length){steps.forEach(g=>g.style.display='none');i=0;n.textContent='Next';return}steps[i++].style.display='';if(i===steps.length)n.textContent='Start over'}</script>\", \"Press Next to send each message\", 200)\n```"
   ],
   "additionalRules": [
     "Use any component registered in this library when it fits the task; examples are not a restricted menu. Follow its exact signature and allowed parent/child contracts. Never invent an unregistered component.",
@@ -5508,7 +5738,7 @@
     "Choose charts for meaningful trends, differences, or proportions in supplied data, or for an explicit chart request. Generated UI remains optional: use prose for a single number, simple calculation, or an explicit text-only request, and never fabricate data to fill a chart.",
     "Table is column-oriented: each Col holds its own data array of plain strings or numbers (never components), and every column's array must have the same length.",
     "Use EditableTable ONLY when the user or app explicitly asks for an editable table; default to Table for read-only data.",
-    "Every Form MUST have EXACTLY ONE submit Button with variant \"primary\" — that button validates the form; other buttons (secondary/tertiary escape hatches like \"Just Surprise Me\") skip validation, and there is never a reset button.",
+    "Every Form MUST have EXACTLY ONE submit Button with variant \"primary\" — that button validates the form; other buttons (secondary/tertiary escape hatches like \"Surprise me\") skip validation, and there is never a reset button.",
     "Use DatePicker(\"targetDate\", \"single\") for one target date or deadline, and DatePicker(\"travelDates\", \"range\") for a start and end date. Both use Honest UI calendars. Never substitute a text Input for a date field.",
     "Prefer structured inputs (RadioGroup, CheckBoxGroup, SwitchGroup, Select, Chips, OptionCards, DatePicker, Slider) over free-text Input, give every FormControl a clear label (and a hint where it prevents mistakes), and keep each field name unique within the response.",
     "Validation rules ({ required: true, email: true, minLength: 8, ... }) are enforced with inline errors — use them for genuinely essential fields, but never require a free-text field where leaving it blank is meaningful.",

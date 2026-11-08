@@ -27,11 +27,11 @@ function Separator({
         variant === "tertiary" &&
           "bg-[var(--hui-color-border-base-tertiary)]",
         size === "small" &&
-          "data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-[var(--hui-space-6)] data-[orientation=vertical]:h-[var(--hui-space-6)] data-[orientation=vertical]:w-px",
+          "data-[orientation=horizontal]:h-[0.5px] data-[orientation=horizontal]:w-[var(--hui-space-6)] data-[orientation=vertical]:h-[var(--hui-space-6)] data-[orientation=vertical]:w-[0.5px]",
         size === "half" &&
-          "data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-1/2 data-[orientation=vertical]:h-1/2 data-[orientation=vertical]:w-px",
+          "data-[orientation=horizontal]:h-[0.5px] data-[orientation=horizontal]:w-1/2 data-[orientation=vertical]:h-1/2 data-[orientation=vertical]:w-[0.5px]",
         size === "full" &&
-          "data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
+          "data-[orientation=horizontal]:h-[0.5px] data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-[0.5px]",
         className
       )}
       {...props}

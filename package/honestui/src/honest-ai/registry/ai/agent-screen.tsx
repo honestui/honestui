@@ -21,12 +21,15 @@ export type AgentScreenStatus = "connecting" | "live" | "offline"
 
 export type AgentScreenLabels = {
   open: string
+  /** Shown beside the title while the screen is live. */
+  live: string
   connecting: string
   offline: string
 }
 
 export const defaultAgentScreenLabels: AgentScreenLabels = {
   open: "Open",
+  live: "Live",
   connecting: "Connecting to the agent's screen…",
   offline: "The agent's screen is not available.",
 }
@@ -92,14 +95,14 @@ function AgentScreen({
   const isLive = status === "live" && Boolean(src)
 
   const frame =
-    "relative block aspect-video w-full overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] p-0"
+    "relative block aspect-video w-full overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-neutral-primary)] p-0"
 
   return (
     <div
       data-slot="agent-screen"
       data-status={status}
       className={cn(
-        "flex w-full min-w-0 flex-col gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]",
+        "flex w-full min-w-0 flex-col gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}
@@ -118,10 +121,10 @@ function AgentScreen({
               mediaType={mediaType}
               alt={alt}
               isPreview
-              className="absolute inset-0 size-full object-cover"
+              className="absolute inset-0 size-full object-cover motion-safe:[transition:filter_var(--hui-duration-normal)_var(--hui-ease-out)] group-hover/screen:brightness-95"
             />
             {/* Always visible, so opening does not depend on hover. */}
-            <span className="absolute end-[var(--hui-space-3)] bottom-[var(--hui-space-3)] inline-flex items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] shadow-[var(--hui-shadow-soft)] [font-weight:var(--hui-font-weight-medium)]">
+            <span className="absolute end-[var(--hui-space-3)] bottom-[var(--hui-space-3)] inline-flex items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay)] [font-weight:var(--hui-font-weight-medium)]">
               <MaximizeIcon aria-hidden="true" className="size-3.5" />
               {labels.open}
             </span>
@@ -156,7 +159,25 @@ function AgentScreen({
           </p>
         </div>
       )}
-      <p className="m-0 truncate [font-weight:var(--hui-font-weight-medium)]">{title}</p>
+      <div className="flex min-w-0 items-baseline gap-[var(--hui-space-3)]">
+        {/* Two lines before truncating, so similar screens stay distinguishable. */}
+        <p className="m-0 line-clamp-2 min-w-0 flex-1 break-words [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]">
+          {title}
+        </p>
+        {isLive && (
+          <span
+            data-slot="agent-screen-live"
+            className="inline-flex shrink-0 items-center gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+          >
+            {/* A static mark; the word carries the meaning. */}
+            <span
+              aria-hidden="true"
+              className="size-1.5 shrink-0 rounded-[var(--hui-radius-full)] bg-[var(--hui-color-foreground-success-primary)] forced-colors:bg-[CanvasText]"
+            />
+            {labels.live}
+          </span>
+        )}
+      </div>
     </div>
   )
 }

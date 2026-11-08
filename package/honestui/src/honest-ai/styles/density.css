@@ -4,8 +4,8 @@
  * Set data-density="compact | default | comfortable" on any element. The
  * variables below are inherited custom properties, so the nearest scope wins
  * and a nested scope overrides its parent. Components read each variable with
- * a fallback to their own default, so they are unchanged outside a scope and
- * when this file is not loaded.
+ * a fallback to their own default, so they still render when this file is
+ * not loaded.
  */
 
 :root {
@@ -26,12 +26,15 @@
   --hui-density-group-gap: 1px;
 }
 
+/* Zero specificity, so a data-density value on the root element still wins.
+   Outside any scope, controls use the default level. */
+:where(:root),
 [data-density="default"] {
   --hui-control-height-sm: 28px;
-  --hui-control-height-lg: 40px;
-  --hui-density-control-height: var(--hui-space-9);
+  --hui-control-height-lg: 44px;
+  --hui-density-control-height: 36px;
   --hui-density-control-padding-block: var(--hui-space-3);
-  --hui-density-control-padding-inline: var(--hui-space-4);
+  --hui-density-control-padding-inline: 14px;
   --hui-density-item-padding-block: var(--hui-space-3);
   --hui-density-cell-padding-block: var(--hui-space-4);
   --hui-density-cell-padding-inline: var(--hui-space-3);

@@ -2,13 +2,12 @@
 
 import * as React from "react"
 import {
-  Check as CheckIcon,
+  ArrowUpRight as ArrowUpRightIcon,
   ChevronDown as ChevronDownIcon,
   CircleAlert as CircleAlertIcon,
-  Globe as GlobeIcon,
+  CircleCheck as CircleCheckIcon,
   LoaderCircle as LoaderCircleIcon,
   Search as SearchIcon,
-  Sparkles as SparklesIcon,
 } from "honestui/icons"
 
 import { cn } from "../../lib/utils.js"
@@ -22,10 +21,14 @@ import {
 export type ThinkingStatus = "running" | "done" | "error"
 
 const labelText =
-  "[font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+  "[font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
 
 const rowText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+
+/** A step uses the same row role as Tool Chips and Task Rows: a 14px label with a 12px detail. */
+const stepText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
 
 /** New rows fade in as the trace grows. Skipped when motion is reduced. */
 const rowEnter =
@@ -37,12 +40,18 @@ const statusTone: Record<ThinkingStatus, string> = {
   error: "text-[var(--hui-color-foreground-danger-primary)]",
 }
 
+/** A finished step uses the same check, in the same color, as a finished task in Task Rows. */
+const stepTone: Record<ThinkingStatus, string> = {
+  ...statusTone,
+  done: "text-[var(--hui-color-foreground-success-primary)]",
+}
+
 export type ThinkingStateProps = Omit<React.ComponentProps<"div">, "children"> & {
   /** What the agent is doing now. Drives the header treatment and the default open state. */
   status: ThinkingStatus
   /** The header text, such as "Thinking" or "Thought for 4 seconds". */
   label: string
-  /** Replaces the header icon. */
+  /** An icon before the label. The header shows none by default, and an alert icon on error. */
   icon?: React.ReactNode
   /** Controls whether the trace is shown. */
   open?: boolean
@@ -82,11 +91,15 @@ function ThinkingState({
     setAnnouncement(label)
   }, [label])
 
+  const headerIcon = status === "error" ? <CircleAlertIcon strokeWidth={1.5} strokeLinecap="round" /> : icon
+
   const header = (
     <>
-      <span aria-hidden="true" className={cn("flex shrink-0 [&_svg]:size-4", statusTone[status])}>
-        {status === "error" ? <CircleAlertIcon strokeWidth={1.5} strokeLinecap="round" /> : (icon ?? <SparklesIcon />)}
-      </span>
+      {headerIcon && (
+        <span aria-hidden="true" className={cn("flex shrink-0 [&_svg]:size-4", statusTone[status])}>
+          {headerIcon}
+        </span>
+      )}
       {status === "running" ? (
         <TextShimmer duration={1.6} className={labelText}>
           {label}
@@ -127,7 +140,7 @@ function ThinkingState({
         >
           <CollapsibleTrigger
             data-slot="thinking-state-trigger"
-            className="group/thinking -mx-[var(--hui-space-2)] flex w-fit max-w-full items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-2)] text-left outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)]"
+            className="group/thinking -mx-[var(--hui-space-2)] flex min-h-[var(--hui-control-height-sm,28px)] w-fit max-w-full cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-1)] text-left outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)]"
           >
             {header}
             <ChevronDownIcon
@@ -139,14 +152,14 @@ function ThinkingState({
             <ul
               role="list"
               data-slot="thinking-state-trace"
-              className="m-0 ms-[var(--hui-space-3)] mt-[var(--hui-space-2)] flex list-none flex-col gap-[var(--hui-space-2)] border-s border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-2)] ps-[var(--hui-space-4)]"
+              className="m-0 ms-[var(--hui-space-2)] mt-[var(--hui-space-1)] flex list-none flex-col gap-[var(--hui-space-3)] border-s-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-secondary)] py-[var(--hui-space-2)] ps-[var(--hui-space-4)]"
             >
               {children}
             </ul>
           </CollapsiblePanel>
         </Collapsible>
       ) : (
-        <div className="flex items-center gap-[var(--hui-space-3)] py-[var(--hui-space-2)]">{header}</div>
+        <div className="flex min-h-[var(--hui-control-height-sm,28px)] items-center gap-[var(--hui-space-3)] py-[var(--hui-space-1)]">{header}</div>
       )}
     </div>
   )
@@ -180,7 +193,7 @@ function ThinkingStep({
   ...props
 }: ThinkingStepProps) {
   const Icon =
-    status === "running" ? LoaderCircleIcon : status === "error" ? CircleAlertIcon : CheckIcon
+    status === "running" ? LoaderCircleIcon : status === "error" ? CircleAlertIcon : CircleCheckIcon
 
   return (
     <li
@@ -188,7 +201,7 @@ function ThinkingStep({
       data-status={status}
       className={cn(
         "flex min-w-0 items-start gap-[var(--hui-space-3)]",
-        rowText,
+        stepText,
         rowEnter,
         className
       )}
@@ -199,20 +212,24 @@ function ThinkingStep({
         strokeLinecap="round"
         aria-hidden="true"
         className={cn(
-          "mt-px size-3.5 shrink-0",
-          statusTone[status],
+          "mt-[3px] size-3.5 shrink-0",
+          stepTone[status],
           status === "running" && "motion-safe:animate-spin"
         )}
       />
-      <span className="min-w-0 break-words text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)]">
+      {/* Regular weight, so the trace stays under its medium header. */}
+      <span className="min-w-0 break-words text-[var(--hui-color-foreground-base-primary)]">
         {children}
         <span className="sr-only"> ({statusLabel ?? defaultStepStatusLabel[status]})</span>
       </span>
       {detail !== undefined && (
         <span
           className={cn(
-            "min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]",
-            detailIsCode && "font-mono [font-size:var(--hui-font-size-mono-mini)]"
+            // 2px down so the 16px detail sits on the first 20px label line.
+            "mt-[2px] min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]",
+            !detailIsCode && rowText,
+            detailIsCode &&
+              "font-mono [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-small)]"
           )}
         >
           {detail}
@@ -287,16 +304,22 @@ function ThinkingSource({ title, domain, className, ...props }: ThinkingSourcePr
         )}
         {...props}
       >
-        <GlobeIcon
-          aria-hidden="true"
-          className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)]"
-        />
-        <span className="min-w-0 truncate text-[var(--hui-color-foreground-base-primary)] underline decoration-[var(--hui-color-border-base-secondary)] underline-offset-2 [font-weight:var(--hui-font-weight-medium)] group-hover/source:decoration-current">
+        {/* The shared source anatomy: title, then host, then an external-link mark. */}
+        <span
+          title={typeof title === "string" ? title : undefined}
+          className="min-w-0 truncate text-[var(--hui-color-foreground-base-primary)]"
+        >
           {title}
         </span>
         {domain && (
-          <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)]">{domain}</span>
+          <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+            {domain}
+          </span>
         )}
+        <ArrowUpRightIcon
+          aria-hidden="true"
+          className="size-3 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
+        />
       </a>
     </li>
   )

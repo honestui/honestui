@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  ChevronDown as ChevronDownIcon,
   CircleAlert as CircleAlertIcon,
   CircleCheck as CircleCheckIcon,
   LoaderCircle as LoaderCircleIcon,
@@ -32,6 +33,8 @@ export type RecommendationOption = {
 export type RecommendationCardLabels = {
   alternatives: string
   otherOptions: string
+  /** Marks the agent's first choice once another option is in view. */
+  recommended: string
   accepting: string
   accepted: string
   error: string
@@ -40,24 +43,38 @@ export type RecommendationCardLabels = {
 export const defaultRecommendationCardLabels: RecommendationCardLabels = {
   alternatives: "Alternatives",
   otherOptions: "Other options",
+  recommended: "Recommended",
   accepting: "Working…",
   accepted: "Accepted.",
   error: "This was not accepted. Try again.",
 }
 
+const regularText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
+
 const smallText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
 
+const divider = "border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)]"
+
+// Rising bars, so the scale reads even when every bar is filled.
+const meterBars = [
+  { level: 1, height: "h-1.5" },
+  { level: 2, height: "h-2" },
+  { level: 3, height: "h-2.5" },
+]
+
 function ConfidenceMeter({ level }: { level: number }) {
   return (
-    <span aria-hidden="true" className="flex shrink-0 items-end gap-0.5">
-      {[1, 2, 3].map((bar) => (
+    <span aria-hidden="true" className="flex h-2.5 shrink-0 items-end gap-0.5">
+      {meterBars.map((bar) => (
         <span
-          key={bar}
+          key={bar.level}
           className={cn(
-            "h-2.5 w-1 rounded-full",
-            bar <= level
-              ? "bg-[var(--hui-color-foreground-base-primary)]"
+            "w-1 rounded-[var(--hui-radius-full)]",
+            bar.height,
+            bar.level <= level
+              ? "bg-[var(--hui-color-foreground-base-secondary)]"
               : "bg-[var(--hui-color-border-base-secondary)]"
           )}
         />
@@ -100,6 +117,10 @@ function RecommendationCard({
   const selected = options.find((option) => option.id === selectedId) ?? options[0]
   const others = options.filter((option) => option !== selected)
   const isLocked = phase === "accepting" || phase === "accepted"
+  const acceptRef = React.useRef<HTMLButtonElement>(null)
+  // Once someone looks at another option, keep the agent's first choice labelled.
+  const [hasSwitched, setHasSwitched] = React.useState(false)
+  const recommended = options[0]
 
   if (!selected) return null
 
@@ -118,33 +139,34 @@ function RecommendationCard({
       data-slot="recommendation-card"
       data-phase={phase}
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)]",
-        smallText,
+        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
+        regularText,
         className
       )}
       {...props}
     >
       <Collapsible>
         <div className="flex flex-col gap-[var(--hui-space-3)] p-[var(--hui-space-5)]">
-          <p className="m-0 break-words [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]">
-            {title}
-          </p>
-          <div
-            aria-live="polite"
-            className="break-words text-[var(--hui-color-foreground-base-secondary)] [line-height:var(--hui-line-height-regular)]"
-          >
+          <p className="m-0 break-words [font-weight:var(--hui-font-weight-medium)]">{title}</p>
+          <div aria-live="polite" className="break-words text-[var(--hui-color-foreground-base-primary)]">
             {selected.body}
           </div>
-          <p className="m-0 flex items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)]">
+          <p className={cn("m-0 flex items-center gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]", smallText)}>
             <ConfidenceMeter level={selected.confidence} />
             {selected.confidenceLabel}
+            {hasSwitched && selected === recommended && (
+              <>
+                <span aria-hidden="true" className="text-[var(--hui-color-foreground-base-secondary)]">·</span>
+                <span className="text-[var(--hui-color-foreground-base-secondary)]">{labels.recommended}</span>
+              </>
+            )}
           </p>
         </div>
 
         {others.length > 0 && (
           <CollapsiblePanel>
-            <div className="border-t-[0.5px] border-[var(--hui-color-border-base-primary)] p-[var(--hui-space-3)]">
-              <p className="m-0 px-[var(--hui-space-2)] pb-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)]">
+            <div className={cn(divider, "p-[var(--hui-space-3)]")}>
+              <p className={cn("m-0 px-[var(--hui-space-3)] pt-[var(--hui-space-1)] pb-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
                 {labels.otherOptions}
               </p>
               <ul role="list" className="m-0 flex list-none flex-col p-0">
@@ -155,13 +177,23 @@ function RecommendationCard({
                       disabled={isLocked}
                       onClick={() => {
                         setSelectedId(option.id)
+                        setHasSwitched(true)
                         setPhase("idle")
+                        // This row leaves the list. Focus the action for the option now shown.
+                        acceptRef.current?.focus()
                       }}
-                      className="flex w-full cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-3)] text-left outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex w-full cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-3)] py-[var(--hui-space-3)] text-start text-[var(--hui-color-foreground-base-primary)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] not-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] disabled:cursor-not-allowed disabled:text-[var(--hui-color-foreground-base-secondary)]"
                     >
                       <ConfidenceMeter level={option.confidence} />
-                      <span className="min-w-0 flex-1 break-words">{option.summary}</span>
-                      <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)]">
+                      <span className="min-w-0 flex-1 break-words">
+                        {option.summary}
+                        {option === recommended && (
+                          <span className={cn("ms-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
+                            {labels.recommended}
+                          </span>
+                        )}
+                      </span>
+                      <span className={cn("shrink-0 text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
                         {option.confidenceLabel}
                       </span>
                     </button>
@@ -172,10 +204,10 @@ function RecommendationCard({
           </CollapsiblePanel>
         )}
 
-        <div className="flex flex-wrap items-center justify-end gap-[var(--hui-space-3)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)]">
+        <div className={cn(divider, "flex flex-wrap items-center justify-end gap-[var(--hui-space-2)] py-[var(--hui-space-3)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]")}>
           <p
             role={phase === "error" ? "alert" : "status"}
-            className="m-0 me-auto flex min-w-0 items-center gap-[var(--hui-space-2)]"
+            className={cn("m-0 me-auto flex min-w-0 items-center gap-[var(--hui-space-2)]", smallText)}
           >
             {phase === "accepted" && (
               <>
@@ -197,11 +229,24 @@ function RecommendationCard({
             )}
           </p>
           {others.length > 0 && (
-            <CollapsibleTrigger render={<Button variant="secondary" size="sm" />}>
+            <CollapsibleTrigger render={<Button variant="ghost" size="sm" />}>
               {labels.alternatives}
+              <ChevronDownIcon
+                aria-hidden="true"
+                className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-secondary)] motion-safe:transition-transform motion-safe:duration-200 in-data-panel-open:rotate-180"
+              />
             </CollapsibleTrigger>
           )}
-          <Button size="sm" disabled={isLocked} onClick={() => void accept()}>
+          {/* aria-disabled while working or done, so the pressed button keeps focus. */}
+          <Button
+            ref={acceptRef}
+            size="sm"
+            aria-disabled={isLocked || undefined}
+            className={cn(phase === "accepting" && "aria-disabled:cursor-progress", phase === "accepted" && "pointer-events-none bg-[var(--hui-color-background-neutral-secondary)] text-[var(--hui-color-foreground-base-tertiary)] shadow-none")}
+            onClick={() => {
+              if (!isLocked) void accept()
+            }}
+          >
             {phase === "accepting" && (
               <LoaderCircleIcon aria-hidden="true" className="size-3.5 motion-safe:animate-spin" />
             )}

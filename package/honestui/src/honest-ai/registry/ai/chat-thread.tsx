@@ -11,6 +11,66 @@ import {
 
 import { cn } from "../../lib/utils.js"
 import { Button } from "../../components/ui/button.js"
+import { Textarea } from "../../components/ui/textarea.js"
+
+/** Whether the element's content is taller than its box, kept current as messages arrive and grow. */
+function useOverflows(ref: React.RefObject<HTMLElement | null>) {
+  const [overflows, setOverflows] = React.useState(false)
+
+  React.useEffect(() => {
+    const element = ref.current
+    if (!element) return
+    if (typeof ResizeObserver === "undefined") return
+    const measure = () => setOverflows(element.scrollHeight > element.clientHeight + 1)
+    const resizes = new ResizeObserver(measure)
+    const observeChildren = () => {
+      resizes.disconnect()
+      resizes.observe(element)
+      for (const child of Array.from(element.children)) resizes.observe(child)
+      measure()
+    }
+    observeChildren()
+    // New messages add children; growing ones are caught by the resize observer.
+    let frame = 0
+    const mutations = new MutationObserver(() => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        observeChildren()
+      })
+    })
+    mutations.observe(element, { childList: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      resizes.disconnect()
+      mutations.disconnect()
+    }
+  }, [ref])
+
+  return overflows
+}
+
+/** Tabular figures on the digits only, since LoveSans also widens letters and spaces. */
+function TabularDigits({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\d+)/).map((part, index) =>
+        index % 2 === 1 ? (
+          <span key={index} className="tabular-nums">
+            {part}
+          </span>
+        ) : (
+          part
+        )
+      )}
+    </>
+  )
+}
+
+// The Button primitive's disabled look, kept focusable with aria-disabled.
+// Shared with Insight Cards' pager.
+const pagerDisabled =
+  "aria-disabled:cursor-not-allowed aria-disabled:bg-transparent aria-disabled:text-[var(--hui-color-foreground-base-tertiary)] aria-disabled:shadow-none aria-disabled:hover:bg-transparent aria-disabled:active:scale-100!"
 
 export type ChatThreadProps = React.ComponentProps<"div"> & {
   /** Names the conversation for screen readers. */
@@ -36,6 +96,7 @@ function ChatThread({
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const isPinnedToEnd = React.useRef(true)
   const messageCount = React.Children.count(children)
+  const overflows = useOverflows(scrollRef)
 
   React.useEffect(() => {
     const scroller = scrollRef.current
@@ -46,17 +107,18 @@ function ChatThread({
     <div
       data-slot="chat-thread"
       className={cn(
-        "flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[var(--hui-radius-5)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)]",
+        "flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[calc(var(--hui-radius-frame)+var(--hui-frame-padding))] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)]",
         className
       )}
       {...props}
     >
-      {/* A log announces messages as they are added, in order. Focusable so it can be scrolled by keyboard. */}
+      {/* A log announces messages as they are added, in order. A Tab stop
+          only while it scrolls, so it can be scrolled by keyboard. */}
       <div
         ref={scrollRef}
         role="log"
         aria-label={label}
-        tabIndex={0}
+        tabIndex={overflows ? 0 : undefined}
         onScroll={(event) => {
           const scroller = event.currentTarget
           isPinnedToEnd.current =
@@ -64,18 +126,19 @@ function ChatThread({
         }}
         // `relative` keeps absolutely positioned content, such as visually hidden
         // labels, inside this scroller. Without it they extend the page instead.
-        className="relative flex min-h-0 flex-1 flex-col gap-[var(--hui-space-5)] overflow-y-auto p-[var(--hui-space-5)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]"
+        className="relative flex min-h-0 flex-1 flex-col gap-[var(--hui-space-5)] overflow-y-auto rounded-[inherit] p-[var(--hui-space-4)] outline-none sm:p-[var(--hui-space-5)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]"
       >
         {messageCount === 0 && emptyMessage ? (
-          <div className="m-auto text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-regular)]">
+          <div className="m-auto text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
             {emptyMessage}
           </div>
         ) : (
           children
         )}
       </div>
+      {/* The thread's corner is the composer's plus this inset, so they stay concentric. */}
       {footer && (
-        <div data-slot="chat-thread-footer" className="shrink-0 p-[var(--hui-space-3)] pt-0">
+        <div data-slot="chat-thread-footer" className="shrink-0 p-[var(--hui-frame-padding)] pt-0">
           {footer}
         </div>
       )}
@@ -227,7 +290,7 @@ function ChatMessage({
     <div
       data-slot="chat-message"
       data-role={role}
-      className={cn("flex min-w-0 flex-col gap-[var(--hui-space-2)]", isUser && "items-end ps-[var(--hui-space-10)]", className)}
+      className={cn("group/message flex min-w-0 flex-col gap-[var(--hui-space-2)]", isUser && "items-end ps-[var(--hui-space-7)] sm:ps-[var(--hui-space-10)]", className)}
       {...props}
     >
       <p
@@ -254,7 +317,7 @@ function ChatMessage({
             <li
               key={`${file.name}-${index}`}
               className={cn(
-                "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-3)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
+                "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-neutral-primary)] px-[var(--hui-space-3)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
                 smallText
               )}
             >
@@ -284,7 +347,7 @@ function ChatMessage({
             void sendEdit()
           }}
         >
-          <textarea
+          <Textarea
             ref={editorRef}
             rows={1}
             value={draft}
@@ -305,7 +368,7 @@ function ChatMessage({
                 void sendEdit()
               }
             }}
-            className="m-0 block w-full min-w-0 resize-none rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)] [overflow-wrap:anywhere] focus-visible:border-[var(--hui-color-border-accent-emphasis)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="block min-w-0 resize-none rounded-[var(--hui-radius-4)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [overflow-wrap:anywhere]"
           />
           {phase === "error" && (
             <p role="alert" className={cn("m-0 flex items-start gap-[var(--hui-space-2)]", smallText)}>
@@ -319,7 +382,7 @@ function ChatMessage({
             </p>
           )}
           <div className="flex items-center justify-end gap-[var(--hui-space-2)]">
-            <Button variant="link" size="sm" disabled={isSending} onClick={() => setIsEditing(false)}>
+            <Button variant="ghost" size="sm" disabled={isSending} onClick={() => setIsEditing(false)}>
               {labels.cancel}
             </Button>
             <Button type="submit" size="sm" disabled={isSending || text === ""}>
@@ -330,7 +393,7 @@ function ChatMessage({
       ) : (
         <div
           className={cn(
-            "min-w-0 max-w-full break-words [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:1.55]",
+            "min-w-0 max-w-full break-words [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
             isUser &&
               "rounded-[var(--hui-radius-5)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)]"
           )}
@@ -342,32 +405,37 @@ function ChatMessage({
       {!isEditing && (canEdit || hasVersions) && (
         <div
           data-slot="chat-message-footer"
-          className={cn("flex min-w-0 items-center gap-[var(--hui-space-2)]", smallText)}
+          // With a fine pointer the controls appear on hover or focus, as in most chat apps.
+          // Touch screens have no hover, so the controls stay visible there.
+          className={cn(
+            "flex min-w-0 items-center gap-[var(--hui-space-2)] pointer-fine:opacity-0 pointer-fine:group-hover/message:opacity-100 pointer-fine:focus-within:opacity-100 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)]",
+            smallText
+          )}
         >
           {hasVersions && (
             <div data-slot="chat-message-versions" className="flex items-center gap-[var(--hui-space-1)]">
               <Button
-                variant="link"
+                variant="ghost"
                 size="icon-sm"
                 aria-label={labels.previousVersion}
                 // aria-disabled keeps focus on the button at either end.
                 aria-disabled={version <= 1}
-                className="aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+                className={pagerDisabled}
                 onClick={() => {
                   if (version > 1) onVersionChange?.(version - 1)
                 }}
               >
                 <ChevronLeftIcon aria-hidden="true" />
               </Button>
-              <span className="tabular-nums text-[var(--hui-color-foreground-base-secondary)]">
-                {labels.version(version, versionCount)}
+              <span className="text-[var(--hui-color-foreground-base-secondary)]">
+                <TabularDigits text={labels.version(version, versionCount)} />
               </span>
               <Button
-                variant="link"
+                variant="ghost"
                 size="icon-sm"
                 aria-label={labels.nextVersion}
                 aria-disabled={version >= versionCount}
-                className="aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+                className={pagerDisabled}
                 onClick={() => {
                   if (version < versionCount) onVersionChange?.(version + 1)
                 }}
@@ -379,7 +447,7 @@ function ChatMessage({
           {canEdit && (
             <Button
               ref={editButtonRef}
-              variant="link"
+              variant="ghost"
               size="icon-sm"
               aria-label={labels.edit}
               title={labels.edit}

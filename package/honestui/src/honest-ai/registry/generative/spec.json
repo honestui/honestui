@@ -46,8 +46,8 @@
       "description": "Compact section heading with an optional one-line description, for use inside cards."
     },
     "Table": {
-      "signature": "Table(columns: Col[])",
-      "description": "Data table — column-oriented. Each Col holds its own data array."
+      "signature": "Table(columns: Col[], title?: string)",
+      "description": "Data table — column-oriented. Each Col holds its own data array. The optional title names what the table shows, in sentence case (\"Largest urban areas\")."
     },
     "Col": {
       "signature": "Col(label: string, data: any, type?: \"string\" | \"number\" | \"action\")",
@@ -1775,13 +1775,16 @@
             "items": {
               "$ref": "#/$defs/Col"
             }
+          },
+          "title": {
+            "type": "string"
           }
         },
         "required": [
           "columns"
         ],
         "additionalProperties": false,
-        "description": "Data table — column-oriented. Each Col holds its own data array."
+        "description": "Data table — column-oriented. Each Col holds its own data array. The optional title names what the table shows, in sentence case (\"Largest urban areas\")."
       },
       "Col": {
         "type": "object",

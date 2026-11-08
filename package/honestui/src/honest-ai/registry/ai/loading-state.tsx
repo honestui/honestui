@@ -70,7 +70,7 @@ const patterns: Record<
 const gridStyles = `
 @keyframes hui-loading-cell{0%,100%{opacity:.15}40%{opacity:1}}
 @keyframes hui-loading-pulse{0%,70%,100%{opacity:.25;transform:scale(.85)}35%{opacity:1;transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){.hui-loading-cell{animation:none!important;transform:none!important}}
+@media(prefers-reduced-motion:reduce){.hui-loading-cell{animation:none!important;transform:none!important}.hui-loading-cell[data-lit]{opacity:.7!important}}
 @media(forced-colors:active){.hui-loading-cell{background:CanvasText}}
 `
 
@@ -124,23 +124,28 @@ function LoadingState({
     <div
       data-slot="loading-state"
       className={cn(
-        "flex w-fit max-w-full items-center gap-[var(--hui-space-3)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+        "flex w-fit max-w-full items-center gap-[var(--hui-space-3)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
         className
       )}
       {...props}
     >
-      <style>{gridStyles}</style>
+      {/* href and precedence let React hoist this once, however many marks render. */}
+      <style href="hui-loading-state" precedence="default">
+        {gridStyles}
+      </style>
       <span
         aria-hidden="true"
         data-slot="loading-state-mark"
         data-pattern={pattern}
-        className="grid size-[15px] shrink-0 content-center grid-cols-[repeat(3,4px)] gap-[1.5px]"
+        className="grid size-[var(--hui-space-5)] shrink-0 content-center grid-cols-[repeat(3,var(--hui-space-2))] gap-[var(--hui-space-1)]"
       >
         {delays.map((delay, index) => (
           <span
             key={index}
+            // Under reduced motion the lit cells hold still at a readable strength.
+            data-lit={delay === null ? undefined : ""}
             className={cn(
-              "hui-loading-cell size-[4px] bg-[var(--hui-color-foreground-base-primary)]",
+              "hui-loading-cell size-[var(--hui-space-2)] bg-[var(--hui-color-foreground-base-primary)]",
               isRound ? "rounded-full" : "rounded-[1px]"
             )}
             style={{
@@ -169,9 +174,18 @@ function LoadingState({
           // The server and the browser read the clock at different moments.
           suppressHydrationWarning
           data-slot="loading-state-elapsed"
-          className="shrink-0 font-mono tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mono-mini)]"
+          className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
         >
-          {elapsed}
+          {/* Tabular figures on the digits only; LoveSans would space the units too. */}
+          {elapsed.split(/(\d+)/).map((part, i) =>
+            i % 2 ? (
+              <span key={i} className="tabular-nums">
+                {part}
+              </span>
+            ) : (
+              part
+            )
+          )}
         </span>
       )}
     </div>

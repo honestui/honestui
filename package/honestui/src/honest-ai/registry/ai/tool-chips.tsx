@@ -5,10 +5,11 @@ import {
   ChevronDown as ChevronDownIcon,
   CircleAlert as CircleAlertIcon,
   LoaderCircle as LoaderCircleIcon,
-  Wrench as WrenchIcon,
+  CircleCheck as CircleCheckIcon,
 } from "honestui/icons"
 
 import { cn } from "../../lib/utils.js"
+import { Button } from "../../components/ui/button.js"
 import {
   Collapsible,
   CollapsiblePanel,
@@ -68,9 +69,10 @@ export const defaultToolChipsLabels: ToolChipsLabels = {
 }
 
 const rowText =
-  "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
 
-const codeText = "font-mono [font-size:var(--hui-font-size-mono-mini)]"
+const codeText =
+  "font-mono [font-variant-ligatures:none] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)]"
 
 const interactiveRow =
   "border-0 bg-transparent outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)]"
@@ -78,17 +80,28 @@ const interactiveRow =
 const rowEnter =
   "motion-safe:transition-[opacity,translate] motion-safe:duration-300 motion-safe:starting:translate-y-1 motion-safe:starting:opacity-0"
 
-// Changed lines keep the primary text color on a tint. The success and danger
-// foregrounds are too light for small text on their own tints.
+// Changed lines keep the primary text color on a half-strength tint, so the
+// text stays the brightest thing on the line in both themes. The sign takes
+// the change's color, so the tint is never the only cue.
 const lineTone: Record<NonNullable<ToolLine["kind"]>, string> = {
   context: "text-[var(--hui-color-foreground-base-secondary)]",
-  added: "bg-[var(--hui-color-background-success-primary)] text-[var(--hui-color-foreground-base-primary)]",
-  removed: "bg-[var(--hui-color-background-danger-primary)] text-[var(--hui-color-foreground-base-primary)]",
+  added: "bg-[color-mix(in_oklch,var(--hui-color-background-success-primary)_50%,transparent)] text-[var(--hui-color-foreground-base-primary)]",
+  removed: "bg-[color-mix(in_oklch,var(--hui-color-background-danger-primary)_50%,transparent)] text-[var(--hui-color-foreground-base-primary)]",
 }
 
-// The `-hover` foregrounds are the theme's darker text step, which small counts need.
+const signTone: Record<NonNullable<ToolLine["kind"]>, string> = {
+  context: "",
+  added: "text-[var(--hui-color-foreground-success-primary-hover)]",
+  removed: "text-[var(--hui-color-foreground-danger-primary)]",
+}
+
+// Step 11 of each scale: the readable text color on a page or a light tint, in both themes.
 const addedCountTone = "text-[var(--hui-color-foreground-success-primary-hover)]"
-const removedCountTone = "text-[var(--hui-color-foreground-danger-primary-hover)]"
+const removedCountTone = "text-[var(--hui-color-foreground-danger-primary)]"
+
+// The path is an identifier, so it is mono; the counts are figures, so they are not.
+const countText =
+  "[font-family:var(--hui-font-body)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)]"
 
 const lineSign: Record<NonNullable<ToolLine["kind"]>, string> = {
   context: " ",
@@ -153,11 +166,11 @@ function ToolChips({
             interactiveRow
           )}
         >
+          <span className="min-w-0 truncate" title={summary}>{summary}</span>
           <ChevronDownIcon
             aria-hidden="true"
-            className="size-3.5 shrink-0 -rotate-90 motion-safe:transition-transform motion-safe:duration-200 group-data-panel-open/summary:rotate-0"
+            className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)] motion-safe:transition-transform motion-safe:duration-200 group-data-panel-open/summary:rotate-180"
           />
-          <span className="min-w-0 truncate">{summary}</span>
         </CollapsibleTrigger>
         <CollapsiblePanel>
           <ul
@@ -174,22 +187,21 @@ function ToolChips({
               role="group"
               aria-label={labels.changes}
               data-slot="tool-chips-changes"
-              className="mt-[var(--hui-space-3)] flex min-w-0 flex-wrap items-center gap-[var(--hui-space-2)] border-t border-[var(--hui-color-border-base-primary)] pt-[var(--hui-space-3)]"
+              className="mt-[var(--hui-space-3)] flex min-w-0 flex-wrap items-center gap-[var(--hui-space-3)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] pt-[var(--hui-space-4)]"
             >
               {visibleChanges.map((change) => (
                 <FileChangeChip key={change.path} change={change} labels={labels} />
               ))}
               {hiddenCount > 0 && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setShowAllChanges(true)}
-                  className={cn(
-                    "rounded-[var(--hui-radius-2)] px-[var(--hui-space-2)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)] underline underline-offset-2",
-                    interactiveRow
-                  )}
+                  className="text-[var(--hui-color-foreground-base-secondary)] not-disabled:hover:text-[var(--hui-color-foreground-base-primary)]"
                 >
                   {labels.showMoreChanges(hiddenCount)}
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -211,7 +223,9 @@ function ToolCallRow({ call, labels }: { call: ToolCall; labels: ToolChipsLabels
           "flex size-4 shrink-0 items-center justify-center [&_svg]:size-3.5",
           status === "error"
             ? "text-[var(--hui-color-foreground-danger-primary)]"
-            : "text-[var(--hui-color-foreground-base-tertiary)]"
+            : status === "done" && !call.icon
+              ? "text-[var(--hui-color-foreground-success-primary)]"
+              : "text-[var(--hui-color-foreground-base-tertiary)]"
         )}
       >
         {status === "running" ? (
@@ -219,7 +233,8 @@ function ToolCallRow({ call, labels }: { call: ToolCall; labels: ToolChipsLabels
         ) : status === "error" ? (
           <CircleAlertIcon strokeWidth={1.5} strokeLinecap="round" />
         ) : (
-          (call.icon ?? <WrenchIcon />)
+          // Without the tool's own icon, the shared done check; a wrench would read as "configure".
+          (call.icon ?? <CircleCheckIcon strokeWidth={1.5} strokeLinecap="round" />)
         )}
       </span>
       <span className="shrink-0 [font-weight:var(--hui-font-weight-medium)]">
@@ -229,11 +244,13 @@ function ToolCallRow({ call, labels }: { call: ToolCall; labels: ToolChipsLabels
         )}
       </span>
       {call.detail && (
+        // Plain secondary text, so the call's name leads and the detail follows it.
         <span
           className={cn(
-            "min-w-0 truncate rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-2)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
+            "min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]",
             call.detailIsCode && codeText
           )}
+          title={call.detail}
         >
           {call.detail}
         </span>
@@ -259,14 +276,14 @@ function ToolCallRow({ call, labels }: { call: ToolCall; labels: ToolChipsLabels
           {summary}
           <ChevronDownIcon
             aria-hidden="true"
-            className="ms-auto size-3.5 shrink-0 -rotate-90 text-[var(--hui-color-foreground-base-tertiary)] motion-safe:transition-transform motion-safe:duration-200 group-data-panel-open/call:rotate-0"
+            className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)] motion-safe:transition-transform motion-safe:duration-200 group-data-panel-open/call:rotate-180"
           />
         </CollapsibleTrigger>
         <CollapsiblePanel>
           <ToolLines
             lines={call.output ?? []}
             isCode={call.outputIsCode}
-            className="ms-[var(--hui-space-4)] mt-[var(--hui-space-1)] mb-[var(--hui-space-2)] border-s border-[var(--hui-color-border-base-primary)] ps-[var(--hui-space-3)]"
+            className="ms-[var(--hui-space-4)] mt-[var(--hui-space-1)] mb-[var(--hui-space-2)] border-s-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-secondary)] ps-[var(--hui-space-3)]"
           />
         </CollapsiblePanel>
       </Collapsible>
@@ -293,13 +310,13 @@ function ToolLines({
           <div
             key={index}
             className={cn(
-              "flex gap-[var(--hui-space-3)] px-[var(--hui-space-2)] [line-height:var(--hui-line-height-regular)]",
-              isCode ? "whitespace-pre" : "break-words",
+              "flex gap-[var(--hui-space-3)] px-[var(--hui-space-3)]",
+              isCode ? "whitespace-pre [line-height:var(--hui-line-height-mono-regular)]" : "break-words [line-height:var(--hui-line-height-regular)]",
               lineTone[kind]
             )}
           >
             {/* The sign carries the meaning, so the tint is never the only cue. */}
-            {hasChanges && <span className="w-[1ch] shrink-0 select-none">{lineSign[kind]}</span>}
+            {hasChanges && <span className={cn("w-[1ch] shrink-0 select-none", signTone[kind])}>{lineSign[kind]}</span>}
             <span className="min-w-0">{line.text}</span>
           </div>
         )
@@ -310,19 +327,22 @@ function ToolLines({
 
 function FileChangeChip({ change, labels }: { change: FileChange; labels: ToolChipsLabels }) {
   const chipLayout = cn(
-    "inline-flex max-w-full items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]",
+    "inline-flex max-w-full items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] [line-height:var(--hui-line-height-mono-small)]",
     codeText
   )
   const counts = (
     <>
       <span className="min-w-0 truncate">{change.path}</span>
-      <span className={cn("shrink-0 tabular-nums", addedCountTone)}>
-        <span aria-hidden="true">+{change.added}</span>
-        <span className="sr-only">{labels.added(change.added)}</span>
-      </span>
+      {/* Each count shows only when it is not zero. */}
+      {change.added > 0 && (
+        <span className={cn("shrink-0", countText, addedCountTone)}>
+          <span aria-hidden="true">+<span className="tabular-nums">{change.added}</span></span>
+          <span className="sr-only">{labels.added(change.added)}</span>
+        </span>
+      )}
       {change.removed > 0 && (
-        <span className={cn("shrink-0 tabular-nums", removedCountTone)}>
-          <span aria-hidden="true">−{change.removed}</span>
+        <span className={cn("shrink-0", countText, removedCountTone)}>
+          <span aria-hidden="true">−<span className="tabular-nums">{change.removed}</span></span>
           <span className="sr-only">{labels.removed(change.removed)}</span>
         </span>
       )}
@@ -331,7 +351,8 @@ function FileChangeChip({ change, labels }: { change: FileChange; labels: ToolCh
 
   if (!change.lines?.length) {
     return (
-      <span data-slot="tool-chips-change" className={chipLayout}>
+      // The chip truncates a long path; the title keeps the whole of it.
+      <span data-slot="tool-chips-change" className={chipLayout} title={change.path}>
         {counts}
       </span>
     )
@@ -355,7 +376,26 @@ function FileChangeChip({ change, labels }: { change: FileChange; labels: ToolCh
         aria-label={labels.diffFor(change.path)}
         className="w-80 max-w-[calc(100vw-2rem)] p-0"
       >
-        <ToolLines lines={change.lines} isCode className="py-[var(--hui-space-2)]" />
+        {/* The same header as Code View: the file and its counts above the lines. */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            "flex min-w-0 items-center gap-[var(--hui-space-3)] border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-overlay)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)] [line-height:var(--hui-line-height-mono-small)]",
+            codeText
+          )}
+        >
+          {/* The full path wraps here, so similar names can be told apart. */}
+          <span className="min-w-0 break-all">{change.path}</span>
+          <span className={cn("ms-auto flex shrink-0 gap-[var(--hui-space-2)]", countText)}>
+            {change.added > 0 && (
+              <span className={addedCountTone}>+<span className="tabular-nums">{change.added}</span></span>
+            )}
+            {change.removed > 0 && (
+              <span className={removedCountTone}>−<span className="tabular-nums">{change.removed}</span></span>
+            )}
+          </span>
+        </div>
+        <ToolLines lines={change.lines} isCode className="py-[var(--hui-space-3)]" />
       </PopoverPopup>
     </Popover>
   )

@@ -6,7 +6,7 @@ import { Radio, RadioGroup } from "../../../components/ui/radio-group.js";
 import { cn } from "../../../lib/utils.js";
 import { useIsStreaming, useTriggerAction } from "../runtime/react";
 import { InlineText } from "./inline-text";
-import { InsideCardContext, array, nodeProps, text, type Props } from "./shared";
+import { ChatBusyContext, InsideCardContext, array, nodeProps, text, type Props } from "./shared";
 
 type Question = {
   question: string;
@@ -40,7 +40,7 @@ function frameClasses(inCard: boolean) {
   return {
     frame: inCard
       ? ""
-      : "overflow-hidden rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)]",
+      : "overflow-hidden rounded-[var(--hui-radius-4)] border border-[var(--hui-color-border-base-primary)]",
     pad: inCard ? "" : "px-5",
     footer: cn(
       "flex flex-wrap items-center justify-between gap-3 border-t border-[var(--hui-color-border-base-primary)]",
@@ -56,6 +56,8 @@ function frameClasses(inCard: boolean) {
  * unless they ask the assistant to explain what they missed.
  */
 export function GeneratedQuiz({ props }: { props: Props }) {
+  // Asking for an explanation sends a message, which can't start while another reply runs.
+  const busy = React.useContext(ChatBusyContext);
   const streaming = useIsStreaming();
   const trigger = useTriggerAction();
   const questions = readQuestions(props.questions);
@@ -150,11 +152,11 @@ export function GeneratedQuiz({ props }: { props: Props }) {
         </ol>
         <div className={cn(footer, "justify-end")}>
           {missed.length > 0 && (
-            <Button variant="secondary" size="sm" onClick={explainMissed}>
+            <Button variant="outline" disabled={busy} onClick={explainMissed}>
               Explain what I missed
             </Button>
           )}
-          <Button variant="ghost" size="sm" onClick={tryAgain}>
+          <Button variant="ghost" onClick={tryAgain}>
             Try again
           </Button>
         </div>
@@ -205,12 +207,12 @@ export function GeneratedQuiz({ props }: { props: Props }) {
         </p>
         <div className="flex flex-wrap gap-2">
           {current > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => goTo(current - 1)}>
+            <Button variant="ghost" onClick={() => goTo(current - 1)}>
               Back
             </Button>
           )}
           {/* The last questions may still be arriving. */}
-          <Button size="sm" onClick={forward} disabled={streaming && isLast}>
+          <Button onClick={forward} disabled={streaming && isLast}>
             {isLast ? "Submit answers" : "Next"}
           </Button>
         </div>

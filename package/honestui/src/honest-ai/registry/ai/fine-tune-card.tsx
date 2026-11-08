@@ -38,8 +38,18 @@ export const defaultFineTuneCardLabels: FineTuneCardLabels = {
   reset: "Reset",
 }
 
+const regularText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
+
 const smallText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+
+/** Every control shares one width, so the column keeps a clean left and right edge. */
+const controlWidth = "w-36 shrink-0"
+
+/** One label role for every row: the scrub label of a number field matches the others. */
+const labelText =
+  "text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
 
 export type FineTuneCardProps = Omit<React.ComponentProps<"div">, "children" | "title"> & {
   /** What is being adjusted, such as "Chart" or "Reply style". */
@@ -83,27 +93,35 @@ function FineTuneCard({
       aria-labelledby={titleId}
       data-slot="fine-tune-card"
       className={cn(
-        "w-full min-w-0 rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)]",
-        smallText,
+        "w-full min-w-0 rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
+        regularText,
         className
       )}
       {...props}
     >
-      <div className="flex min-h-[var(--hui-space-10)] items-center gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-2)] ps-[var(--hui-space-4)] pe-[var(--hui-space-2)]">
+      <div className="flex min-h-[var(--hui-space-11)] min-w-0 items-center gap-[var(--hui-space-3)] border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-2)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]">
         <p id={titleId} className="m-0 min-w-0 flex-1 truncate [font-weight:var(--hui-font-weight-medium)]">
           {title}
         </p>
-        <span role="status" className="shrink-0 text-[var(--hui-color-foreground-base-secondary)]">
+        <span role="status" className={cn("shrink-0 text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
           {isEdited ? labels.edited : ""}
         </span>
-        {isEdited && (
-          <Button variant="link" size="sm" onClick={() => update(defaultValues)}>
-            {labels.reset}
-          </Button>
-        )}
+        {/* Always mounted, so pressing it keeps focus and the header keeps its shape.
+            With nothing edited it is aria-disabled: still focusable, does nothing. */}
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-disabled={!isEdited || undefined}
+          className="aria-disabled:pointer-events-none aria-disabled:text-[var(--hui-color-foreground-base-tertiary)]"
+          onClick={() => {
+            if (isEdited) update(defaultValues)
+          }}
+        >
+          {labels.reset}
+        </Button>
       </div>
 
-      <div className="flex flex-col gap-[var(--hui-space-4)] p-[var(--hui-space-4)]">
+      <div className="flex flex-col gap-[var(--hui-space-4)] p-[var(--hui-space-5)]">
         {controls.map((control) => (
           <FineTuneField
             key={control.id}
@@ -114,6 +132,19 @@ function FineTuneCard({
         ))}
       </div>
     </div>
+  )
+}
+
+/** Tabular figures on the digits only, since LoveSans also widens letters and dashes. */
+function TabularDigits({ text }: { text: string }) {
+  return text.split(/(\d[\d.,]*)/).map((part, index) =>
+    index % 2 === 1 ? (
+      <span key={index} className="tabular-nums">
+        {part}
+      </span>
+    ) : (
+      part
+    )
   )
 }
 
@@ -129,6 +160,10 @@ function FineTuneField({
   const labelId = React.useId()
 
   if (control.type === "number") {
+    // The range, when both ends are known, says what a bare number like "40" means.
+    const range =
+      control.min !== undefined && control.max !== undefined ? `${control.min}–${control.max}` : undefined
+
     return (
       <NumberField
         size="sm"
@@ -141,26 +176,37 @@ function FineTuneField({
           if (next !== null) onChange(next)
         }}
       >
-        <NumberFieldScrubArea label={control.label} />
-        <NumberFieldGroup className="w-24">
-          <NumberFieldInput />
+        <span className="flex min-w-0 flex-col">
+          <NumberFieldScrubArea
+            label={control.label}
+            className={cn("[&_[data-slot=label]]:[font-weight:var(--hui-font-weight-regular)]", labelText)}
+          />
+          {range && (
+            <span aria-hidden="true" className={cn("text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
+              <TabularDigits text={range} />
+            </span>
+          )}
+        </span>
+        <NumberFieldGroup className={controlWidth}>
+          <NumberFieldInput className="px-[var(--hui-field-padding-inline,var(--hui-space-4))] text-end" />
         </NumberFieldGroup>
       </NumberField>
     )
   }
 
   const label = (
-    <span id={labelId} className="shrink-0 text-[var(--hui-color-foreground-base-secondary)]">
+    <span id={labelId} className={cn("min-w-0", labelText)}>
       {control.label}
     </span>
   )
 
   if (control.type === "segment") {
     return (
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-[var(--hui-space-3)]">
+      <div className="flex min-w-0 items-center justify-between gap-[var(--hui-space-4)]">
         {label}
         <ToggleGroup
           size="sm"
+          className={controlWidth}
           aria-labelledby={labelId}
           value={typeof value === "string" ? [value] : []}
           onValueChange={(next) => {
@@ -170,7 +216,7 @@ function FineTuneField({
           }}
         >
           {control.options.map((option) => (
-            <Toggle key={option.value} value={option.value}>
+            <Toggle key={option.value} value={option.value} className="min-w-0 flex-1">
               {option.label}
             </Toggle>
           ))}
@@ -189,7 +235,7 @@ function FineTuneField({
           if (typeof next === "string") onChange(next)
         }}
       >
-        <SelectTrigger size="sm" aria-labelledby={labelId} className="w-36">
+        <SelectTrigger size="sm" aria-labelledby={labelId} className={controlWidth}>
           <SelectValue />
         </SelectTrigger>
         <SelectPopup>

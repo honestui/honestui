@@ -21,7 +21,7 @@
   --hui-font-size-large: 16px;
   --hui-font-size-base: var(--hui-font-size-regular);
   /* Text inside a control: button labels, field values, tab labels. */
-  --hui-font-size-control: 13px;
+  --hui-font-size-control: 14px;
 
   /* Body Line Heights */
   --hui-line-height-micro: 12px;
@@ -41,7 +41,7 @@
   --hui-letter-spacing-regular: -0.006em;
   --hui-letter-spacing-large: -0.011em;
   --hui-letter-spacing-base: var(--hui-letter-spacing-regular);
-  --hui-letter-spacing-control: -0.003em;
+  --hui-letter-spacing-control: 0;
 
   /* Title Font Sizes */
   --hui-font-size-t1: 20px;
@@ -80,13 +80,7 @@
   --hui-letter-spacing-mono-large: 0px;
 }
 
-[data-style="modern"] {
-  --hui-font-title: var(--hui-font-love-sans);
-  --hui-font-body: var(--hui-font-love-sans);
-  font-family: var(--hui-font-body);
-}
-
-[data-style="traditional"] {
+:root {
   --hui-font-title: var(--hui-font-love-sans);
   --hui-font-body: var(--hui-font-love-sans);
   font-family: var(--hui-font-body);
@@ -105,9 +99,10 @@ body {
 }
 
 /* Heading defaults. The size, weight, and line height skip component parts
-   (anything with a data-slot, such as a dialog title rendered as an h2) and
-   everything inside a docs preview, so components and examples render at the
-   size their own classes ask for. */
+   (anything with a data-slot, such as a dialog title rendered as an h2),
+   everything inside a docs preview, and rendered prose outside a `not-prose`
+   block, so components, examples, and Markdown render at the size their own
+   styles ask for. */
 h1,
 h2,
 h3,
@@ -115,22 +110,22 @@ h4 {
   font-family: var(--hui-font-title);
   text-wrap: balance;
 }
-h1:not([data-slot], [data-slot="preview"] *) {
+h1:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t4);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t4);
 }
-h2:not([data-slot], [data-slot="preview"] *) {
+h2:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t3);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t3);
 }
-h3:not([data-slot], [data-slot="preview"] *) {
+h3:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t2);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t2);
 }
-h4:not([data-slot], [data-slot="preview"] *) {
+h4:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t1);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t1);

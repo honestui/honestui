@@ -14,7 +14,7 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
       role="navigation"
-      aria-label="pagination"
+      aria-label="Pagination"
       data-slot="pagination"
       className={cn("mx-auto flex w-full justify-center", className)}
       {...props}
@@ -67,15 +67,14 @@ function PaginationLink({
     "aria-current": isActive ? ("page" as const) : undefined,
     "data-slot": "pagination-link",
     "data-active": isActive,
-    className: render
-      ? className
-      : cn(
-          buttonVariants({
-            variant: isActive ? "secondary" : "ghost",
-            size,
-          }),
-          className
-        ),
+    // A rendered element such as a router Link keeps the button styling.
+    className: cn(
+      buttonVariants({
+        variant: isActive ? "secondary" : "ghost",
+        size,
+      }),
+      className
+    ),
   }
 
   return useRender({
@@ -93,10 +92,10 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn("max-sm:size-[var(--hui-density-control-height,2rem)] max-sm:p-0", className)}
+      className={cn("max-sm:size-[var(--hui-density-control-height,36px)] max-sm:p-0", className)}
       {...props}
     >
-      <ChevronLeftIcon className="sm:-ms-1" />
+      <ChevronLeftIcon className="sm:-ms-1 rtl:rotate-180" />
       <span className="max-sm:hidden">Previous</span>
     </PaginationLink>
   )
@@ -110,11 +109,11 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn("max-sm:size-[var(--hui-density-control-height,2rem)] max-sm:p-0", className)}
+      className={cn("max-sm:size-[var(--hui-density-control-height,36px)] max-sm:p-0", className)}
       {...props}
     >
       <span className="max-sm:hidden">Next</span>
-      <ChevronRightIcon className="sm:-me-1" />
+      <ChevronRightIcon className="sm:-me-1 rtl:rotate-180" />
     </PaginationLink>
   )
 }
@@ -125,12 +124,11 @@ function PaginationEllipsis({
 }: React.ComponentProps<"span">) {
   return (
     <span
-      aria-hidden
       data-slot="pagination-ellipsis"
       className={cn("flex min-w-7 justify-center", className)}
       {...props}
     >
-      <MoreHorizontalIcon className="size-4" />
+      <MoreHorizontalIcon aria-hidden="true" className="size-4" />
       <span className="sr-only">More pages</span>
     </span>
   )

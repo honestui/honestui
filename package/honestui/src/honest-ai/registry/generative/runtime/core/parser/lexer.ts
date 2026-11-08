@@ -210,10 +210,11 @@ export function tokenize(src: string): Token[] {
         const validJsonString = isClosed ? rawString : rawString + '"';
         tokens.push({ t: T.Str, v: JSON.parse(validJsonString) });
       } catch {
-        // Fallback if JSON.parse fails (e.g., malformed unicode escape during streaming)
-        // Strip the quotes and return the raw text so the UI doesn't crash
-        const stripped = rawString.replace(/^"|"$/g, "");
-        tokens.push({ t: T.Str, v: stripped });
+        // JSON rejects what models often write inside a string: a raw line
+        // break, \' or a line-ending backslash. Unescape by hand so those
+        // strings still lose their escapes; returning the raw text would leave
+        // every \" in place and break, say, an HtmlVisual's attributes.
+        tokens.push({ t: T.Str, v: unescapeLoose(rawString.slice(1, isClosed ? -1 : undefined)) });
       }
       continue;
     }
@@ -378,4 +379,36 @@ export function tokenize(src: string): Token[] {
 
   tokens.push({ t: T.EOF });
   return tokens;
+}
+
+const SIMPLE_ESCAPES: Record<string, string> = { n: "\n", t: "\t", r: "\r", b: "\b", f: "\f", v: "\v", "0": "\0" };
+
+/**
+ * A string body's escapes, read leniently: JSON's escapes, plus \' and a
+ * backslash before a line break (a line continuation, dropped). Any other
+ * escaped character stands for itself, and a trailing lone backslash (a
+ * stream cut mid-escape) is dropped.
+ */
+export function unescapeLoose(body: string): string {
+  let result = "";
+  for (let i = 0; i < body.length; i++) {
+    const char = body[i];
+    if (char !== "\\") {
+      result += char;
+      continue;
+    }
+    const next = body[++i];
+    if (next === undefined) break;
+    if (next === "u" && /^[0-9a-fA-F]{4}$/.test(body.slice(i + 1, i + 5))) {
+      result += String.fromCharCode(parseInt(body.slice(i + 1, i + 5), 16));
+      i += 4;
+    } else if (next === "\n") {
+      // A line continuation.
+    } else if (next === "\r") {
+      if (body[i + 1] === "\n") i++;
+    } else {
+      result += SIMPLE_ESCAPES[next] ?? next;
+    }
+  }
+  return result;
 }

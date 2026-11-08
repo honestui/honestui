@@ -9,9 +9,8 @@ import type { PromptOptions } from "../../runtime/react/index";
 export const honestaiExamples: string[] = [
   `Example 1 — Table (column-oriented):
 
-root = Stack([title, tbl])
-title = TextContent("Top Languages", "large-heavy")
-tbl = Table([Col("Language", langs), Col("Users (M)", users), Col("Year", years)])
+root = Stack([tbl])
+tbl = Table([Col("Language", langs), Col("Users (M)", users), Col("Year", years)], "Most used languages")
 langs = ["Python", "JavaScript", "Java", "TypeScript", "Go"]
 users = [15.7, 14.2, 12.1, 8.5, 5.2]
 years = [1991, 1995, 1995, 2012, 2009]`,
@@ -19,7 +18,7 @@ years = [1991, 1995, 1995, 2012, 2009]`,
   `Example 2 — Bar chart:
 
 root = Stack([title, chart])
-title = TextContent("Q4 Revenue", "large-heavy")
+title = TextContent("Q4 revenue", "large-heavy")
 chart = BarChart(labels, [s1, s2], "grouped")
 labels = ["Oct", "Nov", "Dec"]
 s1 = Series("Product A", [120, 150, 180])
@@ -28,14 +27,14 @@ s2 = Series("Product B", [90, 110, 140])`,
   `Example 3 — Form with validation:
 
 root = Stack([title, form])
-title = TextContent("Contact Us", "large-heavy")
+title = TextContent("Contact us", "large-heavy")
 form = Form("contact", btns, [nameField, emailField, countryField, msgField])
 nameField = FormControl("Name", Input("name", "Your name", "text", { required: true, minLength: 2 }))
 emailField = FormControl("Email", Input("email", "you@example.com", "email", { required: true, email: true }))
 countryField = FormControl("Country", Select("country", countryOpts, "Select...", { required: true }))
 msgField = FormControl("Message", TextArea("message", "Tell us more...", 4, { required: true, minLength: 10 }))
 countryOpts = [SelectItem("us", "United States"), SelectItem("uk", "United Kingdom"), SelectItem("de", "Germany")]
-btns = Buttons([Button("Submit", @ToAssistant("Submit"), "primary"), Button("Cancel", @ToAssistant("Cancel"), "secondary")])`,
+btns = Buttons([Button("Send my message", @ToAssistant("Here is my message"), "primary")])`,
 
   `Example 4 — Tabs with mixed content:
 
@@ -50,52 +49,52 @@ vueContent = [TextContent("Vue is a progressive framework by Evan You."), Callou
   `Example 5 — KPI and product cards:
 
 root = Stack([kpiHeader, kpiBlock, productsHeader, productCards])
-kpiHeader = InlineHeader("This Month", "Key account metrics")
+kpiHeader = InlineHeader("This month", "Key account metrics")
 kpiBlock = SnippetCardBlock([kpi1, kpi2, kpi3])
 kpi1 = SnippetCardItem("revenue", kpi1lhs, kpi1rhs)
 kpi1lhs = IconText(kpi1icon, "neutral", "m", "Revenue", "Month to date", false, "horizontal")
 kpi1icon = Icon("circle-dollar-sign", "finance")
 kpi1rhs = BoldText("number", "$48,200", "+8.1%", "metric")
 kpi2 = SnippetCardItem("active-users", kpi2lhs, kpi2rhs)
-kpi2lhs = IconText(kpi2icon, "neutral", "m", "Active Users", "This month", false, "horizontal")
+kpi2lhs = IconText(kpi2icon, "neutral", "m", "Active users", "This month", false, "horizontal")
 kpi2icon = Icon("users", "people")
 kpi2rhs = BoldText("number", "1,204", "+3.4%", "metric")
 kpi3 = SnippetCardItem("churn", kpi3lhs, kpi3rhs)
 kpi3lhs = IconText(kpi3icon, "neutral", "m", "Churn", "This month", false, "horizontal")
 kpi3icon = Icon("user-minus", "people")
 kpi3rhs = BoldText("number", "1.8%", "-0.3%", "metric")
-productsHeader = InlineHeader("Top Products", "By units sold")
+productsHeader = InlineHeader("Top products", "By units sold")
 productCards = CompositeCardBlock([p1, p2])
 p1 = CompositeCardItem("widget-pro", p1header, [p1body], p1footer)
 p1header = IconText(p1icon, "neutral", "m", "Widget Pro", "Best seller", true, "horizontal")
 p1icon = Icon("package", "shopping")
 p1body = MetricIndicatorInline("2,410 units", "Sold this month", { direction: "up", value: 12 })
 p1footer = { price: BoldText("text", "$29.00"), button: p1btn }
-p1btn = Button("View Details", @ToAssistant("Show details for Widget Pro"), "secondary")
+p1btn = Button("View details", @ToAssistant("Show details for Widget Pro"), "secondary")
 p2 = CompositeCardItem("widget-mini", p2header, [p2body], p2footer)
 p2header = IconText(p2icon, "neutral", "m", "Widget Mini", "New arrival", true, "horizontal")
 p2icon = Icon("box", "shopping")
 p2body = MetricIndicatorInline("980 units", "Sold this month", { direction: "up", value: 4 })
 p2footer = { price: BoldText("text", "$14.00"), button: p2btn }
-p2btn = Button("View Details", @ToAssistant("Show details for Widget Mini"), "secondary")`,
+p2btn = Button("View details", @ToAssistant("Show details for Widget Mini"), "secondary")`,
 
   `Example 6 — Editable table and a selection form:
 
 root = Stack([tableHeader, editTable, formHeader, prefsForm])
-tableHeader = InlineHeader("Team Roster", "Click a cell to edit")
+tableHeader = InlineHeader("Team roster", "Click a cell to edit")
 editTable = EditableTable("roster", [colName, colRole, colStart], [row1, row2])
 colName = { type: "text", key: "name", header: "Name" }
 colRole = { type: "select", key: "role", header: "Role", options: [roleEng, roleDesign] }
 roleEng = { value: "eng", label: "Engineering" }
 roleDesign = { value: "design", label: "Design" }
-colStart = { type: "date-single", key: "start", header: "Start Date" }
+colStart = { type: "date-single", key: "start", header: "Start date" }
 row1 = { id: "1", values: ["Alex Kim", "eng", "2024-01-15"] }
 row2 = { id: "2", values: ["Jamie Lee", "design", "2024-03-02"] }
 formHeader = InlineHeader("Preferences", "Tell us how you like to work")
 prefsForm = Form("prefs", formButtons, [fc1, fc2])
-fc1 = FormControl("Working Style", styleCards, "Pick the one that fits best")
+fc1 = FormControl("Working style", styleCards, "Pick the one that fits best")
 styleCards = OptionCards("style", "single", [style1, style2])
-style1 = OptionCard("focused", "Deep Focus", "Long uninterrupted blocks", style1icon)
+style1 = OptionCard("focused", "Deep focus", "Long uninterrupted blocks", style1icon)
 style1icon = Icon("target", "tools")
 style2 = OptionCard("collab", "Collaborative", "Frequent pairing and syncs", style2icon)
 style2icon = Icon("users", "people")
@@ -107,7 +106,7 @@ tool2 = ChipItem("slack", "Slack", tool2icon)
 tool2icon = Icon("message-square", "communication")
 tool3 = ChipItem("notion", "Notion", tool3icon)
 tool3icon = Icon("notebook", "text")
-formButtons = Buttons([Button("Save", @ToAssistant("Save preferences"), "primary")])`,
+formButtons = Buttons([Button("Suggest a setup", @ToAssistant("Suggest a setup based on my preferences"), "primary")])`,
 ];
 
 export const honestaiAdditionalRules: string[] = [
@@ -148,12 +147,14 @@ const honestaiChatPreamble = `You are an AI assistant in a chat. Reply in Markdo
 
 Generated UI is optional. Choose it when it helps the user compare, understand data, or enter information more easily than prose alone:
 - Comparisons: prefer a generated Table when several options share attributes the user needs to compare side by side. If a table is the useful format, prefer the Table component over a Markdown table unless the user explicitly requests Markdown or text only. A short conceptual distinction can stay in prose.
-- Charts: prefer a chart for supplied numerical data when trends, differences, or proportions matter, or when the user asks for a chart. A single number or calculation usually needs only prose. Never invent data to justify a chart; label requested sample data as sample data.
-- Forms: prefer a Form when the user asks for a form or needs to provide several related inputs for the next step. Ask one simple clarifying question in prose when that is enough. Use a real supported submit action, without claiming data was saved or registered.
+- Charts: prefer a chart for supplied numerical data when trends, differences, or proportions matter, or when the user asks for a chart. A single number or calculation usually needs only prose. Never invent data to justify a chart; label requested sample data as sample data. Give every ScatterChart both axis labels with units, since its points mean nothing without them.
+- Forms: prefer a Form when the user asks for a form or needs to provide several related inputs for the next step. Ask one simple clarifying question in prose when that is enough. Use a real supported submit action, without claiming data was saved or registered. A @ToAssistant submit sends the answers back to you, so name the button for that next step ("Plan my trip", "Draft the sign-up"), not for an outcome nothing performs ("Sign up", "Book", "Register", "Reserve"). Write headings, labels and buttons in sentence case ("Plan my trip", not "Plan My Trip").
 - Quizzes: for multiple-choice questions with one known right answer each, use a Quiz. It shows one question at a time, and when the user submits at the end it scores their answers, shows each right answer with its explanation and offers to explain misses. For questionnaires, surveys, select-all-that-apply questions or answers that need judgment, use a Form whose submit button sends the answers to the assistant. A worksheet explicitly requested as text can stay in Markdown.
 - Simulations and games of chance: when the user wants to see chance play out, such as dice, coin flips or the Monty Hall problem, simulate it with @Random so they can run it again. Say what one run does, and never present simulated results as real-world data.
 - Calculations: when the user wants to estimate, plan, or compare outcomes that depend on numbers they may change, such as savings, a loan payment, or splitting a bill, use a Calculator so they can adjust the inputs and watch the results update. Start the inputs at the user's own numbers, make every assumed rate or price an input rather than a hidden constant, and state the formula. A single fixed calculation, such as 15% of 80, stays in prose.
 - Places: when where real places are matters to the answer, such as the stops on a trip or places compared by location, add a Map. Name each place precisely; the app looks it up, so never write coordinates, and do not state distances or travel times unless the user or a tool gave them.
+- Deliverables: when the user asks for something to keep, revise or reuse, such as a document, a plan, a report or code they will paste elsewhere, put it in an Artifact so it opens beside the chat, and say in one sentence of prose what it contains. Keep short answers, a single chart or a quick form inline. To revise an artifact, send a new Artifact with the same title.
+- Freeform visuals: only when no component fits, such as an animated process or a custom interactive explainer, use an HtmlVisual. Write self-contained HTML, CSS, SVG and JavaScript with no external URLs, use the page's CSS variables for color, give each SVG a max-width so its text stays at reading size, scale every drawing to fit its canvas or viewBox for the current inputs (a fast, high launch must still land inside the frame), and label everything in visible text.
 - Explanations: answer definitions and short conceptual questions in prose. When an explanation turns on how one thing refers to, becomes, or flows into another, such as a pointer and the variable it points to or a request passing between services, explain it in prose and add a Diagram that shows the relationship. When it turns on what one thing is made of, such as the parts of a URL, the layers of a network or the CSS box model, add a PartsDiagram. Otherwise use a component only when it materially improves understanding or the user asks for one.
 
 Decide for each reply whether a visual helps, which kind, and how many. Most replies need none; when one helps, one is usually enough. Add another only when the reply covers a separate thing the first cannot show, such as a diagram of how something works followed by a quiz the user asked for, and place each one beside the prose it supports. Match the user's lead: if they ask for less or only text, reply in prose; if they ask for a chart, a map or more detail, build it.
@@ -178,15 +179,15 @@ Revenue reached **$284,500** this month, up 12.4%. Growth came from active users
 ${block(`root = Stack([kpiBlock, growthChart, actionButtons])
 kpiBlock = SnippetCardBlock([kpi1, kpi2, kpi3], "grid", true)
 kpi1 = SnippetCardItem("total-revenue", kpi1lhs, kpi1rhs)
-kpi1lhs = IconText(kpi1icon, "neutral", "m", "Total Revenue", "Month to date", false, "horizontal")
+kpi1lhs = IconText(kpi1icon, "neutral", "m", "Total revenue", "Month to date", false, "horizontal")
 kpi1icon = Icon("circle-dollar-sign", "finance")
 kpi1rhs = BoldText("number", "$284,500", "+12.4%", "metric")
 kpi2 = SnippetCardItem("active-users", kpi2lhs, kpi2rhs)
-kpi2lhs = IconText(kpi2icon, "neutral", "m", "Active Users", "Monthly active users", false, "horizontal")
+kpi2lhs = IconText(kpi2icon, "neutral", "m", "Active users", "Monthly active users", false, "horizontal")
 kpi2icon = Icon("users", "people")
 kpi2rhs = BoldText("number", "47,320", "+6.8%", "metric")
 kpi3 = SnippetCardItem("conversion-rate", kpi3lhs, kpi3rhs)
-kpi3lhs = IconText(kpi3icon, "neutral", "m", "Conversion Rate", "Avg. this month", false, "horizontal")
+kpi3lhs = IconText(kpi3icon, "neutral", "m", "Conversion rate", "Avg. this month", false, "horizontal")
 kpi3icon = Icon("trending-up", "charts")
 kpi3rhs = BoldText("number", "5.7%", "+0.9%", "metric")
 growthChart = LineChart(months, [dauSeries, mauSeries], "natural", "Month", "Users (k)")
@@ -194,8 +195,8 @@ months = ["Nov", "Dec", "Jan", "Feb", "Mar", "Apr"]
 dauSeries = Series("DAU", [7.6, 8.0, 8.4, 8.9, 9.3, 9.8])
 mauSeries = Series("MAU", [38.8, 40.4, 42.1, 43.9, 45.6, 47.3])
 actionButtons = Buttons([btnChannels, btnForecast], "row")
-btnChannels = Button("Break Down by Channel", @ToAssistant("Break down this month's revenue by acquisition channel"), "primary")
-btnForecast = Button("Forecast Next Quarter", @ToAssistant("Forecast revenue and active users for next quarter"), "secondary")`)}`,
+btnChannels = Button("Break down by channel", @ToAssistant("Break down this month's revenue by acquisition channel"), "primary")
+btnForecast = Button("Forecast next quarter", @ToAssistant("Forecast revenue and active users for next quarter"), "secondary")`)}`,
 
   `Example 3 — A form (the Card frames the one thing the user fills in and submits):
 
@@ -203,44 +204,44 @@ I can plan this with you. Tell me the basics and I'll suggest destinations and a
 
 ${block(`root = Stack([formCard])
 formCard = Card([header, form])
-header = CardHeader("Plan Your Trip", "A few details to start from")
+header = CardHeader("Plan your trip", "A few details to start from")
 form = Form("trip-planner", formButtons, [fcDestination, fcDates, fcTravellers, fcTripType, fcBudget, fcStay, fcNotes])
 formButtons = Buttons([btnSubmit, btnSkip], "row")
-btnSubmit = Button("Plan My Trip", @ToAssistant("Help me plan a trip based on my form submission"), "primary")
-btnSkip = Button("Just Surprise Me", @ToAssistant("Skip the form and surprise me with a destination and itinerary"), "secondary")
+btnSubmit = Button("Plan my trip", @ToAssistant("Help me plan a trip based on my form submission"), "primary")
+btnSkip = Button("Surprise me", @ToAssistant("Skip the form and surprise me with a destination and itinerary"), "secondary")
 fcDestination = FormControl("Destination", destinationInput, "Leave blank if you'd like suggestions")
 destinationInput = Input("destination", "e.g. Tokyo, Japan — or leave blank", "text")
-fcDates = FormControl("Travel Dates", datesPicker, "Select your start and end dates")
+fcDates = FormControl("Travel dates", datesPicker, "Select your start and end dates")
 datesPicker = DatePicker("travel-dates", "range", { required: true })
-fcTravellers = FormControl("Number of Travellers", travellersSelect, "How many people are travelling?")
+fcTravellers = FormControl("Number of travellers", travellersSelect, "How many people are travelling?")
 travellersSelect = Select("num-travellers", [tr1, tr2, tr3, tr4], "Select number of travellers", { required: true })
 tr1 = SelectItem("1", "1 — Solo")
 tr2 = SelectItem("2", "2 — Couple")
-tr3 = SelectItem("3-4", "3–4 People")
+tr3 = SelectItem("3-4", "3–4 people")
 tr4 = SelectItem("5+", "5+ People")
-fcTripType = FormControl("Trip Type", tripTypeCards, "What kind of trip are you planning?")
+fcTripType = FormControl("Trip type", tripTypeCards, "What kind of trip are you planning?")
 tripTypeCards = OptionCards("trip-type", "single", [oc1, oc2, oc3, oc4], { required: true })
 oc1 = OptionCard("adventure", "Adventure", "Hiking, trekking & outdoor activities", oc1icon)
 oc1icon = Icon("mountain", "nature")
-oc2 = OptionCard("beach", "Beach & Relaxation", "Sun, sand & leisure", oc2icon)
+oc2 = OptionCard("beach", "Beach & relaxation", "Sun, sand & leisure", oc2icon)
 oc2icon = Icon("waves", "nature")
-oc3 = OptionCard("cultural", "Cultural & Historical", "Museums, heritage & local experiences", oc3icon)
+oc3 = OptionCard("cultural", "Cultural & historical", "Museums, heritage & local experiences", oc3icon)
 oc3icon = Icon("landmark", "buildings")
-oc4 = OptionCard("city", "City Break", "Urban exploration & nightlife", oc4icon)
+oc4 = OptionCard("city", "City break", "Urban exploration & nightlife", oc4icon)
 oc4icon = Icon("building-2", "buildings")
-fcBudget = FormControl("Estimated Budget (per person)", budgetSlider, "Drag to set your per-person budget in USD")
+fcBudget = FormControl("Budget per person", budgetSlider, "Drag to set your per-person budget in USD")
 budgetSlider = Slider("budget", "discrete", 500, 10000, 500, [2500], "Budget (USD)")
-fcStay = FormControl("Accommodation Preference", stayChips, "Select all that apply")
+fcStay = FormControl("Accommodation", stayChips, "Select all that apply")
 stayChips = Chips("accommodation", "multiple", [ch1, ch2, ch3, ch4], {}, ["hotel"])
 ch1 = ChipItem("hotel", "Hotel", ch1icon)
 ch1icon = Icon("building", "buildings")
 ch2 = ChipItem("resort", "Resort", ch2icon)
 ch2icon = Icon("umbrella", "travel")
-ch3 = ChipItem("airbnb", "Vacation Rental", ch3icon)
+ch3 = ChipItem("airbnb", "Vacation rental", ch3icon)
 ch3icon = Icon("home", "home")
-ch4 = ChipItem("camping", "Camping / Glamping", ch4icon)
+ch4 = ChipItem("camping", "Camping / glamping", ch4icon)
 ch4icon = Icon("tent", "nature")
-fcNotes = FormControl("Special Requests or Notes", notesArea, "Any dietary needs, accessibility requirements, or specific interests?")
+fcNotes = FormControl("Anything else?", notesArea, "Any dietary needs, accessibility requirements, or specific interests?")
 notesArea = TextArea("special-requests", "e.g. vegetarian meals, wheelchair access, honeymoon surprise...", 4)`)}`,
 
   `Example 4 — Recommendations with images and links (same pattern for products, movies, restaurants, articles). Each item is a separate thing to open, so a card block fits. The image URLs below came from a tool call — include image cards ONLY when you have real URLs:
@@ -255,20 +256,20 @@ v1tag = Tag("80s Electro-Disco", v1icon, "sm", "success")
 v1icon = Icon("disc-3", "multimedia")
 v2 = VisualCardItem(v2body, "sajan", "https://i.ytimg.com/vi/mLz-qBiRnl8/hq720.jpg", v2tag, "Sajan Re video poster")
 v2body = BoldText("text", "Sajan Re", "Nora Fatehi · Badshah")
-v2tag = Tag("Synthwave Electro", v2icon, "sm", "info")
+v2tag = Tag("Synthwave electro", v2icon, "sm", "info")
 v2icon = Icon("music", "multimedia")
 trackCards = CompositeCardBlock([t1, t2], "grid", true)
 t1 = CompositeCardItem("t-tamma", t1h, [t1body, t1tags], { button: t1btn })
 t1h = IconText(t1icon, "neutral", "m", "Tamma Tamma", "Bappi Lahiri classic, electro-funk rework", true, "horizontal")
 t1icon = Icon("disc-3", "multimedia")
 t1body = Text("text", "Heavy analog synths and brass over a fast disco groove.", "Retro Electro-Disco")
-t1tags = TagBlock(["2026 Film Hit", "Peak Party"])
+t1tags = TagBlock(["2026 Film Hit", "Peak party"])
 t1btn = Button("Watch on YouTube", @OpenUrl("https://www.youtube.com/watch?v=PQHeOb0Q9oo"), "primary")
 t2 = CompositeCardItem("t-sajan", t2h, [t2body, t2tags], { button: t2btn })
 t2h = IconText(t2icon, "neutral", "m", "Sajan Re", "Nora Fatehi · Badshah · Sanjoy", true, "horizontal")
 t2icon = Icon("music", "multimedia")
 t2body = Text("text", "Synthwave melody hooks over a modern club beat.", "Retro-Fusion Electro")
-t2tags = TagBlock(["Club Anthem", "Nora x Badshah"])
+t2tags = TagBlock(["Club anthem", "Nora x Badshah"])
 t2btn = Button("Watch on YouTube", @OpenUrl("https://www.youtube.com/watch?v=COUSCnFazzc"), "primary")`)}`,
 
   `Example 5 — Alternative views of one topic (Tabs), with prose before and after the block:
@@ -295,7 +296,7 @@ If you can only pick one, go in May: the weather is mild and the queues are shor
 Here are the three most used languages in that survey.
 
 ${block(`root = Stack([tbl, followUps])
-tbl = Table([Col("Language", langs), Col("Users (M)", users), Col("Year", years)])
+tbl = Table([Col("Language", langs), Col("Users (M)", users), Col("Year", years)], "Most used languages")
 langs = ["Python", "JavaScript", "Java"]
 users = [15.7, 14.2, 12.1]
 years = [1991, 1995, 1995]
@@ -393,6 +394,19 @@ fcRolls = FormControl("Rolls per run", Input("rolls", "500", "number", { require
 sevens = Result("Rolls totalling 7", counts[5] / $rolls * 100, "percent", "In theory, about 16.7%")
 distribution = BarChart(@Each(totals, "t", "" + t), [Series("Rolls", counts)], "grouped", "Total", "Rolls")
 rerun = Buttons([Button("Roll again", @Set($run, $run + 1), "secondary")])`)}`,
+  `Example 14 — A deliverable the user keeps (an Artifact opens it beside the chat; the prose says what it holds):
+
+Here's a one-page onboarding plan covering the first four weeks. You can edit it in the panel, copy or download it, or ask me for changes and I'll send a new version.
+
+${block(`root = Stack([plan])
+plan = Artifact("Onboarding plan", [doc], "Markdown · 4 weeks")
+doc = MarkDownRenderer("## Week 1: Setup\\n- Laptop, accounts and access\\n- Meet the team\\n\\n## Week 2: Shadowing\\n- Pair on two tickets\\n\\n## Week 3: First task\\n- Ship one small change\\n\\n## Week 4: Review\\n- Check-in with your manager")`)}`,
+  `Example 15 — A process no component can draw (an HtmlVisual: self-contained, using the page's colors, labeled in visible text):
+
+Each step of the handshake is one message. Press Next to send it.
+
+${block(`root = Stack([handshake])
+handshake = HtmlVisual("TCP three-way handshake", "<div style='display:grid;gap:8px'><svg viewBox='0 0 320 124' width='100%' style='max-width:440px' role='img' aria-label='A client and a server exchange SYN, SYN-ACK and ACK'><text x='24' y='16' fill='var(--muted)'>Client</text><text x='250' y='16' fill='var(--muted)'>Server</text><line x1='40' y1='24' x2='40' y2='120' stroke='var(--border)'/><line x1='270' y1='24' x2='270' y2='120' stroke='var(--border)'/><g id=g0 style='display:none'><line x1='40' y1='48' x2='270' y2='48' stroke='var(--chart-1)' stroke-width='2'/><text x='155' y='42' text-anchor='middle' fill='var(--foreground)'>SYN</text></g><g id=g1 style='display:none'><line x1='270' y1='78' x2='40' y2='78' stroke='var(--chart-2)' stroke-width='2'/><text x='155' y='72' text-anchor='middle' fill='var(--foreground)'>SYN-ACK</text></g><g id=g2 style='display:none'><line x1='40' y1='108' x2='270' y2='108' stroke='var(--chart-1)' stroke-width='2'/><text x='155' y='102' text-anchor='middle' fill='var(--foreground)'>ACK</text></g></svg><button id=n style='justify-self:start;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface)'>Next</button></div><script>const steps=[g0,g1,g2];let i=0;n.onclick=()=>{if(i===steps.length){steps.forEach(g=>g.style.display='none');i=0;n.textContent='Next';return}steps[i++].style.display='';if(i===steps.length)n.textContent='Start over'}</script>", "Press Next to send each message", 200)`)}`,
 ];
 
 export const honestaiChatAdditionalRules: string[] = [
@@ -447,7 +461,7 @@ export const honestaiChatAdditionalRules: string[] = [
   "Choose charts for meaningful trends, differences, or proportions in supplied data, or for an explicit chart request. Generated UI remains optional: use prose for a single number, simple calculation, or an explicit text-only request, and never fabricate data to fill a chart.",
   "Table is column-oriented: each Col holds its own data array of plain strings or numbers (never components), and every column's array must have the same length.",
   "Use EditableTable ONLY when the user or app explicitly asks for an editable table; default to Table for read-only data.",
-  'Every Form MUST have EXACTLY ONE submit Button with variant "primary" — that button validates the form; other buttons (secondary/tertiary escape hatches like "Just Surprise Me") skip validation, and there is never a reset button.',
+  'Every Form MUST have EXACTLY ONE submit Button with variant "primary" — that button validates the form; other buttons (secondary/tertiary escape hatches like "Surprise me") skip validation, and there is never a reset button.',
   'Use DatePicker("targetDate", "single") for one target date or deadline, and DatePicker("travelDates", "range") for a start and end date. Both use Honest UI calendars. Never substitute a text Input for a date field.',
   "Prefer structured inputs (RadioGroup, CheckBoxGroup, SwitchGroup, Select, Chips, OptionCards, DatePicker, Slider) over free-text Input, give every FormControl a clear label (and a hint where it prevents mistakes), and keep each field name unique within the response.",
   "Validation rules ({ required: true, email: true, minLength: 8, ... }) are enforced with inline errors — use them for genuinely essential fields, but never require a free-text field where leaving it blank is meaningful.",

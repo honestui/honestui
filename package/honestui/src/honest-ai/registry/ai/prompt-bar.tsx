@@ -324,8 +324,8 @@ function PromptBar({
         <div
           data-slot="prompt-bar-suggestions"
           className={cn(
-            "absolute inset-x-0 bottom-full z-10 mb-[var(--hui-space-3)] max-h-64 overflow-y-auto rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-lifted)]",
-            smallText
+            "absolute inset-x-0 bottom-full z-10 mb-[var(--hui-space-3)] max-h-64 overflow-y-auto overscroll-contain rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay)]",
+            bodyText
           )}
         >
           {matches.length > 0 ? (
@@ -347,7 +347,7 @@ function PromptBar({
                     onMouseDown={(event) => event.preventDefault()}
                     onMouseMove={() => setActiveIndex(matches.indexOf(item))}
                     onClick={() => insertItem(item)}
-                    className="flex min-w-0 cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-space-3)] data-active:bg-[var(--hui-color-background-base-primary-hover)]"
+                    className="flex min-w-0 cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-space-3)] data-active:bg-[var(--hui-color-background-overlay-hover,var(--hui-color-background-base-primary-hover))]"
                   >
                     {item.icon && (
                       <span
@@ -357,11 +357,16 @@ function PromptBar({
                         {item.icon}
                       </span>
                     )}
-                    <span className="shrink-0 [font-weight:var(--hui-font-weight-medium)]">
+                    <span className="max-w-full shrink-0 truncate [font-weight:var(--hui-font-weight-medium)]">
                       {suggestion?.kind === "command" ? `/${item.label}` : item.label}
                     </span>
                     {item.description && (
-                      <span className="min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]">
+                      <span
+                        className={cn(
+                          "min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]",
+                          smallText
+                        )}
+                      >
                         {item.description}
                       </span>
                     )}
@@ -389,7 +394,7 @@ function PromptBar({
 
       <div
         data-slot="prompt-bar-field"
-        className="flex flex-col gap-[var(--hui-space-2)] rounded-[var(--hui-radius-5)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:var(--hui-transition-interactive)] focus-within:border-[var(--hui-color-border-accent-emphasis)] in-data-disabled:opacity-60"
+        className="flex flex-col gap-[var(--hui-space-2)] rounded-[var(--hui-radius-frame)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] p-[var(--hui-frame-padding)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:var(--hui-transition-interactive)] not-focus-within:not-in-data-disabled:hover:border-[var(--hui-color-border-field-hover,var(--hui-color-border-field))] focus-within:border-[var(--hui-color-border-accent-emphasis)] focus-within:shadow-[var(--hui-focus-ring-field)] in-data-disabled:border-[var(--hui-color-border-base-primary)] in-data-disabled:bg-[var(--hui-color-background-base-secondary)] in-data-disabled:shadow-none"
       >
         {attachments.length > 0 && (
           <ul
@@ -402,15 +407,18 @@ function PromptBar({
               <li
                 key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
                 className={cn(
-                  "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-secondary)] py-[var(--hui-space-1)] ps-[var(--hui-space-3)] pe-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
+                  "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-neutral-primary)] py-[var(--hui-space-1)] ps-[var(--hui-space-3)] pe-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
                   smallText
                 )}
               >
                 <FileIcon aria-hidden="true" className="size-3.5 shrink-0" />
-                <span className="min-w-0 truncate">{file.name}</span>
+                <span className="min-w-0 truncate" title={file.name}>
+                  {file.name}
+                </span>
                 <Button
-                  variant="link"
+                  variant="ghost"
                   size="icon-sm"
+                  className="size-[var(--hui-space-7)] rounded-[var(--hui-radius-1)] not-disabled:hover:bg-[var(--hui-color-background-neutral-secondary)] not-disabled:active:bg-[var(--hui-color-background-neutral-secondary-hover)]"
                   disabled={disabled}
                   aria-label={labels.removeAttachment(file.name)}
                   onClick={() => {
@@ -445,14 +453,14 @@ function PromptBar({
           onSelect={(event) => setCaret(event.currentTarget.selectionStart)}
           onKeyDown={handleKeyDown}
           className={cn(
-            "m-0 block w-full min-w-0 resize-none border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] outline-none [overflow-wrap:anywhere] placeholder:text-[var(--hui-color-foreground-base-tertiary)] disabled:cursor-not-allowed",
+            "m-0 block w-full min-w-0 resize-none border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] outline-none [overflow-wrap:anywhere] placeholder:text-[var(--hui-color-foreground-base-secondary)] disabled:cursor-not-allowed disabled:text-[var(--hui-color-foreground-base-tertiary)]",
             bodyText
           )}
         />
 
         <div
           data-slot="prompt-bar-controls"
-          className="flex min-w-0 flex-wrap items-center gap-[var(--hui-space-2)]"
+          className="flex min-w-0 flex-wrap items-center gap-[var(--hui-space-1)]"
         >
           {allowAttachments && (
             <>
@@ -472,8 +480,9 @@ function PromptBar({
                 }}
               />
               <Button
-                variant="link"
+                variant="ghost"
                 size="icon"
+                className="rounded-[var(--hui-radius-frame-panel)]"
                 disabled={disabled}
                 aria-label={labels.attach}
                 onClick={() => fileInputRef.current?.click()}
@@ -488,15 +497,21 @@ function PromptBar({
               <MenuTrigger
                 disabled={disabled}
                 render={
-                  <Button variant="link" size="sm" className="max-w-full min-w-0" />
+                  // Default size, so its hit area matches Attach and Send in the same row.
+                  <Button
+                    variant="ghost"
+                    className="max-w-full min-w-0 rounded-[var(--hui-radius-frame-panel)]"
+                  />
                 }
               >
                 <span className="sr-only">{labels.model}: </span>
                 {selectedModel?.icon}
-                <span className="min-w-0 truncate">{selectedModel?.label ?? labels.model}</span>
+                <span className="min-w-0 truncate" title={selectedModel?.label}>
+                  {selectedModel?.label ?? labels.model}
+                </span>
                 <ChevronDownIcon
                   aria-hidden="true"
-                  className="size-3 text-[var(--hui-color-foreground-base-tertiary)]"
+                  className="size-3 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
                 />
               </MenuTrigger>
               <MenuPopup align="start" className="min-w-48">
@@ -509,7 +524,7 @@ function PromptBar({
                           <span className="min-w-0 truncate">{item.label}</span>
                         </span>
                         {item.description && (
-                          <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)]">
+                          <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
                             {item.description}
                           </span>
                         )}
@@ -531,6 +546,7 @@ function PromptBar({
               ref={sendButtonRef}
               type={isStoppable ? "button" : "submit"}
               size="icon"
+              className="rounded-[var(--hui-radius-frame-panel)]"
               disabled={!isStoppable && !canSend}
               aria-label={isStoppable ? labels.stop : labels.send}
               onClick={

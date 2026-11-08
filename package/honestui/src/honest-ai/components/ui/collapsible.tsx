@@ -15,7 +15,10 @@ function CollapsibleTrigger({
   return (
     <CollapsiblePrimitive.Trigger
       data-slot="collapsible-trigger"
-      className={cn("cursor-pointer", className)}
+      className={cn(
+        "cursor-pointer rounded-[var(--hui-radius-1)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]",
+        className
+      )}
       {...props}
     />
   )
@@ -29,7 +32,7 @@ function CollapsiblePanel({
     <CollapsiblePrimitive.Panel
       data-slot="collapsible-panel"
       className={cn(
-        "h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 data-ending-style:h-0 data-starting-style:h-0",
+        "h-(--collapsible-panel-height) overflow-hidden motion-safe:[transition:height_var(--hui-duration-normal)_var(--hui-ease-out)] data-ending-style:h-0 data-starting-style:h-0",
         className
       )}
       {...props}

@@ -54,6 +54,10 @@ export type ApprovalCardLabels = {
   step: (current: number, total: number) => string
   /** Shown beside a disabled Send, so the reason is never a guess. */
   incomplete: string
+  /** The same reason when the card asks one question. */
+  incompleteSingle: string
+  /** Shown beside a disabled Continue on a required question. */
+  required: string
   submitted: string
   error: string
 }
@@ -69,11 +73,16 @@ export const defaultApprovalCardLabels: ApprovalCardLabels = {
   customPlaceholder: "Something else…",
   step: (current, total) => `Question ${current} of ${total}`,
   incomplete: "Answer at least one question to send.",
+  incompleteSingle: "Choose an answer to send.",
+  required: "This question needs an answer to continue.",
   submitted: "Answers sent.",
   error: "The answers were not sent. Your choices are still here, so you can send again.",
 }
 
 const bodyText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
+
+const metaText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
 
 const emptyAnswer: ApprovalAnswer = { selected: [], custom: "" }
@@ -116,7 +125,9 @@ function ApprovalCard({
     "editing"
   )
   const rootRef = React.useRef<HTMLDivElement>(null)
+  const primaryRef = React.useRef<HTMLButtonElement>(null)
   const promptId = React.useId()
+  const customId = React.useId()
 
   const question = questions[Math.min(index, questions.length - 1)]
   const isLast = index >= questions.length - 1
@@ -133,7 +144,28 @@ function ApprovalCard({
     if (phase === "submitted") rootRef.current?.focus()
   }, [phase])
 
+  // Going back to the first question removes Back while it has focus.
+  const refocusAfterBack = React.useRef(false)
+  React.useEffect(() => {
+    if (!refocusAfterBack.current) return
+    refocusAfterBack.current = false
+    const primary = primaryRef.current
+    if (primary && !primary.disabled) primary.focus()
+    else rootRef.current?.focus()
+  }, [index])
+
   if (!question) return null
+
+  // Whenever the primary button is disabled, say why beside it.
+  const disabledReason = isLast
+    ? canSend
+      ? null
+      : questions.length === 1
+        ? labels.incompleteSingle
+        : labels.incomplete
+    : question.required && !answered
+      ? labels.required
+      : null
 
   const updateAnswer = (next: ApprovalAnswer) => {
     setAnswers((current) => ({ ...current, [question.id]: next }))
@@ -157,7 +189,7 @@ function ApprovalCard({
   }
 
   const cardFrame =
-    "w-full min-w-0 rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] outline-none focus-visible:[outline:var(--hui-focus-ring)]"
+    "w-full min-w-0 rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] outline-none focus-visible:[outline:var(--hui-focus-ring)]"
 
   if (phase === "submitted") {
     return (
@@ -195,21 +227,21 @@ function ApprovalCard({
             {questions.length > 1 && (
               <p
                 aria-live="polite"
-                className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]"
+                className={cn("m-0 text-[var(--hui-color-foreground-base-secondary)]", metaText)}
               >
                 {labels.step(index + 1, questions.length)}
               </p>
             )}
             <p
               id={promptId}
-              className="m-0 break-words [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
+              className="m-0 break-words text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-large)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)]"
             >
               {question.prompt}
             </p>
           </div>
           {onDismiss && (
             <Button
-              variant="link"
+              variant="ghost"
               size="icon-sm"
               aria-label={labels.dismiss}
               onClick={onDismiss}
@@ -246,7 +278,6 @@ function ApprovalCard({
               <OptionRow key={option.value} label={option.label}>
                 {(labelId) => (
                   <Checkbox
-                    size="small"
                     aria-labelledby={labelId}
                     disabled={isSubmitting}
                     checked={answer.selected.includes(option.value)}
@@ -266,63 +297,90 @@ function ApprovalCard({
         )}
 
         {question.allowCustom && (
-          <Input
-            key={`${question.id}-custom`}
-            size="sm"
-            aria-label={labels.customAnswer}
-            placeholder={labels.customPlaceholder}
-            disabled={isSubmitting}
-            value={answer.custom}
-            onChange={(event) =>
-              updateAnswer({
-                // A single-choice question holds one answer: typed or picked, not both.
-                selected: question.type === "single" ? [] : answer.selected,
-                custom: event.target.value,
-              })
-            }
-          />
+          <div key={`${question.id}-custom`} className="flex flex-col gap-[var(--hui-space-2)]">
+            <label
+              htmlFor={customId}
+              className={cn("text-[var(--hui-color-foreground-base-secondary)]", metaText)}
+            >
+              {labels.customAnswer}
+            </label>
+            <Input
+              id={customId}
+              placeholder={labels.customPlaceholder}
+              disabled={isSubmitting}
+              value={answer.custom}
+              onChange={(event) =>
+                updateAnswer({
+                  // A single-choice question holds one answer: typed or picked, not both.
+                  selected: question.type === "single" ? [] : answer.selected,
+                  custom: event.target.value,
+                })
+              }
+            />
+          </div>
         )}
 
         {phase === "error" && (
           <p role="alert" className="m-0 flex items-start gap-[var(--hui-space-3)]">
-            <CircleAlertIcon strokeWidth={1.5} strokeLinecap="round"
+            <CircleAlertIcon
+              strokeWidth={1.5}
+              strokeLinecap="round"
               aria-hidden="true"
-              className="mt-px size-3.5 shrink-0 text-[var(--hui-color-foreground-danger-primary)]"
+              className="mt-[var(--hui-space-1)] size-4 shrink-0 text-[var(--hui-color-foreground-danger-primary)]"
             />
             <span className="min-w-0 break-words">{labels.error}</span>
           </p>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-end gap-[var(--hui-space-3)] border-t border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)]">
-        {isLast && !canSend && (
-          <p className="m-0 me-auto min-w-0 text-[var(--hui-color-foreground-base-secondary)]">
-            {labels.incomplete}
+      <div className="flex flex-wrap items-center justify-end gap-[var(--hui-space-3)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)]">
+        {disabledReason && (
+          <p
+            className={cn(
+              "m-0 me-auto min-w-0 text-[var(--hui-color-foreground-base-secondary)]",
+              metaText
+            )}
+          >
+            {disabledReason}
           </p>
         )}
         {index > 0 && (
           <Button
-            variant="link"
+            variant="ghost"
             size="sm"
             disabled={isSubmitting}
-            onClick={() => setIndex(index - 1)}
+            onClick={() => {
+              // Back disappears on the first question; keep focus in the footer.
+              if (index === 1) refocusAfterBack.current = true
+              setIndex(index - 1)
+            }}
           >
             {labels.back}
           </Button>
         )}
         {isLast ? (
-          <Button size="sm" disabled={!canSend || isSubmitting} onClick={() => void submit()}>
+          // aria-disabled while sending, so the pressed button keeps focus.
+          <Button
+            ref={primaryRef}
+            size="sm"
+            disabled={!canSend}
+            aria-disabled={isSubmitting || undefined}
+            className="aria-disabled:cursor-progress"
+            onClick={() => {
+              if (!isSubmitting) void submit()
+            }}
+          >
             {isSubmitting && (
               <LoaderCircleIcon aria-hidden="true" className="size-3.5 motion-safe:animate-spin" />
             )}
             {isSubmitting ? labels.sending : labels.send}
           </Button>
         ) : answered || question.required ? (
-          <Button size="sm" disabled={!answered} onClick={() => setIndex(index + 1)}>
+          <Button ref={primaryRef} size="sm" disabled={!answered} onClick={() => setIndex(index + 1)}>
             {labels.continue}
           </Button>
         ) : (
-          <Button variant="secondary" size="sm" onClick={() => setIndex(index + 1)}>
+          <Button ref={primaryRef} variant="secondary" size="sm" onClick={() => setIndex(index + 1)}>
             {labels.skip}
           </Button>
         )}
@@ -342,7 +400,7 @@ function OptionRow({
   const labelId = React.useId()
 
   return (
-    <label className="-mx-[var(--hui-space-2)] flex min-w-0 cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-2)] py-[var(--hui-space-2)] motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] has-disabled:cursor-not-allowed has-data-disabled:cursor-not-allowed">
+    <label className="-mx-[var(--hui-space-3)] flex min-h-[var(--hui-space-10)] min-w-0 cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[length:var(--hui-border-width-surface)] border-transparent px-[var(--hui-space-3)] py-[var(--hui-space-2)] motion-safe:[transition:var(--hui-transition-interactive)] not-has-data-checked:hover:bg-[color-mix(in_oklch,var(--hui-color-background-neutral-primary)_50%,transparent)] has-data-checked:border-[var(--hui-color-border-base-secondary)] has-data-checked:bg-[var(--hui-color-background-neutral-primary)] has-disabled:cursor-not-allowed has-data-disabled:cursor-not-allowed">
       {children(labelId)}
       <span id={labelId} className="min-w-0 break-words">
         {label}

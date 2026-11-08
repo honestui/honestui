@@ -42,7 +42,7 @@ export const defaultContextMeterLabels: ContextMeterLabels = {
   number: (value) => numberFormat.format(value),
 }
 
-const RING_RADIUS = 6
+const RING_RADIUS = 5.75
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
 const CHANGE_SECONDS = 0.6
 
@@ -56,7 +56,7 @@ const statusTone: Record<ContextMeterStatus, string> = {
   ok: "text-[var(--hui-color-foreground-base-primary)]",
   near: "text-[var(--hui-color-foreground-base-primary)]",
   // The darker danger step, which stays readable as small text.
-  full: "text-[var(--hui-color-foreground-danger-primary-hover)]",
+  full: "text-[var(--hui-color-foreground-danger-primary)]",
 }
 
 export type ContextMeterProps = Omit<React.ComponentProps<"button">, "children"> & {
@@ -120,7 +120,7 @@ function ContextMeter({
     shownRatio,
     (value) => `${Math.min(value, 1) * RING_CIRCUMFERENCE} ${RING_CIRCUMFERENCE}`
   )
-  const shownPercent = useTransform(shownRatio, (value) => `${toPercent(value)}%`)
+  const shownPercent = useTransform(shownRatio, (value) => String(toPercent(value)))
   const barWidth = useTransform(shownRatio, (value) => `${Math.min(value, 1) * 100}%`)
   const tokensText = labels.tokens(labels.number(usedTokens), labels.number(limit))
 
@@ -130,29 +130,41 @@ function ContextMeter({
         data-slot="context-meter"
         data-status={status}
         className={cn(
-          "inline-flex shrink-0 cursor-pointer items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-2)] tabular-nums outline-none [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)] motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] data-popup-open:bg-[var(--hui-color-background-base-primary-hover)]",
+          "inline-flex min-h-[var(--hui-control-height-sm,28px)] min-w-[var(--hui-control-height-sm,28px)] shrink-0 cursor-pointer items-center justify-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-1)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] data-popup-open:bg-[var(--hui-color-background-base-primary-hover)]",
           statusTone[status],
           className
         )}
+        // Without the percentage, a pointer hover still shows the figure.
+        title={showPercent ? undefined : labels.summary(percent)}
         {...props}
       >
+        {/* A full track and a square-ended fill from 12 o'clock, so it reads as a gauge, not a spinner. */}
         <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4 shrink-0 -rotate-90">
-          <circle cx="8" cy="8" r={RING_RADIUS} fill="none" stroke="currentColor" strokeWidth="2" opacity="0.2" />
+          <circle
+            cx="8"
+            cy="8"
+            r={RING_RADIUS}
+            fill="none"
+            // Mixed from the text color, so the empty track stays near 3:1 on dark surfaces.
+            className="[stroke:color-mix(in_oklch,var(--hui-color-foreground-base-primary)_40%,var(--hui-color-background-base-primary))] forced-colors:[stroke:GrayText]"
+            strokeWidth="2.5"
+          />
           <motion.circle
             cx="8"
             cy="8"
             r={RING_RADIUS}
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
+            strokeWidth="2.5"
+            strokeLinecap="butt"
             style={{ strokeDasharray: ringDash }}
           />
         </svg>
         {showPercent && (
-          <motion.span aria-hidden="true" data-slot="context-meter-percent">
-            {shownPercent}
-          </motion.span>
+          <span aria-hidden="true" data-slot="context-meter-percent">
+            {/* Tabular figures on the digits only; LoveSans would space the sign too. */}
+            <motion.span className="tabular-nums">{shownPercent}</motion.span>%
+          </span>
         )}
         {/* The warning is a shape and a word, so it does not depend on the color. */}
         {statusLabel && <TriangleAlertIcon {...warningStroke} aria-hidden="true" className="size-3.5 shrink-0" />}
@@ -175,7 +187,7 @@ function ContextMeter({
               aria-valuemax={limit}
               aria-valuenow={Math.min(usedTokens, limit)}
               aria-valuetext={tokensText}
-              className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--hui-color-background-base-secondary)]"
+              className="h-1.5 w-full overflow-hidden rounded-full bg-[color-mix(in_oklch,var(--hui-color-foreground-base-primary)_16%,transparent)]"
             >
               {/* A border, not a fill, so the bar survives forced colors. */}
               <motion.div
@@ -184,7 +196,7 @@ function ContextMeter({
               />
             </div>
             <p className="m-0 flex flex-wrap items-baseline justify-between gap-x-[var(--hui-space-3)]">
-              <span>{tokensText}</span>
+              <span><TabularDigits text={tokensText} /></span>
               <span className="text-[var(--hui-color-foreground-base-secondary)]">
                 {labels.remaining(labels.number(Math.max(limit - usedTokens, 0)))}
               </span>
@@ -198,19 +210,23 @@ function ContextMeter({
           </div>
 
           {(parts.length > 0 || cost !== undefined) && (
-            <dl className="m-0 grid grid-cols-[minmax(0,1fr)_auto] gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-1)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] pt-[var(--hui-space-3)]">
+            <dl className="m-0 grid grid-cols-[minmax(0,1fr)_auto] gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-1)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] pt-[var(--hui-space-3)]">
               {parts.map((part) => (
                 <React.Fragment key={part.label}>
                   <dt className="min-w-0 break-words text-[var(--hui-color-foreground-base-secondary)]">
                     {part.label}
                   </dt>
-                  <dd className="m-0 text-end tabular-nums">{labels.number(part.tokens)}</dd>
+                  <dd className="m-0 text-end">
+                    <TabularDigits text={labels.number(part.tokens)} />
+                  </dd>
                 </React.Fragment>
               ))}
               {cost !== undefined && (
                 <>
                   <dt className="text-[var(--hui-color-foreground-base-secondary)]">{labels.cost}</dt>
-                  <dd className="m-0 text-end tabular-nums">{cost}</dd>
+                  <dd className="m-0 text-end">
+                    <TabularDigits text={cost} />
+                  </dd>
                 </>
               )}
             </dl>
@@ -222,6 +238,19 @@ function ContextMeter({
         </div>
       </PopoverPopup>
     </Popover>
+  )
+}
+
+/** Tabular figures on the digits only; LoveSans would space commas, signs and letters too. */
+function TabularDigits({ text }: { text: string }) {
+  return text.split(/(\d+)/).map((part, i) =>
+    i % 2 ? (
+      <span key={i} className="tabular-nums">
+        {part}
+      </span>
+    ) : (
+      part
+    )
   )
 }
 

@@ -40,7 +40,7 @@ export function GeneratedCalculator({ props, renderNode }: GeneratedProps) {
       className={cn(
         "@container",
         !inCard &&
-          "overflow-hidden rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)]",
+          "overflow-hidden rounded-[var(--hui-radius-4)] border border-[var(--hui-color-border-base-primary)]",
       )}
     >
       <div className={cn("grid @2xl:grid-cols-[minmax(0,1fr)_minmax(15rem,20rem)]", inCard && "gap-5")}>

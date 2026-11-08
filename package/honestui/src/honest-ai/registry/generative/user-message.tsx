@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Markdown } from "../ai/markdown.js";
 
 type Entry = [string, unknown];
@@ -94,8 +95,124 @@ function SubmittedEntries({ entries, depth = 0 }: { entries: Entry[]; depth?: nu
   );
 }
 
-/** Present submitted values without changing the content stored or sent to the model. */
+/** "Here is my edited version of “Plan”…" blocks an artifact edit appends to a message. */
+const EDIT = /(?:^|\n\n)(Here is my edited version|I restored the original version) of “([^\n]+?)”\. Use it for any further changes:\n\n(`{3,})[^\n]*\n([\s\S]*?)\n\3(?=\n|$)/g;
+
+/** "About this part of “Plan”:" and the quoted passage, a selection asked about. */
+const QUOTE = /(?:^|\n\n)About this part of “([^\n]+?)”:\n\n(>(?: [^\n]*)?(?:\n>(?: [^\n]*)?)*)/g;
+
+/** "About these 2 rows from “Cities”:" and the chosen rows as a Markdown table. */
+const ROWS = /(?:^|\n\n)About (?:this row|these \d+ rows) from (?:“([^\n]+?)”|the table):\n\n(\|[^\n]*\|(?:\n\|[^\n]*\|)*)/g;
+
+/** `content` without its attached edits to the given artifact titles; other edits stay. */
+export function withoutEdits(content: string, titles: ReadonlySet<string>): string {
+  return content.replace(EDIT, (match, _lead: string, title: string) => (titles.has(title) ? "" : match));
+}
+
+/** `content` with `addition` placed before a trailing form-payload line, which must stay last. */
+export function beforePayload(content: string, addition: string): string {
+  if (!addition) return content;
+  const lastBreak = content.lastIndexOf("\n");
+  const lastLine = content.slice(lastBreak + 1).trim();
+  return lastBreak >= 0 && lastLine.startsWith("{")
+    ? content.slice(0, lastBreak) + addition + content.slice(lastBreak)
+    : content + addition;
+}
+
+/** The reader's own words, and the artifact edits that went with them. */
+export function readEdits(content: string): {
+  text: string;
+  edits: { title: string; body: string; restored?: boolean }[];
+  quotes: { title: string; passage: string }[];
+  rows: { title: string; table: string }[];
+} {
+  const edits: { title: string; body: string; restored?: boolean }[] = [];
+  const quotes: { title: string; passage: string }[] = [];
+  const rows: { title: string; table: string }[] = [];
+  const text = content
+    .replace(EDIT, (_, lead: string, title: string, _fence: string, body: string) => {
+      edits.push(lead.startsWith("I restored") ? { title, body, restored: true } : { title, body });
+      return "";
+    })
+    .replace(ROWS, (_, title: string | undefined, table: string) => {
+      rows.push({ title: title ?? "", table });
+      return "";
+    })
+    .replace(QUOTE, (_, title: string, lines: string) => {
+      quotes.push({ title, passage: lines.split("\n").map((line) => line.replace(/^> ?/, "")).join("\n") });
+      return "";
+    })
+    .trim();
+  return { text, edits, quotes, rows };
+}
+
+/**
+ * Present submitted values and attached artifact edits compactly, without
+ * changing the content stored or sent to the model.
+ */
 export function UserMessageContent({ content }: { content: string }) {
+  const { text, edits, quotes, rows } = readEdits(content);
+  if (edits.length > 0 || quotes.length > 0 || rows.length > 0)
+    return (
+      <div className="grid min-w-0 gap-2" data-slot="message-with-edits">
+        {/* A passage asked about comes first, as the reader's words answer it. */}
+        {rows.map((chosen, i) => (
+          <figure key={`rows-${i}`} className="m-0 grid min-w-0 gap-1 border-s-2 border-[var(--hui-color-border-base-primary)] ps-2.5 text-sm">
+            <figcaption className="text-xs text-muted-foreground">From {chosen.title || "the table"}</figcaption>
+            <div className="min-w-0 overflow-x-auto text-muted-foreground">
+              <Markdown>{chosen.table}</Markdown>
+            </div>
+          </figure>
+        ))}
+        {quotes.map((quote, i) => (
+<SentQuote key={`quote-${i}`} title={quote.title} passage={quote.passage} />
+        ))}
+        {text && <MessageBody content={text} />}
+        {edits.map((edit, i) => (
+          <details key={i} className="group min-w-0 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] text-sm">
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 px-2.5 py-1.5 text-muted-foreground outline-none focus-visible:[outline:var(--hui-focus-ring)] [&::-webkit-details-marker]:hidden">
+              <span aria-hidden="true" className="motion-safe:transition-transform group-open:rotate-90">›</span>
+              {edit.restored ? "Restored" : "Edited"}: {edit.title}
+            </summary>
+            <pre tabIndex={0} role="region" aria-label={`${edit.restored ? "Restored" : "Edited"}: ${edit.title}`} className="m-0 max-h-64 overflow-auto outline-none focus-visible:[outline:var(--hui-focus-ring)] border-t border-[var(--hui-color-border-base-primary)] px-2.5 py-2 font-mono text-xs whitespace-pre-wrap [overflow-wrap:anywhere]">
+              {edit.body}
+            </pre>
+          </details>
+        ))}
+      </div>
+    );
+  return <MessageBody content={content} />;
+}
+
+/** A passage the reader asked about, above their words. */
+function SentQuote({ title, passage }: { title: string; passage: string }) {
+  const body = React.useRef<HTMLQuoteElement>(null);
+  // Focusable only when it scrolls, so a long quote scrolls by keyboard in
+  // every browser and a short one adds no empty tab stop.
+  const [scrolls, setScrolls] = React.useState(false);
+  React.useEffect(() => {
+    const element = body.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => setScrolls(element.scrollHeight > element.clientHeight + 1));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <figure className="m-0 grid min-w-0 gap-1 border-s-2 border-[var(--hui-color-border-base-primary)] ps-2.5 text-sm">
+      <figcaption className="text-xs text-muted-foreground">From {title}</figcaption>
+      <blockquote
+        ref={body}
+        tabIndex={scrolls ? 0 : undefined}
+        aria-label={`Quote from ${title}`}
+        className="m-0 max-h-24 overflow-auto rounded-[var(--hui-radius-1)] whitespace-pre-wrap text-muted-foreground outline-none [overflow-wrap:anywhere] focus-visible:[outline:var(--hui-focus-ring)]"
+      >
+        {passage}
+      </blockquote>
+    </figure>
+  );
+}
+
+function MessageBody({ content }: { content: string }) {
   const submission = readSubmission(content);
   if (!submission) return <Markdown>{content}</Markdown>;
   return (

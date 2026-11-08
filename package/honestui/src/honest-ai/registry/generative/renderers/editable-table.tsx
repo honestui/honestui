@@ -12,8 +12,9 @@ import {
   useTriggerAction,
   useFormName,
 } from "../runtime/react";
-import { array, record, text, type Props } from "./shared";
+import { ChatBusyContext, array, record, text, type Props } from "./shared";
 export function GeneratedEditableTable({ props }: { props: Props }) {
+  const busy = React.useContext(ChatBusyContext);
   const field = useStateField<unknown>(text(props.name));
   const streaming = useIsStreaming();
   const trigger = useTriggerAction();
@@ -110,7 +111,8 @@ export function GeneratedEditableTable({ props }: { props: Props }) {
         }}
       />
       <Button
-        disabled={streaming || field.value === undefined}
+        // Saving sends the table to the assistant, which waits while another reply runs.
+        disabled={streaming || busy || field.value === undefined}
         onClick={() => trigger("Save Changes", formName)}
       >
         Save changes

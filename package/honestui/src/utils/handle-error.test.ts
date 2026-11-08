@@ -95,7 +95,7 @@ describe("handleError", () => {
     expect(logger.error).toHaveBeenCalledWith(
       "You can also try a previous version to see if that works:"
     )
-    expect(logger.error).toHaveBeenCalledWith("npx honestui@0.1.0 add foo")
+    expect(logger.error).toHaveBeenCalledWith("npx honestui@0.2.0 add foo")
     expect(exit).toHaveBeenCalledWith(1)
   })
 })

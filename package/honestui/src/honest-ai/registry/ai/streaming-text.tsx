@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  ArrowUpRight as ArrowUpRightIcon,
   Check as CheckIcon,
   ChevronDown as ChevronDownIcon,
   CircleAlert as CircleAlertIcon,
@@ -16,7 +17,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import { EASE_OUT, SPRING_PRESS, SPRING_SWAP } from "../../lib/ease.js"
 import { cn } from "../../lib/utils.js"
-import { buttonVariants } from "../../components/ui/button.js"
+import { Button, buttonVariants } from "../../components/ui/button.js"
+import { Tooltip, TooltipPopup, TooltipTrigger } from "../../components/ui/tooltip.js"
 
 export type StreamingTextStatus = "streaming" | "complete" | "error"
 
@@ -128,23 +130,31 @@ function ActionButton({
   const shouldReduceMotion = useReducedMotion() ?? false
 
   return (
-    <motion.button
-      type="button"
-      aria-label={label}
-      title={label}
-      aria-pressed={isPressed}
-      onClick={onClick}
-      whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
-      transition={SPRING_PRESS}
-      className={cn(
-        buttonVariants({ variant: "link", size: "icon-sm" }),
-        // The spring handles the press, so the CSS press scale is turned off.
-        "active:scale-100! aria-pressed:bg-[var(--hui-color-background-neutral-secondary)]",
-        className
-      )}
-    >
-      {children}
-    </motion.button>
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <motion.button
+            type="button"
+            aria-label={label}
+            aria-pressed={isPressed}
+            onClick={onClick}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
+            transition={SPRING_PRESS}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "icon-sm" }),
+              // The spring handles the press, so the CSS press scale is turned off.
+              "active:scale-100! aria-pressed:bg-[var(--hui-color-background-neutral-secondary)]",
+              className
+            )}
+          />
+        }
+      >
+        {children}
+      </TooltipTrigger>
+      <TooltipPopup showArrow={false} sideOffset={6}>
+        {label}
+      </TooltipPopup>
+    </Tooltip>
   )
 }
 
@@ -221,7 +231,7 @@ function StreamingText({
   const hasSources = sources.length > 0
   const isSourcesOpen = sourcesOpen ?? uncontrolledSourcesOpen
   const hasActions =
-    showActions && !isStreaming && (canCopy || onRetry !== undefined || canRate || hasSources)
+    showActions && !isStreaming && (canCopy || (onRetry !== undefined && status !== "error") || canRate || hasSources)
 
   const copy = async () => {
     try {
@@ -271,13 +281,21 @@ function StreamingText({
       </div>
 
       {status === "error" && (
-        <p role="alert" className={cn("m-0 flex items-start gap-[var(--hui-space-2)]", smallText)}>
-          <CircleAlertIcon strokeWidth={1.5} strokeLinecap="round"
-            aria-hidden="true"
-            className="mt-px size-3.5 shrink-0 text-[var(--hui-color-foreground-danger-primary)]"
-          />
-          <span className="min-w-0 break-words">{labels.error}</span>
-        </p>
+        <div className="flex min-w-0 flex-wrap items-center gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)]">
+          <p role="alert" className={cn("m-0 flex min-w-0 items-start gap-[var(--hui-space-2)]", smallText)}>
+            <CircleAlertIcon strokeWidth={1.5} strokeLinecap="round"
+              aria-hidden="true"
+              className="mt-px size-3.5 shrink-0 text-[var(--hui-color-foreground-danger-primary)]"
+            />
+            <span className="min-w-0 break-words">{labels.error}</span>
+          </p>
+          {/* After an error, recovery is a labelled action next to the message, not an icon in the row below. */}
+          {onRetry && showActions && (
+            <Button variant="secondary" size="xs" onClick={onRetry}>
+              {labels.retry}
+            </Button>
+          )}
+        </div>
       )}
 
       <AnimatePresence initial={false}>
@@ -285,8 +303,8 @@ function StreamingText({
           <motion.div
             key="actions"
             data-slot="streaming-text-actions"
-            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: shouldReduceMotion ? 0.12 : 0.22, ease: EASE_OUT }}
             className={smallText}
@@ -310,7 +328,7 @@ function StreamingText({
                   </AnimatePresence>
                 </ActionButton>
               )}
-              {onRetry && (
+              {onRetry && status !== "error" && (
                 <ActionButton label={labels.retry} onClick={onRetry}>
                   <RotateCcwIcon aria-hidden="true" />
                 </ActionButton>
@@ -380,7 +398,7 @@ function StreamingText({
                       <ul
                         role="list"
                         data-slot="streaming-text-sources"
-                        className="m-0 mt-[var(--hui-space-2)] flex list-none flex-col rounded-[var(--hui-radius-3)] bg-[var(--hui-color-background-base-secondary)] p-[var(--hui-space-2)]"
+                        className="m-0 mt-[var(--hui-space-2)] flex list-none flex-col rounded-[var(--hui-radius-3)] bg-[var(--hui-color-background-neutral-primary)] p-[var(--hui-space-2)]"
                       >
                         {sources.map((source, index) => (
                           <motion.li
@@ -394,17 +412,23 @@ function StreamingText({
                               href={source.href}
                               className={cn(
                                 "flex min-w-0 items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] no-underline!",
-                                interactive
+                                interactive,
+                                // The list sits on a neutral fill, so a row needs the next step up to show hover.
+                                "hover:bg-[var(--hui-color-background-neutral-secondary)]"
                               )}
                             >
-                              <span className="min-w-0 truncate underline decoration-[var(--hui-color-border-base-secondary)] underline-offset-2">
+                              <span className="min-w-0 truncate" title={source.title}>
                                 {source.title}
                               </span>
                               {source.domain && (
-                                <span className="ms-auto shrink-0 font-mono text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mono-mini)]">
+                                <span className={cn("shrink-0 text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
                                   {source.domain}
                                 </span>
                               )}
+                              <ArrowUpRightIcon
+                                aria-hidden="true"
+                                className="size-3 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
+                              />
                             </a>
                           </motion.li>
                         ))}
@@ -431,13 +455,18 @@ function StreamingCitation({ className, children, ...props }: StreamingCitationP
     <a
       data-slot="streaming-citation"
       className={cn(
-        "mx-0.5 inline-flex items-center gap-[var(--hui-space-1)] rounded-[var(--hui-radius-1)] bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-2)] align-baseline font-mono text-[var(--hui-color-foreground-base-secondary)] no-underline! [font-size:var(--hui-font-size-mono-mini)] [line-height:var(--hui-line-height-small)] hover:text-[var(--hui-color-foreground-base-primary)]",
-        interactive,
+        // The source chip shared with Context Cards and Thinking State, kept to
+        // the line height so a citation does not push the lines of text apart.
+        "mx-0.5 inline-flex items-center gap-[var(--hui-space-1)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-2)] align-baseline text-[var(--hui-color-foreground-base-primary)] no-underline! outline-none motion-safe:[transition:var(--hui-transition-interactive)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] hover:bg-[var(--hui-color-background-neutral-secondary-hover)] focus-visible:[outline:var(--hui-focus-ring)]",
         className
       )}
       {...props}
     >
       {children}
+      <ArrowUpRightIcon
+        aria-hidden="true"
+        className="size-3 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
+      />
     </a>
   )
 }

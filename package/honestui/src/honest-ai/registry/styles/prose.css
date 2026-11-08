@@ -36,9 +36,10 @@
     --prose-muted,
     var(--hui-color-foreground-base-secondary, color-mix(in oklab, currentColor 72%, transparent))
   );
+  /* A step off the page, for code blocks and the table header band. */
   --_surface: var(
     --prose-surface,
-    var(--hui-color-background-base-secondary, color-mix(in oklab, currentColor 7%, transparent))
+    var(--hui-color-background-base-secondary, color-mix(in oklab, currentColor 5%, transparent))
   );
   --_rule: var(
     --prose-rule,
@@ -53,6 +54,10 @@
     var(--hui-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace)
   );
   --_radius: var(--prose-radius, var(--hui-radius-1, 0.25em));
+  /* Code blocks and tables share one frame radius. */
+  --_radius-block: var(--hui-radius-code-block, calc(var(--_radius) + 0.25rem));
+  /* A half-pixel line fades at 1x, so without tokens lines are a full pixel. */
+  --_hairline: var(--hui-border-width-surface, 1px);
 
   min-width: 0;
   max-width: var(--prose-width, none);
@@ -80,17 +85,23 @@
 
 .honest-prose :where(h1, h2, h3, h4, h5, h6):not(:where(.not-prose, .not-prose *)) {
   margin-block: calc(var(--_flow) * 1.667) 0;
+  text-wrap: balance;
+}
+
+/* The type uses :is() so it outranks a theme's element rules, such as
+   `h2:not([data-slot])`. Margins stay at zero specificity above. */
+.honest-prose :is(h1, h2, h3, h4, h5, h6):not(:where(.not-prose, .not-prose *)) {
   font-family: inherit;
   font-size: 1em;
   font-weight: var(--hui-font-weight-semibold, 600);
   line-height: 1.43;
   letter-spacing: inherit;
-  text-wrap: balance;
 }
 
-.honest-prose :where(h1, h2):not(:where(.not-prose, .not-prose *)) {
+.honest-prose :is(h1, h2):not(:where(.not-prose, .not-prose *)) {
   font-size: var(--_heading);
-  line-height: 1.5;
+  line-height: 1.375;
+  letter-spacing: var(--hui-letter-spacing-large, -0.011em);
 }
 
 /* A heading and the block under it read as one unit. */
@@ -100,47 +111,72 @@
 
 /* Inline text */
 
+/* A quiet underline that firms up on hover. It is always there, so links
+   never depend on color. */
 .honest-prose :where(a):not(:where(.not-prose, .not-prose *)) {
   color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration-line: underline;
+  text-decoration-thickness: max(1px, 0.0625em);
+  text-decoration-color: color-mix(in oklab, currentColor 50%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.honest-prose :where(a:hover):not(:where(.not-prose, .not-prose *)) {
+  text-decoration-color: currentColor;
 }
 
 .honest-prose :where(strong, b):not(:where(.not-prose, .not-prose *)) {
   font-weight: var(--hui-font-weight-semibold, 600);
 }
 
-.honest-prose :where(code, kbd, samp):not(:where(.not-prose, .not-prose *)) {
+/* Footnote references do not make their line taller. */
+.honest-prose :where(sub, sup):not(:where(.not-prose, .not-prose *)) {
+  line-height: 0;
+}
+
+/* Code shows the characters as typed, so ligatures such as => are off and
+   the body's letter spacing does not spread the columns. */
+.honest-prose :where(pre, code, kbd, samp):not(:where(.not-prose, .not-prose *)) {
   font-family: var(--_font-mono);
+  font-variant-ligatures: none;
+  letter-spacing: 0;
 }
 
-/* Inline code and code blocks set their own sizes, so code is not shrunk twice. */
-.honest-prose :where(kbd, samp):not(:where(.not-prose, .not-prose *)) {
-  font-size: 0.9em;
+/* Code in a heading steps down a weight, so it is not the heaviest text there. */
+.honest-prose :where(h1, h2, h3, h4, h5, h6) :where(code):not(:where(.not-prose, .not-prose *)) {
+  font-weight: var(--hui-font-weight-medium, 500);
 }
 
-/* Inline code matches the docs site: a page-colored chip with a rule. */
+/* Inline code is 12px at the 14px body and scales with the text around it,
+   including inside headings. */
+.honest-prose :where(:not(pre) > code, kbd, samp):not(:where(.not-prose, .not-prose *)) {
+  font-size: 0.857em;
+}
+
+/* Inline code and keys are page-colored chips with a hairline. Padding sits
+   inside the chip, and a chip that wraps keeps its border on both lines. */
+.honest-prose :where(:not(pre) > code, kbd):not(:where(.not-prose, .not-prose *)) {
+  border: var(--_hairline) solid var(--_rule);
+  border-radius: var(--_radius);
+  background: var(--hui-color-background-base-primary, color-mix(in oklab, currentColor 4%, transparent));
+  padding: 0.1em 0.35em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 .honest-prose :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) {
-  margin-inline: 0.25rem;
-  border: 1px solid var(--_rule-strong);
-  border-radius: var(--_radius);
-  background: var(--hui-color-background-base-primary, Canvas);
-  padding: 1px 0.3rem;
   color: var(--prose-code-color, inherit);
-  font-size: 0.8em;
 }
 
+/* A key has a lower edge, so it reads as a key and not as code. */
 .honest-prose :where(kbd):not(:where(.not-prose, .not-prose *)) {
-  border: 0.5px solid var(--_rule-strong);
-  border-radius: var(--_radius);
-  background: var(--_surface);
-  padding-inline: 0.3em;
+  box-shadow: inset 0 -1px 0 var(--_rule-strong);
 }
 
 /* Lists */
 
 .honest-prose :where(ul, ol):not(:where(.not-prose, .not-prose *)) {
-  padding-inline-start: 1.45em;
+  padding-inline-start: 1.6em;
 }
 
 .honest-prose :where(ul):not(:where(.not-prose, .not-prose *)) {
@@ -155,23 +191,51 @@
   list-style: circle;
 }
 
+/* Markers recede behind the text. Browsers give list numbers tabular
+   figures, which LoveSans draws like code. */
+.honest-prose :where(li):not(:where(.not-prose, .not-prose *))::marker {
+  color: var(--_muted);
+  font-variant-numeric: normal;
+}
+
 .honest-prose :where(li):not(:where(.not-prose, .not-prose *)) {
-  margin-block: calc(var(--_flow) / 6) 0;
+  margin-block: calc(var(--_flow) / 3) 0;
 }
 
 .honest-prose :where(li) > :where(ul, ol):not(:where(.not-prose, .not-prose *)) {
-  margin-block-start: calc(var(--_flow) / 6);
+  margin-block-start: calc(var(--_flow) / 3);
 }
 
-/* A task list's checkboxes stand in for the bullets. */
-.honest-prose :where(ul.contains-task-list):not(:where(.not-prose, .not-prose *)) {
+/* In a loose list, paragraphs inside an item sit closer than the items do. */
+.honest-prose :where(li > p + p):not(:where(.not-prose, .not-prose *)) {
+  margin-block-start: calc(var(--_flow) / 2);
+}
+
+.honest-prose :where(li:has(> :is(p, pre, blockquote, figure, table, div, dl)) + li):not(:where(.not-prose, .not-prose *)) {
+  margin-block-start: var(--_flow);
+}
+
+/* A task's checkbox sits where its bullet would, so wrapped lines and nested
+   lists indent like any other list, and a plain item in the same list keeps
+   its bullet. Markdown draws the checkbox as a markdown-task-mark span. */
+.honest-prose :where(li.task-list-item):not(:where(.not-prose, .not-prose *)) {
+  position: relative;
   list-style: none;
-  padding-inline-start: 0;
 }
 
-.honest-prose :where(li.task-list-item input):not(:where(.not-prose, .not-prose *)) {
+.honest-prose
+  :where(
+    li.task-list-item > :first-child:is(input, [data-slot=markdown-task-mark]),
+    li.task-list-item > p:first-child > :first-child:is(input, [data-slot=markdown-task-mark])
+  ):not(:where(.not-prose, .not-prose *)) {
+  position: absolute;
+  inset-inline-start: -1.6em;
+  /* Centered on the first line. */
+  inset-block-start: calc(var(--_leading) * 0.5em);
+  translate: 0 -50%;
   margin: 0;
-  margin-inline-end: 0.4em;
+  /* A checkbox has its own font size, which would change the em above. */
+  font-size: inherit;
 }
 
 .honest-prose :where(dt):not(:where(.not-prose, .not-prose *)) {
@@ -181,6 +245,10 @@
 .honest-prose :where(dd):not(:where(.not-prose, .not-prose *)) {
   margin: 0;
   color: var(--_muted);
+}
+
+.honest-prose :where(dd + dt):not(:where(.not-prose, .not-prose *)) {
+  margin-block-start: calc(var(--_flow) * 0.667);
 }
 
 /* Quotes and rules */
@@ -194,25 +262,46 @@
 .honest-prose :where(hr):not(:where(.not-prose, .not-prose *)) {
   margin-block-start: calc(var(--_flow) * 1.333);
   border: 0;
-  border-block-start: 0.5px solid var(--_rule);
+  border-block-start: var(--_hairline) solid var(--_rule);
   height: 0;
+  /* Browsers color a rule gray, which the fallback line would mix with. */
+  color: inherit;
+}
+
+/* The same space below a rule as above it. A heading keeps its own. */
+.honest-prose :where(hr):not(:where(.not-prose, .not-prose *)) + :where(:not(h1, h2, h3, h4, h5, h6)) {
+  margin-block-start: calc(var(--_flow) * 1.333);
 }
 
 /*
- * Code blocks, for a renderer that does not bring a component for them. The
- * frame matches the docs site: a surface shell around a page-colored panel
- * with a hairline rule. The border is the shell, so it needs no wrapper.
+ * Code blocks, for a renderer that does not bring a component for them: one
+ * tinted panel with a hairline. Code View's shell holds a header; a plain
+ * block has none, so it needs only the panel.
+ *
+ * The block keeps the body size, so its spacing matches the blocks around it.
+ * The code inside is 12px on a 20px line at the 14px body, as in Code View.
  */
 
 .honest-prose :where(pre):not(:where(.not-prose, .not-prose *)) {
   overflow-x: auto;
-  border: 0.25rem solid var(--_surface);
-  border-radius: calc(var(--_radius) + 0.25rem);
-  background: var(--hui-color-background-base-primary, Canvas);
-  box-shadow: inset 0 0 0 0.5px var(--_rule);
-  padding: 0.875rem 1rem;
-  font-size: 0.8125rem;
-  line-height: 1.65;
+  border: var(--_hairline) solid var(--_rule);
+  border-radius: var(--_radius-block);
+  background: var(--_surface);
+  padding: 0.857em 1.143em;
+  tab-size: 2;
+}
+
+.honest-prose :where(pre > code):not(:where(.not-prose, .not-prose *)) {
+  display: block;
+  font-size: 0.857em;
+  line-height: 1.667;
+}
+
+/* A plain-HTML block without a code element sets the code size itself. */
+.honest-prose :where(pre:not(:has(> code))):not(:where(.not-prose, .not-prose *)) {
+  padding: 1em 1.333em;
+  font-size: 0.857em;
+  line-height: 1.667;
 }
 
 /* Tables */
@@ -224,26 +313,30 @@
 
 /*
  * The frame is drawn on the table itself, so it needs no wrapper. Separate
- * borders let the corners round; collapsed borders cannot.
+ * borders let the corners round; collapsed borders cannot. Cells are content,
+ * so they keep the body size and line height.
  */
 .honest-prose :where(table):not(:where(.not-prose, .not-prose *)) {
   width: 100%;
-  border: 0.5px solid var(--_rule);
+  border: var(--_hairline) solid var(--_rule);
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: var(--hui-radius-4, 0.5em);
-  box-shadow: var(--hui-shadow-feather, none);
-  font-size: 0.857em;
-  line-height: 1.34;
+  border-radius: var(--_radius-block);
 }
 
-.honest-prose :where(.prose-scroll) > :where(table) {
+.honest-prose :where(.prose-scroll) > :where(table):not(:where(.not-prose, .not-prose *)) {
   margin-block-start: 0;
 }
 
+/* Every cell has the same padding, so a cell that arrives later does not
+   change the one before it. */
 .honest-prose :where(th, td):not(:where(.not-prose, .not-prose *)) {
   padding: calc(var(--_flow) * 0.667) var(--_flow);
   vertical-align: top;
+}
+
+/* Cells start-align unless the HTML aligns them with an attribute. */
+.honest-prose :where(th:not([align]), td:not([align])):not(:where(.not-prose, .not-prose *)) {
   text-align: start;
 }
 
@@ -257,18 +350,27 @@
   color: var(--_muted);
 }
 
-/* Cell backgrounds are not clipped by the table's radius, so the corner cells round themselves. */
+/* Cell backgrounds are not clipped by the table's radius, so the corner
+   cells round themselves, inside the border. The header row is complete
+   before it renders, so its last cell is stable. */
 .honest-prose :where(thead > tr:first-child > th:first-child):not(:where(.not-prose, .not-prose *)) {
-  border-start-start-radius: var(--hui-radius-4, 0.5em);
+  border-start-start-radius: calc(var(--_radius-block) - var(--_hairline));
 }
 
 .honest-prose :where(thead > tr:first-child > th:last-child):not(:where(.not-prose, .not-prose *)) {
-  border-start-end-radius: var(--hui-radius-4, 0.5em);
+  border-start-end-radius: calc(var(--_radius-block) - var(--_hairline));
 }
 
-/* The line is drawn above each body cell, so a row that arrives later needs no restyle. */
-.honest-prose :where(td):not(:where(.not-prose, .not-prose *)) {
-  border-block-start: 0.5px solid var(--_rule);
+/* The line is drawn above each row after the first, and above the first row
+   after a header, including row headers. It looks only backward, so a row
+   that arrives later needs no restyle, and a table without a header gets no
+   second line under its border. */
+.honest-prose
+  :where(
+    :is(tbody, tfoot) > tr + tr > *,
+    :is(thead, tbody) + :is(tbody, tfoot) > tr:first-child > *
+  ):not(:where(.not-prose, .not-prose *)) {
+  border-block-start: var(--_hairline) solid var(--_rule);
 }
 
 /* Media */
@@ -281,11 +383,30 @@
 .honest-prose :where(figcaption):not(:where(.not-prose, .not-prose *)) {
   margin-block-start: calc(var(--_flow) / 2);
   color: var(--_muted);
-  font-size: 0.857em;
+  font-size: calc(1em * 6 / 7);
+}
+
+/* Footnotes sit apart from the reply, below a rule, in smaller muted text. */
+.honest-prose :where([data-footnotes]):not(:where(.not-prose, .not-prose *)) {
+  margin-block-start: calc(var(--_flow) * 1.333);
+  border-block-start: var(--_hairline) solid var(--_rule);
+  padding-block-start: calc(var(--_flow) / 3);
+  color: var(--_muted);
+  font-size: calc(1em * 6 / 7);
+}
+
+/* Secondary text inside secondary text keeps its color. Without tokens the
+   muted color is a fraction of the current one, and would fade again. */
+.honest-prose :where(blockquote, dd, figcaption, thead th, [data-footnotes]) :where(blockquote, dd, figcaption, th):not(:where(.not-prose, .not-prose *)),
+.honest-prose :where(blockquote, dd, figcaption, [data-footnotes]) :where(li):not(:where(.not-prose, .not-prose *))::marker {
+  color: inherit;
 }
 
 /* Last, so it wins over the flow rules above: nothing is pushed off the top of its container. */
+/* In a tight list item, text comes before a block without a paragraph, so an
+   item drops the margin only from an opening paragraph or heading. */
 .honest-prose > :where(:first-child),
-.honest-prose :where(li, blockquote, td, th, dd, figure) > :where(:first-child):not(:where(.not-prose *)) {
+.honest-prose :where(blockquote, td, th, dd, figure, ul, ol, [data-footnotes]) > :where(:first-child):not(:where(.not-prose *)),
+.honest-prose :where(li) > :where(p, h1, h2, h3, h4, h5, h6):first-child:not(:where(.not-prose *)) {
   margin-block-start: 0;
 }
