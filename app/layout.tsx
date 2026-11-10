@@ -222,6 +222,13 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        <script
+          defer
+          src="https://collect.connorlove.com/script.js"
+          data-site="sk_site_pidZ11YHyq8ZC1Xr"
+        ></script>
+      </head>
       <body className="font-sans antialiased">
         <script
           type="application/ld+json"
