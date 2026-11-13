@@ -1,5 +1,4 @@
-import { JetBrains_Mono } from "next/font/google";
-import localFont from "next/font/local";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "next-themes";
 import { SiteAnalytics } from "@/components/site-analytics";
@@ -12,60 +11,10 @@ import {
 } from "@/globals/constants/site";
 import "./globals.css";
 
-const loveSans = localFont({
-  src: [
-    {
-      path: "../public/fonts/LoveSans-Light.woff",
-      weight: "300",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/LoveSans-LightItalic.woff",
-      weight: "300",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/LoveSans-Regular.woff",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/LoveSans-RegularItalic.woff",
-      weight: "400",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/LoveSans-Medium.woff",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/LoveSans-MediumItalic.woff",
-      weight: "500",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/LoveSans-Semibold.woff",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/LoveSans-SemiboldItalic.woff",
-      weight: "600",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/LoveSans-Bold.woff",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/LoveSans-BoldItalic.woff",
-      weight: "700",
-      style: "italic",
-    },
-  ],
-  variable: "--font-love-sans",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -218,7 +167,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${loveSans.variable} ${jetbrainsMono.variable}`}
+      className={`${geistSans.variable} ${jetbrainsMono.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

@@ -44,17 +44,21 @@ export function DataTableColumnHeader<TData, TValue>({
       <Button
         variant="ghost"
         size="sm"
-        className="-ms-[var(--hui-space-2)] h-auto border-0 px-[var(--hui-space-2)] py-[var(--hui-space-1)] font-medium [font-size:var(--hui-font-size-small)] text-[var(--hui-color-foreground-base-tertiary)]"
+        data-sorted={sorted ? "" : undefined}
+        className="group/sort -ms-[var(--hui-space-2)] h-auto border-0 px-[var(--hui-space-2)] py-[var(--hui-space-1)] font-medium [font-size:var(--hui-font-size-small)] text-[var(--hui-color-foreground-base-secondary)] data-sorted:text-[var(--hui-color-foreground-base-primary)]"
         aria-label={`Sort by ${title}`}
         onClick={() => toggleDataTableColumnSorting(column)}
       >
         <span>{title}</span>
         {sorted === "asc" ? (
-          <ArrowUpIcon aria-hidden />
+          <ArrowUpIcon aria-hidden className="size-3" />
         ) : sorted === "desc" ? (
-          <ArrowDownIcon aria-hidden />
+          <ArrowDownIcon aria-hidden className="size-3" />
         ) : (
-          <ChevronsUpDownIcon aria-hidden className="opacity-60" />
+          <ChevronsUpDownIcon
+            aria-hidden
+            className="size-3 opacity-0 motion-safe:transition-opacity group-hover/sort:opacity-60 group-focus-visible/sort:opacity-60"
+          />
         )}
       </Button>
     </div>

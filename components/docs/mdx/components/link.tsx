@@ -1,11 +1,17 @@
 import Link from "next/link";
 import React from "react";
 
-import { Link as LinkIcon } from "honestui/icons";
 import { cn } from "@/lib/utils";
 
+// One link treatment for prose, tables and external links: the text takes the
+// primary ink so it stands out from body copy, and a hairline underline in a
+// muted tone keeps it recognisable as a link without colour alone. The
+// underline darkens on hover.
+export const docsLinkClassName =
+  "rounded-[2px] font-medium text-[var(--hui-color-foreground-base-primary)] underline decoration-[var(--hui-color-foreground-base-tertiary)] decoration-1 underline-offset-[3.5px] outline-none transition-[text-decoration-color] duration-150 hover:decoration-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-2";
+
 export const A = ({ className, ...props }: React.ComponentProps<"a">) => (
-  <a className={cn("font-medium underline underline-offset-4", className)} {...props} />
+  <a className={cn(docsLinkClassName, className)} {...props} />
 );
 
 export const MDXLink = ({
@@ -22,13 +28,12 @@ export const MDXLink = ({
   return (
     <Link
       href={href}
-      target={_blank ? "_blank" : "_self"}
-      className={cn(className, "hover:text-primary group")}
+      target={_blank ? "_blank" : undefined}
+      rel={_blank ? "noreferrer" : undefined}
+      className={cn(docsLinkClassName, className)}
     >
-      <span className="decoration-primary/50 group-hover:decoration-primary underline decoration-1 underline-offset-4 transition-colors duration-100">
-        {children}
-      </span>
-      <LinkIcon className="group-hover:text-primary text-muted-foreground mb-0.5 ml-0.5 inline size-2.5 duration-100" />
+      {children}
+      {_blank ? <span className="sr-only"> (opens in a new tab)</span> : null}
     </Link>
   );
 };

@@ -101,7 +101,7 @@ For dark mode, change both `data-theme` and the class to `dark`. The class also 
 
 The theme includes Honest UI's one component style: rounded corners, 14px control labels, pale hairlines, faint shadows, and a blue default accent. There is no style attribute to set; older `data-style` values are ignored. An explicit `data-accent-color` or `data-density` scope keeps its own settings.
 
-Set `--font-love-sans` and `--font-jetbrains-mono` to use your fonts. Set your page's background and text color with `--hui-color-background-base-primary` and `--hui-color-foreground-base-primary`.
+Set `--font-geist-sans` and `--font-jetbrains-mono` to use your fonts. Set your page's background and text color with `--hui-color-background-base-primary` and `--hui-color-foreground-base-primary`.
 
 ## Prose
 

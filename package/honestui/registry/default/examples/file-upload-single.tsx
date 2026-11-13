@@ -4,6 +4,8 @@ import * as React from "react"
 
 import {
   FileUpload,
+  FileUploadBrowse,
+  FileUploadDescription,
   FileUploadDropzone,
   FileUploadIcon,
   FileUploadList,
@@ -13,7 +15,12 @@ import {
 } from "@/registry/default/product/file-upload/file-upload"
 import { Button } from "@/registry/default/ui/button"
 import { makeSamplePngFile } from "./file-upload-example-utils"
-import { FileUploadSampleButton } from "./file-upload-sample-button"
+import {
+  demoHelperText,
+  FileUploadDemoHeader,
+  FileUploadDemoTitle,
+  FileUploadSampleButton,
+} from "./file-upload-sample-button"
 
 /**
  * Single-file tasks should not keep a giant empty dropzone around. After a
@@ -26,7 +33,19 @@ export default function FileUploadSingle() {
   const hasFile = value.length > 0
 
   return (
-    <div ref={containerRef} className="w-full min-w-0 max-w-xl">
+    <div ref={containerRef} className="flex w-full min-w-0 max-w-xl flex-col gap-[var(--hui-space-2)]">
+      <FileUploadDemoHeader
+        action={
+          <FileUploadSampleButton
+            containerRef={containerRef}
+            files={() => [
+              makeSamplePngFile("portrait.png", { size: 820 * 1024 }),
+            ]}
+          />
+        }
+      >
+        <FileUploadDemoTitle>Profile picture</FileUploadDemoTitle>
+      </FileUploadDemoHeader>
       <FileUpload
         value={value}
         onValueChange={setValue}
@@ -37,30 +56,21 @@ export default function FileUploadSingle() {
         <FileUploadList />
 
         {hasFile ? (
-          <div className="mt-[var(--hui-space-3)]">
-            <FileUploadTrigger render={<Button variant="outline" />}>
+          <div className="mt-[var(--hui-space-3)] flex items-center justify-between gap-[var(--hui-space-3)]">
+            <p className={demoHelperText}>PNG or JPG up to 5 MB</p>
+            <FileUploadTrigger render={<Button variant="outline" size="sm" />}>
               Replace
             </FileUploadTrigger>
           </div>
         ) : (
-          <FileUploadDropzone className="mt-[var(--hui-space-3)]">
+          <FileUploadDropzone className="mt-[var(--hui-space-3)] first:mt-0">
             <FileUploadIcon />
             <FileUploadTitle>Drop a file or browse</FileUploadTitle>
+            <FileUploadDescription>PNG or JPG up to 5 MB</FileUploadDescription>
+            <FileUploadBrowse />
           </FileUploadDropzone>
         )}
       </FileUpload>
-
-      <div className="mt-[var(--hui-space-2)] flex items-center gap-[var(--hui-space-3)]">
-        <p className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
-          PNG or JPG up to 5 MB
-        </p>
-        <FileUploadSampleButton
-          containerRef={containerRef}
-          files={() => [
-            makeSamplePngFile("portrait.png", { size: 820 * 1024 }),
-          ]}
-        />
-      </div>
     </div>
   )
 }

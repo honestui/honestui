@@ -75,7 +75,7 @@ function InsightCards({ title, children, labels: labelsProp, className, ...props
               aria-live="polite"
               className="px-[var(--hui-space-2)] text-center whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
             >
-              {/* Tabular figures on the digits only, since LoveSans also widens letters. */}
+              {/* Tabular figures on the digits only, since the tabular feature can also widen letters. */}
               {labels.position(current + 1, cards.length)
                 .split(/(\d+)/)
                 .map((part, partIndex) =>

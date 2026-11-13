@@ -97,7 +97,7 @@ export function DataTableFilter({
     <Menu>
       <MenuTrigger
         render={
-          <Button variant="ghost" size="sm" className={className} />
+          <Button variant="outline" size="sm" className={className} />
         }
       >
         <FunnelIcon aria-hidden className="opacity-72" />

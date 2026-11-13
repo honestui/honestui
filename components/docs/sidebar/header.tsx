@@ -9,11 +9,11 @@ const DocsHeader = async () => {
   const stars = await getGithubStars();
 
   return (
-    <SidebarHeader className="bg-background pointer-events-none fixed top-0 z-50 flex h-14 w-full flex-row justify-between border-b p-0 sm:sticky sm:h-[35px] sm:border-b-0 sm:bg-transparent">
+    <SidebarHeader className="bg-background pointer-events-none fixed top-0 z-50 flex h-14 w-full flex-row justify-between border-b p-0 sm:static sm:h-11 sm:shrink-0 sm:border-b-0 sm:bg-transparent">
       <div className="pointer-events-auto flex items-center pl-3">
         <SidebarTrigger className="sidebar:hidden" />
       </div>
-      <div className="pointer-events-auto relative z-10 flex h-full items-center gap-2 pl-6">
+      <div className="pointer-events-auto relative z-10 flex h-full items-center gap-1 pr-1 pl-6">
         <Button
           aria-label={
             stars === null
@@ -30,22 +30,21 @@ const DocsHeader = async () => {
             />
           }
           size="sm"
-          variant="link"
+          variant="ghost"
+          className="text-muted-foreground hover:text-foreground h-8 gap-1.5 px-2"
         >
-          <GithubIcon aria-hidden="true" className="size-4 text-primary" />
+          <GithubIcon aria-hidden="true" className="size-4" />
           {stars !== null && (
-            <span aria-hidden="true" className="text-primary text-xs">
+            <span aria-hidden="true" className="text-xs tabular-nums">
               {stars.toLocaleString("en-US")}
             </span>
           )}
         </Button>
-        <span aria-hidden="true" className="text-muted">
-          |
-        </span>
         <ThemeSwitcher />
+        <span aria-hidden="true" className="bg-border mx-1 h-4 w-px" />
         <Button
           aria-label="Connor Love’s website (opens in a new tab)"
-          className="group h-8"
+          className="group h-8 px-2"
           render={
             <Link
               href="https://connorlove.com"
@@ -58,7 +57,7 @@ const DocsHeader = async () => {
         >
           <span
             aria-hidden="true"
-            className="text-muted-foreground group-hover:text-primary text-xs"
+            className="text-muted-foreground group-hover:text-foreground text-xs"
           >
             Built by Connor Love
           </span>

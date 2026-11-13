@@ -5,7 +5,7 @@ export default function TextRevealDemo() {
     <TextReveal
       text={["Ideas made tangible.", "Craft built to last."]}
       as="p"
-      className="px-6 text-center text-3xl font-semibold leading-tight sm:text-5xl"
+      className="px-6 text-center text-3xl font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl"
       stagger={0.08}
     />
   );

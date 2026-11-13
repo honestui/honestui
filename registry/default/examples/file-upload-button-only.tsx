@@ -24,13 +24,16 @@ export default function FileUploadButtonOnly() {
 
   return (
     <div className="flex min-h-[128px] w-full items-center justify-center">
-      <div ref={containerRef} className="flex flex-wrap items-center justify-center gap-[var(--hui-space-3)]">
+      <div
+        ref={containerRef}
+        className="flex w-full max-w-xl flex-wrap items-center justify-between gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-4)]"
+      >
         <FileUpload
           value={value}
           onValueChange={setValue}
-          className="flex items-center justify-center gap-[var(--hui-space-3)]"
+          className="flex w-auto min-w-0 flex-1 items-center gap-[var(--hui-space-4)]"
         >
-          <FileUploadTrigger render={<Button variant="outline" />}>
+          <FileUploadTrigger render={<Button variant="outline" size="sm" />}>
             {value.length === 0 ? "Choose file" : "Choose another file"}
           </FileUploadTrigger>
           <FileUploadSummary className="max-w-72" />
@@ -47,6 +50,7 @@ export default function FileUploadButtonOnly() {
             }),
           ]}
           label="Try samples"
+          className="text-[var(--hui-color-foreground-base-secondary)]"
         />
       </div>
     </div>

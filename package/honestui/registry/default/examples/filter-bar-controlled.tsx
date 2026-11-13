@@ -48,7 +48,7 @@ export default function FilterBarControlled() {
           Reset
         </Button>
       </div>
-      <p aria-live="polite" className="mt-3 text-sm text-muted-foreground">
+      <p aria-live="polite" className="mt-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
         External state owns every value{commitNote ? `; ${commitNote} received` : ""}.
       </p>
     </div>

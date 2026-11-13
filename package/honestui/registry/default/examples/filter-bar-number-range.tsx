@@ -27,7 +27,7 @@ export default function FilterBarNumberRange() {
         value={value}
         onValueChange={setValue}
       />
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
         The chip reads Price: $100 to $500. Switch the rule to Over or Under
         and the wording follows.
       </p>

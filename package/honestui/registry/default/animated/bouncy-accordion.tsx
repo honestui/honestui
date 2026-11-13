@@ -155,21 +155,22 @@ function BouncyAccordionRow({
     <motion.div
       layout="position"
       initial={false}
-      style={{ marginTop: separatedFromPrevious ? 12 : 0 }}
+      style={{ marginTop: separatedFromPrevious ? 8 : 0 }}
       transition={reduce ? { duration: 0 } : ROW_TRANSITION}
     >
       <motion.div
         data-state={open ? "open" : "closed"}
         initial={false}
         animate={{
-          borderTopLeftRadius: startsGroup ? 28 : 0,
-          borderTopRightRadius: startsGroup ? 28 : 0,
-          borderBottomLeftRadius: endsGroup ? 28 : 0,
-          borderBottomRightRadius: endsGroup ? 28 : 0,
+          borderTopLeftRadius: startsGroup ? 14 : 0,
+          borderTopRightRadius: startsGroup ? 14 : 0,
+          borderBottomLeftRadius: endsGroup ? 14 : 0,
+          borderBottomRightRadius: endsGroup ? 14 : 0,
         }}
         transition={reduce ? { duration: 0 } : ROW_TRANSITION}
         className={cn(
-          "overflow-hidden bg-card text-card-foreground",
+          "overflow-hidden border border-border bg-card text-card-foreground",
+          !startsGroup && "border-t-0",
           item.disabled && "opacity-50",
           classNames?.item,
         )}
@@ -182,8 +183,8 @@ function BouncyAccordionRow({
           aria-controls={contentId}
           onClick={onToggle}
           className={cn(
-            "flex min-h-[54px] w-full items-center gap-4 px-5 text-left outline-none transition-colors",
-            "focus-visible:bg-muted/25",
+            "flex min-h-12 w-full items-center gap-3 px-4 text-left outline-none transition-colors",
+            "hover:bg-muted/40 focus-visible:bg-muted/40",
             "disabled:pointer-events-none",
             classNames?.trigger,
           )}
@@ -191,7 +192,7 @@ function BouncyAccordionRow({
           {item.icon ? (
             <span
               className={cn(
-                "grid h-7 w-7 shrink-0 place-items-center text-muted-foreground",
+                "grid size-7 shrink-0 place-items-center rounded-md border border-border text-muted-foreground",
                 classNames?.icon,
               )}
             >
@@ -200,7 +201,7 @@ function BouncyAccordionRow({
           ) : null}
           <span
             className={cn(
-              "min-w-0 flex-1 truncate text-[15px] font-medium text-foreground",
+              "min-w-0 flex-1 truncate text-sm font-medium text-foreground",
               classNames?.title,
             )}
           >
@@ -242,11 +243,11 @@ function BouncyAccordionRow({
               opacity: open ? 1 : 0,
             }}
             transition={reduce ? { duration: 0 } : DESCRIPTION_TRANSITION}
-            className="px-5 pb-5"
+            className="px-4 pb-4 ps-14"
           >
             <div
               className={cn(
-                "text-[15px] leading-6 text-muted-foreground",
+                "text-sm leading-6 text-muted-foreground",
                 classNames?.description,
               )}
             >

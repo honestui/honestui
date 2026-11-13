@@ -9,7 +9,6 @@ import {
 } from "honestui/icons"
 
 import { cn } from "@/lib/utils"
-import { Badge } from "@/registry/default/ui/badge"
 import { Button } from "@/registry/default/ui/button"
 import {
   Popover,
@@ -400,12 +399,8 @@ function FilterBarDefaultSurface({
     2
   )
   const defaultPanelMaxWidth = `${4 + panelColumnCount * 20}rem`
-  const chipsRow = (
-    <>
-      <FilterBarChipsRow />
-      <FilterBarClearAction />
-    </>
-  )
+  // Clear all trails the last chip instead of floating at the far edge.
+  const chipsRow = <FilterBarChipsRow trailing={<FilterBarClearAction />} />
 
   // Base UI triggers attach their ref and click behavior to whatever element
   // they render, so the trigger must be a real Button, not a wrapper that
@@ -423,26 +418,20 @@ function FilterBarDefaultSurface({
           ? `${controller.labels.trigger}, ${controller.labels.triggerActiveSuffix(controller.activeCount)}`
           : controller.labels.trigger
       }
+      className={FILTER_TRIGGER_CLASS}
       // Keeps surrounding controls still when the count badge appears.
       style={{ minWidth: "var(--fb-trigger-min-width, 5.25rem)" }}
     >
-      <FunnelIcon aria-hidden />
-      <span>{controller.labels.trigger}</span>
-      {controller.activeCount > 0 ? (
-        <Badge size="sm" variant="secondary" className="tabular-nums">
-          {controller.activeCount}
-        </Badge>
-      ) : null}
-      <ChevronDownIcon
-        aria-hidden
-        data-open={controller.open || undefined}
-        className="[transition:transform_var(--hui-duration-fast)_var(--hui-ease-out)] data-open:-rotate-180 motion-reduce:[transition:none]"
+      <FilterBarTriggerContents
+        label={controller.labels.trigger}
+        activeCount={controller.activeCount}
+        isOpen={controller.open}
       />
     </Button>
   )
 
   return (
-    <div className="flex w-full min-w-0 items-center gap-(--hui-space-3)">
+    <div className="flex w-full min-w-0 items-center gap-1.5">
       {isNarrow ? (
         <Sheet
           open={controller.open}
@@ -490,16 +479,43 @@ function FilterBarDefaultSurface({
 
 /** The removable record of everything currently filtering the view. */
 
-const CHIP_ROW_GAP_PX = 8
-const OVERFLOW_INDICATOR_CLASS =
-  "shrink-0 rounded-[var(--hui-radius-full)] px-(--hui-space-2) py-(--hui-space-1) text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)]"
+const CHIP_ROW_GAP_PX = 6
+
+/**
+ * Every control in the bar shares one 32px height, one corner, one hairline
+ * edge, and one 13px label, so trigger, chips, overflow, and Clear all read
+ * as a single row.
+ */
+const FILTER_ROW_CONTROL_CLASS =
+  "h-(--hui-space-9) min-h-(--hui-space-9) rounded-[calc(var(--hui-radius-2)-2px)] [font-size:13px] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+
+const FILTER_TRIGGER_CLASS = cn(
+  FILTER_ROW_CONTROL_CLASS,
+  "shrink-0 gap-1.5 px-2.5 shadow-none"
+)
+
+const CHIP_SURFACE_CLASS =
+  "border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)]"
+
+const OVERFLOW_INDICATOR_CLASS = cn(
+  FILTER_ROW_CONTROL_CLASS,
+  CHIP_SURFACE_CLASS,
+  "inline-flex shrink-0 items-center justify-center px-2.5 tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-weight:var(--hui-font-weight-medium)]"
+)
 
 /**
  * Shows one chip per active filter, trimmed with its human-readable value.
  * In collapse mode a pre-paint measurement keeps the row stable, then hides
  * whatever does not fit behind a single "+N" control.
  */
-function FilterBarChipsRow({ className }: { className?: string }) {
+function FilterBarChipsRow({
+  className,
+  trailing,
+}: {
+  className?: string
+  /** Rendered right after the last chip, such as Clear all. */
+  trailing?: React.ReactNode
+}) {
   const {
     activeEntries,
     orderedDefinitions,
@@ -508,6 +524,8 @@ function FilterBarChipsRow({ className }: { className?: string }) {
     labels,
   } = useController("FilterBarChipsRow")
   const containerRef = React.useRef<HTMLDivElement>(null)
+  const listRef = React.useRef<HTMLDivElement>(null)
+  const trailingRef = React.useRef<HTMLDivElement>(null)
   // null means every chip fits or the first pre-paint measure has not run.
   const [fitCount, setFitCount] = React.useState<number | null>(null)
 
@@ -535,16 +553,19 @@ function FilterBarChipsRow({ className }: { className?: string }) {
 
   React.useLayoutEffect(() => {
     const container = containerRef.current
+    const list = listRef.current
 
-    if (!container || isWrap || typeof ResizeObserver === "undefined") return
+    if (!container || !list || isWrap || typeof ResizeObserver === "undefined") return
 
     let frame = requestAnimationFrame(measure)
 
     function measure() {
-      if (!container) return
+      if (!container || !list) return
 
-      const limit = container.clientWidth
-      const chipSlots = Array.from(container.children).filter(
+      const trailingWidth = trailingRef.current?.getBoundingClientRect().width ?? 0
+      const limit =
+        container.clientWidth - (trailingWidth > 0 ? trailingWidth + CHIP_ROW_GAP_PX : 0)
+      const chipSlots = Array.from(list.children).filter(
         (node): node is HTMLElement =>
           node instanceof HTMLElement && node.dataset.chipSlot != null
       )
@@ -559,7 +580,7 @@ function FilterBarChipsRow({ className }: { className?: string }) {
         return
       }
 
-      const overflowMeasure = container.querySelector<HTMLElement>(
+      const overflowMeasure = list.querySelector<HTMLElement>(
         "[data-overflow-measure]"
       )
       const chipLimit = Math.max(
@@ -615,47 +636,62 @@ function FilterBarChipsRow({ className }: { className?: string }) {
     <div
       ref={containerRef}
       data-slot="filter-bar-values"
-      role="list"
-      aria-label="Active filters"
       className={cn(
-        "relative flex min-w-0 flex-1 items-center gap-(--hui-space-2)",
+        "relative flex min-w-0 flex-1 items-center gap-1.5",
         collapsed ? "flex-nowrap overflow-hidden" : "flex-wrap",
         className
       )}
     >
-      {orderedChips.map(({ entry, definition }, index) => {
-        const isChipHidden = collapsed && index >= visibleChipCount
+      <div
+        ref={listRef}
+        data-slot="filter-bar-values-list"
+        role="list"
+        aria-label="Active filters"
+        className={cn(
+          "flex min-w-0 items-center gap-1.5",
+          collapsed ? "flex-nowrap" : "flex-wrap"
+        )}
+      >
+        {orderedChips.map(({ entry, definition }, index) => {
+          const isChipHidden = collapsed && index >= visibleChipCount
 
-        return (
-          <div
-            key={entry.key}
-            data-chip-slot
-            data-slot="filter-bar-value"
-            role="listitem"
-            aria-hidden={isChipHidden || undefined}
+          return (
+            <div
+              key={entry.key}
+              data-chip-slot
+              data-slot="filter-bar-value"
+              role="listitem"
+              aria-hidden={isChipHidden || undefined}
+              className={cn(
+                "min-w-0",
+                isChipHidden &&
+                  "pointer-events-none absolute top-0 left-0 invisible"
+              )}
+            >
+              <FilterBarChip entry={entry} definition={definition} />
+            </div>
+          )
+        })}
+        {!isWrap ? (
+          <span
+            aria-hidden="true"
+            data-overflow-measure
             className={cn(
-              isChipHidden &&
-                "pointer-events-none absolute top-0 left-0 invisible"
+              OVERFLOW_INDICATOR_CLASS,
+              "pointer-events-none absolute top-0 left-0 invisible"
             )}
           >
-            <FilterBarChip entry={entry} definition={definition} />
-          </div>
-        )
-      })}
-      {!isWrap ? (
-        <span
-          aria-hidden="true"
-          data-overflow-measure
-          className={cn(
-            OVERFLOW_INDICATOR_CLASS,
-            "pointer-events-none absolute top-0 left-0 invisible"
-          )}
-        >
-          {labels.moreCount(orderedChips.length)}
-        </span>
-      ) : null}
-      {hiddenCount > 0 ? (
-        <OverflowIndicator hiddenCount={hiddenCount} />
+            {labels.moreCount(orderedChips.length)}
+          </span>
+        ) : null}
+        {hiddenCount > 0 ? (
+          <OverflowIndicator hiddenCount={hiddenCount} />
+        ) : null}
+      </div>
+      {trailing ? (
+        <div ref={trailingRef} className="flex shrink-0 items-center">
+          {trailing}
+        </div>
       ) : null}
     </div>
   )
@@ -671,7 +707,7 @@ function OverflowIndicator({ hiddenCount }: { hiddenCount: number }) {
         data-slot="filter-bar-more-values"
         className={cn(
           OVERFLOW_INDICATOR_CLASS,
-          "min-h-6 min-w-6 cursor-pointer outline-none hover:bg-[var(--hui-color-background-base-primary-hover)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)] disabled:cursor-not-allowed"
+          "min-w-(--hui-space-9) cursor-pointer outline-none motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out),color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[var(--hui-color-background-base-primary-hover)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)] disabled:cursor-not-allowed"
         )}
         onClick={() => openPanel()}
         disabled={disabled}
@@ -703,31 +739,45 @@ export function FilterBarChip({
       data-slot="filter-bar-chip"
       title={`${definition.label}${valueText ? `: ${valueText}` : ""}`}
       className={cn(
-        "inline-flex h-(--hui-space-7) min-w-0 max-w-[16rem] items-center gap-(--hui-space-1) rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-secondary)] pl-(--hui-space-3) pr-(--hui-space-1)",
-        "[font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)] text-[var(--hui-color-foreground-base-primary)]",
+        FILTER_ROW_CONTROL_CLASS,
+        CHIP_SURFACE_CLASS,
+        "inline-flex min-w-0 max-w-[18rem] items-stretch overflow-hidden",
         isDisabled && "opacity-64"
       )}
     >
       <button
         type="button"
         data-slot="filter-bar-chip-open"
-        className="h-full min-w-6 cursor-pointer truncate bg-transparent text-left outline-none focus-visible:[outline:var(--hui-focus-ring)] disabled:cursor-not-allowed"
+        className="flex min-w-6 cursor-pointer items-center gap-(--hui-space-2) truncate bg-transparent pl-2.5 pr-1.5 text-left outline-none motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:[outline-offset:-2px] disabled:cursor-not-allowed"
         onClick={() => openPanel({ focusKey: definition.key })}
         disabled={isDisabled}
       >
-        {definition.label}
+        <span
+          data-slot="filter-bar-chip-label"
+          className="shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
+        >
+          {definition.label}
+        </span>
         {valueText ? (
-          <span className="text-[var(--hui-color-foreground-base-secondary)]">
+          <span
+            data-slot="filter-bar-chip-value"
+            className="truncate tabular-nums text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)]"
+          >
             {" "}
             {valueText}
           </span>
         ) : null}
       </button>
+      <span
+        aria-hidden
+        className="my-(--hui-space-3) w-[0.5px] shrink-0 bg-[var(--hui-color-border-base-secondary)]"
+      />
+      <span className="flex shrink-0 items-center px-[3px]">
       <button
         type="button"
         data-slot="filter-bar-chip-remove"
         aria-label={labels.removeFilter(definition.label)}
-        className="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-[var(--hui-radius-full)] text-[var(--hui-color-foreground-base-secondary)] outline-none hover:bg-[var(--hui-color-background-neutral-tertiary)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)] disabled:pointer-events-none"
+        className="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-tertiary)] outline-none motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out),color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[var(--hui-color-background-base-primary-hover)] hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:[outline:var(--hui-focus-ring)] disabled:pointer-events-none"
         onClick={(event) => {
           event.stopPropagation()
 
@@ -767,8 +817,9 @@ export function FilterBarChip({
         }}
         disabled={isDisabled}
       >
-        <CloseIcon aria-hidden className="size-3" />
+        <CloseIcon aria-hidden className="size-3.5" />
       </button>
+      </span>
     </div>
   )
 }
@@ -793,6 +844,10 @@ export function FilterBarValue({ filterKey }: { filterKey: string }) {
   return <FilterBarChip entry={entry} definition={definition} />
 }
 
+/** The footer actions sit flush in the strip, without the toolbar frame. */
+const FOOTER_TOOLBAR_CLASS =
+  "justify-end gap-(--hui-space-2) overflow-visible rounded-none border-0 p-0 [--hui-control-height-sm:var(--hui-space-9)] [&>*]:[font-size:13px]"
+
 /** Action row for apply mode; defaults to Cancel plus Apply filters. */
 export function FilterBarFooter({
   className,
@@ -804,12 +859,15 @@ export function FilterBarFooter({
   return (
     <footer
       data-slot="filter-bar-footer"
-      className={cn("px-(--hui-space-4) py-(--hui-space-3)", className)}
+      className={cn(
+        "bg-[var(--hui-color-background-base-secondary)] px-(--hui-space-5) py-(--hui-space-3)",
+        className
+      )}
     >
       {children ?? (
-        <Toolbar className="justify-end gap-(--hui-space-2)">
-          <FilterBarCancel />
-          <FilterBarApply />
+        <Toolbar className={FOOTER_TOOLBAR_CLASS}>
+          <FilterBarCancel size="sm" />
+          <FilterBarApply size="sm" />
         </Toolbar>
       )}
     </footer>
@@ -817,10 +875,10 @@ export function FilterBarFooter({
 }
 
 export function FilterBarClear() {
-  return <FilterBarClearAction />
+  return <FilterBarClearAction className="ml-auto" />
 }
 
-function FilterBarClearAction() {
+function FilterBarClearAction({ className }: { className?: string }) {
   const { activeCount, clearCommitted, labels, disabled } =
     useController("FilterBarClear")
 
@@ -831,7 +889,11 @@ function FilterBarClearAction() {
     <Button
       variant="link"
       size="sm"
-      className="ml-auto shrink-0 text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)]"
+      className={cn(
+        FILTER_ROW_CONTROL_CLASS,
+        "shrink-0 px-2.5 text-[var(--hui-color-foreground-base-secondary)] [font-weight:var(--hui-font-weight-regular)] hover:text-[var(--hui-color-foreground-base-primary)]",
+        className
+      )}
       onClick={(event) => {
         const trigger = event.currentTarget
           .closest<HTMLElement>('[data-slot="filter-bar-root"]')
@@ -912,20 +974,45 @@ function FilterBarTriggerCore({
       }
       onClick={onToggle}
       data-slot="filter-bar-trigger"
+      className={cn(FILTER_TRIGGER_CLASS, props.className)}
     >
-      <FunnelIcon aria-hidden />
-      <span>{labels.trigger}</span>
+      <FilterBarTriggerContents
+        label={labels.trigger}
+        activeCount={activeCount}
+        isOpen={isOpen}
+      />
+    </Button>
+  )
+}
+
+/** Funnel, label, ink count, and chevron, shared by every trigger. */
+function FilterBarTriggerContents({
+  label,
+  activeCount,
+  isOpen,
+}: {
+  label: string
+  activeCount: number
+  isOpen: boolean
+}) {
+  return (
+    <>
+      <FunnelIcon aria-hidden className="size-4 text-[var(--hui-color-foreground-base-secondary)]" />
+      <span>{label}</span>
       {activeCount > 0 ? (
-        <Badge size="sm" variant="secondary" className="tabular-nums">
+        <span
+          data-slot="filter-bar-trigger-count"
+          className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-emphasis)] px-[5px] tabular-nums text-[var(--hui-color-foreground-base-emphasis)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] [line-height:1]"
+        >
           {activeCount}
-        </Badge>
+        </span>
       ) : null}
       <ChevronDownIcon
         aria-hidden
         data-open={isOpen || undefined}
-        className="[transition:transform_var(--hui-duration-fast)_var(--hui-ease-out)] data-open:-rotate-180 motion-reduce:[transition:none]"
+        className="-me-(--hui-space-1) size-3.5 text-[var(--hui-color-foreground-base-tertiary)] [transition:transform_var(--hui-duration-fast)_var(--hui-ease-out)] data-open:-rotate-180 motion-reduce:[transition:none]"
       />
-    </Button>
+    </>
   )
 }
 
@@ -973,7 +1060,7 @@ export function FilterBarHeader({
   return (
     <header
       className={cn(
-        "flex items-start justify-between gap-(--hui-space-4) px-(--hui-space-5) pt-(--hui-space-4) pb-(--hui-space-3)",
+        "flex min-h-11 items-center justify-between gap-(--hui-space-4) px-(--hui-space-5) py-(--hui-space-2)",
         className
       )}
       data-slot="filter-bar-header"
@@ -995,6 +1082,7 @@ function DraftClearAction() {
     <Button
       variant="link"
       size="sm"
+      className="-me-(--hui-space-3) h-(--hui-space-8) min-h-(--hui-space-8) px-(--hui-space-3) text-[var(--hui-color-foreground-base-secondary)] [font-size:13px] [font-weight:var(--hui-font-weight-regular)] hover:text-[var(--hui-color-foreground-base-primary)]"
       disabled={disabled}
       onClick={() => clearEditing()}
       data-slot="filter-bar-clear-draft"
@@ -1011,7 +1099,7 @@ export function FilterBarTitle(props: React.ComponentProps<"h2">) {
     <h2
       tabIndex={-1}
       data-slot="filter-bar-title"
-      className="m-0! text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-large)]! [font-weight:var(--hui-font-weight-medium)]! [line-height:var(--hui-line-height-large)]! outline-none"
+      className="m-0! text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-regular)]! [font-weight:var(--hui-font-weight-medium)]! [line-height:var(--hui-line-height-regular)]! outline-none"
       {...props}
     >
       {props.children ?? labels.title}
@@ -1025,7 +1113,7 @@ export function FilterBarGroups({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "grid items-start grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] gap-x-(--hui-space-5) gap-y-(--hui-space-6)",
+        "grid items-start grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] gap-x-(--hui-space-7) gap-y-(--hui-space-6)",
         className
       )}
       data-slot="filter-bar-groups"
@@ -1085,14 +1173,18 @@ function FilterBarGroupSection({
       className="flex min-w-0 flex-col gap-y-(--hui-space-2) outline-none"
     >
       <div
-        className="flex items-baseline justify-between gap-(--hui-space-2)"
+        className="flex min-h-5 items-center justify-between gap-(--hui-space-2)"
         data-slot="filter-bar-group-heading"
       >
-        <span className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] uppercase tracking-wide">
+        <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-small)]">
           {definition.label}
         </span>
         <span
-          className="tabular-nums text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-mini)]"
+          className={cn(
+            "inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[var(--hui-radius-full)] px-[5px] tabular-nums [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] [line-height:1]",
+            selectedOptionCount > 0 &&
+              "bg-[var(--hui-color-background-neutral-secondary)] text-[var(--hui-color-foreground-base-primary)]"
+          )}
           data-slot="filter-bar-group-count"
         >
           {selectedOptionCount > 0 ? selectedOptionCount : ""}
@@ -1107,7 +1199,7 @@ export function FilterBarGroupLabel({ children }: { children: React.ReactNode })
   return (
     <span
       data-slot="filter-bar-group-label"
-      className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] uppercase tracking-wide"
+      className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-small)]"
     >
       {children}
     </span>
@@ -1157,12 +1249,16 @@ function FilterBarPanelBody({ variant }: { variant: "popover" | "sheet" }) {
   const isSheet = variant === "sheet"
 
   return (
-    <div className="flex max-h-[inherit] flex-col" data-slot="filter-bar-panel">
+    <div
+      // Every field in the panel shares the bar's 32px control height.
+      className="flex max-h-[inherit] flex-col [--hui-control-height-sm:var(--hui-space-9)]"
+      data-slot="filter-bar-panel"
+    >
       <FilterBarHeader className={cn(isSheet && "pt-(--hui-space-5)")} />
       {isSheet ? <SheetTitle className="sr-only">{labels.title}</SheetTitle> : null}
       <Separator />
       <ScrollArea className="min-h-0 flex-1">
-        <div className="px-(--hui-space-5) py-(--hui-space-5)">
+        <div className="px-(--hui-space-5) pt-(--hui-space-4) pb-(--hui-space-5)">
           <FilterBarGroups />
         </div>
       </ScrollArea>
@@ -1171,7 +1267,7 @@ function FilterBarPanelBody({ variant }: { variant: "popover" | "sheet" }) {
           <Separator />
           {isSheet ? (
             <SheetFooter className="justify-end pt-(--hui-space-2)">
-              <Toolbar className="justify-end gap-(--hui-space-2)">
+              <Toolbar className={FOOTER_TOOLBAR_CLASS}>
                 <FilterBarCancel />
                 <FilterBarApply />
               </Toolbar>

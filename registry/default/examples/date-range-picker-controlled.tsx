@@ -14,7 +14,7 @@ export default function DateRangePickerControlled() {
   const [lastCommitted, setLastCommitted] = React.useState("none")
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full max-w-sm min-w-0">
       <DateRangePicker
         value={value}
         onValueChange={(next) => {
@@ -27,7 +27,7 @@ export default function DateRangePickerControlled() {
         }}
         presets={getDateRangePresets()}
       />
-      <div className="mt-4 grid gap-1 text-sm text-muted-foreground">
+      <div className="mt-2 grid gap-1 text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]">
         <p>Internal state follows the picker because the example passes the value back.</p>
         <p role="status">Last commit: {lastCommitted}</p>
       </div>

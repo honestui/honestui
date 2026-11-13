@@ -12,25 +12,25 @@ interface ApiTableProps {
  */
 export function ApiTable({ children, className }: ApiTableProps) {
   return (
-    <div className="no-scrollbar my-6 w-full overflow-x-auto rounded-lg border">
-      <table className={cn("w-full border-none text-sm", className)}>
+    <div className="no-scrollbar my-7 w-full overflow-x-auto">
+      <table className={cn("w-full border-collapse text-sm", className)}>
         <thead>
-          <tr className="bg-muted dark:bg-muted/30 border-b">
-            <th className="text-muted-foreground px-4 py-2 text-left text-[12px] font-medium">
+          <tr className="border-b">
+            <th className="text-muted-foreground py-2.5 pe-6 text-left text-[13px] font-medium last:pe-0">
               Prop
             </th>
-            <th className="text-muted-foreground px-4 py-2 text-left text-[12px] font-medium">
+            <th className="text-muted-foreground py-2.5 pe-6 text-left text-[13px] font-medium last:pe-0">
               Type
             </th>
-            <th className="text-muted-foreground px-4 py-2 text-left text-[12px] font-medium">
+            <th className="text-muted-foreground py-2.5 pe-6 text-left text-[13px] font-medium last:pe-0">
               Default
             </th>
-            <th className="text-muted-foreground px-4 py-2 text-left text-[12px] font-medium">
+            <th className="text-muted-foreground py-2.5 pe-6 text-left text-[13px] font-medium last:pe-0">
               Description
             </th>
           </tr>
         </thead>
-        <tbody className="[&_tr:last-child]:border-b-0">{children}</tbody>
+        <tbody>{children}</tbody>
       </table>
     </div>
   );
@@ -62,7 +62,7 @@ function renderType(type: string) {
       {parts.map((part, index) => (
         <React.Fragment key={part}>
           {index > 0 && <span className="text-muted-foreground/40 font-mono text-[12px]">|</span>}
-          <span className="bg-muted dark:bg-muted/40 inline-flex items-center rounded-md border px-1.5 py-0.5 font-mono text-[11px]">
+          <span className="inline-flex items-center rounded-[var(--hui-radius-1)] bg-[var(--hui-color-background-neutral-primary)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--hui-color-foreground-base-primary)]">
             {part.slice(1, -1)}
           </span>
         </React.Fragment>
@@ -85,7 +85,7 @@ export function ApiHeading({ children, className }: ApiHeadingProps) {
   return (
     <div
       className={cn(
-        "font-heading text-primary mt-8 scroll-m-10 text-base font-medium tracking-tight select-none [&+p]:mt-4!",
+        "font-heading text-primary mt-8 scroll-m-10 text-[15px] leading-6 font-semibold select-none [&+*]:mt-2!",
         className,
       )}
     >
@@ -97,8 +97,8 @@ export function ApiHeading({ children, className }: ApiHeadingProps) {
 /** A single prop row inside an <ApiTable>. */
 export function ApiRow({ name, type, default: defaultValue, required, children }: ApiRowProps) {
   return (
-    <tr className="border-b">
-      <td className="px-4 py-2.5 align-top">
+    <tr className="border-b-[0.5px]">
+      <td className="py-3 pe-6 align-top">
         <span className="text-primary font-mono text-[13px] whitespace-nowrap">
           {name}
           {required && (
@@ -108,10 +108,10 @@ export function ApiRow({ name, type, default: defaultValue, required, children }
           )}
         </span>
       </td>
-      <td className="px-4 py-2.5 align-top">
+      <td className="py-3 pe-6 align-top">
         {type ? renderType(type) : <span className="text-muted-foreground/40">–</span>}
       </td>
-      <td className="px-4 py-2.5 align-top">
+      <td className="py-3 pe-6 align-top">
         {defaultValue ? (
           <span className="text-muted-foreground font-mono text-[12px] whitespace-nowrap">
             {defaultValue}
@@ -120,7 +120,7 @@ export function ApiRow({ name, type, default: defaultValue, required, children }
           <span className="text-muted-foreground/40">–</span>
         )}
       </td>
-      <td className="text-muted-foreground min-w-[220px] px-4 py-2.5 align-top text-[13px] [&>p]:my-0">
+      <td className="text-muted-foreground min-w-[220px] py-3 align-top text-[13px] [&>p]:my-0">
         {children}
       </td>
     </tr>

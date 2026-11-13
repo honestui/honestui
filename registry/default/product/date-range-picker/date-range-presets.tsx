@@ -9,6 +9,8 @@ import {
   endOfMonth,
 } from "date-fns"
 
+import { Check as CheckIcon } from "honestui/icons"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/default/ui/button"
 
@@ -93,7 +95,7 @@ export function DateRangePresets({
       data-slot="date-range-presets"
       role="group"
       aria-label={ariaLabel}
-      className={cn("flex flex-col gap-[var(--hui-space-2)]", className)}
+      className={cn("flex flex-col gap-px", className)}
     >
       {presets.map((preset) => {
         const isSelected = presetMatches(preset, value)
@@ -107,14 +109,17 @@ export function DateRangePresets({
             aria-pressed={isSelected}
             data-selected={isSelected || undefined}
             className={cn(
-              "h-[var(--hui-space-9)] w-full shrink-0 justify-start rounded-[var(--hui-radius-2)] px-[var(--hui-space-4)]",
-              "[font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
-              "hover:bg-[var(--hui-color-background-base-primary-hover)]! active:bg-[var(--hui-color-background-base-primary-hover)]!",
-              "data-[selected]:bg-[var(--hui-color-background-accent-primary)]! data-[selected]:text-[var(--hui-color-foreground-accent-primary-hover)]! data-[selected]:[font-weight:var(--hui-font-weight-medium)]!"
+              "h-(--hui-space-9) w-full shrink-0 justify-between gap-(--hui-space-3) rounded-[var(--hui-radius-1)] px-(--hui-space-3) text-[var(--hui-color-foreground-base-secondary)] shadow-none",
+              "[font-size:13px] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+              "hover:bg-[var(--hui-color-background-base-primary-hover)]! hover:text-[var(--hui-color-foreground-base-primary)] active:bg-[var(--hui-color-background-base-primary-hover)]! active:scale-100!",
+              "data-[selected]:bg-[var(--hui-color-background-neutral-primary)]! data-[selected]:text-[var(--hui-color-foreground-base-primary)]! data-[selected]:[font-weight:var(--hui-font-weight-medium)]!"
             )}
             onClick={() => onSelect(preset.getValue())}
           >
-            {preset.label}
+            <span className="truncate">{preset.label}</span>
+            {isSelected ? (
+              <CheckIcon aria-hidden className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-primary)]" />
+            ) : null}
           </Button>
         )
       })}

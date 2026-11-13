@@ -23,7 +23,7 @@ function Table({
         variant === "surface" && surfaceContainer
       )}
     >
-      {/* No table-wide tabular-nums: in Love Sans it also widens spaces and
+      {/* No table-wide tabular-nums: in some fonts it also widens spaces and
           punctuation to figure width. Apply it to numeric cells only. */}
       <table
         data-slot="table"
@@ -99,12 +99,16 @@ function TableHead({ className, ...props }: ComponentPropsWithoutRef<"th">) {
   )
 }
 
+// The row's identifying cell (the first, or the one after a selection
+// checkbox) is set in the primary text color so rows scan by name; the other
+// cells stay secondary. The color goes through a variable so a text color
+// passed in className still wins.
 function TableCell({ className, ...props }: ComponentPropsWithoutRef<"td">) {
   return (
     <td
       data-slot="table-cell"
       className={cn(
-        "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-cell-padding-block,var(--hui-space-4))] whitespace-normal [overflow-wrap:anywhere] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-regular)] [font-style:normal] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
+        "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-inherit px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-cell-padding-block,var(--hui-space-4))] whitespace-normal [overflow-wrap:anywhere] text-[var(--table-cell-color,var(--hui-color-foreground-base-secondary))] in-data-[slot=table-body]:not-[[colspan]]:first:[--table-cell-color:var(--hui-color-foreground-base-primary)] in-data-[slot=table-body]:[td:first-child:has([data-slot=checkbox])+&]:[--table-cell-color:var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-regular)] [font-style:normal] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
         className
       )}
       {...props}

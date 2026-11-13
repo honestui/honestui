@@ -22,7 +22,7 @@ export default function QuantityFieldForm() {
 
   return (
     <form
-      className="flex w-full max-w-xs min-w-0 flex-col gap-[var(--hui-space-5)]"
+      className="flex w-full max-w-sm min-w-0 flex-col gap-[var(--hui-space-5)]"
       onSubmit={(event) => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
@@ -62,13 +62,13 @@ export default function QuantityFieldForm() {
         <QuantityFieldStatus />
       </QuantityField>
 
-      <Button type="submit" className="self-start">
+      <Button type="submit" size="sm" className="self-start px-[var(--hui-space-4)]">
         Save limits
       </Button>
 
       <output
         aria-label="Submitted form data"
-        className="block min-h-[var(--hui-space-9)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+        className="block min-h-[var(--hui-space-9)] border-t-[0.5px] border-t-transparent pt-[var(--hui-space-4)] not-empty:border-t-[var(--hui-color-border-base-primary)] text-[var(--hui-color-foreground-base-secondary)] tabular-nums [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
       >
         {submitted?.map(([name, value]) => (
           <code key={name} className="block">

@@ -22,15 +22,15 @@ const chartConfig = {
   baseLoad: {
     label: "Base load",
     colors: {
-      light: ["#047857"],
-      dark: ["#10b981"],
+      light: ["#2563eb"],
+      dark: ["#3b82f6"],
     },
   },
   peakLoad: {
     label: "Peak load",
     colors: {
-      light: ["#be123c"],
-      dark: ["#f43f5e"],
+      light: ["#ea580c"],
+      dark: ["#ea580c"],
     },
   },
 } satisfies ChartConfig;

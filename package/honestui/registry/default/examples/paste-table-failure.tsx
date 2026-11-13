@@ -32,8 +32,12 @@ export default function PasteTableFailureExample() {
   const attempts = React.useRef(0)
 
   return (
-    <div className="flex w-full max-w-3xl min-w-0 flex-col gap-[var(--hui-space-4)]">
-      <PasteTableSampleButton rows={sampleRows} />
+    <div className="flex w-full min-w-0 flex-col gap-[var(--hui-space-5)]">
+      <PasteTableSampleButton
+        rows={sampleRows}
+        title="Import discount codes"
+        description="No header row; the first import fails on purpose."
+      />
       <PasteTable
         aria-label="Import discount codes"
         columns={columns}

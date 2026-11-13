@@ -27,8 +27,8 @@
   --hui-frame-padding: 8px;
   --hui-radius-frame: calc(var(--hui-radius-frame-panel) + var(--hui-frame-padding));
 
-  --hui-font-title: var(--hui-font-love-sans);
-  --hui-font-body: var(--hui-font-love-sans);
+  --hui-font-title: var(--hui-font-sans);
+  --hui-font-body: var(--hui-font-sans);
   --hui-radius-card: var(--hui-radius-5);
   --hui-radius-dialog: var(--hui-radius-5);
   --hui-radius-item: calc(var(--hui-radius-2) - var(--hui-space-2));

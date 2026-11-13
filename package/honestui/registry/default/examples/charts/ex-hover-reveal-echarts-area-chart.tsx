@@ -22,15 +22,15 @@ const chartConfig = {
   online: {
     label: "Online orders",
     colors: {
-      light: ["#047857"],
-      dark: ["#10b981"],
+      light: ["#2563eb"],
+      dark: ["#3b82f6"],
     },
   },
   stores: {
     label: "Store orders",
     colors: {
-      light: ["#be123c"],
-      dark: ["#f43f5e"],
+      light: ["#ea580c"],
+      dark: ["#ea580c"],
     },
   },
 } satisfies ChartConfig;

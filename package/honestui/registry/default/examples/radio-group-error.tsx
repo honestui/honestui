@@ -18,7 +18,7 @@ export default function RadioGroupErrorDemo() {
       setTriedToSubmit(true)
     }}>
       <fieldset className="grid gap-3">
-        <legend className="text-sm font-medium">Shipping speed</legend>
+        <legend className="mb-3 text-sm font-medium">Shipping speed</legend>
         <RadioGroup
           value={value}
           onValueChange={(next) => {

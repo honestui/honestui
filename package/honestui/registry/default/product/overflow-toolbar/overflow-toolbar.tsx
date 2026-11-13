@@ -3,6 +3,8 @@
 import * as React from "react"
 import { flushSync } from "react-dom"
 
+import { ChevronDown as ChevronDownIcon } from "honestui/icons"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/default/ui/button"
 import {
@@ -39,8 +41,14 @@ const moreAttribute = "data-overflow-toolbar-more"
 const toolbarNavigationKeys = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"])
 
 /** Toolbar strips borders from its direct children only; these can sit one level down. */
-const controlClassName =
-  "border-0 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:active:scale-100!"
+const controlClassName = cn(
+  "border-0 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:active:scale-100!",
+  // One 32px control height, a 13px label, and 16px icons in the secondary colour.
+  "shrink-0 rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:16px] [font-weight:var(--hui-font-weight-medium)]",
+  "[&_svg]:size-4 [&_svg]:text-[var(--hui-color-foreground-base-secondary)] not-data-disabled:hover:[&_svg]:text-[var(--hui-color-foreground-base-primary)] data-popup-open:[&_svg]:text-[var(--hui-color-foreground-base-primary)]"
+)
+const labelledControl = "min-h-8 gap-[6px] px-[10px]"
+const iconControl = "size-8"
 
 type OverflowToolbarContextValue = {
   store: OverflowToolbarItemStore
@@ -248,7 +256,11 @@ function OverflowToolbar({ className, children, ...props }: OverflowToolbarProps
         ref={rootRef}
         data-slot="overflow-toolbar"
         // If the pinned actions alone are too wide, they scroll instead of being cut off.
-        className={cn("w-full min-w-0 overflow-x-auto overflow-y-clip", className)}
+        className={cn(
+          // A hairline surface around 32px controls: 4px inset, 2px between controls.
+          "w-full min-w-0 gap-[2px] overflow-x-auto overflow-y-clip rounded-[var(--hui-radius-2)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-2)]",
+          className
+        )}
         {...props}
       >
         {children}
@@ -283,8 +295,8 @@ function OverflowToolbarGroup({ label, className, ...props }: OverflowToolbarGro
       <ToolbarGroup
         aria-label={label}
         className={cn(
-          "[&:not(:has(>:not([hidden])))]:hidden",
-          "before:hidden before:h-[var(--hui-space-5)] before:w-px before:shrink-0 before:bg-[var(--hui-color-border-base-primary)] before:content-[''] forced-colors:before:bg-[CanvasText]",
+          "gap-[2px] [&:not(:has(>:not([hidden])))]:hidden",
+          "before:mx-[var(--hui-space-2)] before:hidden before:h-[var(--hui-space-5)] before:w-px before:shrink-0 before:bg-[var(--hui-color-border-base-primary)] before:content-[''] forced-colors:before:bg-[CanvasText]",
           "[:is([data-overflow-toolbar-group]:has(>:not([hidden])),:not([hidden],[data-overflow-toolbar-group]))~&]:before:block",
           className
         )}
@@ -363,12 +375,12 @@ function OverflowToolbarItem({
   const showsLabel = !iconOnly || icon == null
   const control = (
     <ToolbarButton
-      render={<Button variant="ghost" size={showsLabel ? "default" : "icon"} />}
+      render={<Button variant="link" size={showsLabel ? "sm" : "icon-sm"} />}
       aria-label={showsLabel ? undefined : label}
       disabled={disabled}
       // A disabled action stays reachable, so it can still be found and read out.
       focusableWhenDisabled
-      className={cn(controlClassName, className)}
+      className={cn(controlClassName, showsLabel ? labelledControl : iconControl, className)}
       onClick={select}
       data-overflow-toolbar-item={id}
     >
@@ -434,12 +446,23 @@ function OverflowToolbarMenu({
       }}
     >
       <ToolbarButton
-        render={<MenuTrigger render={<Button variant="ghost" />} />}
+        render={<MenuTrigger render={<Button variant="link" size="sm" />} />}
         aria-label={children == null ? undefined : label}
-        className={cn(controlClassName, className)}
+        className={cn(
+          controlClassName,
+          children == null ? cn(labelledControl, "gap-[var(--hui-space-2)]") : iconControl,
+          // Pushed to the end of the bar, wherever it sits in the markup.
+          "ms-auto",
+          className
+        )}
         data-overflow-toolbar-more=""
       >
-        {children ?? label}
+        {children ?? (
+          <>
+            {label}
+            <ChevronDownIcon aria-hidden="true" className="size-3.5!" />
+          </>
+        )}
       </ToolbarButton>
       <MenuPopup
         align="end"

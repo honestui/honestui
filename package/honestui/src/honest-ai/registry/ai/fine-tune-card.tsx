@@ -135,7 +135,7 @@ function FineTuneCard({
   )
 }
 
-/** Tabular figures on the digits only, since LoveSans also widens letters and dashes. */
+/** Tabular figures on the digits only, since the tabular feature can also widen letters and dashes. */
 function TabularDigits({ text }: { text: string }) {
   return text.split(/(\d[\d.,]*)/).map((part, index) =>
     index % 2 === 1 ? (

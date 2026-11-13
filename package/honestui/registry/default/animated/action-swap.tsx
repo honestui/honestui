@@ -144,16 +144,16 @@ const ICON_VARIANTS: Record<CoreAnimation, Variants> = {
 
 const VARIANT_CLASS: Record<ActionSwapButtonVariant, string> = {
   primary: "bg-primary text-primary-foreground hover:bg-primary/90",
-  secondary: "border border-border bg-card text-foreground hover:border-border",
-  outline: "border border-border bg-transparent text-foreground hover:bg-primary/5",
-  ghost: "text-muted-foreground hover:bg-primary/5 hover:text-foreground",
+  secondary: "bg-muted text-foreground hover:bg-muted/70",
+  outline: "border border-border bg-background text-foreground hover:bg-muted/60",
+  ghost: "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
 };
 
 const SIZE_CLASS: Record<ActionSwapButtonSize, string> = {
-  sm: "h-8 gap-1.5 rounded-full px-3 text-xs",
-  md: "h-10 gap-2 rounded-full px-4 text-sm",
-  lg: "h-12 gap-2.5 rounded-full px-5 text-base",
-  icon: "h-10 w-10 rounded-full",
+  sm: "h-8 gap-1.5 rounded-lg px-3 text-[13px]",
+  md: "h-9 gap-2 rounded-[10px] px-3.5 text-sm",
+  lg: "h-11 gap-2.5 rounded-xl px-5 text-[15px]",
+  icon: "h-9 w-9 rounded-[10px]",
 };
 
 export function ActionSwapText({

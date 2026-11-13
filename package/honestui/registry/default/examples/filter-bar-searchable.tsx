@@ -27,7 +27,7 @@ export default function FilterBarSearchable() {
         value={value}
         onValueChange={setValue}
       />
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
         Search ignores case and never clears what you already picked. Try a
         word with no matches to see the empty state.
       </p>

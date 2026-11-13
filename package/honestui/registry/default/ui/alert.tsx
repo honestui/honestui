@@ -6,6 +6,9 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+// Tinted variants use step 3 fills and step 6 borders: softer than the
+// semantic step 4 backgrounds, so an alert inside a card or dialog informs
+// without competing with the primary action.
 const alertVariants = cva(
   "relative grid w-full items-start gap-x-2 gap-y-0.5 rounded-[var(--hui-radius-2)] border-[0.5px] px-3.5 py-3 [font-size:var(--hui-font-size-control,13px)] [line-height:var(--hui-line-height-regular)] text-[var(--hui-color-foreground-base-primary)] has-data-[slot=alert-action]:grid-cols-[1fr_auto] has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-2 has-[>svg]:has-data-[slot=alert-action]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] [&>svg]:h-[1lh] [&>svg]:w-4",
   {
@@ -13,13 +16,13 @@ const alertVariants = cva(
       variant: {
         default:
           "border-[var(--hui-color-border-base-secondary)] bg-transparent [&>svg]:text-[var(--hui-color-foreground-base-secondary)]",
-        info: "border-[var(--hui-color-border-accent-primary)] bg-[var(--hui-color-background-accent-primary)] [&>svg]:text-[var(--hui-color-foreground-accent-primary)]",
+        info: "border-[var(--hui-accent-6)] bg-[var(--hui-accent-3)] [&>svg]:text-[var(--hui-color-foreground-accent-primary)]",
         success:
-          "border-[var(--hui-color-border-success-primary)] bg-[var(--hui-color-background-success-primary)] [&>svg]:text-[var(--hui-color-foreground-success-primary-hover)]",
+          "border-[var(--hui-success-6)] bg-[var(--hui-success-3)] [&>svg]:text-[var(--hui-color-foreground-success-primary-hover)]",
         warning:
-          "border-[var(--hui-color-border-attention-primary)] bg-[var(--hui-color-background-attention-primary)] [&>svg]:text-[var(--hui-color-foreground-attention-primary-hover)]",
+          "border-[var(--hui-attention-6)] bg-[var(--hui-attention-3)] [&>svg]:text-[var(--hui-color-foreground-attention-primary-hover)]",
         error:
-          "border-[var(--hui-color-border-danger-primary)] bg-[var(--hui-color-background-danger-primary)] [&>svg]:text-[var(--hui-color-foreground-danger-primary)]",
+          "border-[var(--hui-danger-6)] bg-[var(--hui-danger-3)] [&>svg]:text-[var(--hui-color-foreground-danger-primary)]",
       },
     },
     defaultVariants: {

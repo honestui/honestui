@@ -23,6 +23,8 @@ export function TiltCard({ children, max = 12, glare = true, className }: TiltCa
   const ry = useMotionValue(0);
   const gx = useMotionValue(50);
   const gy = useMotionValue(50);
+  const glareOpacity = useMotionValue(0);
+  const sGlareOpacity = useSpring(glareOpacity, SPRING_MOUSE);
 
   const srx = useSpring(rx, SPRING_MOUSE);
   const sry = useSpring(ry, SPRING_MOUSE);
@@ -37,15 +39,17 @@ export function TiltCard({ children, max = 12, glare = true, className }: TiltCa
     rx.set((0.5 - py) * max);
     gx.set(px * 100);
     gy.set(py * 100);
+    glareOpacity.set(1);
   };
 
   const onLeave = () => {
     rx.set(0);
     ry.set(0);
+    glareOpacity.set(0);
   };
 
   const transform = useMotionTemplate`perspective(1000px) rotateX(${srx}deg) rotateY(${sry}deg)`;
-  const glareBg = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, var(--foreground), transparent 50%)`;
+  const glareBg = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, color-mix(in oklab, var(--foreground) 6%, transparent), transparent 60%)`;
 
   return (
     <motion.div
@@ -53,14 +57,14 @@ export function TiltCard({ children, max = 12, glare = true, className }: TiltCa
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       style={{ transform, transformStyle: "preserve-3d" }}
-      className={cn("relative overflow-hidden rounded-2xl will-change-transform", className)}
+      className={cn("relative overflow-hidden rounded-xl will-change-transform", className)}
     >
       {children}
       {glare && enabled ? (
         <motion.div
           aria-hidden
-          style={{ background: glareBg }}
-          className="pointer-events-none absolute inset-0 opacity-15"
+          style={{ background: glareBg, opacity: sGlareOpacity }}
+          className="pointer-events-none absolute inset-0"
         />
       ) : null}
     </motion.div>

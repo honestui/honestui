@@ -4,6 +4,7 @@ import * as React from "react"
 
 import {
   FileUpload,
+  FileUploadBrowse,
   FileUploadDescription,
   FileUploadDropzone,
   FileUploadIcon,
@@ -37,11 +38,12 @@ export default function FileUploadSources() {
               ? "Whole folders count; browser support varies"
               : "Switch below to pick folders instead of files"}
           </FileUploadDescription>
+          <FileUploadBrowse />
         </FileUploadDropzone>
         <FileUploadList />
       </FileUpload>
 
-      <label className="flex items-center gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">
+      <label className="-mt-[var(--hui-space-2)] flex items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">
         <Switch
           checked={pickFolders}
           onCheckedChange={(checked) => setPickFolders(Boolean(checked))}
@@ -57,33 +59,37 @@ export default function FileUploadSources() {
           <FileUploadDescription>
             Opens the camera on phones with facing {direction === "environment" ? "back" : "front"}
           </FileUploadDescription>
+          <FileUploadBrowse>Open camera</FileUploadBrowse>
         </FileUploadDropzone>
         <FileUploadList />
 
-        <div className="mt-[var(--hui-space-3)] flex items-center gap-[var(--hui-space-2)]">
-          <button
-            type="button"
-            onClick={() => setDirection("environment")}
-            className={
-              direction === "environment"
-                ? "font-medium underline underline-offset-4"
-                : "text-[var(--hui-color-foreground-base-secondary)] underline-offset-4 hover:underline"
-            }
-          >
-            Back camera
-          </button>
-          <span aria-hidden="true">·</span>
-          <button
-            type="button"
-            onClick={() => setDirection("user")}
-            className={
-              direction === "user"
-                ? "font-medium underline underline-offset-4"
-                : "text-[var(--hui-color-foreground-base-secondary)] underline-offset-4 hover:underline"
-            }
-          >
-            Front camera
-          </button>
+        <div className="mt-[var(--hui-space-3)] flex items-center justify-between gap-[var(--hui-space-3)]">
+          <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">
+            Camera
+          </span>
+          <div className="inline-flex h-8 items-center gap-[var(--hui-space-1)] rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-secondary)] p-[var(--hui-space-1)]">
+            {(
+              [
+                ["environment", "Back camera"],
+                ["user", "Front camera"],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={direction === value}
+                onClick={() => setDirection(value)}
+                className={
+                  "h-full rounded-[calc(var(--hui-radius-1)-2px)] px-[var(--hui-space-4)] outline-none [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)] focus-visible:[outline:var(--hui-focus-ring)] " +
+                  (direction === value
+                    ? "bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[0_0_0_0.5px_var(--hui-color-border-base-secondary)]"
+                    : "text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)]")
+                }
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </FileUpload>
     </div>

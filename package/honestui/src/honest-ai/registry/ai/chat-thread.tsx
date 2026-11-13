@@ -50,7 +50,7 @@ function useOverflows(ref: React.RefObject<HTMLElement | null>) {
   return overflows
 }
 
-/** Tabular figures on the digits only, since LoveSans also widens letters and spaces. */
+/** Tabular figures on the digits only, since the tabular feature can also widen letters and spaces. */
 function TabularDigits({ text }: { text: string }) {
   return (
     <>

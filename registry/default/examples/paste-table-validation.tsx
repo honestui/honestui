@@ -68,11 +68,15 @@ export default function PasteTableValidationExample() {
   const [imported, setImported] = React.useState<Record<string, unknown>[] | null>(null)
 
   return (
-    <div className="flex w-full max-w-3xl min-w-0 flex-col gap-[var(--hui-space-4)]">
-      <PasteTableSampleButton rows={sampleRows} />
+    <div className="flex w-full min-w-0 flex-col gap-[var(--hui-space-5)]">
+      <PasteTableSampleButton
+        rows={sampleRows}
+        title="Import price list"
+        description="German-format sheet: comma decimals and day-first dates."
+      />
       <PasteTable aria-label="Import price list" columns={columns} onImport={setImported} />
       {imported && (
-        <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
+        <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
           Last import: {imported.map((row) => `${row.sku} at ${row.price} (${row.status ?? "no status"})`).join(", ")}.
         </p>
       )}

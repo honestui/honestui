@@ -15,7 +15,7 @@ export default function DateRangePickerSingleMonth() {
   return (
     <div className="w-full max-w-sm min-w-0">
       <DateRangePicker value={value} onValueChange={setValue} numberOfMonths={1} />
-      <p className="mt-4 text-sm text-muted-foreground" role="status">
+      <p className="mt-2 text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]" role="status">
         Same behavior as the two-month picker in a narrower surface.
       </p>
     </div>

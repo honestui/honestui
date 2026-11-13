@@ -58,7 +58,7 @@ function Slider({
       >
         <SliderPrimitive.Track
           data-slot="slider-track"
-          className="relative grow rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-secondary)] data-[orientation=horizontal]:mx-[var(--hui-space-4)] data-[orientation=horizontal]:h-[var(--hui-space-2)] data-[orientation=vertical]:my-[var(--hui-space-4)] data-[orientation=vertical]:w-[var(--hui-space-2)]"
+          className="relative grow rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-secondary)] data-[orientation=horizontal]:mx-[10px] data-[orientation=horizontal]:h-[var(--hui-space-2)] data-[orientation=vertical]:my-[10px] data-[orientation=vertical]:w-[var(--hui-space-2)]"
         >
           <SliderPrimitive.Indicator
             data-slot="slider-indicator"
@@ -77,19 +77,14 @@ function Slider({
               <span
                 data-slot="slider-thumb-visual"
                 className={cn(
-                  "relative flex items-center justify-center border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:transform_var(--hui-duration-press)_var(--hui-ease-out),box-shadow_var(--hui-duration-press)_var(--hui-ease-out)]",
+                  // A plain white disc: the hairline and the lifted shadow carry
+                  // the edge, so it reads on the fill and on the empty track.
+                  "relative block rounded-[var(--hui-radius-full)] border-[0.5px] border-[var(--hui-alpha-a4)] bg-white shadow-[var(--hui-shadow-lifted)] motion-safe:[transition:scale_var(--hui-duration-press)_var(--hui-ease-out),box-shadow_var(--hui-duration-press)_var(--hui-ease-out)]",
                   size === "large"
-                    ? "h-[var(--hui-space-6)] w-[var(--hui-space-7)] gap-[3px] rounded-[var(--hui-radius-2)]"
-                    : "h-[var(--hui-space-5)] w-[var(--hui-space-3)] rounded-[var(--hui-radius-full)]"
+                    ? "size-[var(--hui-space-6)]"
+                    : "h-[var(--hui-space-5)] w-[var(--hui-space-3)]"
                 )}
-              >
-                {size === "large" && (
-                  <>
-                    <span className="h-[6px] w-px rounded-[var(--hui-radius-1)] bg-[var(--hui-color-border-base-tertiary)]" />
-                    <span className="h-[6px] w-px rounded-[var(--hui-radius-1)] bg-[var(--hui-color-border-base-tertiary)]" />
-                  </>
-                )}
-              </span>
+              />
               {showValue && (
                 <SliderPrimitive.Value
                   data-slot="slider-thumb-label"

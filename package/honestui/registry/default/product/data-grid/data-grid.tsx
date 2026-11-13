@@ -466,7 +466,7 @@ export function DataGridRoot<TData>({
       <div
         data-slot="data-grid"
         data-density={density}
-        className={cn("w-full min-w-0 space-y-[var(--hui-density-gap,var(--hui-space-3))]", className)}
+        className={cn("w-full min-w-0 space-y-[var(--hui-density-gap,var(--hui-space-4))]", className)}
       >
         {children ?? (
           <>
@@ -525,7 +525,7 @@ export function DataGridFrame({
     <div
       data-slot="data-grid-frame"
       className={cn(
-        "min-w-0 overflow-hidden rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)]",
+        "min-w-0 overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)]",
         className,
       )}
       {...props}
@@ -836,7 +836,7 @@ export function DataGridTable({ className }: { className?: string }) {
   const tableState = table.getState()
   const isFiltering =
     Boolean(tableState.globalFilter) || tableState.columnFilters.length > 0
-  const rowHeight = density === "compact" ? 44 : density === "comfortable" ? 64 : 56
+  const rowHeight = density === "compact" ? 36 : density === "comfortable" ? 52 : 44
   const rowVirtualizer = useVirtualizer({
     count: virtualization ? rows.length : 0,
     getScrollElement: () => viewportRef.current,
@@ -967,9 +967,9 @@ export function DataGridTable({ className }: { className?: string }) {
                       : undefined
                 }
                 className={cn(
-                  "group/header relative h-12 overflow-visible px-[var(--hui-space-4)] py-0",
-                  density === "compact" && "h-10",
-                  density === "comfortable" && "h-[3.25rem]",
+                  "group/header relative h-9 overflow-visible bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-4)] py-0",
+                  density === "compact" && "h-8",
+                  density === "comfortable" && "h-10",
                   getAlignmentClass(meta.align),
                   getResponsiveClass(meta.hideBelow),
                   getPinnedBoundaryClass(column),
@@ -1156,7 +1156,7 @@ export function DataGridTable({ className }: { className?: string }) {
                               : undefined
                         }
                         className={cn(
-                          "px-[var(--hui-space-4)] py-0 outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--hui-color-border-accent-emphasis)]",
+                          "px-[var(--hui-space-4)] py-0 [font-size:var(--hui-font-size-regular)] outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--hui-color-border-accent-emphasis)]",
                           getAlignmentClass(meta.align),
                           getResponsiveClass(meta.hideBelow),
                           getPinnedBoundaryClass(cell.column),
@@ -1238,7 +1238,7 @@ export function DataGridStateMessage({
   return (
     <Empty className={cn("min-h-60 rounded-none border-0 p-[var(--hui-space-8)]", className)}>
       <EmptyHeader>
-        <EmptyTitle className="font-sans [font-size:var(--hui-font-size-large)] [font-weight:var(--hui-font-weight-medium)]">
+        <EmptyTitle className="font-sans [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)]">
           {title}
         </EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>
@@ -1261,7 +1261,7 @@ export function DataGridFooter({
     <div
       data-slot="data-grid-footer"
       className={cn(
-        "flex min-h-14 flex-wrap items-center gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)]",
+        "flex min-h-11 flex-wrap items-center gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-2)]",
         className,
       )}
       {...props}

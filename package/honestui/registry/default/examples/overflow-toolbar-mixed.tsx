@@ -50,7 +50,7 @@ export default function OverflowToolbarMixed() {
             aria-label="Filter files"
             placeholder="Filter"
             type="search"
-            className={`h-8 w-32 shrink-0 rounded-[var(--hui-radius-2)] border-[0.5px]! border-[var(--hui-color-border-base-primary)]! bg-transparent px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)] ${smallText}`}
+            className={`h-8 w-32 shrink-0 rounded-[var(--hui-radius-1)] border-[0.5px]! border-[var(--hui-color-border-base-primary)]! bg-transparent px-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)] ${smallText}`}
           />
           <OverflowToolbarGroup label="Selected files">
             <OverflowToolbarItem

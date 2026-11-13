@@ -16,6 +16,7 @@ import {
   withAlpha,
   type ChartConfig,
   type ResolvedColors,
+  withChartFont,
 } from "@/registry/default/ui/charts/chart";
 import {
   Children,
@@ -762,7 +763,7 @@ export function Heatmap<TData extends Record<string, unknown>>({
     liveRef.current.resolved = resolveColors(container, config, [valueDataKey]);
     const push = () => {
       const option = buildOption();
-      const merged = chartOptions ? { ...option, ...chartOptions } : option;
+      const merged = withChartFont(chartOptions ? { ...option, ...chartOptions } : option, container);
       chart.setOption(merged as EChartsOption, { notMerge: true });
     };
     push();

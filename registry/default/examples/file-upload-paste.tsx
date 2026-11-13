@@ -18,7 +18,7 @@ import { formatFileSize } from "@/registry/default/product/file-upload/file-uplo
  * after focusing the zone and the usual rules apply unchanged.
  */
 export default function FileUploadPaste() {
-  const [note, setNote] = React.useState("Nothing picked yet.")
+  const [note, setNote] = React.useState("Nothing pasted yet.")
 
   return (
     <div className="w-full min-w-0 max-w-xl">
@@ -46,7 +46,7 @@ export default function FileUploadPaste() {
 
       <p
         aria-live="polite"
-        className="mt-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
+        className="mt-[var(--hui-space-2)] mb-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
       >
         {note}
       </p>

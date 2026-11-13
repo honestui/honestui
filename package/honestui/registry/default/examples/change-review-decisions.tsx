@@ -5,6 +5,8 @@ import * as React from "react"
 import {
   applyAcceptedChanges,
   ChangeReview,
+  ChangeReviewHeader,
+  ChangeReviewList,
   type ChangeReviewDecisions,
   type ChangeReviewFieldNode,
 } from "@/registry/default/product/change-review/change-review"
@@ -40,19 +42,21 @@ export default function ChangeReviewDecisionsExample() {
   const result = applyAcceptedChanges(current, requested, decisions)
 
   return (
-    <div className="flex w-full max-w-2xl min-w-0 flex-col gap-[var(--hui-space-4)]">
-      <ChangeReview
-        aria-label="Requested profile changes"
-        before={current}
-        after={requested}
-        fields={fields}
-        decisions={decisions}
-        onDecisionsChange={setDecisions}
-      />
-      <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
+    <ChangeReview
+      aria-label="Requested profile changes"
+      before={current}
+      after={requested}
+      fields={fields}
+      decisions={decisions}
+      onDecisionsChange={setDecisions}
+      className="max-w-2xl"
+    >
+      <ChangeReviewHeader />
+      <ChangeReviewList />
+      <p className="m-0 bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
         Profile after approval: {result.displayName}, {result.title}, phone{" "}
         {result.phone || "not set"}.
       </p>
-    </div>
+    </ChangeReview>
   )
 }

@@ -103,7 +103,7 @@ function TokenSample({ token, type }: { token: TokenDefinition; type: TokenPrevi
     if (token.name.includes("line-height")) style.lineHeight = variable;
     if (token.name.includes("letter-spacing")) style.letterSpacing = variable;
     if (token.name.includes("font-weight")) style.fontWeight = variable;
-    if (["--hui-font-love-sans", "--hui-font-title", "--hui-font-body", "--hui-font-mono"].includes(token.name)) {
+    if (["--hui-font-sans", "--hui-font-title", "--hui-font-body", "--hui-font-mono"].includes(token.name)) {
       style.fontFamily = variable;
     }
 
@@ -123,27 +123,27 @@ export function TokenTable({ caption, tokens, type = "value", className }: Token
   return (
     <div
       className={cn(
-        "no-scrollbar my-6 w-full overflow-x-auto rounded-[var(--hui-radius-3)] border border-[var(--hui-color-border-base-primary)]",
+        "no-scrollbar my-7 w-full overflow-x-auto",
         className,
       )}
     >
-      <table className="w-full min-w-[42rem] border-collapse text-left text-sm">
+      {/* The description sits under the token name rather than in its own
+          column, so the table fits the reading column and a phone screen
+          without being cut off at the right edge. */}
+      <table className="w-full border-collapse text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead>
-          <tr className="border-b border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)]">
+          <tr className="border-b border-[var(--hui-color-border-base-secondary)] text-[13px] text-[var(--hui-color-foreground-base-secondary)]">
             {hasPreview ? (
-              <th scope="col" className="w-36 px-4 py-3 font-medium">
+              <th scope="col" className="py-2.5 pe-6 font-medium">
                 Preview
               </th>
             ) : null}
-            <th scope="col" className="px-4 py-3 font-medium">
+            <th scope="col" className="w-full py-2.5 pe-6 font-medium">
               Token
             </th>
-            <th scope="col" className="px-4 py-3 font-medium">
+            <th scope="col" className="py-2.5 text-end font-medium">
               Value
-            </th>
-            <th scope="col" className="px-4 py-3 font-medium">
-              Use
             </th>
           </tr>
         </thead>
@@ -151,21 +151,23 @@ export function TokenTable({ caption, tokens, type = "value", className }: Token
           {tokens.map((token) => (
             <tr
               key={`${token.name}-${token.value ?? "theme"}`}
-              className="border-b border-[var(--hui-color-border-base-primary)] last:border-b-0"
+              className="border-b-[0.5px] border-[var(--hui-color-border-base-secondary)]"
             >
               {hasPreview ? (
-                <td className="px-4 py-3">
+                <td className="py-3 pe-6 align-middle">
                   <TokenSample token={token} type={type} />
                 </td>
               ) : null}
-              <th scope="row" className="px-4 py-3 font-normal">
-                <code className="whitespace-nowrap">{token.name}</code>
+              <th scope="row" className="py-3 pe-6 align-middle font-normal">
+                <code className="text-[13px] [overflow-wrap:anywhere] text-[var(--hui-color-foreground-base-primary)]">
+                  {token.name}
+                </code>
+                <span className="mt-1 block text-[13px] leading-relaxed text-[var(--hui-color-foreground-base-secondary)]">
+                  {token.description}
+                </span>
               </th>
-              <td className="px-4 py-3 text-[var(--hui-color-foreground-base-secondary)]">
+              <td className="py-3 text-end align-middle text-[13px] whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] tabular-nums">
                 {token.value ?? "Theme-aware"}
-              </td>
-              <td className="px-4 py-3 text-[var(--hui-color-foreground-base-secondary)]">
-                {token.description}
               </td>
             </tr>
           ))}

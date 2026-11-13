@@ -22,15 +22,15 @@ const chartConfig = {
   resolved: {
     label: "Resolved", // [!code highlight]
     colors: {
-      light: ["#047857"], // [!code highlight]
-      dark: ["#10b981"], // [!code highlight]
+      light: ["#2563eb"], // [!code highlight]
+      dark: ["#3b82f6"], // [!code highlight]
     },
   },
   escalated: {
     label: "Escalated", // [!code highlight]
     colors: {
-      light: ["#be123c"], // [!code highlight]
-      dark: ["#f43f5e"], // [!code highlight]
+      light: ["#ea580c"], // [!code highlight]
+      dark: ["#ea580c"], // [!code highlight]
     },
   },
 } satisfies ChartConfig;

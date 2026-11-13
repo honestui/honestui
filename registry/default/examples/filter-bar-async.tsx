@@ -53,7 +53,7 @@ export default function FilterBarAsync() {
         value={value}
         onValueChange={setValue}
       />
-      <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+      <p className="mt-3 flex items-center gap-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
         <Switch
           checked={failRequests}
           onCheckedChange={(checked) => setFailRequests(checked === true)}

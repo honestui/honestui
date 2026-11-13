@@ -20,7 +20,7 @@ const regularText =
 const smallText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
 
-/** Tabular figures on the digits only, since LoveSans also widens letters. */
+/** Tabular figures on the digits only, since the tabular feature can also widen letters. */
 function TabularDigits({ text }: { text: string }) {
   return text.split(/(\d[\d.,]*)/).map((part, index) =>
     index % 2 === 1 ? (

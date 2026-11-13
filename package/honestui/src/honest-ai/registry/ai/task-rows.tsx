@@ -246,7 +246,7 @@ function TaskRow({
   )
 }
 
-/** Tabular figures on the digits only; LoveSans would space the letters too. */
+/** Tabular figures on the digits only; the tabular feature would space the letters too. */
 function TabularDigits({ text }: { text: string }) {
   return text.split(/(\d+)/).map((part, i) =>
     i % 2 ? (

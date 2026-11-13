@@ -15,7 +15,7 @@ A button has a visible label, an optional icon, a variant, a size, and a state. 
 
 ## Variants
 
-Use one default button per view for the primary action. Use secondary or outline for supporting actions, ghost for low-emphasis controls in toolbars and cards, and link for inline actions inside text. Reserve destructive and destructive-outline for actions that are hard to reverse, such as deleting data. A destructive action that is merely prominent is not a destructive action; it must actually destroy something.
+Use one default button per view for the primary action. The default is neutral ink, near-black in light mode and near-white in dark, so it leads a dense screen without adding a color. Use accent, which takes the theme accent color, for the single action that should stand out in color, such as an upgrade or a marketing call to action. Use secondary or outline for supporting actions, ghost for low-emphasis controls in toolbars and cards, and link for inline actions inside text. Reserve destructive and destructive-outline for actions that are hard to reverse, such as deleting data. A destructive action that is merely prominent is not a destructive action; it must actually destroy something.
 
 ## Behavior
 
@@ -198,7 +198,7 @@ Spacing and order mirror automatically under `dir="rtl"`.
 
 | Prop | Values | Default |
 | --- | --- | --- |
-| `variant` | `default`, `outline`, `secondary`, `destructive`, `destructive-outline`, `ghost`, `link` | `default` |
+| `variant` | `default`, `accent`, `outline`, `secondary`, `destructive`, `destructive-outline`, `ghost`, `link` | `default` |
 | `size` | `xs`, `sm`, `default`, `lg`, `xl`, `icon`, `icon-sm`, `icon-lg` | `default` |
 | `asChild` | boolean | `false` |
 

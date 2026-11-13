@@ -415,6 +415,14 @@ export type QuantityFieldControlProps = Omit<React.ComponentProps<"div">, "child
   steppers?: boolean | undefined
 }
 
+/** Steppers sit inside the shared edge, so they lose their own border and corners. */
+const stepperClassName =
+  "size-auto w-9 rounded-none border-0 bg-transparent text-[var(--hui-color-foreground-base-secondary)] not-disabled:hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:outline-offset-[-2px]"
+
+/** The unit is an attached segment at the end of the control, on the subtle tint. */
+const unitSegmentClassName =
+  "shrink-0 border-0 border-s-[0.5px] border-s-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)]"
+
 /** The number, its steppers, and the unit. With one unit offered, the unit is text instead of a menu. */
 function QuantityFieldControl({ steppers = true, className, ...props }: QuantityFieldControlProps) {
   const context = useQuantityFieldContext("QuantityFieldControl")
@@ -425,7 +433,17 @@ function QuantityFieldControl({ steppers = true, className, ...props }: Quantity
       role="group"
       aria-labelledby={context.labelId}
       data-slot="quantity-field-control"
-      className={cn("flex w-full min-w-0 items-center gap-[var(--hui-space-2)]", className)}
+      data-invalid={context.error !== null ? "" : undefined}
+      data-disabled={context.disabled ? "" : undefined}
+      className={cn(
+        // One 36px control: steppers, number, and unit share a single hairline edge.
+        "flex h-9 w-full min-w-0 items-stretch overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] motion-safe:[transition:border-color_var(--hui-duration-fast)_var(--hui-ease-out),box-shadow_var(--hui-duration-fast)_var(--hui-ease-out)]",
+        "not-data-disabled:hover:border-[var(--hui-color-border-field-hover,var(--hui-color-border-base-secondary))]",
+        "has-[input:focus]:border-[var(--hui-color-border-accent-emphasis)]! has-[input:focus]:shadow-[var(--hui-focus-ring-field)]",
+        "data-invalid:border-[var(--hui-color-border-danger-emphasis)]! has-[input:focus]:data-invalid:shadow-[var(--hui-focus-ring-field-danger)]",
+        "data-disabled:border-[var(--hui-color-border-base-primary)] data-disabled:bg-[var(--hui-color-background-base-secondary)]",
+        className
+      )}
       {...props}
     >
       <NumberField
@@ -441,12 +459,13 @@ function QuantityFieldControl({ steppers = true, className, ...props }: Quantity
         disabled={context.disabled}
         readOnly={context.readOnly}
         required={context.required}
-        className="min-w-0 flex-1"
+        className="h-full min-w-0 flex-1 gap-0"
       >
-        <NumberFieldGroup className="w-full">
+        <NumberFieldGroup className="h-full w-full rounded-none has-[input:focus]:shadow-none [&>*]:h-full">
           {steppers && (
             <NumberFieldDecrement
               aria-label={labels.decrease}
+              className={stepperClassName}
               disabled={value !== null && min !== undefined && value <= min ? true : undefined}
             />
           )}
@@ -456,13 +475,16 @@ function QuantityFieldControl({ steppers = true, className, ...props }: Quantity
             onBlur={context.onInputBlur}
             onPaste={context.onPaste}
             className={cn(
-              "aria-invalid:border-[var(--hui-color-border-danger-emphasis)]",
-              !steppers && "rounded-[var(--hui-radius-1)] text-start"
+              "border-0 bg-transparent px-[var(--hui-space-3)] [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] focus:not-read-only:bg-transparent data-disabled:bg-transparent",
+              steppers
+                ? "border-x-[0.5px] border-x-[var(--hui-color-border-base-primary)] focus:border-x-[var(--hui-color-border-base-primary)] aria-invalid:border-x-[var(--hui-color-border-base-primary)] data-invalid:border-x-[var(--hui-color-border-base-primary)]"
+                : "text-start"
             )}
           />
           {steppers && (
             <NumberFieldIncrement
               aria-label={labels.increase}
+              className={stepperClassName}
               disabled={value !== null && max !== undefined && value >= max ? true : undefined}
             />
           )}
@@ -477,7 +499,12 @@ function QuantityFieldControl({ steppers = true, className, ...props }: Quantity
       {units.length === 1 ? (
         <span
           data-slot="quantity-field-unit"
-          className={cn("shrink-0 text-[var(--hui-color-foreground-base-secondary)]", smallText)}
+          className={cn(
+            unitSegmentClassName,
+            "flex min-w-16 items-center px-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-secondary)]",
+            smallText,
+            "[font-size:var(--hui-font-size-control,13px)]"
+          )}
         >
           {unit.symbol}
         </span>
@@ -494,9 +521,13 @@ function QuantityFieldControl({ steppers = true, className, ...props }: Quantity
           >
             <SelectTrigger
               size="sm"
+              variant="text"
               aria-labelledby={`${context.labelId} ${context.unitLabelId}`}
               data-slot="quantity-field-unit"
-              className="shrink-0"
+              className={cn(
+                unitSegmentClassName,
+                "h-full min-h-0 min-w-16 rounded-none py-0 ps-[var(--hui-space-4)] pe-[var(--hui-space-3)] focus-visible:border-s-[var(--hui-color-border-base-primary)] focus-visible:shadow-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[-2px] data-popup-open:bg-[var(--hui-color-background-base-primary-hover)] [&_[data-slot=select-trigger-content]]:[font-weight:var(--hui-font-weight-medium)]"
+              )}
             >
               <SelectValue>{unit.symbol}</SelectValue>
             </SelectTrigger>

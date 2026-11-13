@@ -17,14 +17,14 @@ export default function DateRangePickerConfirm() {
   const [value, setValue] = React.useState<DateRange | undefined>(undefined)
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full max-w-sm min-w-0">
       <DateRangePicker
         value={value}
         onValueChange={setValue}
         confirmMode
         presets={getDateRangePresets()}
       />
-      <p className="mt-4 text-sm text-muted-foreground" role="status">
+      <p className="mt-2 text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]" role="status">
         {value?.from && value.to
           ? `Dashboard filtered to ${value.from.toLocaleDateString()} through ${value.to.toLocaleDateString()}.`
           : "The dashboard keeps its current window until you choose Apply."}

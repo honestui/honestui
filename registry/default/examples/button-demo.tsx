@@ -11,6 +11,7 @@ export default function ButtonDemo() {
           <Check aria-hidden="true" />
           Publish
         </Button>
+        <Button variant="accent">Upgrade</Button>
         <Button variant="secondary">Save draft</Button>
         <Button variant="outline">Preview</Button>
         <Button variant="ghost">Cancel</Button>
@@ -18,12 +19,14 @@ export default function ButtonDemo() {
           <Trash aria-hidden="true" />
           Delete
         </Button>
+        <Button variant="destructive-outline">Remove</Button>
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <Button size="xs">Extra small</Button>
         <Button size="sm">Small</Button>
         <Button>Default</Button>
         <Button size="lg">Large</Button>
+        <Button size="xl">Extra large</Button>
         <Button size="icon" aria-label="Add item">
           <Plus aria-hidden="true" />
         </Button>

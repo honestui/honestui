@@ -48,7 +48,7 @@ function TabsList({
         resolvedVariant === "standalone" &&
           "bg-transparent shadow-none [&>[data-slot=tabs-trigger]]:border-[0.5px] [&>[data-slot=tabs-trigger]]:border-[var(--hui-color-border-base-primary)] [&>[data-slot=tabs-trigger][data-active]]:border-transparent",
         resolvedVariant === "plain" &&
-          "justify-center gap-[var(--hui-space-6)] rounded-none bg-transparent p-0 shadow-none [&>[data-slot=tabs-trigger]]:flex-none [&>[data-slot=tabs-trigger]]:rounded-none [&>[data-slot=tabs-trigger]]:border-b [&>[data-slot=tabs-trigger]]:border-b-transparent",
+          "justify-center gap-[var(--hui-space-6)] rounded-none bg-transparent p-0 shadow-none data-[orientation=vertical]:items-stretch data-[orientation=vertical]:justify-start data-[orientation=vertical]:gap-[var(--hui-space-2)] [&>[data-slot=tabs-trigger]]:flex-none [&>[data-slot=tabs-trigger]]:rounded-none [&>[data-slot=tabs-trigger]]:border-b [&>[data-slot=tabs-trigger]]:border-b-transparent data-[orientation=vertical]:[&>[data-slot=tabs-trigger]]:border-b-0 data-[orientation=vertical]:[&>[data-slot=tabs-trigger]]:px-[var(--hui-space-5)]",
         className
       )}
       {...props}
@@ -61,7 +61,7 @@ function TabsList({
           resolvedVariant === "standalone" &&
             "box-border border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-neutral-primary)] shadow-none",
           resolvedVariant === "plain" &&
-            "rounded-none bg-[var(--hui-color-border-base-emphasis)] shadow-none data-[orientation=horizontal]:h-px data-[orientation=horizontal]:[translate:var(--active-tab-left,0px)_calc(var(--active-tab-top,0px)+var(--active-tab-height,0px)-1px)] data-[orientation=vertical]:w-px data-[orientation=vertical]:[translate:calc(var(--active-tab-left,0px)+var(--active-tab-width,0px)-1px)_var(--active-tab-top,0px)]",
+            "rounded-none bg-[var(--hui-color-border-base-emphasis)] shadow-none data-[orientation=horizontal]:h-px data-[orientation=horizontal]:[translate:var(--active-tab-left,0px)_calc(var(--active-tab-top,0px)+var(--active-tab-height,0px)-1px)] data-[orientation=vertical]:w-px data-[orientation=vertical]:[translate:calc(var(--active-tab-left,0px)-1px)_var(--active-tab-top,0px)] data-[orientation=vertical]:rtl:[translate:calc(var(--active-tab-left,0px)+var(--active-tab-width,0px))_var(--active-tab-top,0px)]",
           indicatorClassName
         )}
       />
@@ -75,7 +75,8 @@ function TabsTab({ className, ...props }: TabsPrimitive.Tab.Props) {
       data-slot="tabs-trigger"
       className={cn(
         "relative z-1 m-0 box-border inline-flex h-[var(--tabs-trigger-height)] flex-1 cursor-pointer items-center justify-center gap-[var(--hui-space-2)] overflow-hidden rounded-[calc(var(--hui-radius-2)-var(--hui-space-1))] border-0 bg-transparent px-[var(--tabs-trigger-padding-inline)] text-center text-ellipsis whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] outline-none [font-size:var(--tabs-trigger-font-size)] [font-style:normal] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--tabs-trigger-letter-spacing)] [line-height:var(--tabs-trigger-line-height)] transition-colors duration-[var(--hui-duration-normal)] ease-[var(--hui-ease-out)] data-active:text-[var(--hui-color-foreground-base-primary)] data-disabled:pointer-events-none data-disabled:text-[var(--hui-color-foreground-base-tertiary)] [&:focus-visible]:[outline:var(--hui-focus-ring)] [&:hover:not([data-disabled])]:text-[var(--hui-color-foreground-base-primary)] motion-safe:[&:active:not([data-disabled]):not([data-active])]:scale-[var(--hui-scale-pressed)] motion-safe:transition-[color,scale] motion-safe:duration-[var(--hui-duration-normal),var(--hui-duration-press)] motion-safe:[transition-timing-function:var(--hui-ease-out)] [&_svg]:pointer-events-none [&_svg]:size-[var(--hui-space-5)] [&_svg]:shrink-0 [&_svg]:text-current",
-        "data-[orientation=vertical]:w-full data-[orientation=vertical]:justify-start",
+        // In a column the flex-basis of flex-1 would collapse the trigger height.
+        "data-[orientation=vertical]:w-full data-[orientation=vertical]:flex-none data-[orientation=vertical]:justify-start",
         className
       )}
       {...props}

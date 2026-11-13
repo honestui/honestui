@@ -4,6 +4,7 @@ import * as React from "react"
 
 import {
   FileUpload,
+  FileUploadBrowse,
   FileUploadDescription,
   FileUploadDropzone,
   FileUploadIcon,
@@ -11,7 +12,11 @@ import {
   FileUploadTitle,
 } from "@/registry/default/product/file-upload/file-upload"
 import { makeSampleFile } from "./file-upload-example-utils"
-import { FileUploadSampleButton } from "./file-upload-sample-button"
+import {
+  FileUploadDemoHeader,
+  FileUploadDemoTitle,
+  FileUploadSampleButton,
+} from "./file-upload-sample-button"
 
 /**
  * validateFile adds rules HonestUI cannot guess. This one bans spaces in
@@ -22,7 +27,26 @@ export default function FileUploadValidation() {
   const containerRef = React.useRef<HTMLDivElement>(null)
 
   return (
-    <div ref={containerRef} className="w-full min-w-0 max-w-xl">
+    <div ref={containerRef} className="flex w-full min-w-0 max-w-xl flex-col gap-[var(--hui-space-2)]">
+      <FileUploadDemoHeader
+        action={
+          <FileUploadSampleButton
+            containerRef={containerRef}
+            files={() => [
+              makeSampleFile("my resume draft.txt", {
+                type: "text/plain",
+                contents: ["name: someone\nrole: something"],
+              }),
+              makeSampleFile("clean-name.csv", {
+                type: "text/csv",
+                contents: ["id,name", "1,connor"],
+              }),
+            ]}
+          />
+        }
+      >
+        <FileUploadDemoTitle>Supporting documents</FileUploadDemoTitle>
+      </FileUploadDemoHeader>
       <FileUpload
         multiple
         validateFile={(file) => {
@@ -41,25 +65,10 @@ export default function FileUploadValidation() {
           <FileUploadDescription>
             Custom rule: use dashes instead of spaces
           </FileUploadDescription>
+          <FileUploadBrowse />
         </FileUploadDropzone>
         <FileUploadList />
       </FileUpload>
-
-      <div className="mt-[var(--hui-space-3)]">
-        <FileUploadSampleButton
-          containerRef={containerRef}
-          files={() => [
-            makeSampleFile("my resume draft.txt", {
-              type: "text/plain",
-              contents: ["name: someone\nrole: something"],
-            }),
-            makeSampleFile("clean-name.csv", {
-              type: "text/csv",
-              contents: ["id,name", "1,connor"],
-            }),
-          ]}
-        />
-      </div>
     </div>
   )
 }

@@ -25,7 +25,8 @@ type ShaderCodePrimitive = string | number | boolean;
 export type ShaderCodeValue = ShaderCodePrimitive | readonly ShaderCodePrimitive[];
 export type ShaderCodeProp = readonly [name: string, value: ShaderCodeValue];
 
-const controlClassName = "min-w-0 py-2";
+const controlClassName = "min-w-0";
+const labelClassName = "text-[13px] font-medium text-foreground";
 
 export function useShaderSettings<T extends object>(defaults: T) {
   const [settings, setSettings] = React.useState<T>(defaults);
@@ -104,24 +105,29 @@ export function ShaderPlayground({
   const playgroundPortal = useComponentPreviewPlaygroundPortal();
 
   const controls = (
-    <section aria-label={`${title} controls`}>
-      <div className="mb-5 flex items-center justify-between gap-3">
+    <section
+      aria-label={`${title} controls`}
+      className="not-prose overflow-hidden rounded-[12px] border border-border bg-card"
+    >
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-2.5">
         <div className="min-w-0">
-          <h3 className="text-lg font-medium">Customize</h3>
-          <p className="text-muted-foreground text-sm">
+          <h3 data-slot="shader-playground-title" className="text-sm font-medium text-foreground">Customize</h3>
+          <p className="text-muted-foreground text-xs">
             Changes update the preview and generated code.
           </p>
         </div>
         <Button
           onClick={onReset}
           size="sm"
-          variant="outline"
+          variant="ghost"
         >
           <RotateCcw />
           Reset
         </Button>
       </div>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-5">{children}</div>
+      <div className="grid grid-cols-1 gap-x-8 gap-y-5 p-4 sm:grid-cols-2 sm:p-5 [&>*]:col-span-1 sm:[&>.col-span-2]:col-span-2">
+        {children}
+      </div>
     </section>
   );
 
@@ -157,15 +163,15 @@ export function ShaderSliderControl({
 
   return (
     <div className={cn(controlClassName, className)}>
-      <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-        <span className="min-w-0 truncate font-medium">{label}</span>
-        <output className="text-muted-foreground shrink-0 font-mono text-xs tabular-nums">
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <span className={cn(labelClassName, "min-w-0 truncate")}>{label}</span>
+        <output className="text-muted-foreground shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-xs tabular-nums">
           {displayValue}
         </output>
       </div>
       <Slider
         aria-label={label}
-        className="h-8"
+        className="h-6"
         max={max}
         min={min}
         onValueChange={(nextValue) => {
@@ -195,8 +201,8 @@ export function ShaderSwitchControl({
   const id = React.useId();
 
   return (
-    <div className={cn(controlClassName, "flex min-h-14 items-center justify-between gap-3", className)}>
-      <label className="text-sm font-medium" htmlFor={id}>
+    <div className={cn(controlClassName, "flex h-8 items-center justify-between gap-3 self-end", className)}>
+      <label className={labelClassName} htmlFor={id}>
         {label}
       </label>
       <Switch checked={checked} id={id} onCheckedChange={onChange} />
@@ -222,7 +228,7 @@ export function ShaderSelectControl({
 
   return (
     <div className={cn(controlClassName, className)}>
-      <label className="mb-2 block text-sm font-medium" htmlFor={id}>
+      <label className={cn(labelClassName, "mb-1.5 block")} htmlFor={id}>
         {label}
       </label>
       <Select
@@ -231,7 +237,7 @@ export function ShaderSelectControl({
         }}
         value={value}
       >
-        <SelectTrigger id={id} size="medium" className="w-full">
+        <SelectTrigger id={id} size="small" className="w-full">
           <SelectValue>{selectedLabel}</SelectValue>
         </SelectTrigger>
         <SelectPopup>
@@ -261,7 +267,7 @@ export function ShaderTextControl({
 
   return (
     <div className={cn(controlClassName, className)}>
-      <label className="mb-2 block text-sm font-medium" htmlFor={id}>
+      <label className={cn(labelClassName, "mb-1.5 block")} htmlFor={id}>
         {label}
       </label>
       <Input
@@ -308,26 +314,30 @@ function ShaderColorControlInner({
 
   return (
     <div className={cn(controlClassName, className)}>
-      <label className="mb-2 block text-sm font-medium" htmlFor={id}>
+      <label className={cn(labelClassName, "mb-1.5 block")} htmlFor={id}>
         {label}
       </label>
-      <div className="flex items-center gap-2">
+      <div
+        className={cn(
+          "flex h-8 items-center gap-2 rounded-[8px] border border-border bg-background ps-1.5 pe-2 transition-colors focus-within:border-ring",
+          !isValid && "border-destructive focus-within:border-destructive",
+        )}
+      >
         <input
           aria-label={`${label} picker`}
-          className="border-input bg-background size-8 shrink-0 cursor-pointer rounded-md border p-0.5"
+          className="size-5 shrink-0 cursor-pointer appearance-none rounded-[5px] border-0 bg-transparent p-0 shadow-[inset_0_0_0_1px_rgb(0_0_0/0.08)] [&::-moz-color-swatch]:rounded-[5px] [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-[5px] [&::-webkit-color-swatch]:border-0"
           onChange={(event) => commitDraft(event.target.value)}
           type="color"
           value={isValid ? draft : value}
         />
-        <Input
+        <input
           aria-invalid={!isValid || undefined}
-          className="min-w-0"
+          className="min-w-0 flex-1 bg-transparent font-mono text-xs uppercase text-foreground outline-none"
           id={id}
           onBlur={() => {
             if (!isValid) setDraft(value);
           }}
           onChange={(event) => commitDraft(event.target.value)}
-          size="sm"
           spellCheck={false}
           value={draft}
         />
@@ -352,17 +362,17 @@ export function ShaderColorListControl({
   return (
     <div
       aria-label={label}
-      className="col-span-2 min-w-0 py-2"
+      className="col-span-2 min-w-0"
       role="group"
     >
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-sm font-medium">{label}</span>
+      <div className="mb-1.5 flex items-center justify-between gap-3">
+        <span className={labelClassName}>{label}</span>
         <Button
           aria-label={`Add ${label.toLowerCase()}`}
           disabled={values.length >= maxColors}
           onClick={() => onChange([...values, values.at(-1) ?? "#ffffff"])}
           size="xs"
-          variant="outline"
+          variant="ghost"
         >
           <Plus />
           Add color
@@ -384,11 +394,11 @@ export function ShaderColorListControl({
             {values.length > minColors && (
               <button
                 aria-label={`Remove color ${index + 1}`}
-                className="text-muted-foreground hover:text-foreground focus-visible:ring-ring absolute top-2 right-2 flex size-7 items-center justify-center rounded-md outline-none focus-visible:ring-2"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring absolute -top-0.5 right-0 flex size-5 items-center justify-center rounded-md outline-none focus-visible:ring-2"
                 onClick={() => onChange(values.filter((_, valueIndex) => valueIndex !== index))}
                 type="button"
               >
-                <X className="size-3.5" />
+                <X className="size-3" />
               </button>
             )}
           </div>

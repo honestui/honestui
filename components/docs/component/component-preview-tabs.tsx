@@ -91,7 +91,9 @@ export function ComponentPreviewTabs({
                   className={cn(
                     playground
                       ? "w-full"
-                      : "no-scrollbar h-80 w-full overflow-auto sm:h-90",
+                      : // The frame grows with the demo up to a cap, then scrolls,
+                        // so a slightly tall demo is not cut at the bottom edge.
+                        "no-scrollbar grid max-h-[35rem] min-h-80 w-full overflow-auto sm:min-h-90",
                     previewClassName,
                   )}
                   data-align={align}
@@ -99,7 +101,7 @@ export function ComponentPreviewTabs({
                   <div
                     className={cn(
                       "preview w-full [&>svg]:select-none",
-                      !playground && "h-full",
+                      !playground && "grid",
                     )}
                     data-slot="preview"
                   >

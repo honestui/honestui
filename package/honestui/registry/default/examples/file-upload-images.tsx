@@ -4,6 +4,7 @@ import * as React from "react"
 
 import {
   FileUpload,
+  FileUploadBrowse,
   FileUploadDescription,
   FileUploadDropzone,
   FileUploadIcon,
@@ -89,6 +90,7 @@ export default function FileUploadImages() {
           <FileUploadDescription>
             PNG, JPG, or SVG up to 8 MB · four at a time
           </FileUploadDescription>
+          <FileUploadBrowse />
         </FileUploadDropzone>
         <FileUploadList />
       </FileUpload>

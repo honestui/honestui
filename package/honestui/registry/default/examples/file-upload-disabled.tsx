@@ -4,6 +4,7 @@ import * as React from "react"
 
 import {
   FileUpload,
+  FileUploadBrowse,
   FileUploadDescription,
   FileUploadDropzone,
   FileUploadIcon,
@@ -27,7 +28,8 @@ export default function FileUploadDisabled() {
             <FileUploadIcon />
             <FileUploadTitle>Enabled sibling for contrast</FileUploadTitle>
             <FileUploadDescription>PDF up to 10 MB</FileUploadDescription>
-          </FileUploadDropzone>
+            <FileUploadBrowse />
+        </FileUploadDropzone>
         </FileUpload>
       </Field>
 
@@ -42,7 +44,8 @@ export default function FileUploadDisabled() {
             <FileUploadIcon />
             <FileUploadTitle>File upload is disabled</FileUploadTitle>
             <FileUploadDescription>Billing must be restored first</FileUploadDescription>
-          </FileUploadDropzone>
+            <FileUploadBrowse />
+        </FileUploadDropzone>
         </FileUpload>
         <span id="lock-note" className="sr-only">
           Attachments unlock after billing is restored.

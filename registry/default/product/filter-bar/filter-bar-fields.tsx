@@ -129,7 +129,7 @@ function DisabledReasonNotice({ definition }: { definition: FilterDefinition }) 
     <p
       id={description}
       data-slot="filter-bar-field-disabled-reason"
-      className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]"
+      className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]"
     >
       {definition.disabledReason}
     </p>
@@ -196,7 +196,7 @@ function OperatorChoice({
     >
       <SelectTrigger
         size="small"
-        className="h-(--hui-space-10) w-full"
+        className="h-(--hui-space-9) min-h-(--hui-space-9) w-full rounded-[calc(var(--hui-radius-2)-2px)] [font-size:13px]"
         aria-label={`${definition.label}${OPERATOR_ARIA_SUFFIX}`}
         aria-describedby={
           definition.disabledReason ? description : undefined
@@ -291,6 +291,7 @@ function FilterTextControl({
       >
         {hidesInput ? null : (
         <Input
+          size="sm"
           id={control}
           aria-labelledby={label}
           aria-describedby={
@@ -371,7 +372,7 @@ function FilterSelectControl({
         >
           <SelectTrigger
             size="small"
-            className="h-(--hui-space-10) w-full"
+            className="h-(--hui-space-9) min-h-(--hui-space-9) w-full rounded-[calc(var(--hui-radius-2)-2px)] [font-size:13px]"
             aria-label={definition.label}
             aria-describedby={
               definition.disabledReason ? description : undefined
@@ -513,6 +514,7 @@ function MultiChoiceList({
     >
       {searchesLocally || loadOptions ? (
         <Input
+          size="sm"
           type="search"
           value={query}
           placeholder={
@@ -529,11 +531,11 @@ function MultiChoiceList({
 
       <ScrollArea
         className={cn(
-          scrollable && "max-h-[calc(var(--hui-space-9)*4)]"
+          scrollable && "max-h-[calc(var(--hui-space-9)*5)]"
         )}
       >
         <ul
-          className="flex w-full flex-col gap-px pb-1"
+          className="-mx-(--hui-space-3) flex flex-col gap-px pb-1"
           aria-labelledby={label}
           aria-describedby={
             definition.disabledReason ? description : undefined
@@ -547,7 +549,7 @@ function MultiChoiceList({
             return (
               <li key={optionKey(option)}>
                 <Label
-                  className="flex! min-h-(--hui-space-8) cursor-pointer items-center justify-between gap-(--hui-space-2) rounded-[var(--hui-radius-2)] px-(--hui-space-2) py-(--hui-space-2) text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] hover:bg-[var(--hui-color-background-base-primary-hover)] data-checked:bg-[var(--hui-color-background-neutral-secondary)] data-disabled:cursor-not-allowed data-disabled:opacity-50"
+                  className="flex! min-h-(--hui-space-9) cursor-pointer items-center justify-between gap-(--hui-space-3) rounded-[var(--hui-radius-1)] px-(--hui-space-3) py-(--hui-space-1) text-[var(--hui-color-foreground-base-primary)] [font-size:13px] [font-weight:var(--hui-font-weight-regular)] [line-height:var(--hui-line-height-small)] motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[var(--hui-color-background-base-primary-hover)] has-[:focus-visible]:bg-[var(--hui-color-background-base-primary-hover)] data-checked:[font-weight:var(--hui-font-weight-medium)] data-disabled:cursor-not-allowed data-disabled:opacity-50"
                   data-slot="filter-bar-option-row"
                   data-checked={checked || undefined}
                   data-disabled={
@@ -567,7 +569,7 @@ function MultiChoiceList({
                   </span>
                   {showOptionCounts && option.count != null ? (
                     <span
-                      className="shrink-0 tabular-nums text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-mini)]"
+                      className="shrink-0 tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)]"
                       data-slot="filter-bar-option-count"
                     >
                       {option.count.toLocaleString()}
@@ -598,7 +600,7 @@ function MultiChoiceList({
         {isLoading && snapshot.options.length > 0 ? (
           <p
             role="status"
-            className="mt-1 flex items-center gap-(--hui-space-2) text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-micro)]"
+            className="mt-1 flex items-center gap-(--hui-space-2) text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)]"
           >
             <LoaderCircleIcon aria-hidden className="size-3 animate-spin" />
             {labels.loadingOptions}
@@ -608,7 +610,7 @@ function MultiChoiceList({
 
       {isError ? (
         <p className="flex flex-col gap-(--hui-space-1)">
-          <span className="text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-micro)]">
+          <span className="text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)]">
             {labels.optionsError}
           </span>
           <Button
@@ -711,11 +713,11 @@ function AmountInput({
       disabled={disabled || definition.disabled}
       className="w-full min-w-0"
     >
-      <div className="flex h-(--hui-space-10) w-full min-w-0 items-center overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-base-primary)] focus-within:border-[var(--hui-color-border-accent-emphasis)]">
+      <div className="flex h-(--hui-space-9) w-full min-w-0 items-center overflow-hidden rounded-[calc(var(--hui-radius-2)-2px)] border-[0.5px] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] [font-size:13px] motion-safe:[transition:border-color_var(--hui-duration-fast)_var(--hui-ease-out)] focus-within:border-[var(--hui-color-border-accent-emphasis)] focus-within:shadow-[var(--hui-focus-ring-field)]">
         {prefix ? (
           <span
             aria-hidden="true"
-            className="pl-(--hui-space-2) text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)]"
+            className="shrink-0 pl-2.5 text-[var(--hui-color-foreground-base-secondary)] [font-size:13px]"
           >
             {prefix}
           </span>
@@ -731,12 +733,12 @@ function AmountInput({
           aria-describedby={
             definition.disabledReason ? description : undefined
           }
-          className="h-full min-w-0 rounded-none border-0 bg-transparent px-(--hui-space-2)"
+          className="h-full min-w-0 rounded-none border-0 bg-transparent px-2.5 tabular-nums shadow-none [font-size:13px] focus-visible:shadow-none [[aria-hidden]+&]:ps-1"
         />
         {suffix ? (
           <span
             aria-hidden="true"
-            className="pr-(--hui-space-2) text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)]"
+            className="shrink-0 pr-2.5 text-[var(--hui-color-foreground-base-secondary)] [font-size:13px]"
           >
             {suffix}
           </span>
@@ -792,7 +794,7 @@ function FilterNumber({
           />
           <span
             aria-hidden="true"
-            className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-micro)]"
+            className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)]"
           >
             to
           </span>
@@ -892,6 +894,7 @@ function FilterDateControl({
         }
       >
         <Input
+          size="sm"
           id={control}
           type="date"
           value={toDateInputString(pickedDay)}
@@ -938,7 +941,7 @@ function FilterDateControl({
           {presets.map((preset) => (
             <Label
               key={preset.label}
-              className="-mx-(--hui-space-2) rounded-[var(--hui-radius-2)] px-(--hui-space-2) py-(--hui-space-1) hover:bg-[var(--hui-color-background-base-primary-hover)]"
+              className="-mx-(--hui-space-3) min-h-(--hui-space-9) rounded-[var(--hui-radius-1)] px-(--hui-space-3) [font-size:13px] hover:bg-[var(--hui-color-background-base-primary-hover)]"
             >
               <Radio
                 value={preset.label}
@@ -1033,6 +1036,7 @@ function FilterDateRangeControl({
         confirmMode
         numberOfMonths={1}
         clearable={false}
+        className="h-(--hui-space-9) min-h-(--hui-space-9) rounded-[calc(var(--hui-radius-2)-2px)] [font-size:13px]"
         disabled={disabled || definition.disabled}
         aria-label={definition.label}
         aria-describedby={
@@ -1088,7 +1092,7 @@ function BooleanRadioChoice({
       {BOOLEAN_CHOICES.map((choice) => (
         <Label
           key={choice.stored}
-          className="-mx-(--hui-space-2) rounded-[var(--hui-radius-2)] px-(--hui-space-2) py-(--hui-space-1) hover:bg-[var(--hui-color-background-base-primary-hover)]"
+          className="-mx-(--hui-space-3) min-h-(--hui-space-9) rounded-[var(--hui-radius-1)] px-(--hui-space-3) [font-size:13px] hover:bg-[var(--hui-color-background-base-primary-hover)]"
         >
           <Radio
             value={choice.stored}

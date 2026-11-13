@@ -110,7 +110,8 @@ export function DataGridColumnHeader<TData>({
             variant="link"
             size="sm"
             className={cn(
-              "min-w-0 border-0 px-[var(--hui-space-2)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-tertiary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)]",
+              "min-h-0 min-w-0 border-0 px-[var(--hui-space-2)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)] no-underline hover:text-[var(--hui-color-foreground-base-primary)] hover:no-underline [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)]",
+              sorted && "text-[var(--hui-color-foreground-base-primary)]",
               alignment === "left" &&
                 "-ms-[var(--hui-space-2)] justify-start",
               alignment === "center" && "justify-center",
@@ -122,11 +123,11 @@ export function DataGridColumnHeader<TData>({
           >
             <span className="truncate">{title}</span>
             {sorted === "asc" ? (
-              <ArrowUpIcon aria-hidden className="size-3.5" />
+              <ArrowUpIcon aria-hidden className="size-3" />
             ) : sorted === "desc" ? (
-              <ArrowDownIcon aria-hidden className="size-3.5" />
+              <ArrowDownIcon aria-hidden className="size-3" />
             ) : (
-              <ChevronsUpDownIcon aria-hidden className="size-3.5 opacity-60" />
+              <ChevronsUpDownIcon aria-hidden className="size-3 opacity-0 transition-opacity group-hover/header:opacity-60" />
             )}
             {sortIndex > 0 && (
               <span className="tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-micro)]">

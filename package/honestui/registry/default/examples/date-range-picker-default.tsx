@@ -9,9 +9,9 @@ export default function DateRangePickerDefault() {
   const [value, setValue] = React.useState<DateRange | undefined>(undefined)
 
   return (
-    <div className="w-full max-w-md min-w-0">
+    <div className="w-full max-w-sm min-w-0">
       <DateRangePicker value={value} onValueChange={setValue} />
-      <p className="mt-4 text-sm text-muted-foreground" role="status">
+      <p className="mt-2 text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]" role="status">
         {value?.from
           ? `Selected ${value.from.toLocaleDateString()}${
               value.to ? ` through ${value.to.toLocaleDateString()}` : ""

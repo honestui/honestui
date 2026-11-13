@@ -27,7 +27,7 @@ export default function FilterBarText() {
         value={value}
         onValueChange={setValue}
       />
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
         Contains, equals, prefixes, and the two empty rules cover almost every
         text filter a list needs.
       </p>

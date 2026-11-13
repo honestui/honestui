@@ -162,7 +162,7 @@ function ContextMeter({
         </svg>
         {showPercent && (
           <span aria-hidden="true" data-slot="context-meter-percent">
-            {/* Tabular figures on the digits only; LoveSans would space the sign too. */}
+            {/* Tabular figures on the digits only; the tabular feature would space the sign too. */}
             <motion.span className="tabular-nums">{shownPercent}</motion.span>%
           </span>
         )}
@@ -241,7 +241,7 @@ function ContextMeter({
   )
 }
 
-/** Tabular figures on the digits only; LoveSans would space commas, signs and letters too. */
+/** Tabular figures on the digits only; the tabular feature would space commas, signs and letters too. */
 function TabularDigits({ text }: { text: string }) {
   return text.split(/(\d+)/).map((part, i) =>
     i % 2 ? (

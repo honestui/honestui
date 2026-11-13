@@ -22,15 +22,15 @@ const chartConfig = {
   earlyVotes: {
     label: "Early votes",
     colors: {
-      light: ["#047857"],
-      dark: ["#10b981"],
+      light: ["#2563eb"],
+      dark: ["#3b82f6"],
     },
   },
   dayOfVotes: {
     label: "Election-day votes",
     colors: {
-      light: ["#be123c"],
-      dark: ["#f43f5e"],
+      light: ["#ea580c"],
+      dark: ["#ea580c"],
     },
   },
 } satisfies ChartConfig;

@@ -31,7 +31,7 @@ export default function FilterBarDateRange() {
         value={value}
         onValueChange={setValue}
       />
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
         Committed ranges that match a preset show its name. Anything else
         falls back to two compact dates.
       </p>

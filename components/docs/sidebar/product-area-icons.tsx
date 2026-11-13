@@ -1,226 +1,146 @@
 import { useId } from "react";
+import { cn } from "@/lib/utils";
 
 /**
- * Illustrated marks for the Library switcher. They share one construction:
- * a 32-unit grid, one gradient-filled hero shape, and supporting shapes in
- * the same hue at reduced opacity. Colors are fixed per mark, so the row's
- * text color cannot repaint them.
+ * Marks for the Library switcher. Every mark is a bare 20px glyph drawn on a
+ * 20-unit grid with a 2-unit margin, with no tile behind it: the silhouette
+ * is what tells one area from the next, and a shared tile would flatten the
+ * seven into one shape. Glyphs are flat and two-tone — `currentColor` at full
+ * strength for the hero shape and at `SOFT` for supporting shapes — so the
+ * set reads as one family and follows the theme. Selection never changes the
+ * mark: the row's check carries that.
  */
 
 export interface ProductAreaIconProps {
   className?: string;
 }
 
-interface Palette {
-  from: string;
-  to: string;
-}
-
-function useGradient({ from, to }: Palette) {
-  const id = useId();
-
-  return {
-    paint: `url(#${id})`,
-    def: (
-      <linearGradient
-        id={id}
-        gradientUnits="userSpaceOnUse"
-        x1="4"
-        y1="2"
-        x2="28"
-        y2="30"
-      >
-        <stop style={{ stopColor: from }} />
-        <stop offset="1" style={{ stopColor: to }} />
-      </linearGradient>
-    ),
-  };
-}
+const SOFT = 0.4;
 
 function Mark({
   className,
   children,
 }: ProductAreaIconProps & { children: React.ReactNode }) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      className={className}
+    <span
+      className={cn(
+        "inline-flex size-5 shrink-0 items-center justify-center text-[var(--hui-color-foreground-base-primary)]",
+        className,
+      )}
     >
-      {children}
-    </svg>
+      <svg
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        focusable="false"
+        className="size-5! text-inherit!"
+      >
+        {children}
+      </svg>
+    </span>
   );
 }
 
-const COMPONENTS: Palette = { from: "#FF9076", to: "#E43861" };
-
-export function ComponentsAreaIcon({ className }: ProductAreaIconProps) {
-  const gradient = useGradient(COMPONENTS);
-
+/** Four primitives on a 2×2 grid. */
+export function ComponentsAreaIcon(props: ProductAreaIconProps) {
   return (
-    <Mark className={className}>
-      <defs>{gradient.def}</defs>
-      <rect x="3" y="4" width="26" height="11" rx="4.5" fill={gradient.paint} />
-      <rect x="8" y="8.25" width="10" height="2.5" rx="1.25" fill="#fff" fillOpacity="0.85" />
-      <rect x="3" y="17.5" width="11.5" height="11.5" rx="4" fill={COMPONENTS.to} fillOpacity="0.5" />
-      <circle cx="23" cy="23.25" r="5.75" fill={COMPONENTS.to} fillOpacity="0.28" />
+    <Mark {...props}>
+      <rect x="2" y="2" width="7.25" height="7.25" rx="2.25" fill="currentColor" />
+      <circle cx="14.375" cy="5.625" r="3.625" fill="currentColor" fillOpacity={SOFT} />
+      <circle cx="5.625" cy="14.375" r="3.625" fill="currentColor" fillOpacity={SOFT} />
+      <rect x="10.75" y="10.75" width="7.25" height="7.25" rx="2.25" fill="currentColor" />
     </Mark>
   );
 }
 
-const PRODUCT_ACCENT = "var(--hui-color-foreground-accent-primary)";
-const PRODUCT: Palette = {
-  from: `color-mix(in oklab, ${PRODUCT_ACCENT} 50%, white)`,
-  to: PRODUCT_ACCENT,
-};
-
-export function ProductAreaIcon({ className }: ProductAreaIconProps) {
-  const gradient = useGradient(PRODUCT);
-  const layer = "M16 4.5 27 10.25 16 16 5 10.25Z";
-
+/** Primitives composed into layers. */
+export function ProductAreaIcon(props: ProductAreaIconProps) {
   return (
-    <Mark className={className}>
-      <defs>{gradient.def}</defs>
-      <g strokeWidth="3" strokeLinejoin="round">
-        <path
-          d={layer}
-          transform="translate(0 11.5)"
-          style={{ fill: PRODUCT.to, stroke: PRODUCT.to }}
-          opacity="0.25"
-        />
-        <path
-          d={layer}
-          transform="translate(0 5.75)"
-          style={{ fill: PRODUCT.to, stroke: PRODUCT.to }}
-          opacity="0.5"
-        />
-        <path d={layer} fill={gradient.paint} stroke={gradient.paint} />
+    <Mark {...props}>
+      <g stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 3 17 6.75 10 10.5 3 6.75Z" fill="currentColor" />
+        <path d="M3 10.25 10 14 17 10.25" strokeOpacity={SOFT + 0.2} />
+        <path d="M3 13.5 10 17.25 17 13.5" strokeOpacity={SOFT - 0.1} />
       </g>
     </Mark>
   );
 }
 
-const CHARTS: Palette = { from: "#4ADEDE", to: "#0EA5E9" };
-
-export function ChartsAreaIcon({ className }: ProductAreaIconProps) {
-  const gradient = useGradient(CHARTS);
-  const fadeId = useId();
-  const line = "M4 22.5C7.5 22.5 8.5 13 12.5 13S17 19.5 20.5 19.5 23.5 8.5 26.5 7";
-
+/** A series ending on its latest point, over the area it encloses. */
+export function ChartsAreaIcon(props: ProductAreaIconProps) {
   return (
-    <Mark className={className}>
-      <defs>
-        {gradient.def}
-        <linearGradient id={fadeId} x1="0" y1="7" x2="0" y2="29" gradientUnits="userSpaceOnUse">
-          <stop stopColor={CHARTS.to} stopOpacity="0.5" />
-          <stop offset="1" stopColor={CHARTS.to} stopOpacity="0.04" />
-        </linearGradient>
-      </defs>
-      <path d={`${line}V25a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4Z`} fill={`url(#${fadeId})`} />
-      <path d={line} stroke={gradient.paint} strokeWidth="3" strokeLinecap="round" />
-      <circle cx="26.5" cy="7" r="3.5" fill={CHARTS.to} />
-      <circle cx="26.5" cy="7" r="1.4" fill="#fff" />
+    <Mark {...props}>
+      <path
+        d="M2.75 12.75C5 12.75 5.25 7.5 7.75 7.5s2.75 4 5 4 2.25-5.5 3.5-6.25V16a1.25 1.25 0 0 1-1.25 1.25H4A1.25 1.25 0 0 1 2.75 16Z"
+        fill="currentColor"
+        fillOpacity={SOFT}
+      />
+      <path
+        d="M2.75 12.75C5 12.75 5.25 7.5 7.75 7.5s2.75 4 5 4 2.25-5.5 3.5-6.25"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      <circle cx="16" cy="5" r="2" fill="currentColor" />
     </Mark>
   );
 }
 
-const ICONS: Palette = { from: "#FFD43B", to: "#F59E0B" };
-
-export function IconsAreaIcon({ className }: ProductAreaIconProps) {
-  const gradient = useGradient(ICONS);
-
+/** A glyph and a smaller sibling. */
+export function IconsAreaIcon(props: ProductAreaIconProps) {
   return (
-    <Mark className={className}>
-      <defs>{gradient.def}</defs>
-      <rect x="11" y="3" width="18" height="18" rx="5.5" fill={ICONS.to} fillOpacity="0.32" />
-      <rect x="3" y="11" width="18" height="18" rx="5.5" fill={gradient.paint} />
+    <Mark {...props}>
       <path
-        d="M12 14.25c.6 3.3 2.45 5.15 5.75 5.75-3.3.6-5.15 2.45-5.75 5.75-.6-3.3-2.45-5.15-5.75-5.75 3.3-.6 5.15-2.45 5.75-5.75Z"
-        fill="#fff"
-        fillOpacity="0.92"
+        d="M8.5 5.5c.65 3.55 2.45 5.35 6 6-3.55.65-5.35 2.45-6 6-.65-3.55-2.45-5.35-6-6 3.55-.65 5.35-2.45 6-6Z"
+        fill="currentColor"
       />
       <path
-        d="M24 6.5c.3 1.6 1.15 2.45 2.75 2.75-1.6.3-2.45 1.15-2.75 2.75-.3-1.6-1.15-2.45-2.75-2.75 1.6-.3 2.45-1.15 2.75-2.75Z"
-        fill={ICONS.to}
+        d="M15 2.25c.3 1.65 1.1 2.45 2.75 2.75C16.1 5.3 15.3 6.1 15 7.75c-.3-1.65-1.1-2.45-2.75-2.75C13.9 4.7 14.7 3.9 15 2.25Z"
+        fill="currentColor"
+        fillOpacity={SOFT + 0.1}
       />
     </Mark>
   );
 }
 
-const ANIMATED: Palette = { from: "#86E36B", to: "#10B981" };
-
-export function AnimatedAreaIcon({ className }: ProductAreaIconProps) {
-  const gradient = useGradient(ANIMATED);
-  const play = "M16 8.5 27 16 16 23.5Z";
-
+/** A play head leaving a motion trail. */
+export function AnimatedAreaIcon(props: ProductAreaIconProps) {
   return (
-    <Mark className={className}>
-      <defs>{gradient.def}</defs>
-      <g strokeWidth="3.5" strokeLinejoin="round">
-        <path
-          d={play}
-          transform="translate(-11 0)"
-          fill={ANIMATED.to}
-          stroke={ANIMATED.to}
-          opacity="0.2"
-        />
-        <path
-          d={play}
-          transform="translate(-5.5 0)"
-          fill={ANIMATED.to}
-          stroke={ANIMATED.to}
-          opacity="0.45"
-        />
-        <path d={play} fill={gradient.paint} stroke={gradient.paint} />
+    <Mark {...props}>
+      <g stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 7v6" strokeWidth="2" strokeOpacity={SOFT - 0.1} />
+        <path d="M6.75 5v10" strokeWidth="2" strokeOpacity={SOFT + 0.2} />
+        <path d="M10.75 4.5 17.25 10 10.75 15.5Z" strokeWidth="1.5" fill="currentColor" />
       </g>
     </Mark>
   );
 }
 
-const SHADERS: Palette = { from: "#FF7EB6", to: "#7C3AED" };
-
-export function ShadersAreaIcon({ className }: ProductAreaIconProps) {
-  const gradient = useGradient(SHADERS);
+/** A shaded sphere: a lit face over its own shadow. */
+export function ShadersAreaIcon(props: ProductAreaIconProps) {
   const clipId = useId();
 
   return (
-    <Mark className={className}>
+    <Mark {...props}>
       <defs>
-        {gradient.def}
         <clipPath id={clipId}>
-          <circle cx="16" cy="16" r="13" />
+          <circle cx="10" cy="10" r="7.5" />
         </clipPath>
       </defs>
-      <circle cx="16" cy="16" r="13" fill={gradient.paint} />
-      <g clipPath={`url(#${clipId})`} fill="#fff">
-        <path
-          d="M1 13c4 0 4-4 8-4s4 4 8 4 4-4 8-4 4 4 8 4v6c-4 0-4-4-8-4s-4 4-8 4-4-4-8-4-4 4-8 4Z"
-          fillOpacity="0.38"
-        />
-        <path
-          d="M1 21c4 0 4-4 8-4s4 4 8 4 4-4 8-4 4 4 8 4v10H1Z"
-          fillOpacity="0.2"
-        />
-      </g>
+      <circle cx="10" cy="10" r="7.5" fill="currentColor" fillOpacity={SOFT} />
+      <circle cx="7.25" cy="7.25" r="7" fill="currentColor" clipPath={`url(#${clipId})`} />
     </Mark>
   );
 }
 
-const EXAMPLES: Palette = { from: "#B197FC", to: "#6366F1" };
-
-export function ExamplesAreaIcon({ className }: ProductAreaIconProps) {
-  const gradient = useGradient(EXAMPLES);
-
+/** A finished screen: a window with its header and navigation rail. */
+export function ExamplesAreaIcon(props: ProductAreaIconProps) {
   return (
-    <Mark className={className}>
-      <defs>{gradient.def}</defs>
-      <rect x="2" y="4" width="28" height="24" rx="6.5" fill={EXAMPLES.to} fillOpacity="0.26" />
-      <rect x="5.5" y="7.5" width="21" height="5" rx="2.5" fill={gradient.paint} />
-      <rect x="5.5" y="15" width="7.5" height="9.5" rx="2.75" fill={gradient.paint} />
-      <rect x="15.5" y="15" width="11" height="9.5" rx="2.75" fill={EXAMPLES.to} fillOpacity="0.55" />
+    <Mark {...props}>
+      <rect x="2.5" y="3.5" width="15" height="13" rx="3" fill="currentColor" fillOpacity={SOFT} />
+      <path d="M2.5 6.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3V8h-15Z" fill="currentColor" />
+      <rect x="4.5" y="10" width="3" height="4.5" rx="1" fill="currentColor" />
     </Mark>
   );
 }

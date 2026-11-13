@@ -1,5 +1,6 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import {
   Copy as CopyIcon,
   Ellipsis as EllipsisIcon,
@@ -14,7 +15,6 @@ import {
   Avatar,
   AvatarFallback,
 } from "@/registry/default/ui/avatar"
-import { Badge } from "@/registry/default/ui/badge"
 import { Button } from "@/registry/default/ui/button"
 import {
   Menu,
@@ -63,10 +63,10 @@ const date = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 })
 
-const statusVariant = {
-  Active: "success",
-  Pending: "warning",
-  Inactive: "secondary",
+const statusDot = {
+  Active: "bg-[var(--hui-color-foreground-success-primary)]",
+  Pending: "bg-[var(--hui-color-foreground-attention-primary)]",
+  Inactive: "bg-[var(--hui-color-foreground-base-tertiary)]",
 } as const
 
 function initials(name: string) {
@@ -138,8 +138,8 @@ export function getGridUserColumns(actions?: {
       filter: { type: "text" },
       priority: "primary",
       cell: ({ row }) => (
-        <div className="flex items-center gap-[var(--hui-space-3)]">
-          <Avatar size="4">
+        <div className="flex items-center gap-[var(--hui-space-4)]">
+          <Avatar size="3">
             <AvatarFallback>{initials(row.original.name)}</AvatarFallback>
           </Avatar>
           <span className="font-medium text-[var(--hui-color-foreground-base-primary)]">
@@ -151,7 +151,7 @@ export function getGridUserColumns(actions?: {
     {
       accessorKey: "email",
       header: "Email",
-      size: 250,
+      size: 230,
       minSize: 180,
       maxSize: 420,
       filter: { type: "text" },
@@ -166,9 +166,13 @@ export function getGridUserColumns(actions?: {
         options: ["Active", "Pending", "Inactive"],
       },
       cell: ({ row }) => (
-        <Badge variant={statusVariant[row.original.status]}>
+        <span className="flex items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)]">
+          <span
+            aria-hidden
+            className={cn("size-1.5 shrink-0 rounded-full", statusDot[row.original.status])}
+          />
           {row.original.status}
-        </Badge>
+        </span>
       ),
     },
     {

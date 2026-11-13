@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Dialog } from "@base-ui/react/dialog";
 
-import { BrushIcon, HistoryIcon } from "@/assets/icons";
+import { BrushIcon, CheckIcon, HistoryIcon } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -25,7 +25,7 @@ import {
 
 type ColorChoice = "blue" | "orange" | "mint" | "red" | "green" | "amber";
 type TypographyChoice =
-  "love-sans" | "system" | "mono" | "editorial" | "serif" | "technical";
+  "geist" | "system" | "mono" | "editorial" | "serif" | "technical";
 type SpacingChoice =
   "dense" | "compact" | "balanced" | "comfortable" | "relaxed";
 type RadiusChoice =
@@ -58,6 +58,7 @@ type SelectOption = {
   label: string;
   description?: string;
   swatch?: string;
+  lightSwatch?: boolean;
 };
 
 // A detached trigger keeps the docs page outside the customizer's dialog tree,
@@ -81,7 +82,7 @@ const PORTAL_CONTENT_SELECTOR = [
 const STYLE_PRESETS: Record<ThemeStyle, ThemeCustomization> = {
   default: {
     color: "blue",
-    typography: "love-sans",
+    typography: "geist",
     spacing: "balanced",
     radius: "medium",
     effects: "balanced",
@@ -125,14 +126,24 @@ const STYLE_OPTIONS: SelectOption[] = [
 const COLOR_OPTIONS: SelectOption[] = [
   { value: "blue", label: "Blue", swatch: "oklch(0.5465 0.2455 262.87)" },
   { value: "orange", label: "Orange", swatch: "oklch(0.6908 0.1909 45.02)" },
-  { value: "mint", label: "Mint", swatch: "oklch(0.8696 0.0999 177.98)" },
+  {
+    value: "mint",
+    label: "Mint",
+    swatch: "oklch(0.8696 0.0999 177.98)",
+    lightSwatch: true,
+  },
   { value: "red", label: "Red", swatch: "oklch(0.6256 0.1933 23.03)" },
   { value: "green", label: "Green", swatch: "oklch(0.6406 0.1329 157.68)" },
-  { value: "amber", label: "Amber", swatch: "oklch(0.8169 0.1639 75.84)" },
+  {
+    value: "amber",
+    label: "Amber",
+    swatch: "oklch(0.8169 0.1639 75.84)",
+    lightSwatch: true,
+  },
 ];
 
 const TYPOGRAPHY_OPTIONS: SelectOption[] = [
-  { value: "love-sans", label: "Love Sans" },
+  { value: "geist", label: "Geist" },
   { value: "system", label: "System Sans" },
   { value: "mono", label: "JetBrains Mono" },
   { value: "editorial", label: "Editorial" },
@@ -200,7 +211,7 @@ const TYPOGRAPHY_PROPERTIES: Record<
   TypographyChoice,
   Record<string, string>
 > = {
-  "love-sans": {},
+  "geist": {},
   system: {
     "--hui-font-title":
       'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -213,7 +224,7 @@ const TYPOGRAPHY_PROPERTIES: Record<
   },
   editorial: {
     "--hui-font-title": 'Georgia, "Times New Roman", serif',
-    "--hui-font-body": "var(--hui-font-love-sans)",
+    "--hui-font-body": "var(--hui-font-sans)",
   },
   serif: {
     "--hui-font-title": 'Georgia, "Times New Roman", serif',
@@ -221,7 +232,7 @@ const TYPOGRAPHY_PROPERTIES: Record<
   },
   technical: {
     "--hui-font-title": "var(--hui-font-mono)",
-    "--hui-font-body": "var(--hui-font-love-sans)",
+    "--hui-font-body": "var(--hui-font-sans)",
   },
 };
 
@@ -688,74 +699,329 @@ function useThemeCustomization() {
   return context;
 }
 
-function CustomizerSelect({
+const FONT_PREVIEW: Record<TypographyChoice, string> = {
+  "geist": "var(--hui-font-sans)",
+  system:
+    'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  mono: "var(--hui-font-mono)",
+  editorial: 'Georgia, "Times New Roman", serif',
+  serif: 'Georgia, "Times New Roman", serif',
+  technical: "var(--hui-font-mono)",
+};
+
+const TYPOGRAPHY_SHORT_LABELS: Record<TypographyChoice, string> = {
+  "geist": "Geist",
+  system: "System",
+  mono: "Mono",
+  editorial: "Editorial",
+  serif: "Serif",
+  technical: "Technical",
+};
+
+const RADIUS_PREVIEW: Record<RadiusChoice, { value: string; label: string }> = {
+  none: { value: "0px", label: "0" },
+  "extra-small": { value: "3px", label: "XS" },
+  small: { value: "6px", label: "S" },
+  medium: { value: "10px", label: "M" },
+  large: { value: "14px", label: "L" },
+  "extra-large": { value: "20px", label: "XL" },
+};
+
+const OPTION_TILE_CLASS =
+  "relative cursor-pointer rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-base-secondary)] text-[var(--hui-color-foreground-base-tertiary)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-neutral-primary)] hover:text-[var(--hui-color-foreground-base-secondary)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)] aria-checked:bg-[var(--hui-color-background-neutral-secondary)] aria-checked:text-[var(--hui-color-foreground-base-primary)] aria-checked:shadow-[inset_0_0.5px_0_oklch(1_0_0/0.08),0_1px_2px_oklch(0_0_0/0.2)]";
+
+function CustomizerSection({
+  label,
+  value,
+  children,
+}: {
+  label: string;
+  value?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="grid gap-[var(--hui-space-3)]">
+      <div className="flex items-baseline justify-between gap-[var(--hui-space-3)]">
+        <span className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-small)]">
+          {label}
+        </span>
+        {value && (
+          <span className="text-[var(--hui-color-foreground-base-tertiary)] [font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]">
+            {value}
+          </span>
+        )}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function useRadioKeyboard<Value extends string>(
+  values: Value[],
+  value: string,
+  onChange: (value: Value) => void,
+) {
+  const refs = React.useRef<(HTMLButtonElement | null)[]>([]);
+  const onKeyDown = (event: React.KeyboardEvent, index: number) => {
+    const delta =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    if (!delta) return;
+    event.preventDefault();
+    const nextIndex = (index + delta + values.length) % values.length;
+    onChange(values[nextIndex]);
+    refs.current[nextIndex]?.focus();
+  };
+  const activeIndex = Math.max(0, values.indexOf(value as Value));
+  const itemProps = (index: number) => ({
+    ref: (node: HTMLButtonElement | null) => {
+      refs.current[index] = node;
+    },
+    type: "button" as const,
+    role: "radio",
+    "aria-checked": values[index] === value,
+    tabIndex: index === activeIndex ? 0 : -1,
+    onKeyDown: (event: React.KeyboardEvent) => onKeyDown(event, index),
+    onClick: () => onChange(values[index]),
+  });
+  return itemProps;
+}
+
+function StylePresetPicker({
+  value,
+  onChange,
+}: {
+  value: ThemeStyle | "custom";
+  onChange: (value: ThemeStyle) => void;
+}) {
+  const values = STYLE_OPTIONS.map((option) => option.value as ThemeStyle);
+  const itemProps = useRadioKeyboard(values, value, onChange);
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Style preset"
+      className="grid grid-cols-2 gap-[var(--hui-space-3)]"
+    >
+      {STYLE_OPTIONS.map((option, index) => {
+        const preset = STYLE_PRESETS[option.value as ThemeStyle];
+        const swatch = COLOR_OPTIONS.find(
+          (color) => color.value === preset.color,
+        )?.swatch;
+
+        return (
+          <button
+            key={option.value}
+            {...itemProps(index)}
+            className={`${OPTION_TILE_CLASS} grid gap-[var(--hui-space-3)] p-[var(--hui-space-4)] text-start`}
+          >
+            <span className="flex items-center gap-[var(--hui-space-2)]">
+              <span
+                aria-hidden="true"
+                className="text-[var(--hui-color-foreground-base-primary)] [font-size:18px] leading-none"
+                style={{ fontFamily: FONT_PREVIEW[preset.typography] }}
+              >
+                Aa
+              </span>
+              <span
+                aria-hidden="true"
+                className="ms-auto size-3 shrink-0 rounded-full"
+                style={{ backgroundColor: swatch }}
+              />
+              <span
+                aria-hidden="true"
+                className="size-3 shrink-0 border-s-[1.5px] border-t-[1.5px] border-current opacity-60"
+                style={{
+                  borderTopLeftRadius: RADIUS_PREVIEW[preset.radius].value,
+                }}
+              />
+            </span>
+            <span className="grid gap-[2px]">
+              <span className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-small)]">
+                {option.label}
+              </span>
+              <span className="[font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]">
+                {option.description}
+              </span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ColorPicker({
+  value,
+  onChange,
+}: {
+  value: ColorChoice;
+  onChange: (value: ColorChoice) => void;
+}) {
+  const values = COLOR_OPTIONS.map((option) => option.value as ColorChoice);
+  const itemProps = useRadioKeyboard(values, value, onChange);
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Accent color"
+      className="flex flex-wrap gap-[var(--hui-space-3)]"
+    >
+      {COLOR_OPTIONS.map((option, index) => (
+        <button
+          key={option.value}
+          {...itemProps(index)}
+          aria-label={option.label}
+          title={option.label}
+          className="group relative flex size-8 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-accent)]"
+        >
+          <span
+            aria-hidden="true"
+            className="flex size-[26px] items-center justify-center rounded-full shadow-[inset_0_0_0_0.5px_oklch(0_0_0/0.15)] motion-safe:[transition:scale_var(--hui-duration-fast)_var(--hui-ease-out)] group-hover:scale-110 group-aria-checked:scale-110"
+            style={{
+              backgroundColor: option.swatch,
+              color: option.lightSwatch ? "oklch(0.2 0 0)" : "white",
+            }}
+          >
+            <CheckIcon
+              width={14}
+              height={14}
+              className="opacity-0 motion-safe:[transition:opacity_var(--hui-duration-fast)_var(--hui-ease-out)] group-aria-checked:opacity-100"
+            />
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function TypographyPicker({
+  value,
+  onChange,
+}: {
+  value: TypographyChoice;
+  onChange: (value: TypographyChoice) => void;
+}) {
+  const values = TYPOGRAPHY_OPTIONS.map(
+    (option) => option.value as TypographyChoice,
+  );
+  const itemProps = useRadioKeyboard(values, value, onChange);
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Typography"
+      className="grid grid-cols-3 gap-[var(--hui-space-2)]"
+    >
+      {values.map((choice, index) => (
+        <button
+          key={choice}
+          {...itemProps(index)}
+          aria-label={
+            TYPOGRAPHY_OPTIONS.find((option) => option.value === choice)?.label
+          }
+          className={`${OPTION_TILE_CLASS} grid justify-items-center gap-[var(--hui-space-1)] px-[var(--hui-space-2)] py-[var(--hui-space-3)]`}
+        >
+          <span
+            aria-hidden="true"
+            className="text-[var(--hui-color-foreground-base-primary)] [font-size:20px] leading-[24px]"
+            style={{ fontFamily: FONT_PREVIEW[choice] }}
+          >
+            Aa
+          </span>
+          <span
+            aria-hidden="true"
+            className="[font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]"
+          >
+            {TYPOGRAPHY_SHORT_LABELS[choice]}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function RadiusPicker({
+  value,
+  onChange,
+}: {
+  value: RadiusChoice;
+  onChange: (value: RadiusChoice) => void;
+}) {
+  const values = RADIUS_OPTIONS.map((option) => option.value as RadiusChoice);
+  const itemProps = useRadioKeyboard(values, value, onChange);
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Radius"
+      className="grid grid-cols-6 gap-[var(--hui-space-2)]"
+    >
+      {values.map((choice, index) => (
+        <button
+          key={choice}
+          {...itemProps(index)}
+          aria-label={
+            RADIUS_OPTIONS.find((option) => option.value === choice)?.label
+          }
+          className={`${OPTION_TILE_CLASS} grid justify-items-center gap-[var(--hui-space-2)] px-[var(--hui-space-1)] py-[var(--hui-space-3)]`}
+        >
+          <span
+            aria-hidden="true"
+            className="size-4 translate-x-[2px] translate-y-[2px] border-s-2 border-t-2 border-current"
+            style={{ borderTopLeftRadius: RADIUS_PREVIEW[choice].value }}
+          />
+          <span
+            aria-hidden="true"
+            className="[font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]"
+          >
+            {RADIUS_PREVIEW[choice].label}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function CustomizerSelectRow({
   id,
   label,
-  description,
   value,
   options,
   onValueChange,
 }: {
   id: string;
   label: string;
-  description?: string;
   value: string;
   options: SelectOption[];
   onValueChange: (value: string) => void;
 }) {
   const selectedOption = options.find((option) => option.value === value);
-  const descriptionId = description ? `${id}-description` : undefined;
 
   return (
-    <div className="grid gap-[var(--hui-space-2)]">
+    <div className="flex items-center justify-between gap-[var(--hui-space-4)]">
       <label
         htmlFor={id}
         className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)]"
       >
         {label}
       </label>
-      {description && (
-        <p
-          id={descriptionId}
-          className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [line-height:var(--hui-line-height-mini)]"
-        >
-          {description}
-        </p>
-      )}
       <Select
         value={value}
         onValueChange={(nextValue) => {
           if (nextValue) onValueChange(nextValue);
         }}
       >
-        <SelectTrigger
-          id={id}
-          aria-label={label}
-          aria-describedby={descriptionId}
-          className="w-full"
-        >
+        <SelectTrigger id={id} aria-label={label} size="sm" className="w-40">
           <SelectValue>{selectedOption?.label ?? value}</SelectValue>
         </SelectTrigger>
         <SelectPopup>
           {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-              <span className="flex min-w-0 items-center gap-[var(--hui-space-3)]">
-                {option.swatch && (
-                  <span
-                    aria-hidden="true"
-                    className="size-[var(--hui-space-5)] shrink-0 rounded-[var(--hui-radius-full)] border-[0.5px] border-[var(--hui-color-border-base-primary)]"
-                    style={{ backgroundColor: option.swatch }}
-                  />
-                )}
-                <span className="grid min-w-0 gap-[var(--hui-space-1)]">
-                  <span>{option.label}</span>
-                  {option.description && (
-                    <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)]">
-                      {option.description}
-                    </span>
-                  )}
-                </span>
-              </span>
+              {option.label}
             </SelectItem>
           ))}
         </SelectPopup>
@@ -788,10 +1054,8 @@ function DocsThemeCustomizationSheet() {
     resetCustomization,
   } = useThemeCustomization();
 
-  const styleOptions =
-    matchingStyle === "custom"
-      ? [{ value: "custom", label: "Custom" }, ...STYLE_OPTIONS]
-      : STYLE_OPTIONS;
+  const label = (options: SelectOption[], value: string) =>
+    options.find((option) => option.value === value)?.label;
 
   return (
     <SheetContent
@@ -800,48 +1064,59 @@ function DocsThemeCustomizationSheet() {
       finalFocus={() =>
         document.getElementById("docs-theme-customizer-trigger")
       }
-      className="gap-0 border-l border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-floating)] sm:max-w-[380px]"
+      className="gap-0 sm:max-w-[360px]"
     >
-      <SheetHeader className="gap-[var(--hui-space-2)] border-b border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-7)] py-[var(--hui-space-6)]">
-        <SheetTitle className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-large)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)]">
-          Customize theme
-        </SheetTitle>
-        <SheetDescription className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">
-          Changes apply to rendered component previews and are saved in this
-          browser.
+      <SheetHeader className="gap-[var(--hui-space-1)] px-[var(--hui-space-6)] pt-[var(--hui-space-6)] pb-[var(--hui-space-4)]">
+        <SheetTitle>Customize theme</SheetTitle>
+        <SheetDescription className="[font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]">
+          Applies to component previews. Saved in this browser.
         </SheetDescription>
       </SheetHeader>
-      <div className="grid min-h-0 flex-1 content-start gap-[var(--hui-space-7)] overflow-y-auto px-[var(--hui-space-7)] py-[var(--hui-space-7)]">
-        <CustomizerSelect
-          id="docs-theme-style"
-          label="Style"
-          description="Start with an Honest UI installer preset, then fine-tune it below."
-          value={matchingStyle}
-          options={styleOptions}
-          onValueChange={(value) => {
-            if (value !== "custom") applyStyle(value as ThemeStyle);
-          }}
+      <div className="grid content-start gap-[var(--hui-space-7)] px-[var(--hui-space-6)] pt-[var(--hui-space-3)] pb-[var(--hui-space-7)]">
+        <CustomizerSection
+          label="Preset"
+          value={matchingStyle === "custom" ? "Custom" : undefined}
+        >
+          <StylePresetPicker value={matchingStyle} onChange={applyStyle} />
+        </CustomizerSection>
+
+        <div
+          aria-hidden="true"
+          className="h-px bg-[var(--hui-color-border-base-primary)]"
         />
-        <div className="grid gap-[var(--hui-space-5)]">
-          <CustomizerSelect
-            id="docs-theme-color"
-            label="Colors"
+
+        <CustomizerSection
+          label="Accent"
+          value={label(COLOR_OPTIONS, customization.color)}
+        >
+          <ColorPicker
             value={customization.color}
-            options={COLOR_OPTIONS}
-            onValueChange={(value) =>
-              updateCustomization("color", value as ColorChoice)
-            }
+            onChange={(value) => updateCustomization("color", value)}
           />
-          <CustomizerSelect
-            id="docs-theme-typography"
-            label="Typography"
+        </CustomizerSection>
+
+        <CustomizerSection
+          label="Typography"
+          value={label(TYPOGRAPHY_OPTIONS, customization.typography)}
+        >
+          <TypographyPicker
             value={customization.typography}
-            options={TYPOGRAPHY_OPTIONS}
-            onValueChange={(value) =>
-              updateCustomization("typography", value as TypographyChoice)
-            }
+            onChange={(value) => updateCustomization("typography", value)}
           />
-          <CustomizerSelect
+        </CustomizerSection>
+
+        <CustomizerSection
+          label="Radius"
+          value={label(RADIUS_OPTIONS, customization.radius)}
+        >
+          <RadiusPicker
+            value={customization.radius}
+            onChange={(value) => updateCustomization("radius", value)}
+          />
+        </CustomizerSection>
+
+        <div className="grid gap-[var(--hui-space-4)]">
+          <CustomizerSelectRow
             id="docs-theme-spacing"
             label="Spacing"
             value={customization.spacing}
@@ -850,16 +1125,7 @@ function DocsThemeCustomizationSheet() {
               updateCustomization("spacing", value as SpacingChoice)
             }
           />
-          <CustomizerSelect
-            id="docs-theme-radius"
-            label="Radius"
-            value={customization.radius}
-            options={RADIUS_OPTIONS}
-            onValueChange={(value) =>
-              updateCustomization("radius", value as RadiusChoice)
-            }
-          />
-          <CustomizerSelect
+          <CustomizerSelectRow
             id="docs-theme-effects"
             label="Effects"
             value={customization.effects}
@@ -870,10 +1136,15 @@ function DocsThemeCustomizationSheet() {
           />
         </div>
       </div>
-      <SheetFooter className="flex-row items-center justify-between border-t border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-7)] py-[var(--hui-space-5)]">
-        <Button variant="ghost" size="sm" onClick={resetCustomization}>
+      <SheetFooter className="flex-row items-center justify-between border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-6)] py-[var(--hui-space-4)] *:w-auto sm:justify-between">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={resetCustomization}
+          disabled={matchingStyle === "default"}
+        >
           <HistoryIcon />
-          Reset defaults
+          Reset
         </Button>
         <Button render={<SheetClose />} size="sm">
           Done

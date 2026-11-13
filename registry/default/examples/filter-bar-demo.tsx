@@ -56,9 +56,9 @@ export default function FilterBarDemo() {
         value={value}
         onValueChange={setValue}
       />
-      <p aria-live="polite" className="mt-3 text-sm text-muted-foreground">
-        Filtering orders locally. Open the panel or edit a chip; every change
-        commits immediately.
+      <p aria-live="polite" className="mt-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
+        {value.length === 1 ? "1 filter" : `${value.length} filters`} on
+        orders · changes apply instantly
       </p>
     </div>
   )

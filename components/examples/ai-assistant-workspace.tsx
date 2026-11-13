@@ -167,11 +167,12 @@ function SidebarItem({
       aria-label={collapsed ? item.label : undefined}
       className={cn(
         "h-8 w-full justify-start gap-[var(--hui-space-3)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)]",
-        item.current && "text-[var(--hui-color-foreground-base-primary)]",
+        item.current &&
+          "bg-[var(--hui-color-background-accent-primary)] text-[var(--hui-color-foreground-base-primary)] hover:bg-[var(--hui-color-background-accent-primary)]",
         collapsed && "mx-auto size-8 justify-center p-0",
       )}
       title={collapsed ? item.label : undefined}
-      variant={item.current ? "secondary" : "link"}
+      variant="link"
     >
       <Icon aria-hidden="true" className="size-4 shrink-0" />
       {!collapsed && <span className="min-w-0 flex-1 truncate text-left">{item.label}</span>}
@@ -439,6 +440,7 @@ export function AiAssistantWorkspace() {
                 <div className="flex flex-wrap items-center gap-[var(--hui-space-2)]">
                   <h2
                     className="min-w-0 flex-1 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-small)]"
+                    data-slot="section-heading"
                     id="recent-conversations-heading"
                   >
                     Recent conversations (48)
@@ -465,6 +467,7 @@ export function AiAssistantWorkspace() {
                 <div className="flex flex-wrap items-center gap-[var(--hui-space-2)]">
                   <h2
                     className="min-w-0 flex-1 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [line-height:var(--hui-line-height-small)]"
+                    data-slot="section-heading"
                     id="suggested-applications-heading"
                   >
                     Suggested applications

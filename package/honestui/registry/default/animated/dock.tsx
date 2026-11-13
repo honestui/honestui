@@ -19,7 +19,7 @@ export interface DockProps {
   size?: number;
 }
 
-export function Dock({ children, size = 44, className }: DockProps) {
+export function Dock({ children, size = 40, className }: DockProps) {
   const pillLayoutId = useId();
   const ctx = useMemo<DockContextValue>(
     () => ({ size, pillLayoutId }),
@@ -30,7 +30,7 @@ export function Dock({ children, size = 44, className }: DockProps) {
     <DockContext.Provider value={ctx}>
       <div
         className={cn(
-          "inline-flex h-auto items-end gap-1.5 rounded-2xl border border-border bg-card/80 px-2 py-1 shadow-2xl backdrop-blur-xl",
+          "inline-flex h-auto items-end gap-1 rounded-[14px] border border-border bg-card/90 p-1 shadow-[0_1px_2px_rgb(0_0_0/0.04),0_4px_12px_-4px_rgb(0_0_0/0.08)] backdrop-blur-xl",
           className,
         )}
       >
@@ -58,19 +58,19 @@ export function DockItem({
 }: DockItemProps) {
   const dock = useContext(DockContext);
   const reduce = useReducedMotion();
-  const size = dock?.size ?? 44;
+  const size = dock?.size ?? 40;
   const pillLayoutId = dock?.pillLayoutId ?? "dock-pill";
 
   const pill = active ? (
     <motion.span
       layoutId={pillLayoutId}
       transition={reduce ? { duration: 0 } : SPRING_LAYOUT}
-      className="absolute inset-0.5 -z-10 rounded-xl bg-primary/5"
+      className="absolute inset-0 -z-10 rounded-[10px] bg-foreground/[0.07]"
     />
   ) : null;
   const sharedStyle = { width: size, height: size };
   const sharedClass = cn(
-    "relative flex shrink-0 items-center justify-center rounded-full text-foreground",
+    "relative isolate flex shrink-0 items-center justify-center rounded-[10px] text-foreground/55 transition-colors hover:text-foreground aria-pressed:text-foreground",
     className,
   );
 
@@ -107,7 +107,7 @@ export function DockSeparator({ className }: { className?: string }) {
   return (
     <span
       aria-hidden
-      className={cn("mx-1 h-6 w-px self-center bg-border", className)}
+      className={cn("mx-0.5 h-5 w-px self-center bg-border", className)}
     />
   );
 }

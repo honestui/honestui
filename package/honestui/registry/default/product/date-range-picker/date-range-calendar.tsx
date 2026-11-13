@@ -16,53 +16,58 @@ import { Button } from "@/registry/default/ui/button"
 import { completeRange, type DateRange } from "./date-range-utils"
 
 /**
- * Shared day button styles. The button fills its grid cell so the clickable
- * area and the range fill cover the whole square.
+ * Shared day button styles. The button fills its 32px grid cell so the
+ * clickable area and the range fill cover the whole square. Today carries a
+ * small dot under the number instead of a ring, so it never competes with
+ * the selected range.
  */
 const DAY_BUTTON_CLASS =
-  "inline-flex h-full w-full cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-[var(--hui-radius-1)] p-0 text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] outline-none motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:[outline-offset:-1px]"
+  "relative inline-flex h-full w-full cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-[var(--hui-radius-1)] p-0 text-[var(--hui-color-foreground-base-primary)] tabular-nums [font-size:13px] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] outline-none motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out),color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:[outline-offset:-1px]"
 
 /*
  * Range states arrive as class names on the cell (RDP's `range_start`,
  * `range_end`, and `range_middle` keys), never as data attributes. Each key
- * targets its own button so the fill reads as one object: middle cells stay
- * square while endpoints round only their outer edge. Committed ranges use
- * the solid accent; the hover and keyboard preview keeps the same shape
- * with lighter fills.
+ * targets its own button so the fill reads as one flat band: middle cells
+ * stay square on a neutral tint while endpoints are solid ink, rounded only
+ * on their outer edge. The hover and keyboard preview keeps the same shape
+ * with a lighter band and outlined endpoints. Marker classes let the base
+ * cell exclude selected days from today and muted-outside treatments.
  */
-/*
- * Range states arrive as class names on the cell (RDP's `range_start`,
- * `range_end`, and `range_middle` keys), never as data attributes. Each key
- * targets its own button so the fill reads as one object: middle cells stay
- * square while endpoints round only their outer edge. Committed ranges use
- * the solid accent; the hover and keyboard preview keeps the same shape
- * with lighter fills. Marker classes let the base cell exclude selected
- * days from today-ring and muted-outside treatments.
- */
-const CELL_BASE_CLASSES =
-  "h-(--hui-space-10) w-(--hui-space-10) p-0 text-center align-middle [&[data-today]:not([data-disabled]):not(.hui-range-endpoint):not(.hui-range-midpoint)>button]:shadow-[inset_0_0_0_1px_var(--hui-color-border-accent-primary)] [&[data-disabled]>button]:pointer-events-none [&[data-disabled]>button]:cursor-not-allowed [&[data-disabled]>button]:text-[var(--hui-color-foreground-base-tertiary)]! [&[data-outside]:not([data-disabled]):not(.hui-range-endpoint):not(.hui-range-midpoint)>button:not(:disabled)]:text-[var(--hui-color-foreground-base-secondary)]"
+const CELL_BASE_CLASSES = cn(
+  "size-(--hui-space-9) p-0 text-center align-middle",
+  // Today: a 4px dot under the number.
+  "[&[data-today]>button]:after:pointer-events-none [&[data-today]>button]:after:absolute [&[data-today]>button]:after:bottom-[3px] [&[data-today]>button]:after:left-1/2 [&[data-today]>button]:after:size-1 [&[data-today]>button]:after:-translate-x-1/2 [&[data-today]>button]:after:rounded-full [&[data-today]>button]:after:bg-current [&[data-today]>button]:after:content-['']",
+  "[&[data-today]:not(.hui-range-endpoint)>button]:[font-weight:var(--hui-font-weight-medium)]",
+  "[&[data-disabled]>button]:pointer-events-none [&[data-disabled]>button]:cursor-not-allowed [&[data-disabled]>button]:text-[var(--hui-color-foreground-base-tertiary)]!",
+  "[&[data-outside]:not([data-disabled]):not(.hui-range-endpoint):not(.hui-range-midpoint)>button:not(:disabled)]:text-[var(--hui-color-foreground-base-secondary)]"
+)
 
 function buildRangeClassNames(previewing: boolean): Partial<ClassNames> {
   const fill = previewing
-    ? "[&>button]:bg-[var(--hui-color-background-accent-primary)]! [&>button]:text-[var(--hui-color-foreground-accent-primary-hover)]!"
-    : "[&>button]:bg-[var(--hui-color-background-accent-emphasis)]! [&>button]:text-[var(--hui-color-foreground-accent-emphasis)]! [&>button:hover]:bg-[var(--hui-color-background-accent-emphasis-hover)]!"
+    ? "[&>button]:bg-[color-mix(in_oklch,var(--hui-color-foreground-base-primary)_10%,transparent)]! [&>button]:text-[var(--hui-color-foreground-base-primary)]! [&>button]:shadow-[inset_0_0_0_1px_var(--hui-color-foreground-base-primary)]"
+    : "[&>button]:bg-[var(--hui-color-background-neutral-emphasis)]! [&>button]:text-[var(--hui-color-foreground-base-emphasis)]! [&>button:hover]:bg-[color-mix(in_oklch,var(--hui-color-background-neutral-emphasis)_86%,var(--hui-color-background-base-primary))]!"
   const emphasis = cn(
     "hui-range-endpoint [&>button]:[font-weight:var(--hui-font-weight-medium)]",
     fill
   )
+  const band = previewing
+    ? "[&>button]:bg-[color-mix(in_oklch,var(--hui-color-foreground-base-primary)_5%,transparent)]!"
+    : "[&>button]:bg-[color-mix(in_oklch,var(--hui-color-foreground-base-primary)_8%,transparent)]! [&>button:hover]:bg-[color-mix(in_oklch,var(--hui-color-foreground-base-primary)_14%,transparent)]!"
   return {
     range_start: cn(
-      "[&>button]:rounded-s-[var(--hui-radius-2)]! [&>button]:rounded-e-none!",
+      "[&>button]:rounded-s-[var(--hui-radius-1)]! [&>button]:rounded-e-none!",
       emphasis
     ),
     range_end: cn(
-      "[&>button]:rounded-e-[var(--hui-radius-2)]! [&>button]:rounded-s-none!",
+      "[&>button]:rounded-e-[var(--hui-radius-1)]! [&>button]:rounded-s-none!",
       emphasis
     ),
     // A single-day range carries both keys; the opposite-side resets cancel
-    // out, leaving one square-cornered accented cell without tails.
-    range_middle:
-      "hui-range-midpoint [&>button]:rounded-none! [&>button]:bg-[var(--hui-color-background-accent-primary)]! [&>button]:text-[var(--hui-color-foreground-base-secondary)]!",
+    // out, leaving one square-cornered ink cell without tails.
+    range_middle: cn(
+      "hui-range-midpoint [&>button]:rounded-none! [&>button]:text-[var(--hui-color-foreground-base-primary)]!",
+      band
+    ),
   }
 }
 
@@ -165,17 +170,18 @@ export function DateRangeCalendar({
   }
 
   return (
-    <div className="flex flex-col gap-[var(--hui-space-3)]">
-      <div className="flex items-center justify-between">
+    <div data-slot="date-range-calendar" className="relative">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-(--hui-space-9) items-center justify-between">
         <Button
           type="button"
           variant="link"
           size="icon-sm"
           aria-label={labels.previousMonth}
           disabled={previousDisabled}
+          className="pointer-events-auto size-7 rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)] disabled:opacity-40"
           onClick={() => setMonth(shiftMonth(month, -1, startNavigationMonth, endNavigationMonth))}
         >
-          <ChevronLeftIcon />
+          <ChevronLeftIcon className="size-4" />
         </Button>
         <Button
           type="button"
@@ -183,9 +189,10 @@ export function DateRangeCalendar({
           size="icon-sm"
           aria-label={labels.nextMonth}
           disabled={nextDisabled}
+          className="pointer-events-auto size-7 rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)] disabled:opacity-40"
           onClick={() => setMonth(shiftMonth(month, 1, startNavigationMonth, endNavigationMonth))}
         >
-          <ChevronRightIcon />
+          <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 
@@ -226,17 +233,17 @@ export function DateRangeCalendar({
         weekStartsOn={weekStartsOn}
         disabled={disabledMatchers}
         classNames={{
-          months: "flex items-start gap-x-[var(--hui-space-8)]",
+          months: "flex items-start gap-x-(--hui-space-7)",
           month: "flex flex-col",
           month_caption:
-            "flex h-(--hui-space-9) items-center justify-center text-center text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)]",
+            "mb-(--hui-space-2) flex h-(--hui-space-9) items-center justify-center text-center text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)]",
           caption_label: "",
           nav: "hidden",
           button_previous: "hidden",
           button_next: "hidden",
           weekdays: "",
           weekday:
-            "w-(--hui-space-10) pb-(--hui-space-2) text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-mini)]",
+            "h-(--hui-space-8) w-(--hui-space-9) text-center align-middle text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-small)]",
           week: "min-w-max",
           weeks: "border-collapse",
           month_grid: "border-collapse",

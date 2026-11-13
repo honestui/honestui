@@ -12,7 +12,7 @@ import {
 import { Popover } from "@/components/ui/popover";
 import { CheckIcon, CopyIcon } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
-import { CaretDown } from "@carbon/icons-react";
+import { ChevronDown } from "honestui/icons";
 import { useClipboard } from "@mantine/hooks";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
@@ -227,7 +227,7 @@ export function DocsCopyPage({ url, path }: { url: string; path: string }) {
       aria-label="Open dropdown menu"
       className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-none border-0 border-l-[0.5px] border-[var(--hui-color-border-base-primary)] bg-transparent p-0! hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:ring-0! data-popup-open:[&>svg]:rotate-180"
     >
-      <CaretDown className="transition-transform duration-200 ease-out motion-reduce:transition-none" />
+      <ChevronDown aria-hidden="true" className="size-4 transition-transform duration-200 ease-out motion-reduce:transition-none" />
     </Button>
   );
 

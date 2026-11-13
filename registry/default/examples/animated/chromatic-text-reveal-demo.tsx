@@ -6,7 +6,7 @@ export default function ChromaticTextRevealDemo() {
       prefix="Make every interaction feel"
       words={["clear", "natural", "polished"]}
       once={false}
-      className="w-full justify-center px-6 text-center text-xl font-semibold sm:text-3xl"
+      className="w-full justify-center px-6 text-center text-xl font-semibold tracking-tight text-foreground sm:text-3xl"
     />
   );
 }

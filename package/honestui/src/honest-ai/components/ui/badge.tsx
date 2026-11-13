@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils.js"
 
 const badgeVariants = cva(
-  "relative inline-flex shrink-0 items-center justify-center gap-[var(--hui-space-2)] whitespace-nowrap rounded-[var(--hui-radius-1)] border-0 px-[var(--hui-space-2)] py-[var(--hui-space-1)] [font-style:normal] [font-weight:var(--hui-font-weight-regular)] outline-none focus-visible:[outline:var(--hui-focus-ring)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [a&,button&]:cursor-pointer [a&,button&]:pointer-coarse:after:absolute [a&,button&]:pointer-coarse:after:size-full [a&,button&]:pointer-coarse:after:min-h-11 [a&,button&]:pointer-coarse:after:min-w-11",
+  "relative inline-flex shrink-0 items-center justify-center gap-[var(--hui-space-2)] whitespace-nowrap rounded-[var(--hui-radius-1)] border-0 px-1.5 py-[var(--hui-space-1)] [font-style:normal] [font-weight:var(--hui-font-weight-medium)] outline-none focus-visible:[outline:var(--hui-focus-ring)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [a&,button&]:cursor-pointer [a&,button&]:pointer-coarse:after:absolute [a&,button&]:pointer-coarse:after:size-full [a&,button&]:pointer-coarse:after:min-h-11 [a&,button&]:pointer-coarse:after:min-w-11",
   {
     variants: {
       variant: {

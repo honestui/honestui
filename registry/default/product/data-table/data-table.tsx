@@ -342,7 +342,7 @@ export function DataTable<TData>({
         className={cn(
           "w-full min-w-0",
           framed &&
-            "overflow-clip rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)]",
+            "overflow-clip rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)]",
         )}
       >
         {children ?? (
@@ -350,7 +350,7 @@ export function DataTable<TData>({
             {(searchEnabled ||
               (filters && filters.length > 0) ||
               toolbarActions) && (
-              <DataTableToolbar className="flex-wrap gap-[var(--hui-space-2)] border-b-[0.5px] p-[var(--hui-space-3)] sm:p-[var(--hui-space-4)]">
+              <DataTableToolbar className="flex-wrap gap-[var(--hui-space-2)] border-b-[0.5px] p-[var(--hui-space-3)]">
                 {searchEnabled && (
                   <DataTableSearch
                     placeholder={searchConfig?.placeholder}
@@ -370,7 +370,7 @@ export function DataTable<TData>({
             <DataTableContent />
 
             {(paginationEnabled || selectable) && (
-              <DataTableFooter className="flex-wrap gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)] px-[var(--hui-space-4)] py-[var(--hui-space-3)]">
+              <DataTableFooter className="min-h-11 flex-wrap items-center gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)] px-[var(--hui-space-4)] py-[var(--hui-space-2)]">
                 {selectable && <DataTableSelectionSummary />}
                 {paginationEnabled && (
                   <DataTablePagination
@@ -497,7 +497,12 @@ export function DataTableContent({ className }: { className?: string }) {
                       ? "descending"
                       : undefined
                 }
-                className={alignClass(meta.align)}
+                className={cn(
+                  "h-9 bg-[var(--hui-color-background-base-secondary)] py-0",
+                  density === "compact" && "h-8",
+                  density === "comfortable" && "h-10",
+                  alignClass(meta.align),
+                )}
               >
                 {column.id === "select" ? (
                   <DataTableSelectAllCheckbox />
@@ -606,8 +611,9 @@ export function DataTableContent({ className }: { className?: string }) {
                   <TableCell
                     key={cell.id}
                     className={cn(
+                      "py-2.5",
                       density === "compact" && "py-[var(--hui-space-2)]",
-                      density === "comfortable" && "py-[var(--hui-space-5)]",
+                      density === "comfortable" && "py-[var(--hui-space-4)]",
                       alignClass(meta.align),
                     )}
                   >
@@ -631,7 +637,7 @@ export function DataTableFooter({
   return (
     <div
       data-slot="data-table-footer"
-      className={cn("flex items-center", className)}
+      className={cn("flex items-center border-t-[0.5px] border-[var(--hui-color-border-base-primary)]", className)}
       {...props}
     >
       {children}

@@ -63,10 +63,17 @@ export {
 } from "./change-review-utils"
 export { useChangeReviewController } from "./change-review-context"
 
-const secondaryText =
-  "text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
-const bodyText =
+/** 12px meta: counts, "No change", helper lines. */
+const metaText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+const secondaryText = cn("text-[var(--hui-color-foreground-base-secondary)]", metaText)
+/** 13px: field labels and the header summary. */
+const labelText =
+  "[font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:20px]"
+/** 14px: the values themselves. */
+const bodyText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:20px]"
+const hairline = "border-[var(--hui-color-border-base-primary)]"
 
 type ChangeReviewSource =
   | {
@@ -200,7 +207,12 @@ function ChangeReview({
     <ChangeReviewControllerContext.Provider value={controller}>
       <section
         data-slot="change-review-root"
-        className={cn("@container flex w-full min-w-0 flex-col gap-[var(--hui-space-3)]", className)}
+        className={cn(
+          "@container flex w-full min-w-0 flex-col overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)]",
+          hairline,
+          "[&>*+*]:border-t-[0.5px] [&>*+*]:border-t-[var(--hui-color-border-base-primary)]",
+          className
+        )}
         {...props}
       >
         {children ?? (
@@ -224,7 +236,7 @@ function ChangeReviewHeader({ className, children, ...props }: React.ComponentPr
     <div
       data-slot="change-review-header"
       className={cn(
-        "flex flex-wrap items-center justify-between gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)]",
+        "flex min-h-12 flex-wrap items-center justify-between gap-x-[var(--hui-space-5)] gap-y-[var(--hui-space-3)] bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)]",
         className
       )}
       {...props}
@@ -232,7 +244,7 @@ function ChangeReviewHeader({ className, children, ...props }: React.ComponentPr
       {children ?? (
         <>
           <ChangeReviewSummary />
-          <div className="flex flex-wrap items-center gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)]">
+          <div className="flex flex-wrap items-center gap-x-[var(--hui-space-5)] gap-y-[var(--hui-space-3)]">
             <ChangeReviewFilter />
             <ChangeReviewBulkActions />
           </div>
@@ -251,8 +263,8 @@ function ChangeReviewSummary({ className, ...props }: React.ComponentProps<"p">)
       data-slot="change-review-summary"
       role="status"
       className={cn(
-        "m-0 text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)]",
-        bodyText,
+        "m-0 flex flex-wrap items-baseline gap-x-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)] tabular-nums [font-weight:var(--hui-font-weight-medium)]",
+        labelText,
         className
       )}
       {...props}
@@ -263,10 +275,7 @@ function ChangeReviewSummary({ className, ...props }: React.ComponentProps<"p">)
           {/* A real separator, so the two counts do not run together when read aloud. */}
           <span className="sr-only">. </span>
           <span
-            className={cn(
-              "ml-[var(--hui-space-2)] [font-weight:var(--hui-font-weight-regular)]",
-              secondaryText
-            )}
+            className={cn("[font-weight:var(--hui-font-weight-regular)]", secondaryText)}
           >
             {labels.decisionSummary(counts)}
           </span>
@@ -288,8 +297,8 @@ function ChangeReviewFilter({ className, ...props }: React.ComponentProps<"div">
     <div
       data-slot="change-review-filter"
       className={cn(
-        "inline-flex min-h-6 items-center gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]",
-        bodyText,
+        "inline-flex min-h-6 items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)] select-none",
+        metaText,
         className
       )}
       {...props}
@@ -300,9 +309,17 @@ function ChangeReviewFilter({ className, ...props }: React.ComponentProps<"div">
         checked={changedOnly}
         onCheckedChange={setChangedOnly}
         // Forced colors removes the track and thumb fills, so draw both with system colors.
-        className={cn(forcedColorsBorder, "forced-colors:box-content forced-colors:[&>span]:bg-[ButtonText]")}
+        className={cn(
+          // A compact 28 × 16 switch: it filters the list, it is not the page's main control.
+          "h-4 w-7 [&>[data-slot=switch-thumb]]:size-3.5 [&>[data-slot=switch-thumb]]:group-active/switch:w-3.5",
+          forcedColorsBorder,
+          "forced-colors:box-content forced-colors:[&>span]:bg-[ButtonText]"
+        )}
       />
-      <span id={labelId} className="cursor-pointer" onClick={() => setChangedOnly(!changedOnly)}>
+      <span
+        id={labelId}
+        className="cursor-pointer hover:text-[var(--hui-color-foreground-base-primary)]"
+        onClick={() => setChangedOnly(!changedOnly)}>
         {labels.changedOnly}
       </span>
     </div>
@@ -311,6 +328,10 @@ function ChangeReviewFilter({ className, ...props }: React.ComponentProps<"div">
 
 /** Filled buttons lose their fill in forced colors, so they get an edge instead. */
 const forcedColorsBorder = "forced-colors:border forced-colors:border-[ButtonText]"
+
+/** Flat: no feather shadow on the strip, and the 12px label the rest of the header uses. */
+const bulkButton =
+  "shadow-none px-[var(--hui-space-4)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] [font-weight:var(--hui-font-weight-medium)]"
 
 /** Accept all and Reject all. Absent unless the application handles decisions. */
 function ChangeReviewBulkActions({ className, ...props }: React.ComponentProps<"div">) {
@@ -326,18 +347,18 @@ function ChangeReviewBulkActions({ className, ...props }: React.ComponentProps<"
       {...props}
     >
       <Button
-        variant="secondary"
+        variant="outline"
         size="sm"
-        className={forcedColorsBorder}
+        className={cn(bulkButton, forcedColorsBorder)}
         disabled={disabled || counts.rejected === counts.changed}
         onClick={() => decideAll("rejected")}
       >
         {labels.rejectAll}
       </Button>
       <Button
-        variant="secondary"
+        variant="outline"
         size="sm"
-        className={forcedColorsBorder}
+        className={cn(bulkButton, forcedColorsBorder)}
         disabled={disabled || counts.accepted === counts.changed}
         onClick={() => decideAll("accepted")}
       >
@@ -361,11 +382,16 @@ function ChangeReviewList({ className, ...props }: React.ComponentProps<"div">) 
       <p
         data-slot="change-review-empty"
         className={cn(
-          "m-0 rounded-[var(--hui-radius-2)] border-[0.5px] border-dashed border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-4)] py-[var(--hui-space-5)] text-center",
-          secondaryText,
-          bodyText
+          "m-0 flex items-center justify-center gap-[var(--hui-space-3)] px-[var(--hui-space-5)] py-[var(--hui-space-7)] text-center text-[var(--hui-color-foreground-base-secondary)]",
+          labelText
         )}
       >
+        <span
+          aria-hidden="true"
+          className="flex size-6 shrink-0 items-center justify-center rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-primary)] text-[var(--hui-color-foreground-base-secondary)]"
+        >
+          <CheckIcon className="size-3.5" />
+        </span>
         {changes.length === 0 ? labels.empty : labels.emptyFiltered}
       </p>
     )
@@ -375,7 +401,7 @@ function ChangeReviewList({ className, ...props }: React.ComponentProps<"div">) 
     <div
       data-slot="change-review-list"
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)]",
+        "w-full min-w-0 overflow-hidden",
         className
       )}
       {...props}
@@ -386,7 +412,7 @@ function ChangeReviewList({ className, ...props }: React.ComponentProps<"div">) 
 }
 
 const divided =
-  "[&>*+*]:border-t-[0.5px] [&>*+*]:border-t-[var(--hui-color-border-base-secondary)]"
+  "[&>*+*]:border-t-[0.5px] [&>*+*]:border-t-[var(--hui-color-border-base-primary)]"
 
 function GroupBody({ node, depth }: { node: ChangeReviewGroupNode; depth: number }) {
   return (
@@ -407,7 +433,7 @@ function GroupBody({ node, depth }: { node: ChangeReviewGroupNode; depth: number
 
 /** Each level of nesting indents its heading and labels by one step; values stay aligned. */
 function indent(depth: number): React.CSSProperties {
-  return { paddingInlineStart: `calc(var(--hui-space-4) * ${depth})` }
+  return { paddingInlineStart: `calc(var(--hui-space-5) * ${depth})` }
 }
 
 function Group({ node, depth }: { node: ChangeReviewGroupNode; depth: number }) {
@@ -419,7 +445,7 @@ function Group({ node, depth }: { node: ChangeReviewGroupNode; depth: number }) 
         id={headingId}
         data-slot="change-review-group-label"
         className={cn(
-          "bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-4)] py-[var(--hui-space-2)] [font-weight:var(--hui-font-weight-medium)]",
+          "bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-5)] py-[var(--hui-space-2)] [font-weight:var(--hui-font-weight-medium)]",
           secondaryText
         )}
       >
@@ -427,7 +453,7 @@ function Group({ node, depth }: { node: ChangeReviewGroupNode; depth: number }) 
           {node.label}
         </span>
       </div>
-      <div className="border-t-[0.5px] border-t-[var(--hui-color-border-base-secondary)]">
+      <div className="border-t-[0.5px] border-t-[var(--hui-color-border-base-primary)]">
         <GroupBody node={node} depth={depth + 1} />
       </div>
     </div>
@@ -442,21 +468,24 @@ function ChangeRow({ change, depth }: { change: ChangeReviewChange; depth: numbe
     <div
       data-slot="change-review-row"
       data-status={status}
-      className="grid grid-cols-1 items-start gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-1)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] @lg:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_auto]"
+      className="grid grid-cols-1 items-start gap-x-[var(--hui-space-5)] gap-y-[var(--hui-space-2)] px-[var(--hui-space-5)] py-[var(--hui-space-4)] motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[color-mix(in_oklch,var(--hui-color-background-base-primary-hover)_60%,transparent)] @lg:grid-cols-[minmax(0,9rem)_minmax(0,1fr)_auto] @lg:items-center"
     >
       <dt
         data-slot="change-review-label"
         style={indent(depth)}
         className={cn(
-          "min-w-0 break-words text-[var(--hui-color-foreground-base-secondary)]",
-          bodyText
+          "min-w-0 self-start break-words text-[var(--hui-color-foreground-base-secondary)] @lg:py-[2px]",
+          labelText
         )}
       >
         {change.label}
       </dt>
       <dd
         data-slot="change-review-value"
-        className={cn("m-0 min-w-0 text-[var(--hui-color-foreground-base-primary)]", bodyText)}
+        className={cn(
+          "m-0 min-w-0 text-[var(--hui-color-foreground-base-primary)] @lg:self-start @lg:py-[2px]",
+          bodyText
+        )}
       >
         {change.kind === "list" ? (
           <ListChange change={change} />
@@ -465,7 +494,7 @@ function ChangeRow({ change, depth }: { change: ChangeReviewChange; depth: numbe
         )}
       </dd>
       {canDecide && status !== "unchanged" && (
-        <dd className="m-0 @lg:col-start-3">
+        <dd className="m-0 @lg:col-start-3 @lg:-my-[var(--hui-space-1)] @lg:self-start">
           <DecisionControls change={change} />
         </dd>
       )}
@@ -481,7 +510,9 @@ function DisplayValue({ change, value }: { change: ChangeReviewValueChange; valu
   const { labels, renderValue } = useChangeReviewController("ChangeReviewValue")
 
   if (isEmptyValue(value)) {
-    return <span className="text-[var(--hui-color-foreground-base-secondary)]">{labels.notSet}</span>
+    return (
+      <span className="text-[var(--hui-color-foreground-base-secondary)] italic">{labels.notSet}</span>
+    )
   }
   if (change.render) return <>{change.render(value)}</>
   if (renderValue) return <>{renderValue(value, change)}</>
@@ -506,37 +537,43 @@ function ValueChange({
   if (status === "unchanged") {
     return (
       <span className="flex flex-wrap items-baseline gap-x-[var(--hui-space-3)]">
-        <span className="min-w-0 break-words">
+        <span className="min-w-0 break-words text-[var(--hui-color-foreground-base-secondary)]">
           <DisplayValue change={change} value={change.after} />
         </span>
-        <span className={secondaryText}>{labels.noChange}</span>
+        <span className={cn("text-[var(--hui-color-foreground-base-secondary)]", metaText)}>
+          {labels.noChange}
+        </span>
       </span>
     )
   }
 
   return (
-    <span className="flex flex-wrap items-center gap-x-[var(--hui-space-2)] gap-y-[var(--hui-space-1)]">
+    <span className="flex flex-wrap items-center gap-x-[var(--hui-space-3)] gap-y-[var(--hui-space-1)] tabular-nums">
       <span className="sr-only">{labels.was} </span>
       <span
         data-slot="change-review-before"
         className={cn(
           "min-w-0 break-words text-[var(--hui-color-foreground-base-secondary)]",
           // "Not set" is a statement about the old value, not the old value itself.
-          !isEmptyValue(change.before) && "line-through"
+          !isEmptyValue(change.before) &&
+            "line-through decoration-[var(--hui-color-foreground-base-tertiary)] decoration-1"
         )}
       >
         <DisplayValue change={change} value={change.before} />
       </span>
-      <ArrowRightIcon
-        aria-hidden="true"
-        className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-secondary)] rtl:rotate-180"
-      />
-      <span className="sr-only">, {labels.now} </span>
-      <span
-        data-slot="change-review-after"
-        className="min-w-0 break-words [font-weight:var(--hui-font-weight-medium)]"
-      >
-        <DisplayValue change={change} value={change.after} />
+      {/* The arrow travels with the new value, so a wrap never strands it at a line end. */}
+      <span className="inline-flex min-w-0 items-center gap-x-[var(--hui-space-3)]">
+        <ArrowRightIcon
+          aria-hidden="true"
+          className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)] rtl:rotate-180"
+        />
+        <span className="sr-only">, {labels.now} </span>
+        <span
+          data-slot="change-review-after"
+          className="min-w-0 break-words text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)]"
+        >
+          <DisplayValue change={change} value={change.after} />
+        </span>
       </span>
     </span>
   )
@@ -545,10 +582,14 @@ function ValueChange({
 type ListEntry = { tone: "added" | "removed" | "changed"; item: unknown }
 
 const entryIcon = { added: PlusIcon, removed: MinusIcon, changed: PencilIcon }
+/** A 16px tile per entry: the sign carries the meaning, the tint only reinforces it. */
 const entryTone = {
-  added: "text-[var(--hui-color-foreground-success-primary)]",
-  removed: "text-[var(--hui-color-foreground-danger-primary)]",
-  changed: "text-[var(--hui-color-foreground-base-secondary)]",
+  added:
+    "bg-[var(--hui-color-background-success-primary)] text-[var(--hui-color-foreground-success-primary)]",
+  removed:
+    "bg-[var(--hui-color-background-danger-primary)] text-[var(--hui-color-foreground-danger-primary)]",
+  changed:
+    "bg-[var(--hui-color-background-neutral-secondary)] text-[var(--hui-color-foreground-base-secondary)]",
 }
 
 function ListChange({ change }: { change: ChangeReviewListChange }) {
@@ -571,15 +612,21 @@ function ListChange({ change }: { change: ChangeReviewListChange }) {
   const itemLabel = change.itemLabel as ((item: unknown) => React.ReactNode) | undefined
 
   return (
-    <div className="flex min-w-0 flex-col gap-[var(--hui-space-2)]">
-      <span data-slot="change-review-list-summary" className="[font-weight:var(--hui-font-weight-medium)]">
+    <div className="flex min-w-0 flex-col gap-[var(--hui-space-3)]">
+      <span
+        data-slot="change-review-list-summary"
+        className="tabular-nums [font-weight:var(--hui-font-weight-medium)]"
+      >
         {labels.listSummary({
           added: change.added.length,
           removed: change.removed.length,
           changed: change.changed?.length ?? 0,
         })}
       </span>
-      <ul id={listId} className="m-0 flex list-none flex-col gap-[var(--hui-space-1)] p-0">
+      <ul
+        id={listId}
+        className="m-0 flex list-none flex-col overflow-hidden rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-primary)] p-0 [&>*+*]:border-t-[0.5px] [&>*+*]:border-t-[var(--hui-color-border-base-primary)]"
+      >
         {shown.map((entry, index) => {
           const Icon = entryIcon[entry.tone]
           return (
@@ -587,11 +634,29 @@ function ListChange({ change }: { change: ChangeReviewListChange }) {
               key={index}
               data-slot="change-review-list-item"
               data-change={entry.tone}
-              className="flex min-w-0 items-start gap-[var(--hui-space-2)]"
+              className={cn(
+                "flex min-w-0 items-center gap-[var(--hui-space-3)] px-[var(--hui-space-3)] py-[6px]",
+                metaText,
+                "[font-size:var(--hui-font-size-control,13px)]"
+              )}
             >
-              <Icon aria-hidden="true" className={cn("mt-0.5 size-3.5 shrink-0", entryTone[entry.tone])} />
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "flex size-4 shrink-0 items-center justify-center rounded-[4px]",
+                  entryTone[entry.tone]
+                )}
+              >
+                <Icon className="size-3" />
+              </span>
               <span className="sr-only">{labels[entry.tone]}: </span>
-              <span className={cn("min-w-0 break-words", entry.tone === "removed" && "line-through")}>
+              <span
+                className={cn(
+                  "min-w-0 break-words",
+                  entry.tone === "removed" &&
+                    "text-[var(--hui-color-foreground-base-secondary)] line-through decoration-[var(--hui-color-foreground-base-tertiary)]"
+                )}
+              >
                 {itemLabel ? itemLabel(entry.item) : String(entry.item)}
               </span>
             </li>
@@ -604,7 +669,7 @@ function ListChange({ change }: { change: ChangeReviewListChange }) {
           size="sm"
           aria-expanded={expanded}
           aria-controls={listId}
-          className="-ml-[var(--hui-space-3)] self-start"
+          className="-ml-[var(--hui-space-3)] self-start text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)]"
           onClick={() => setExpanded((current) => !current)}
         >
           {expanded ? labels.showFewer : labels.showMore(overflow)}
@@ -619,11 +684,12 @@ function ListChange({ change }: { change: ChangeReviewListChange }) {
 /* -------------------------------------------------------------------------- */
 
 // The tinted fills are light, so the label stays in the primary text colour to keep its contrast.
+// The chosen side's icon takes the success or danger colour; the label does not.
 const decisionTone: Record<ChangeReviewDecision, string> = {
   accepted:
-    "border-[var(--hui-color-border-success-emphasis)] bg-[var(--hui-color-background-success-primary)] hover:bg-[var(--hui-color-background-success-primary)]",
+    "bg-[var(--hui-color-background-success-primary)] not-disabled:hover:bg-[var(--hui-color-background-success-primary)] text-[var(--hui-color-foreground-base-primary)] [&_svg]:text-[var(--hui-color-foreground-success-primary)]",
   rejected:
-    "border-[var(--hui-color-border-danger-emphasis)] bg-[var(--hui-color-background-danger-primary)] hover:bg-[var(--hui-color-background-danger-primary)]",
+    "bg-[var(--hui-color-background-danger-primary)] not-disabled:hover:bg-[var(--hui-color-background-danger-primary)] text-[var(--hui-color-foreground-base-primary)] [&_svg]:text-[var(--hui-color-foreground-danger-primary)]",
 }
 
 /**
@@ -637,7 +703,7 @@ function DecisionControls({ change }: { change: ChangeReviewChange }) {
 
   const toggle = (decision: ChangeReviewDecision) => (
     <Button
-      variant="ghost"
+      variant="link"
       size="sm"
       disabled={disabled}
       aria-pressed={current === decision}
@@ -645,21 +711,26 @@ function DecisionControls({ change }: { change: ChangeReviewChange }) {
         decision === "accepted" ? labels.acceptChange(change.label) : labels.rejectChange(change.label)
       }
       data-decision={decision}
-      className={cn("border-solid", current === decision && decisionTone[decision])}
+      className={cn(
+        "min-h-7 gap-[6px] rounded-none px-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] [font-weight:var(--hui-font-weight-medium)] not-disabled:hover:text-[var(--hui-color-foreground-base-primary)] focus-visible:z-1 focus-visible:outline-offset-[-2px] [&_svg]:text-[var(--hui-color-foreground-base-tertiary)]",
+        current === decision && decisionTone[decision]
+      )}
       onClick={() => decide(change.id, current === decision ? null : decision)}
     >
-      {current === decision &&
-        (decision === "accepted" ? (
-          <CheckIcon aria-hidden="true" className="size-3.5" />
-        ) : (
-          <CloseIcon aria-hidden="true" className="size-3.5" />
-        ))}
+      {decision === "accepted" ? (
+        <CheckIcon aria-hidden="true" className="size-3.5" />
+      ) : (
+        <CloseIcon aria-hidden="true" className="size-3.5" />
+      )}
       {decision === "accepted" ? labels.accept : labels.reject}
     </Button>
   )
 
   return (
-    <div data-slot="change-review-decision" className="flex items-center gap-[var(--hui-space-2)]">
+    <div
+      data-slot="change-review-decision"
+      className="inline-flex items-stretch overflow-hidden rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] [&>*+*]:border-s-[0.5px] [&>*+*]:border-s-[var(--hui-color-border-base-secondary)] forced-colors:border-[ButtonText]"
+    >
       {toggle("rejected")}
       {toggle("accepted")}
     </div>

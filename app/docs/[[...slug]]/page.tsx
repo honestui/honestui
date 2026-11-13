@@ -157,7 +157,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
               {doc.title}
             </h1>
             {doc.description && (
-              <p className="text-muted-foreground text-[15px]">{doc.description}</p>
+              <p className="text-muted-foreground mt-1 text-base leading-relaxed text-pretty">{doc.description}</p>
             )}
             {links && (
               <div className="mt-3 flex flex-row gap-3 select-none">
@@ -180,10 +180,10 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
             {page.slugs[0] === "components" && <DocsThemeCustomizer />}
           </div>
         </div>
-        <div className="text-primary/80 mt-8 w-full flex-1 text-[14px] *:data-[slot=alert]:first:mt-0">
+        <div className="mt-8 w-full flex-1 text-[15px] text-[var(--hui-color-foreground-base-secondary)] dark:text-[color-mix(in_oklab,var(--hui-color-foreground-base-primary)_90%,transparent)] *:data-[slot=alert]:first:mt-0">
           <MDX components={mdxComponents} />
         </div>
-        <div className="mt-40 flex flex-col gap-8">
+        <div className="mt-24 flex flex-col gap-8">
           <div className="grid grid-cols-2 gap-4 sm:gap-8">
             <div>
               {neighbours.previous ? (
@@ -214,9 +214,9 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
           </div>
         </div>
       </div>
-      <div className="sticky top-26 hidden h-fit self-start xl:flex">
+      <div className="sticky top-12 hidden h-fit self-start xl:flex">
         {doc.toc?.length ? (
-          <div className="no-scrollbar w-72 overflow-y-auto px-8">
+          <div className="no-scrollbar max-h-[calc(100vh-9rem)] w-64 overflow-y-auto pr-8 pl-4">
             <DocsTableOfContents toc={doc.toc} />
           </div>
         ) : null}

@@ -163,3 +163,15 @@ export function flattenColor(color: string, base: string): string {
     Math.round(channel * a + baseChannel * (1 - a));
   return `rgb(${mix(r, baseR)}, ${mix(g, baseG)}, ${mix(b, baseB)})`;
 }
+
+/**
+ * ECharts draws text on a canvas, where CSS inheritance does not apply, so
+ * axis and label text would fall back to the browser's sans-serif. This reads
+ * the chart container's computed font family and sets it as the option's base
+ * text style. An authored `textStyle` is kept as is.
+ */
+export function withChartFont<T extends object>(option: T, container: Element): T {
+  if ("textStyle" in option) return option;
+  const fontFamily = getComputedStyle(container).fontFamily;
+  return fontFamily ? { ...option, textStyle: { fontFamily } } : option;
+}

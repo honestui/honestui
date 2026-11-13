@@ -192,7 +192,7 @@
 }
 
 /* Markers recede behind the text. Browsers give list numbers tabular
-   figures, which LoveSans draws like code. */
+   figures, which can read like code. */
 .honest-prose :where(li):not(:where(.not-prose, .not-prose *))::marker {
   color: var(--_muted);
   font-variant-numeric: normal;

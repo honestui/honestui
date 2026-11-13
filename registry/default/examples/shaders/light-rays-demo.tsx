@@ -28,12 +28,12 @@ interface LightRaysSettings {
 
 const defaults: LightRaysSettings = {
   raysOrigin: "top-center",
-  raysColor: "#b8d6ff",
+  raysColor: "#e8eef8",
   raysSpeed: 0.7,
-  lightSpread: 0.72,
-  rayLength: 2.2,
+  lightSpread: 0.9,
+  rayLength: 2.8,
   pulsating: false,
-  fadeDistance: 1,
+  fadeDistance: 1.3,
   saturation: 1,
   followMouse: false,
   mouseInfluence: 0.1,
@@ -64,7 +64,7 @@ export default function LightRaysDemo() {
       code={code}
       onReset={reset}
       preview={
-        <div className="size-full bg-[#07090d]">
+        <div className="size-full bg-[#06070a]">
           <LightRays className="size-full" {...settings} />
         </div>
       }

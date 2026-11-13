@@ -37,8 +37,16 @@ export default function AsyncActionHookExample() {
   })
 
   return (
-    <div className="flex w-full max-w-md min-w-0 flex-col gap-[var(--hui-space-3)]">
-      <div className="inline-flex min-h-6 items-center gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+    <div className="flex w-full max-w-lg min-w-0 flex-col gap-[var(--hui-space-3)]">
+      <div className="flex min-w-0 items-center justify-between gap-[var(--hui-space-4)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)]">
+        <div className="flex min-w-0 flex-col">
+          <span id={labelId} className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:20px]">
+            Email me a weekly summary
+          </span>
+          <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+            Activity across your projects, every Monday morning.
+          </span>
+        </div>
         <Switch
           aria-labelledby={labelId}
           checked={isSubscribed}
@@ -47,7 +55,6 @@ export default function AsyncActionHookExample() {
           // Forced colors removes the track and thumb fills, so draw both with system colors.
           className="forced-colors:box-content forced-colors:border forced-colors:border-[ButtonText] forced-colors:[&>span]:bg-[ButtonText]"
         />
-        <span id={labelId}>Email me a weekly summary</span>
       </div>
       <ActionStatus
         action={save}

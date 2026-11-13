@@ -1,6 +1,6 @@
 ---
 name: honestui-brand-guidelines
-description: "Design, build, or substantially improve an official Honest UI-authored report website. Use for customer reports, proposals, briefs, benchmarks, comparisons, narrative data pages, pricing or ROI or performance calculators, and bespoke decision pages that need Honest UI information architecture, LoveSans typography, data storytelling, responsive craft, components, tokens, and light and dark themes."
+description: "Design, build, or substantially improve an official Honest UI-authored report website. Use for customer reports, proposals, briefs, benchmarks, comparisons, narrative data pages, pricing or ROI or performance calculators, and bespoke decision pages that need Honest UI information architecture, Geist typography, data storytelling, responsive craft, components, tokens, and light and dark themes."
 ---
 
 # Honest UI design guidelines for report websites
@@ -26,7 +26,7 @@ When requirements compete, protect them in this order:
 1. Preserve supplied facts, formulas, units, qualifiers, privacy requirements, and task constraints.
 2. Preserve the caller's framework, routes, delivery surface, and established Honest UI foundation.
 3. Make the reader's question, strongest supported answer, and material evidence immediately clear.
-4. Establish unmistakable Honest UI authorship through the wordmark, LoveSans type roles, shared grid, semantic tokens, and purposeful craft.
+4. Establish unmistakable Honest UI authorship through the wordmark, Geist type roles, shared grid, semantic tokens, and purposeful craft.
 5. Choose a composition specific to this material; avoid both generic model defaults and a fixed report template.
 6. Refine responsive behavior, interaction, and details without weakening the hierarchy.
 
@@ -169,9 +169,9 @@ Do not force materially unequal findings into equal cells. Rank them, group them
 
 #### Set type and rhythm
 
-Use LoveSans through `--hui-font-title` for headings and display titles and `--hui-font-body` for prose, labels, controls, tables, KPIs, dates, counts, percentages, durations, and financial figures. Use JetBrains Mono through `--hui-font-mono` only for code, commands, paths, raw tokens, timestamps, and short operational identifiers such as region, plan, SKU, account, or environment IDs. Set only the identifier in Mono, not its sentence or entire table.
+Use Geist through `--hui-font-title` for headings and display titles and `--hui-font-body` for prose, labels, controls, tables, KPIs, dates, counts, percentages, durations, and financial figures. Use JetBrains Mono through `--hui-font-mono` only for code, commands, paths, raw tokens, timestamps, and short operational identifiers such as region, plan, SKU, account, or environment IDs. Set only the identifier in Mono, not its sentence or entire table.
 
-Official Honest UI projects load the supplied LoveSans files and bind them to `--font-love-sans`; the semantic family tokens provide the fallback stack. Do not substitute a generic display face, mix unrelated families, or copy the font files into a non-Honest UI product without authorization.
+Official Honest UI projects load Geist (SIL Open Font License) and bind it to `--font-geist-sans`; the semantic family tokens provide the fallback stack. Do not substitute a generic display face or mix unrelated families.
 
 Use the published size, line-height, letter-spacing, and weight tokens. Do not create arbitrary font sizes or numeric font weights. Use `--hui-font-size-t4` for the page-defining title when scale is earned; `--hui-font-size-t3` for major section turns; `--hui-font-size-t2` and `--hui-font-size-t1` for nested structure; the large or regular body recipe for orientation and reading; small for compact labels; mini and micro only for genuinely subordinate metadata. Use the corresponding `--hui-line-height-*` and `--hui-letter-spacing-*` token for every size. Equivalent peers always share role, size, weight, line-height, and numeric treatment; never resize one because its string is longer or its value is larger.
 

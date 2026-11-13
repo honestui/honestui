@@ -37,8 +37,16 @@ function Input({
           size === "lg" && "h-[calc(var(--hui-control-height-lg,44px)-2px)]",
           props.type === "search" &&
             "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
+          // A file input does not center its text, so the line height is set
+          // to the input height for each size.
           props.type === "file" &&
-            "text-[var(--hui-color-foreground-base-secondary)] file:me-3 file:bg-transparent file:[font-size:var(--hui-font-size-control,13px)] file:[line-height:var(--hui-line-height-regular)] file:font-medium file:text-[var(--hui-color-foreground-base-primary)]"
+            "cursor-pointer text-[var(--hui-color-foreground-base-secondary)] [line-height:calc(var(--hui-density-control-height,36px)-2px)] file:me-3 file:h-full file:cursor-pointer file:border-0 file:bg-transparent file:p-0 file:[font-size:var(--hui-font-size-control,13px)] file:[line-height:inherit] file:font-medium file:text-[var(--hui-color-foreground-base-primary)]",
+          props.type === "file" &&
+            size === "sm" &&
+            "[line-height:calc(var(--hui-control-height-sm,var(--hui-space-8))-2px)]",
+          props.type === "file" &&
+            size === "lg" &&
+            "[line-height:calc(var(--hui-control-height-lg,44px)-2px)]"
         )}
         size={typeof size === "number" ? size : undefined}
         {...props}

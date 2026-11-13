@@ -436,8 +436,8 @@ export function AssetBrowser({
           className="min-w-0"
           style={isPanelFloating ? { paddingRight: panelInset } : undefined}
         >
-          {/* From sm up the docs header is a transparent 35px strip, so the toolbar sticks under it and paints that strip itself. */}
-          <div className="bg-background sticky top-14 z-20 -mx-1 px-1 py-3 sm:top-[35px] sm:before:absolute sm:before:inset-x-0 sm:before:bottom-full sm:before:h-[35px] sm:before:bg-background">
+          {/* From sm up the docs header sits outside the scroll panel, so the toolbar sticks to the panel's top edge. */}
+          <div className="bg-background sticky top-14 z-20 -mx-1 px-1 py-3 sm:top-0">
             <div className="flex w-full flex-col gap-2 sm:flex-row">
               <div className="relative min-w-0 flex-1">
                 <label className="sr-only" htmlFor="asset-search">

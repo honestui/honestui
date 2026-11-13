@@ -4,6 +4,7 @@ import * as React from "react"
 
 import {
   FileUpload,
+  FileUploadBrowse,
   FileUploadDescription,
   FileUploadDropzone,
   FileUploadIcon,
@@ -23,6 +24,7 @@ export default function FileUploadDragOver() {
           <FileUploadIcon />
           <FileUploadTitle>Drop to upload</FileUploadTitle>
           <FileUploadDescription>Any number of files</FileUploadDescription>
+          <FileUploadBrowse />
         </FileUploadDropzone>
       </FileUpload>
 
@@ -31,10 +33,11 @@ export default function FileUploadDragOver() {
           <FileUploadIcon />
           <FileUploadTitle>One slot only</FileUploadTitle>
           <FileUploadDescription>Dragging two or more turns this red</FileUploadDescription>
+          <FileUploadBrowse />
         </FileUploadDropzone>
       </FileUpload>
 
-      <p className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)] sm:col-span-2">
+      <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] sm:col-span-2">
         Borders shift color on valid and invalid drags; nothing bounces.
       </p>
     </div>

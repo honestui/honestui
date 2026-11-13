@@ -20,7 +20,7 @@ export default function DateRangePickerForm() {
   const invalidId = React.useId()
 
   return (
-    <div className="grid w-full max-w-2xl gap-8">
+    <div className="grid w-full max-w-sm gap-6">
       <Field>
         <FieldLabel htmlFor={id}>Report period</FieldLabel>
         <DateRangePicker

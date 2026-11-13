@@ -37,15 +37,20 @@
   pointer-events: none;
 }
 
+/* Mirrors the default (neutral ink) variant in registry/default/ui/button.tsx. */
 .buttonDefault {
-  color: var(--hui-color-foreground-accent-emphasis);
-  background: var(--hui-color-background-accent-emphasis);
-  box-shadow: var(--hui-shadow-feather);
+  color: var(--hui-color-foreground-base-emphasis);
+  background: var(--hui-color-background-neutral-emphasis);
+  box-shadow: var(--hui-shadow-key, var(--hui-shadow-feather));
 }
 
 .buttonDefault:hover,
 .buttonDefault:active {
-  background: var(--hui-color-background-accent-emphasis-hover);
+  background: color-mix(
+    in oklch,
+    var(--hui-color-background-neutral-emphasis) 86%,
+    var(--hui-color-background-base-primary)
+  );
 }
 
 .buttonDefault:focus-visible {
@@ -55,13 +60,13 @@
 .buttonOutline {
   color: var(--hui-color-foreground-base-primary);
   background: var(--hui-color-background-base-primary);
-  border: 0.5px solid var(--hui-color-border-base-tertiary);
+  border: 0.5px solid var(--hui-color-border-field, var(--hui-color-border-base-tertiary));
   box-shadow: var(--hui-shadow-feather);
 }
 
 .buttonOutline:hover,
 .buttonOutline:active {
-  border-color: var(--hui-color-border-base-focus);
+  border-color: var(--hui-color-border-field-hover, var(--hui-color-border-base-focus));
   background: var(--hui-color-background-base-primary-hover);
 }
 

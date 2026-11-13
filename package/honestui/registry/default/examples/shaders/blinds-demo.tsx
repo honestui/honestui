@@ -32,7 +32,7 @@ interface BlindsSettings {
 const defaults: BlindsSettings = {
   dpr: 1.5,
   paused: false,
-  gradientColors: ["#ffb86b", "#f9f4e8", "#4f7cff"],
+  gradientColors: ["#c8a27c", "#f3efe7", "#7b8fb5"],
   angle: 18,
   noise: 0.12,
   blindCount: 12,
@@ -85,7 +85,7 @@ export default function BlindsDemo() {
       code={code}
       onReset={reset}
       preview={
-        <div className="size-full bg-[#090b10]">
+        <div className="size-full bg-[#0b0c0f]">
           <GradientBlinds className="size-full" {...settings} />
         </div>
       }

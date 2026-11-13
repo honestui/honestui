@@ -16,7 +16,7 @@ export default function DateRangePickerLimits() {
   const [value, setValue] = React.useState<DateRange | undefined>(undefined)
 
   return (
-    <div className="w-full max-w-md min-w-0">
+    <div className="w-full max-w-sm min-w-0">
       <DateRangePicker
         value={value}
         onValueChange={setValue}
@@ -27,7 +27,7 @@ export default function DateRangePickerLimits() {
           return weekday === 0 || weekday === 6
         }}
       />
-      <p className="mt-4 text-sm text-muted-foreground" role="status">
+      <p className="mt-2 text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]" role="status">
         Stays run today or later, within six months, and never cover a
         weekend.
       </p>

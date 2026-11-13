@@ -94,7 +94,7 @@ export default function FilterBarDataTable() {
         value={filters}
         onValueChange={setFilters}
       />
-      <p aria-live="polite" className="text-sm text-muted-foreground">
+      <p aria-live="polite" className="text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]">
         {rows.length} of {SAMPLE_ORDERS.length} orders
       </p>
       <DataTable columns={columns} data={rows} caption="Orders" />

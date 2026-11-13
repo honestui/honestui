@@ -7,6 +7,20 @@ This page summarizes user-facing changes to Honest UI in reverse chronological o
 
 Entries are maintained by hand alongside each change. Until the first stable release, dates refer to commits on the main branch rather than numbered versions.
 
+## November 12, 2026
+
+- **Breaking:** Button's `default` variant is now neutral ink (near-black in light mode, near-white in dark) instead of the accent color. Use the new `accent` variant where a button should keep the theme accent. Buttons stay flat; there is no `appearance` prop.
+- Button's `secondary` variant has no shadow, and `destructive-outline` uses a soft red border at rest with the strong border and tint on hover.
+- Button padding and corner radius now scale with size: `xs` and `sm` have more inline padding, `lg` and `xl` are wider, and the radius runs 6, 8, 10, 12, 12 px from `xs` to `xl`. Heights are unchanged.
+- **Breaking:** The default typeface is Geist instead of LoveSans. `--font-love-sans` is now `--font-geist-sans` and `--hui-font-love-sans` is now `--hui-font-sans`; rename them if you set either. See [Typography](/docs/theme/typography).
+- Alert's tinted variants use softer fills and borders. Badge labels are medium weight. Slider's thumb is a plain white disc, without grip lines on the large size.
+- Underline Tabs lay out correctly in vertical orientation. File inputs center their text at every size. Table cells inherit the row background.
+- Chart axis and label text inherit the chart container's font family instead of the browser's default sans-serif.
+- Product components (Async Action, Change Review, Data Grid, Data Table, Date Range Picker, File Upload, Filter Bar, Overflow Toolbar, Paste Table, Quantity Field) share one control height, corner, hairline edge, and label size within a bar. Date Range Picker marks today with a dot and draws the range as one flat band.
+- Dock defaults to 40px items with a flatter surface.
+- Docs: restyled prose with quieter links, ruled tables, and flat callouts; dark mode uses near-black chrome with brighter text; sidebar links and the previous/next cards have hover states.
+- Honest AI components are re-synced with these component and token changes.
+
 ## November 4, 2026
 
 - **Breaking:** Removed Button's `appearance` prop (`glossy`, `glow`, `bevel`); buttons use the flat treatment only. Removed Badge's `gradient` variant and the alias names `accent` (use `default`), `neutral` (use `secondary`), `danger` (use `error`), and sizes `micro` (`sm`), `small` (`default`), `regular` (`lg`).

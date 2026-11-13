@@ -7,6 +7,7 @@ import {
   withAlpha,
   type ChartConfig,
   type ResolvedColors,
+  withChartFont,
 } from "@/registry/default/ui/charts/chart";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
 import {
@@ -948,7 +949,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     liveRef.current.resolved = resolveColors(container, config, seriesKeys);
     const push = () => {
       const option = buildOption();
-      chart.setOption((chartOptions ? { ...option, ...chartOptions } : option) as EChartsOption, {
+      chart.setOption(withChartFont(chartOptions ? { ...option, ...chartOptions } : option, container) as EChartsOption, {
         notMerge: true,
       });
     };

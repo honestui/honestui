@@ -46,18 +46,18 @@ const defaults: GrainientSettings = {
   blendSoftness: 0.05,
   rotationAmount: 500,
   noiseScale: 2,
-  grainAmount: 0.1,
+  grainAmount: 0.08,
   grainScale: 2,
   grainAnimated: false,
-  contrast: 1.5,
+  contrast: 1.25,
   gamma: 1,
-  saturation: 1,
+  saturation: 0.9,
   centerX: 0,
   centerY: 0,
   zoom: 0.9,
-  color1: "#ff9ffc",
-  color2: "#5227ff",
-  color3: "#b497cf",
+  color1: "#f2d3bd",
+  color2: "#1b2340",
+  color3: "#7f97bd",
 };
 
 export default function GrainientDemo() {
@@ -72,7 +72,7 @@ export default function GrainientDemo() {
       code={code}
       onReset={reset}
       preview={
-        <div className="size-full bg-[#12100e]">
+        <div className="size-full bg-[#0f1220]">
           <Grainient className="size-full" {...settings} />
         </div>
       }

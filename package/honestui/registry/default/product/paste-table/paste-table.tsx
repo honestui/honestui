@@ -76,8 +76,6 @@ export {
   parseNumberCell,
 } from "./paste-table-utils"
 
-const miniText =
-  "[font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
 const bodyText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
 /** Table headings default to the tertiary text color, which is too faint for 12px text. */
@@ -86,6 +84,11 @@ const headText = "text-[var(--hui-color-foreground-base-secondary)]"
 const dangerText = "text-[var(--hui-color-foreground-danger-primary)]"
 /** Filled buttons lose their fill in forced colors, so they get an edge instead. */
 const forcedColorsBorder = "forced-colors:border forced-colors:border-[ButtonText]"
+
+const regularText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
+/** Cell padding that lands a single 20px line in a 40px row. */
+const cellPad = "px-[var(--hui-space-4)] py-[calc(var(--hui-space-3)+var(--hui-space-1))]"
 
 /** Rows rendered at first, and added by each press of "Show more rows". */
 const ROW_PAGE = 50
@@ -315,7 +318,10 @@ function PasteTable({
       {...props}
     >
       {session ? (
-        <>
+        <div
+          data-slot="paste-table-surface"
+          className="flex w-full min-w-0 flex-col overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)]"
+        >
           <ReviewHeader
             labels={labels}
             rowCount={results.length}
@@ -333,7 +339,7 @@ function PasteTable({
               role="alert"
               tabIndex={-1}
               className={cn(
-                "flex items-start gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-danger-emphasis)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)]",
+                "flex items-start gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)] focus-visible:[outline-offset:-2px]",
                 bodyText
               )}
             >
@@ -352,21 +358,38 @@ function PasteTable({
 
           <div
             data-slot="paste-table-preview"
-            className="w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)]"
+            className="w-full min-w-0"
           >
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead scope="col" className={cn("w-px whitespace-nowrap", headText)}>
+              <TableHeader className="static bg-[var(--hui-color-background-base-secondary)]">
+                <TableRow className="bg-[var(--hui-color-background-base-secondary)]">
+                  <TableHead
+                    scope="col"
+                    className={cn(
+                      "w-px whitespace-nowrap py-[var(--hui-space-4)] ps-[var(--hui-space-5)] pe-[var(--hui-space-2)] align-bottom tabular-nums",
+                      headText,
+                      bodyText
+                    )}
+                  >
                     {labels.rowHeading}
                   </TableHead>
                   {session.mapping.map((key, column) => {
                     const pastedName = session.hasHeaderRow ? session.rows[0]?.cells[column] : ""
                     const name = pastedName || labels.columnName(column + 1)
                     return (
-                      <TableHead key={column} scope="col" className={cn("min-w-28 align-top", headText)}>
+                      <TableHead
+                        key={column}
+                        scope="col"
+                        className={cn(
+                          "min-w-36 px-[var(--hui-space-3)] py-[var(--hui-space-4)] align-top",
+                          headText,
+                          bodyText
+                        )}
+                      >
                         <span className="flex flex-col gap-[var(--hui-space-2)]">
-                          <span className="break-words">{name}</span>
+                          <span className="truncate px-[var(--hui-space-2)] [font-weight:var(--hui-font-weight-regular)]" title={name}>
+                            {name}
+                          </span>
                           <ColumnSelect
                             label={labels.mapColumn(name)}
                             skipLabel={labels.skipColumn}
@@ -379,7 +402,7 @@ function PasteTable({
                       </TableHead>
                     )
                   })}
-                  <TableHead scope="col" className="w-px">
+                  <TableHead scope="col" className="w-px pe-[var(--hui-space-4)]">
                     <span className="sr-only">{labels.actionsHeading}</span>
                   </TableHead>
                 </TableRow>
@@ -387,7 +410,10 @@ function PasteTable({
               <TableBody>
                 {results.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={session.mapping.length + 2} className="text-center">
+                    <TableCell
+                      colSpan={session.mapping.length + 2}
+                      className={cn("py-[var(--hui-space-9)] text-center text-[var(--hui-color-foreground-base-secondary)]", bodyText)}
+                    >
                       {labels.noRows}
                     </TableCell>
                   </TableRow>
@@ -419,9 +445,9 @@ function PasteTable({
 
           {results.length > visibleCount && (
             <Button
-              variant="link"
+              variant="ghost"
               size="sm"
-              className="self-start"
+              className="mx-[var(--hui-space-4)] my-[var(--hui-space-3)] self-start"
               onClick={() => setVisibleCount((count) => count + ROW_PAGE)}
             >
               {labels.showMoreRows(Math.min(ROW_PAGE, results.length - visibleCount))}
@@ -430,10 +456,11 @@ function PasteTable({
 
           <div
             data-slot="paste-table-actions"
-            className="flex flex-wrap items-center justify-between gap-[var(--hui-space-2)]"
+            className="flex flex-wrap items-center justify-between gap-[var(--hui-space-2)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)]"
           >
             <Button
               variant="ghost"
+              className="-ms-[var(--hui-space-3)]"
               size="sm"
               disabled={isLocked}
               onClick={() => closeSession(null)}
@@ -444,7 +471,7 @@ function PasteTable({
               {problemCells.length > 0 && (
                 <>
                   <Button
-                    variant="secondary"
+                    variant="ghost"
                     size="sm"
                     className={forcedColorsBorder}
                     disabled={isLocked}
@@ -455,7 +482,7 @@ function PasteTable({
                     {labels.removeProblemRows(problemRowCount)}
                   </Button>
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     className={forcedColorsBorder}
                     disabled={isLocked}
@@ -478,7 +505,7 @@ function PasteTable({
               </Button>
             </div>
           </div>
-        </>
+        </div>
       ) : (
         <>
           <Field disabled={disabled}>
@@ -497,7 +524,8 @@ function PasteTable({
               }}
               render={(controlProps) => (
                 <Textarea
-                  rows={4}
+                  rows={6}
+                  className="min-h-36 resize-y"
                   placeholder={labels.pastePlaceholder}
                   data-focus="paste"
                   aria-invalid={pasteError ? true : undefined}
@@ -573,7 +601,7 @@ function ReviewHeader({
   return (
     <div
       data-slot="paste-table-header"
-      className="flex flex-wrap items-center justify-between gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)]"
+      className="flex min-h-12 flex-wrap items-center justify-between gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)]"
     >
       <p
         role="status"
@@ -581,17 +609,28 @@ function ReviewHeader({
         data-slot="paste-table-summary"
         data-focus="summary"
         className={cn(
-          "m-0 rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-weight:var(--hui-font-weight-medium)] focus-visible:[outline:var(--hui-focus-ring)]",
-          bodyText
+          "m-0 inline-flex items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-primary)] outline-none [font-weight:var(--hui-font-weight-medium)] focus-visible:[outline:var(--hui-focus-ring)]",
+          regularText
         )}
       >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "inline-block size-1.5 shrink-0 rounded-full",
+            rowCount === 0
+              ? "bg-[var(--hui-color-foreground-base-tertiary)]"
+              : problemRowCount > 0
+                ? "bg-[var(--hui-color-foreground-danger-primary)]"
+                : "bg-[var(--hui-color-foreground-success-primary)]"
+          )}
+        />
         {rowCount === 0
           ? labels.noRows
           : labels.summary({ rows: rowCount, problemRows: problemRowCount, problemCells: problemCellCount })}
       </p>
       <div
         className={cn(
-          "inline-flex min-h-6 items-center gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]",
+          "inline-flex min-h-6 items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)]",
           bodyText
         )}
       >
@@ -695,8 +734,7 @@ function PreviewRow({
       <th
         scope="row"
         className={cn(
-          "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-left align-top text-[var(--hui-color-foreground-base-secondary)] [font-weight:var(--hui-font-weight-regular)]",
-          miniText
+          "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] py-[calc(var(--hui-space-3)+var(--hui-space-1))] ps-[var(--hui-space-5)] pe-[var(--hui-space-2)] text-left align-top tabular-nums text-[var(--hui-color-foreground-base-tertiary)] [font-weight:var(--hui-font-weight-regular)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] leading-5"
         )}
       >
         {rowNumber}
@@ -708,8 +746,9 @@ function PreviewRow({
               key={column}
               data-slot="paste-table-skipped-cell"
               className={cn(
-                "max-w-80 py-[var(--hui-space-2)] align-top break-words whitespace-normal text-[var(--hui-color-foreground-base-secondary)]",
-                bodyText
+                "max-w-80 align-top break-words whitespace-normal text-[var(--hui-color-foreground-base-tertiary)]",
+                cellPad,
+                regularText
               )}
             >
               {source?.cells[column]}
@@ -733,10 +772,11 @@ function PreviewRow({
           />
         )
       })}
-      <TableCell className="py-[var(--hui-space-2)] align-top">
+      <TableCell className="w-px py-[var(--hui-space-2)] ps-[var(--hui-space-2)] pe-[var(--hui-space-4)] align-top">
         <Button
-          variant="link"
+          variant="ghost"
           size="icon-sm"
+          className="text-[var(--hui-color-foreground-base-tertiary)] hover:text-[var(--hui-color-foreground-base-primary)]"
           aria-label={labels.removeRow(rowNumber)}
           disabled={disabled}
           onClick={onRemove}
@@ -788,8 +828,8 @@ function PreviewCell({
       data-slot="paste-table-cell"
       data-invalid={cell.error ? "" : undefined}
       className={cn(
-        "max-w-80 py-[var(--hui-space-2)] align-top whitespace-normal text-[var(--hui-color-foreground-base-primary)]",
-        bodyText
+        "max-w-80 px-[var(--hui-space-3)] py-[var(--hui-space-3)] align-top whitespace-normal text-[var(--hui-color-foreground-base-primary)]",
+        regularText
       )}
     >
       {isEditing ? (
@@ -824,8 +864,9 @@ function PreviewCell({
           aria-describedby={cell.error ? errorId : undefined}
           onClick={onEdit}
           className={cn(
-            "block min-h-6 w-full cursor-text rounded-[var(--hui-radius-1)] border-0 bg-transparent p-0 text-left break-words text-inherit outline-none [font:inherit] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] disabled:cursor-not-allowed",
-            cell.error && "underline decoration-[var(--hui-color-border-danger-emphasis)] decoration-wavy underline-offset-4",
+            "flex min-h-6 w-full cursor-text items-center rounded-[var(--hui-radius-1)] border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-1)] text-left break-words text-inherit outline-none [font:inherit] motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] disabled:cursor-not-allowed",
+            cell.error &&
+              "[box-shadow:inset_0_0_0_1px_var(--hui-color-border-danger-emphasis)]",
             shown === "" && "text-[var(--hui-color-foreground-base-secondary)]"
           )}
         >
@@ -836,9 +877,12 @@ function PreviewCell({
         <span
           id={errorId}
           data-slot="paste-table-cell-error"
-          className={cn("mt-[var(--hui-space-1)] flex items-start gap-[var(--hui-space-1)]", miniText)}
+          className={cn(
+            "mt-[var(--hui-space-1)] flex items-start gap-[var(--hui-space-2)] px-[var(--hui-space-2)] pb-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
+            bodyText
+          )}
         >
-          <TriangleAlertIcon aria-hidden="true" className={cn("mt-px size-3 shrink-0", dangerText)} />
+          <TriangleAlertIcon aria-hidden="true" className={cn("mt-[3px] size-3 shrink-0", dangerText)} />
           {cell.error}
         </span>
       )}

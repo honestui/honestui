@@ -29,7 +29,6 @@ export default function BouncyAccordionDemo() {
       items={items}
       defaultValue="payment"
       className="w-full max-w-md p-6"
-      classNames={{ item: "border border-border" }}
     />
   );
 }

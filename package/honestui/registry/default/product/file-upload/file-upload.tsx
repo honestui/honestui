@@ -744,14 +744,14 @@ function FileUploadDropzone({
         disabled={disabled}
         aria-describedby={describedBy}
         className={cn(
-          "group/dropzone relative flex w-full cursor-pointer flex-col items-center justify-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border border-dashed bg-transparent px-[var(--hui-space-6)] py-[var(--hui-space-8)] text-center outline-none",
-          "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
-          "min-h-[132px] md:min-h-[176px]",
+          "group/dropzone relative flex w-full cursor-pointer flex-col items-center justify-center gap-[var(--hui-space-1)] rounded-[var(--hui-radius-2)] border border-dashed px-[var(--hui-space-6)] py-[var(--hui-space-6)] text-center outline-none",
+          "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
+          "min-h-[120px]",
           "motion-safe:[transition:border-color_var(--hui-duration-fast)_var(--hui-ease-out),background-color_var(--hui-duration-fast)_var(--hui-ease-out)]",
           !disabled &&
             controller.dragState === "idle" && [
-              "border-[var(--hui-color-border-base-primary)] text-[var(--hui-color-foreground-base-primary)]",
-              "hover:border-[var(--hui-color-border-base-emphasis)]",
+              "border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-secondary)] text-[var(--hui-color-foreground-base-primary)]",
+              "hover:bg-[var(--hui-color-background-base-primary-hover)]",
               "focus-visible:[outline:var(--hui-focus-ring)] focus-visible:[outline-offset:var(--hui-focus-ring-offset-accent)]",
             ],
           !disabled &&
@@ -765,7 +765,7 @@ function FileUploadDropzone({
               "focus-visible:[outline:var(--hui-focus-ring)] focus-visible:[outline-offset:var(--hui-focus-ring-offset-accent)]",
             ],
           disabled && [
-            "cursor-not-allowed border-[var(--hui-color-border-base-secondary)] text-[var(--hui-color-foreground-base-tertiary)]",
+            "cursor-not-allowed border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] text-[var(--hui-color-foreground-base-tertiary)]",
           ],
           className
         )}
@@ -826,7 +826,7 @@ function FileUploadDropzone({
         <p
           id={selectionErrorId}
           data-slot="file-upload-selection-error"
-          className="mt-[var(--hui-space-2)] text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
+          className="mt-[var(--hui-space-3)] text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
         >
           {controller.selectionError}
         </p>
@@ -850,13 +850,13 @@ function FileUploadIcon({ className, ...props }: FileUploadIconProps) {
       aria-hidden="true"
       data-slot="file-upload-icon"
       className={cn(
-        "size-6 shrink-0 text-[var(--hui-color-foreground-base-secondary)] motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out)]",
+        "mb-[var(--hui-space-3)] box-content size-4 shrink-0 rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)] motion-safe:[transition:color_var(--hui-duration-fast)_var(--hui-ease-out),border-color_var(--hui-duration-fast)_var(--hui-ease-out)]",
         !controller.disabled &&
           controller.dragState === "valid" &&
-          "text-[var(--hui-color-foreground-accent-emphasis)]",
+          "border-[var(--hui-color-border-accent-emphasis)] text-[var(--hui-color-foreground-accent-emphasis)]",
         !controller.disabled &&
           controller.dragState === "invalid" &&
-          "text-[var(--hui-color-foreground-danger-emphasis)]",
+          "border-[var(--hui-color-border-danger-emphasis)] text-[var(--hui-color-foreground-danger-emphasis)]",
         controller.disabled && "text-[var(--hui-color-foreground-base-tertiary)]",
         className
       )}
@@ -905,7 +905,7 @@ function FileUploadDescription({ className, ...props }: React.ComponentProps<"sp
         controller.dragState === "idle" ? undefined : controller.dragState
       }
       className={cn(
-        "block text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
+        "block text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         !controller.disabled &&
           controller.dragState === "invalid" &&
           "text-[var(--hui-color-foreground-danger-primary)]",
@@ -913,6 +913,37 @@ function FileUploadDescription({ className, ...props }: React.ComponentProps<"sp
       )}
       {...props}
     />
+  )
+}
+
+/**
+ * Button-styled "Browse files" cue inside the dropzone. It is presentational:
+ * the whole dropzone is already the button, so this stays out of the
+ * accessible name and never nests a second interactive element.
+ */
+function FileUploadBrowse({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"span">) {
+  const controller = useFileUploadController("FileUploadBrowse")
+
+  return (
+    <span
+      aria-hidden="true"
+      data-slot="file-upload-browse"
+      className={cn(
+        "mt-[var(--hui-space-4)] inline-flex h-7 shrink-0 items-center justify-center rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+        "motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)]",
+        !controller.disabled &&
+          "group-hover/dropzone:bg-[var(--hui-color-background-base-primary-hover)]",
+        controller.disabled && "text-[var(--hui-color-foreground-base-tertiary)]",
+        className
+      )}
+      {...props}
+    >
+      {children ?? "Browse files"}
+    </span>
   )
 }
 
@@ -965,10 +996,14 @@ function FileUploadTrigger({
  */
 function FileUploadAddMore({
   children,
+  size,
   ...props
-}: Omit<useRender.ComponentProps<"button">, "render">) {
+}: Omit<useRender.ComponentProps<"button">, "render"> & {
+  /** Matches the surrounding toolbar; use "sm" beside 32px controls. */
+  size?: React.ComponentProps<typeof Button>["size"]
+}) {
   return (
-    <FileUploadTrigger render={<Button variant="outline" />} {...props}>
+    <FileUploadTrigger render={<Button variant="outline" size={size} />} {...props}>
       <PlusIcon aria-hidden="true" />
       {children ?? "Add more files"}
     </FileUploadTrigger>
@@ -1026,8 +1061,8 @@ function FileUploadList({
     <ul
       data-slot="file-upload-list"
       className={cn(
-        "m-0 mt-[var(--hui-space-3)] w-full list-none rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] p-0",
-        "[&>li+li]:border-t-[0.5px] [&>li+li]:border-t-[var(--hui-color-border-base-secondary)]",
+        "m-0 mt-[var(--hui-space-3)] w-full list-none overflow-hidden rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] p-0 first:mt-0",
+        "[&>li+li]:border-t-[0.5px] [&>li+li]:border-t-[var(--hui-color-border-base-primary)]",
         className
       )}
       {...props}
@@ -1077,7 +1112,7 @@ function FileUploadItem({ item, className, children, ...props }: FileUploadItemP
         data-slot="file-upload-item"
         data-status={item.status}
         className={cn(
-          "grid min-h-[64px] grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-[var(--hui-space-3)] px-[var(--hui-space-4)] py-[var(--hui-space-3)]",
+          "grid min-h-[60px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-[var(--hui-space-4)] py-[calc(var(--hui-space-3)+var(--hui-space-1))] ps-[var(--hui-space-4)] pe-[var(--hui-space-3)]",
           className
         )}
         {...props}
@@ -1093,7 +1128,7 @@ function FileUploadItem({ item, className, children, ...props }: FileUploadItemP
 /* -------------------------------------------------------------------------- */
 
 const previewTileClass =
-  "flex size-10 shrink-0 flex-col items-center justify-center gap-y-0.5 rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-neutral-primary)] text-[var(--hui-color-foreground-base-secondary)]"
+  "flex size-10 shrink-0 flex-col items-center justify-center gap-y-[var(--hui-space-1)] rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] text-[var(--hui-color-foreground-base-secondary)]"
 
 /**
  * Image files get live thumbnails; everything else gets a quiet type tile.
@@ -1135,7 +1170,7 @@ function FileUploadItemPreview({
       data-slot="file-upload-item-preview"
       src={previewUrl}
       className={cn(
-        "size-10 shrink-0 rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] object-cover",
+        "size-10 shrink-0 rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] object-cover",
         className
       )}
       {...props}
@@ -1145,20 +1180,20 @@ function FileUploadItemPreview({
 
 function TileGlyph({ extension }: { extension: string }) {
   const glyphs: Record<string, React.ReactNode> = {
-    PDF: <DocumentGlyph className="size-4" />,
-    DOC: <DocumentGlyph className="size-4" />,
-    DOCX: <DocumentGlyph className="size-4" />,
-    TXT: <DocumentGlyph className="size-4" />,
-    CSV: <SpreadsheetGlyph className="size-4" />,
-    XLS: <SpreadsheetGlyph className="size-4" />,
-    XLSX: <SpreadsheetGlyph className="size-4" />,
+    PDF: <DocumentGlyph className="size-3.5" />,
+    DOC: <DocumentGlyph className="size-3.5" />,
+    DOCX: <DocumentGlyph className="size-3.5" />,
+    TXT: <DocumentGlyph className="size-3.5" />,
+    CSV: <SpreadsheetGlyph className="size-3.5" />,
+    XLS: <SpreadsheetGlyph className="size-3.5" />,
+    XLSX: <SpreadsheetGlyph className="size-3.5" />,
   }
 
   return (
     <>
-      {glyphs[extension] ?? <FileGlyph className="size-4" />}
+      {glyphs[extension] ?? <FileGlyph className="size-3.5" />}
       {extension.length <= 5 ? (
-        <span className="text-[calc(var(--hui-font-size-micro)*0.9)] font-medium leading-none tracking-wide">
+        <span className="text-[9px] font-medium leading-none tracking-[0.04em]">
           {extension}
         </span>
       ) : null}
@@ -1200,8 +1235,11 @@ function FileUploadItemContent({ className, ...props }: FileUploadItemContentPro
     <div
       data-slot="file-upload-item-content"
       className={cn(
-        "col-start-2 flex min-w-0 flex-wrap items-baseline justify-between gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-1)]",
-        "[&>[data-slot=file-upload-item-progress]]:basis-full [&>[data-slot=file-upload-item-reason]]:basis-full",
+        "col-start-2 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-[var(--hui-space-5)] gap-y-[var(--hui-space-1)]",
+        "[&>[data-slot=file-upload-item-name]]:col-start-1 [&>[data-slot=file-upload-item-metadata]]:col-start-1",
+        "[&>[data-slot=file-upload-item-status]]:col-start-2 [&>[data-slot=file-upload-item-status]]:row-span-2 [&>[data-slot=file-upload-item-status]]:row-start-1 [&>[data-slot=file-upload-item-status]]:justify-self-end",
+        "[&>[data-slot=file-upload-item-status][data-status=error]]:col-span-2 [&>[data-slot=file-upload-item-status][data-status=error]]:col-start-1 [&>[data-slot=file-upload-item-status][data-status=error]]:row-span-1 [&>[data-slot=file-upload-item-status][data-status=error]]:row-start-auto [&>[data-slot=file-upload-item-status][data-status=error]]:justify-self-start [&>[data-slot=file-upload-item-status][data-status=error]]:whitespace-normal",
+        "[&>[data-slot=file-upload-item-progress]]:col-span-2 [&>[data-slot=file-upload-item-reason]]:col-span-2",
         className
       )}
       {...props}
@@ -1219,7 +1257,7 @@ function FileUploadItemActions({
     <div
       data-slot="file-upload-item-actions"
       className={cn(
-        "col-start-3 row-start-1 flex items-center gap-[var(--hui-space-1)]",
+        "col-start-3 row-start-1 flex items-center gap-[var(--hui-space-2)] empty:hidden",
         className
       )}
       {...props}
@@ -1235,7 +1273,7 @@ function FileUploadItemName({ className, ...props }: React.ComponentProps<"span"
       data-slot="file-upload-item-name"
       title={item.file.name}
       className={cn(
-        "truncate text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
+        "truncate text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
         className
       )}
       {...props}
@@ -1253,7 +1291,7 @@ function FileUploadItemMetadata({ className, ...props }: React.ComponentProps<"s
     <span
       data-slot="file-upload-item-metadata"
       className={cn(
-        "shrink-0 whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
+        "truncate whitespace-nowrap tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}
@@ -1265,8 +1303,6 @@ function FileUploadItemMetadata({ className, ...props }: React.ComponentProps<"s
 
 function statusTone(status: FileUploadStatus | undefined) {
   switch (status) {
-    case "success":
-      return "text-[var(--hui-color-foreground-success-primary)]"
     case "error":
       return "text-[var(--hui-color-foreground-danger-primary)]"
     default:
@@ -1280,8 +1316,9 @@ function FileUploadItemStatus({ className, ...props }: React.ComponentProps<"spa
   return (
     <span
       data-slot="file-upload-item-status"
+      data-status={item.status}
       className={cn(
-        "inline-flex items-center gap-[var(--hui-space-2)] whitespace-nowrap [font-size:var(--hui-font-size-mini)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
+        "inline-flex items-center gap-[calc(var(--hui-space-2)+var(--hui-space-1))] whitespace-nowrap empty:hidden [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         statusTone(item.status),
         className
       )}
@@ -1292,16 +1329,27 @@ function FileUploadItemStatus({ className, ...props }: React.ComponentProps<"spa
   )
 }
 
+function StatusDot({ className }: { className: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("inline-block size-1.5 shrink-0 rounded-full", className)}
+    />
+  )
+}
+
 function StatusLine({ item }: { item: FileUploadItem }) {
   if (item.status === "uploading") {
     const percentKnown = typeof item.progress === "number"
 
     return (
       <>
-        {!percentKnown && (
+        {percentKnown ? (
+          <StatusDot className="bg-[var(--hui-color-foreground-accent-primary)]" />
+        ) : (
           <LoaderCircleIcon
             aria-hidden="true"
-            className="size-3.5 motion-safe:animate-spin"
+            className="size-3.5 text-[var(--hui-color-foreground-base-secondary)] motion-safe:animate-spin"
           />
         )}
         {percentKnown ? "Uploading" : "Uploading..."}
@@ -1312,7 +1360,10 @@ function StatusLine({ item }: { item: FileUploadItem }) {
   if (item.status === "success") {
     return (
       <>
-        <CircleCheckIcon aria-hidden="true" className="size-3.5" />
+        <CircleCheckIcon
+          aria-hidden="true"
+          className="size-3.5 text-[var(--hui-color-foreground-success-primary)]"
+        />
         Uploaded
       </>
     )
@@ -1322,7 +1373,7 @@ function StatusLine({ item }: { item: FileUploadItem }) {
     /* Applications own the sentence; show theirs verbatim. */
     return (
       <>
-        <TriangleAlertIcon aria-hidden="true" className="size-3.5" />
+        <TriangleAlertIcon aria-hidden="true" className="size-3.5 shrink-0" />
         {item.error ?? "Upload failed"}
       </>
     )
@@ -1333,7 +1384,12 @@ function StatusLine({ item }: { item: FileUploadItem }) {
     return null
   }
 
-  return "Waiting to upload"
+  return (
+    <>
+      <StatusDot className="bg-[var(--hui-color-foreground-base-tertiary)]" />
+      Waiting to upload
+    </>
+  )
 }
 
 /** Thin bar for running uploads; indeterminate while percent stays unknown. */
@@ -1356,7 +1412,7 @@ function FileUploadItemProgress({
     <div
       data-slot="file-upload-item-progress"
       className={cn(
-        "flex w-full items-center gap-[var(--hui-space-3)] pt-[var(--hui-space-1)]",
+        "flex w-full items-center gap-[var(--hui-space-4)] pt-[var(--hui-space-2)]",
         className
       )}
       {...props}
@@ -1366,7 +1422,7 @@ function FileUploadItemProgress({
         aria-label={`Uploading ${item.file.name}`}
         className="gap-0"
       >
-        <ProgressTrack className="h-[3px]">
+        <ProgressTrack className="h-1 rounded-full">
           <ProgressIndicator />
         </ProgressTrack>
       </Progress>
@@ -1374,7 +1430,7 @@ function FileUploadItemProgress({
       {percent !== null ? (
         <span
           aria-hidden="true"
-          className="shrink-0 tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
+          className="w-[4ch] shrink-0 text-end tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
         >
           {Math.round(percent)}%
         </span>
@@ -1393,7 +1449,7 @@ function FileUploadItemReason({ className, ...props }: React.ComponentProps<"spa
     <span
       data-slot="file-upload-item-reason"
       className={cn(
-        "text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]",
+        "text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}
@@ -1419,10 +1475,10 @@ function FileUploadItemRetry({
   return (
     <Button
       {...props}
-      variant="link"
+      variant="outline"
       size="sm"
       disabled={controller.disabled}
-      className={cn("-ms-[var(--hui-space-2)] h-fit shrink-0 self-center", className)}
+      className={cn("shrink-0 self-center", className)}
       onClick={() => {
         controller.retryItem(item)
       }}
@@ -1462,13 +1518,13 @@ function FileUploadItemRemove({
     <Button
       ref={buttonRef}
       {...props}
-      variant={failed ? "link" : "ghost"}
+      variant="ghost"
       size={failed ? "sm" : "icon-sm"}
       disabled={controller.disabled}
       aria-label={props["aria-label"] ?? `Remove ${item.file.name}`}
       className={cn(
-        failed && "-ms-[var(--hui-space-2)] h-fit shrink-0 self-center",
-        "max-sm:size-8",
+        "shrink-0 self-center text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)]",
+        !failed && "max-sm:size-8",
         className
       )}
       onClick={() => {
@@ -1497,13 +1553,13 @@ function RejectedRow({ rejection }: { rejection: FileUploadRejection }) {
   return (
     <li
       data-slot="file-upload-rejected-row"
-      className="grid min-h-[64px] grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-[var(--hui-space-3)] px-[var(--hui-space-4)] py-[var(--hui-space-3)]"
+      className="grid min-h-[60px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-[var(--hui-space-4)] py-[calc(var(--hui-space-3)+var(--hui-space-1))] ps-[var(--hui-space-4)] pe-[var(--hui-space-3)]"
     >
       <span
         aria-hidden="true"
         className={cn(
           previewTileClass,
-          "border-[var(--hui-color-border-danger-emphasis)] bg-[var(--hui-color-background-danger-primary)] text-[var(--hui-color-foreground-danger-primary)]"
+          "text-[var(--hui-color-foreground-danger-primary)]"
         )}
       >
         <TriangleAlertIcon className="size-4" />
@@ -1511,17 +1567,18 @@ function RejectedRow({ rejection }: { rejection: FileUploadRejection }) {
       <div className="col-start-2 flex min-w-0 flex-col gap-y-[var(--hui-space-1)]">
         <span
           title={rejection.file.name}
-          className="truncate text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+          className="truncate text-[var(--hui-color-foreground-base-primary)] [font-weight:var(--hui-font-weight-medium)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
         >
           {rejection.file.name}
         </span>
-        <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
+        <span className="tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
           {[formatFileSize(rejection.file.size), getFileExtension(rejection.file.name)]
             .filter(Boolean)
             .join(" · ")}
-        </span>
-        <span className="text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
-          {rejection.reason}
+          <span aria-hidden="true"> · </span>
+          <span className="text-[var(--hui-color-foreground-danger-primary)]">
+            {rejection.reason}
+          </span>
         </span>
       </div>
       <Button
@@ -1530,7 +1587,7 @@ function RejectedRow({ rejection }: { rejection: FileUploadRejection }) {
         size="icon-sm"
         disabled={controller.disabled}
         aria-label={`Remove ${rejection.file.name}`}
-        className="max-sm:size-8"
+        className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)] max-sm:size-8"
         onClick={() => {
           controller.removeRejection(rejection.id)
         }}
@@ -1573,6 +1630,7 @@ function FileUploadSummary({ className }: { className?: string }) {
 export {
   FileUpload,
   FileUploadAddMore,
+  FileUploadBrowse,
   FileUploadClear,
   FileUploadDescription,
   FileUploadDropzone,

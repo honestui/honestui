@@ -67,7 +67,7 @@ export default function FilterBarCustom() {
         value={value}
         onValueChange={setValue}
       />
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 text-xs text-[var(--hui-color-foreground-base-secondary)]">
         The renderer receives value, onChange, clear, disabled, label and
         description IDs, and the definition; it stays connected to everything
         else.

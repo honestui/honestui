@@ -109,7 +109,7 @@ test("AI assistant workspace uses revised content and an operable sidebar", asyn
   const exampleFont = await page.locator('[data-example="ai-assistant-workspace"]').evaluate(
     (element) => getComputedStyle(element).fontFamily,
   );
-  expect(exampleFont).toContain("loveSans");
+  expect(exampleFont).toContain("Geist");
 });
 
 test("AI assistant workspace keeps mobile navigation and theme controls operable", async ({

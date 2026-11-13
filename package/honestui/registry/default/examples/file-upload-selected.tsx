@@ -11,6 +11,7 @@ import {
 } from "@/registry/default/product/file-upload/file-upload"
 import { formatFileSize } from "@/registry/default/product/file-upload/file-upload-utils"
 import { makeSampleItem, makeSampleSvgFile } from "./file-upload-example-utils"
+import { demoHelperText } from "./file-upload-sample-button"
 
 /**
  * Three already-picked files shown with consistent file-type tiles. Add more
@@ -44,16 +45,15 @@ export default function FileUploadSelected() {
       >
         <FileUploadList showImagePreviews={false} />
 
-        <div className="mt-[var(--hui-space-3)] flex flex-wrap items-center gap-[var(--hui-space-3)]">
-          <FileUploadAddMore>Add more files</FileUploadAddMore>
-          <FileUploadClear />
-          <span
-            aria-live="polite"
-            className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]"
-          >
+        <div className="mt-[var(--hui-space-3)] flex flex-wrap items-center justify-between gap-[var(--hui-space-3)]">
+          <span aria-live="polite" className={`${demoHelperText} tabular-nums`}>
             {value.length} of 5 files selected ·{" "}
             {formatFileSize(value.reduce((sum, item) => sum + item.file.size, 0))}
           </span>
+          <div className="flex items-center gap-[var(--hui-space-2)]">
+            <FileUploadClear variant="ghost" />
+            <FileUploadAddMore size="sm">Add more files</FileUploadAddMore>
+          </div>
         </div>
       </FileUpload>
     </div>

@@ -30,6 +30,7 @@ import {
   withAlpha,
   type ChartConfig,
   type ResolvedColors,
+  withChartFont,
 } from "@/registry/default/ui/charts/chart";
 import { TooltipComponent, type TooltipComponentOption } from "echarts/components";
 import {
@@ -951,7 +952,7 @@ export function PieChart<TData extends Record<string, unknown>>({
 
     const push = (withEntrance: boolean) => {
       const option = buildOption();
-      const merged = chartOptions ? { ...option, ...chartOptions } : option;
+      const merged = withChartFont(chartOptions ? { ...option, ...chartOptions } : option, container);
       Object.assign(merged, {
         animation: withEntrance,
         animationDuration: REVEAL_DURATION,

@@ -5,6 +5,12 @@ import {
   type DataTableProps,
 } from "@/registry/default/product/data-table/data-table"
 
+const statusDot = {
+  Active: "bg-[var(--hui-color-foreground-success-primary)]",
+  Pending: "bg-[var(--hui-color-foreground-attention-primary)]",
+  Inactive: "bg-[var(--hui-color-foreground-base-tertiary)]",
+} as const
+
 type Customer = {
   id: string
   name: string
@@ -32,7 +38,16 @@ const customers: Customer[] = [
 const columns: DataTableProps<Customer>["columns"] = [
   { accessorKey: "name", header: "Customer" },
   { accessorKey: "email", header: "Email" },
-  { accessorKey: "status", header: "Status" },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => (
+      <span className="flex items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)]">
+        <span aria-hidden className={`size-1.5 shrink-0 rounded-full ${statusDot[row.original.status]}`} />
+        {row.original.status}
+      </span>
+    ),
+  },
   { accessorKey: "plan", header: "Plan" },
   {
     accessorKey: "spent",

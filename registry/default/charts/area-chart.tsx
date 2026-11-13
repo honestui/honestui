@@ -35,6 +35,7 @@ import {
   withAlpha,
   type ChartConfig,
   type ResolvedColors,
+  withChartFont,
 } from "@/registry/default/ui/charts/chart";
 import {
   Children,
@@ -1967,7 +1968,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
 
     const push = (withEntrance: boolean) => {
       const option = buildOption();
-      const merged = chartOptions ? { ...option, ...chartOptions } : option;
+      const merged = withChartFont(chartOptions ? { ...option, ...chartOptions } : option, container);
       Object.assign(merged, {
         animation: withEntrance,
         animationDuration: REVEAL_DURATION,

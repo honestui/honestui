@@ -22,7 +22,7 @@ export default function DateRangePickerDemo() {
   })
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full max-w-sm min-w-0">
       <DateRangePicker
         value={value}
         onValueChange={setValue}
@@ -37,7 +37,7 @@ export default function DateRangePickerDemo() {
           return date.getTime() > yesterday.getTime()
         }}
       />
-      <p className="mt-4 text-sm text-muted-foreground" role="status">
+      <p className="mt-2 text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]" role="status">
         Report period:{" "}
         {value?.from && value.to
           ? `${value.from.toLocaleDateString()} through ${value.to.toLocaleDateString()}`

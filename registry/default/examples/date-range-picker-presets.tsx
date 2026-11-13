@@ -15,14 +15,14 @@ export default function DateRangePickerPresets() {
   const [value, setValue] = React.useState<DateRange | undefined>(undefined)
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full max-w-sm min-w-0">
       <DateRangePicker
         value={value}
         onValueChange={setValue}
         presets={PRESETS}
         aria-label="Billing period"
       />
-      <p className="mt-4 text-sm text-muted-foreground" role="status">
+      <p className="mt-2 text-xs tabular-nums text-[var(--hui-color-foreground-base-secondary)]" role="status">
         {value?.from && value.to
           ? `Billing runs ${value.from.toLocaleDateString()} to ${value.to.toLocaleDateString()}.`
           : "Pick a period to filter invoices."}

@@ -15,10 +15,10 @@ const data = [
 
 const chartConfig = {
   email: { label: "Email", colors: { light: ["#1d4ed8"], dark: ["#60a5fa"] } },
-  chat: { label: "Chat", colors: { light: ["#047857"], dark: ["#34d399"] } },
+  chat: { label: "Chat", colors: { light: ["#2563eb"], dark: ["#34d399"] } },
   phone: { label: "Phone", colors: { light: ["#b45309"], dark: ["#fbbf24"] } },
   forum: { label: "Forum", colors: { light: ["#7e22ce"], dark: ["#c084fc"] } },
-  social: { label: "Social", colors: { light: ["#be123c"], dark: ["#fb7185"] } },
+  social: { label: "Social", colors: { light: ["#ea580c"], dark: ["#fb7185"] } },
 } satisfies ChartConfig;
 
 export function ExamplePieChart() {

@@ -2,6 +2,22 @@
 
 Changes to the `honestui` npm package. Entries marked unreleased describe work prepared for the next publication.
 
+## 0.4.0 - 2026-11-12
+
+- Breaking: the default sans family is Geist. `--font-love-sans` is renamed to `--font-geist-sans` and `--hui-font-love-sans` to `--hui-font-sans`. If you set either variable, rename it; the old names are no longer read. The package still ships no font files: load Geist yourself or point `--font-geist-sans` at your own typeface.
+- Breaking: Button's `default` variant is neutral ink (near-black in light mode, near-white in dark) instead of the accent color. Use the new `accent` variant where a button should keep the theme accent.
+- Button: `secondary` has no shadow, `destructive-outline` uses a soft red border at rest, and padding and corner radius scale with size. Heights are unchanged.
+- Alert: tinted variants use softer fills and borders so an alert inside a card or dialog does not compete with the primary action.
+- Badge: medium-weight label with slightly tighter inline padding.
+- Slider: the thumb is a plain white disc with a hairline edge; the large size no longer draws grip lines.
+- Tabs: the underline variant lays out correctly in vertical orientation, and vertical triggers keep their height.
+- Input: `type="file"` centers its text at every size and shows a pointer cursor.
+- Table: cells inherit the row background instead of painting their own.
+- Charts: axis and label text inherit the chart container's font family instead of the browser's default sans-serif. An authored `textStyle` is kept.
+- Product components: visual pass on Async Action, Change Review, Data Grid, Data Table, Date Range Picker, File Upload, Filter Bar, Overflow Toolbar, Paste Table, and Quantity Field. Controls in a bar share one height, corner, hairline edge, and label size; Date Range Picker marks today with a dot and draws the range as one flat band.
+- Animated: Dock defaults to 40px items with a flatter surface and squared item corners.
+- Honest AI: re-synced from honest-ai with the font token rename and the updated Alert, Badge, Button, Input, Slider, Table, and Tabs that the AI components bundle.
+
 ## 0.3.1 - 2026-11-07
 
 - Sync Honest AI components, generative UI, and prose from honest-ai commit `7786392`.

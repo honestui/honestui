@@ -60,10 +60,10 @@ export const mdxComponents: MDXComponents = {
   ),
   pre: ({ className, children, ...props }: React.ComponentProps<"pre">) => {
     return (
-      <div className="group relative mt-4 rounded-[8px] bg-[var(--hui-color-background-neutral-primary)] p-1">
+      <div className="group relative mt-6 rounded-[var(--hui-radius-code-block,14px)] bg-[var(--hui-color-background-neutral-primary)] p-1">
         <pre
           className={cn(
-            "no-scrollbar bg-background min-w-0 overflow-x-auto rounded-sm border-[0.5px] border-[var(--hui-color-border-base-primary)] py-3.5 text-[.8125rem] outline-none has-data-highlighted-line:px-0 has-data-line-numbers:px-0 has-data-[slot=tabs]:p-0 [&>code]:px-0!",
+            "no-scrollbar bg-background min-w-0 overflow-x-auto rounded-[var(--hui-radius-code-block-inner,10px)] border-[0.5px] border-[var(--hui-color-border-base-primary)] py-3.5 text-[.8125rem] outline-none has-data-highlighted-line:px-0 has-data-line-numbers:px-0 has-data-[slot=tabs]:p-0 [&>code]:px-0!",
             className,
           )}
           {...props}
@@ -90,7 +90,9 @@ export const mdxComponents: MDXComponents = {
       return (
         <code
           className={cn(
-            "bg-background relative mx-1 rounded-sm border px-[0.3rem] py-px font-mono text-[11px] text-(--color-vesper-type) outline-none",
+            // A flat, borderless chip. No horizontal margin: it sits in the
+            // sentence like a word, so punctuation after it stays attached.
+            "relative rounded-[var(--hui-radius-1)] bg-[var(--hui-color-background-neutral-primary)] px-[0.35em] py-[0.15em] font-mono text-[0.85em] font-normal text-[var(--hui-color-foreground-base-primary)] outline-none [box-decoration-break:clone] sm:whitespace-nowrap",
             className,
           )}
           {...props}

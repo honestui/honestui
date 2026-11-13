@@ -48,14 +48,14 @@ export function DocsSidebar({
         <SidebarContent className={cn("scroll-fade select-none", "pt-2 pb-14")}>
           <SidebarSections tree={source.pageTree} />
         </SidebarContent>
-        <SidebarFooter className="gap-1 px-4 py-3 group-data-[collapsible=icon]:hidden">
+        <SidebarFooter className="gap-3 border-t border-border/50 px-4 py-3 group-data-[collapsible=icon]:hidden">
           <a
-            className="group/honest-ai border-border/60 hover:bg-sidebar-accent mb-3 flex flex-col gap-1 rounded-lg border p-3 outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="group/honest-ai hover:bg-sidebar-accent -mx-2 flex flex-col gap-0.5 rounded-md px-2 py-1.5 outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
             href={HONEST_AI_URL}
           >
-            <span className="flex items-center gap-2 text-sm font-medium">
+            <span className="flex items-center gap-2 text-[13px] font-medium">
               Honest AI
-              <Badge size="sm" variant="default">
+              <Badge size="sm" variant="secondary">
                 New
               </Badge>
               <ArrowUpRight
@@ -63,23 +63,25 @@ export function DocsSidebar({
                 className="text-muted-foreground group-hover/honest-ai:text-foreground ml-auto size-3.5 transition-colors"
               />
             </span>
-            <span className="text-muted-foreground text-xs leading-snug">
+            <span className="text-muted-foreground line-clamp-1 text-xs">
               {HONEST_AI_TAGLINE}
             </span>
           </a>
-          <p className="mb-1 text-[11px] font-medium text-muted-foreground">Resources</p>
-          <Link
-            className="text-muted-foreground w-fit rounded-sm text-xs outline-none hover:text-foreground hover:underline hover:underline-offset-4 focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            href="/compare"
-          >
-            Comparisons
-          </Link>
-          <Link
-            className="text-muted-foreground w-fit rounded-sm text-xs outline-none hover:text-foreground hover:underline hover:underline-offset-4 focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            href="/privacy"
-          >
-            Privacy and analytics
-          </Link>
+          <div className="text-muted-foreground flex items-center gap-3 text-xs">
+            <Link
+              className="w-fit rounded-sm outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              href="/compare"
+            >
+              Comparisons
+            </Link>
+            <span aria-hidden="true" className="bg-border size-0.5 rounded-full" />
+            <Link
+              className="w-fit rounded-sm outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              href="/privacy"
+            >
+              Privacy
+            </Link>
+          </div>
         </SidebarFooter>
       </nav>
     </Sidebar>

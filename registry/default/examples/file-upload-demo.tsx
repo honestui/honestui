@@ -4,6 +4,7 @@ import * as React from "react"
 
 import {
   FileUpload,
+  FileUploadBrowse,
   FileUploadDescription,
   FileUploadDropzone,
   FileUploadIcon,
@@ -17,7 +18,10 @@ import {
   FieldLabel,
 } from "@/registry/default/ui/field"
 import { makeSampleFile, makeSamplePngFile } from "./file-upload-example-utils"
-import { FileUploadSampleButton } from "./file-upload-sample-button"
+import {
+  FileUploadDemoHeader,
+  FileUploadSampleButton,
+} from "./file-upload-sample-button"
 
 /**
  * The everyday setup: drop or browse up to five files, real size and type
@@ -26,12 +30,27 @@ import { FileUploadSampleButton } from "./file-upload-sample-button"
  */
 export default function FileUploadDemo() {
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const [lastEvent, setLastEvent] = React.useState("Nothing picked yet.")
+  const [lastEvent, setLastEvent] = React.useState("0 of 5 files selected")
 
   return (
     <div ref={containerRef} className="w-full min-w-0 max-w-xl">
       <Field>
-        <FieldLabel htmlFor="file-upload-demo-zone">Upload files</FieldLabel>
+        <FileUploadDemoHeader
+          action={
+            <FileUploadSampleButton
+              containerRef={containerRef}
+              files={() => [
+                makeSamplePngFile("meadow-shot.png", { size: 340 * 1024 }),
+                makeSampleFile("trip-deck.pdf", {
+                  type: "application/pdf",
+                  size: 1.2 * 1024 * 1024,
+                }),
+              ]}
+            />
+          }
+        >
+          <FieldLabel htmlFor="file-upload-demo-zone">Upload files</FieldLabel>
+        </FileUploadDemoHeader>
         <FileUpload
           accept={{
             "image/png": [".png"],
@@ -46,7 +65,7 @@ export default function FileUploadDemo() {
 
             setLastEvent(
               items.length === 0
-                ? "Selection cleared."
+                ? "0 of 5 files selected"
                 : `${items.length} of 5 files selected · ${formatFileSize(totalSize)} total`
             )
           }}
@@ -58,26 +77,14 @@ export default function FileUploadDemo() {
             <FileUploadIcon />
             <FileUploadTitle>Drop files here or click to browse</FileUploadTitle>
             <FileUploadDescription>PNG, JPG, PDF up to 10 MB</FileUploadDescription>
+            <FileUploadBrowse />
           </FileUploadDropzone>
           <FileUploadList />
         </FileUpload>
-        <FieldDescription id="file-upload-demo-status">
+        <FieldDescription id="file-upload-demo-status" className="tabular-nums">
           {lastEvent}
         </FieldDescription>
       </Field>
-
-      <div className="mt-[var(--hui-space-3)]">
-        <FileUploadSampleButton
-          containerRef={containerRef}
-          files={() => [
-            makeSamplePngFile("meadow-shot.png", { size: 340 * 1024 }),
-            makeSampleFile("trip-deck.pdf", {
-              type: "application/pdf",
-              size: 1.2 * 1024 * 1024,
-            }),
-          ]}
-        />
-      </div>
     </div>
   )
 }

@@ -37,11 +37,15 @@ export default function PasteTableDemo() {
   const [imported, setImported] = React.useState<Record<string, unknown>[] | null>(null)
 
   return (
-    <div className="flex w-full max-w-3xl min-w-0 flex-col gap-[var(--hui-space-4)]">
-      <PasteTableSampleButton rows={sampleRows} />
+    <div className="flex w-full min-w-0 flex-col gap-[var(--hui-space-5)]">
+      <PasteTableSampleButton
+        rows={sampleRows}
+        title="Import contacts"
+        description="Sample rows with three mistakes, to show cell validation."
+      />
       <PasteTable aria-label="Import contacts" columns={columns} onImport={setImported} />
       {imported && (
-        <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
+        <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
           Last import: {imported.map((row) => `${row.name} (${row.startDate ?? "no start date"})`).join(", ")}.
         </p>
       )}

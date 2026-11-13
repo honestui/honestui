@@ -35,10 +35,23 @@ export default function AsyncActionCancelExample() {
   })
 
   return (
-    <div className="flex w-full max-w-md min-w-0 flex-col items-start gap-[var(--hui-space-4)]">
-      <ActionButton action={exportReport} pendingLabel="Exporting…">
-        Export report
-      </ActionButton>
+    <div className="flex w-full max-w-lg min-w-0 flex-col gap-[var(--hui-space-3)]">
+      <div className="flex min-w-0 items-center justify-between gap-[var(--hui-space-4)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)]">
+        <div className="flex min-w-0 flex-col">
+          <span className="text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:20px]">Monthly usage report</span>
+          <span className="text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+            CSV · All workspaces · October
+          </span>
+        </div>
+        <ActionButton
+          action={exportReport}
+          pendingLabel="Exporting…"
+          size="sm"
+          className="shrink-0 px-[var(--hui-space-4)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)]"
+        >
+          Export report
+        </ActionButton>
+      </div>
       <ActionStatus
         action={exportReport}
         labels={{
@@ -47,7 +60,7 @@ export default function AsyncActionCancelExample() {
           cancelled: "Export cancelled.",
         }}
       />
-      <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
+      <p className="m-0 text-[var(--hui-color-foreground-base-secondary)] tabular-nums [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
         Requests started: {requestsStarted}
       </p>
     </div>

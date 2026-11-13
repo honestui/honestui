@@ -4,7 +4,10 @@ import * as React from "react"
 import {
   CircleAlert as CircleAlertIcon,
   CircleCheck as CircleCheckIcon,
+  CircleSlash as CircleSlashIcon,
   LoaderCircle as LoaderCircleIcon,
+  RotateCcw as RetryIcon,
+  Undo2 as UndoIcon,
   X as CloseIcon,
 } from "honestui/icons"
 
@@ -33,7 +36,11 @@ export { defaultActionStatusLabels } from "./async-action-utils"
 export { useAsyncAction } from "./use-async-action"
 
 const bodyText =
-  "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+  "[font-size:var(--hui-font-size-control,13px)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [line-height:20px]"
+
+/** 28px recovery buttons: a hairline edge on the bar, 12px medium label. */
+const statusButton =
+  "min-h-7 gap-[6px] px-[var(--hui-space-3)] shadow-none [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)] [font-weight:var(--hui-font-weight-medium)] [&_svg]:size-3.5 [&_svg]:text-[var(--hui-color-foreground-base-secondary)]"
 
 /** Filled buttons lose their fill in forced colors, so they get an edge instead. */
 const forcedColorsBorder = "forced-colors:border forced-colors:border-[ButtonText]"
@@ -104,6 +111,7 @@ const phaseIcon: Partial<Record<AsyncActionPhase, typeof CircleCheckIcon>> = {
   undone: CircleCheckIcon,
   error: CircleAlertIcon,
   undoError: CircleAlertIcon,
+  cancelled: CircleSlashIcon,
 }
 
 const phaseTone: Partial<Record<AsyncActionPhase, string>> = {
@@ -113,6 +121,7 @@ const phaseTone: Partial<Record<AsyncActionPhase, string>> = {
   undone: "text-[var(--hui-color-foreground-success-primary)]",
   error: "text-[var(--hui-color-foreground-danger-primary)]",
   undoError: "text-[var(--hui-color-foreground-danger-primary)]",
+  cancelled: "text-[var(--hui-color-foreground-base-tertiary)]",
 }
 
 export type ActionStatusProps = Omit<React.ComponentProps<"div">, "children" | "ref"> & {
@@ -166,7 +175,9 @@ function ActionStatus({ action, labels: labelsProp, className, ...props }: Actio
       data-phase={state.phase}
       tabIndex={-1}
       className={cn(
-        "flex min-w-0 flex-wrap items-center gap-x-[var(--hui-space-3)] gap-y-[var(--hui-space-2)] rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)]",
+        // A hairline status bar while there is something to say; nothing at all while idle.
+        "flex min-h-11 w-full min-w-0 flex-wrap items-center gap-x-[var(--hui-space-4)] gap-y-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] py-[6px] ps-[var(--hui-space-4)] pe-[6px] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)]",
+        "data-[phase=idle]:min-h-0 data-[phase=idle]:border-0 data-[phase=idle]:p-0",
         bodyText,
         className
       )}
@@ -175,10 +186,10 @@ function ActionStatus({ action, labels: labelsProp, className, ...props }: Actio
       <p
         role="status"
         data-slot="action-status-message"
-        className="m-0 flex min-w-0 items-start gap-[var(--hui-space-2)]"
+        className="m-0 flex min-w-0 flex-1 items-start gap-[var(--hui-space-3)]"
       >
         {Icon && (
-          <Icon aria-hidden="true" className={cn("mt-0.5 size-3.5 shrink-0", phaseTone[state.phase])} />
+          <Icon aria-hidden="true" className={cn("mt-[3px] size-3.5 shrink-0", phaseTone[state.phase])} />
         )}
         {message !== null && <span className="min-w-0 break-words">{message}</span>}
       </p>
@@ -186,13 +197,13 @@ function ActionStatus({ action, labels: labelsProp, className, ...props }: Actio
       {(action.canCancel || action.canRetry || action.canUndo || action.canDismiss) && (
         <div
           data-slot="action-status-actions"
-          className="flex items-center gap-[var(--hui-space-2)]"
+          className="ms-auto flex items-center gap-[var(--hui-space-2)]"
         >
           {action.canCancel && (
             <Button
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              className={forcedColorsBorder}
+              className={cn(statusButton, forcedColorsBorder)}
               onClick={action.cancel}
             >
               {labels.cancel}
@@ -200,21 +211,23 @@ function ActionStatus({ action, labels: labelsProp, className, ...props }: Actio
           )}
           {action.canRetry && (
             <Button
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              className={forcedColorsBorder}
+              className={cn(statusButton, forcedColorsBorder)}
               onClick={action.retry}
             >
+              <RetryIcon aria-hidden="true" />
               {labels.retry}
             </Button>
           )}
           {action.canUndo && (
             <Button
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              className={forcedColorsBorder}
+              className={cn(statusButton, forcedColorsBorder)}
               onClick={action.undo}
             >
+              <UndoIcon aria-hidden="true" />
               {labels.undo}
             </Button>
           )}
@@ -223,6 +236,7 @@ function ActionStatus({ action, labels: labelsProp, className, ...props }: Actio
               variant="link"
               size="icon-sm"
               aria-label={labels.dismiss}
+              className="size-7 rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-secondary)] not-disabled:hover:text-[var(--hui-color-foreground-base-primary)]"
               onClick={action.reset}
             >
               <CloseIcon aria-hidden="true" />

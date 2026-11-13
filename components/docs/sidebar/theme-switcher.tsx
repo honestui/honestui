@@ -58,18 +58,16 @@ const ThemeSwitcher = () => {
   };
 
   return (
-    <>
-      <Button
-        aria-label="Toggle color theme"
-        onClick={(event) => toggleTheme(event.currentTarget)}
-        size="icon"
-        variant="ghost"
-      >
-        <Sun className="size-3.5 scale-100 rotate-0 motion-safe:transition-transform dark:scale-0 dark:-rotate-90" />
-        <Moon className="absolute size-3.5 scale-0 rotate-90 motion-safe:transition-transform dark:scale-100 dark:rotate-0" />
-      </Button>
-      <span className="text-muted">|</span>
-    </>
+    <Button
+      aria-label="Toggle color theme"
+      onClick={(event) => toggleTheme(event.currentTarget)}
+      size="icon"
+      variant="ghost"
+      className="text-muted-foreground hover:text-foreground size-8"
+    >
+      <Sun className="size-3.5 scale-100 rotate-0 motion-safe:transition-transform dark:scale-0 dark:-rotate-90" />
+      <Moon className="absolute size-3.5 scale-0 rotate-90 motion-safe:transition-transform dark:scale-100 dark:rotate-0" />
+    </Button>
   );
 };
 

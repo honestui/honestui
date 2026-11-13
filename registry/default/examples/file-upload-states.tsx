@@ -129,7 +129,7 @@ export default function FileUploadStates() {
         <FileUploadList showImagePreviews={false} />
       </FileUpload>
 
-      <p className="mt-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mini)] [letter-spacing:var(--hui-letter-spacing-mini)] [line-height:var(--hui-line-height-mini)]">
+      <p className="mt-[var(--hui-space-3)] mb-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
         Sizes are stand-in metadata; no network requests leave this page.
       </p>
     </div>

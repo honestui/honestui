@@ -176,7 +176,7 @@ function LoadingState({
           data-slot="loading-state-elapsed"
           className="shrink-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
         >
-          {/* Tabular figures on the digits only; LoveSans would space the units too. */}
+          {/* Tabular figures on the digits only; the tabular feature would space the units too. */}
           {elapsed.split(/(\d+)/).map((part, i) =>
             i % 2 ? (
               <span key={i} className="tabular-nums">

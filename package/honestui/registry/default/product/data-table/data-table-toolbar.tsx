@@ -18,7 +18,7 @@ export function DataTableToolbar({
     <Toolbar
       data-slot="data-table-toolbar"
       className={cn(
-        "flex-wrap items-center gap-[var(--hui-space-2)] rounded-none border-0 p-[var(--hui-space-3)] sm:p-[var(--hui-space-4)]",
+        "flex-wrap items-center gap-[var(--hui-space-2)] rounded-none border-0 p-[var(--hui-space-3)]",
         className,
       )}
       {...props}
@@ -75,11 +75,11 @@ export function DataTableSearch({
   return (
     <span
       data-slot="data-table-search"
-      className={cn("relative block w-full sm:max-w-80", className)}
+      className={cn("relative block w-full sm:max-w-64", className)}
     >
       <SearchIcon
         aria-hidden
-        className="pointer-events-none absolute start-[var(--hui-space-3)] top-1/2 z-1 size-4 -translate-y-1/2 text-[var(--hui-color-foreground-base-secondary)]"
+        className="pointer-events-none absolute start-[var(--hui-space-3)] top-1/2 z-1 size-3.5 -translate-y-1/2 text-[var(--hui-color-foreground-base-tertiary)]"
       />
       <Input
         type="search"
@@ -87,7 +87,8 @@ export function DataTableSearch({
         placeholder={placeholder}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="[&>[data-slot=input]]:!ps-[var(--hui-space-9)]"
+        size="sm"
+        className="[&>[data-slot=input]]:!ps-[calc(var(--hui-space-3)+var(--hui-space-5)+2px)]"
         {...props}
       />
     </span>

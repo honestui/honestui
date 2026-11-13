@@ -80,7 +80,7 @@
   --hui-duration-drawer: 450ms; /* drawer */
 
   /* Blurs */
-  /* Example usage: backdrop-filter:: var(--hui-blur-sm); */
+  /* Example usage: backdrop-filter: var(--hui-blur-sm); */
   --hui-blur-sm: blur(0.5px);
   --hui-blur-md: blur(1px);
   --hui-blur-lg: blur(2px);

@@ -33,7 +33,7 @@ export function DataTableViewOptions({
 
   return (
     <Menu>
-      <MenuTrigger render={<Button variant="ghost" size="sm" className={className} />}>
+      <MenuTrigger render={<Button variant="outline" size="sm" className={className} />}>
         <Settings2Icon aria-hidden className="opacity-72" />
         {label}
       </MenuTrigger>

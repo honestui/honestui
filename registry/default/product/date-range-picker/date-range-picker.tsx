@@ -16,7 +16,6 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/default/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/registry/default/ui/popover"
-import { Separator } from "@/registry/default/ui/separator"
 
 import {
   formatDateLabel,
@@ -368,7 +367,7 @@ function DateRangePicker({
               variant="link"
               className={cn(
                 triggerClassNames({ invalid }),
-                "justify-start px-[var(--hui-space-3)] shadow-none",
+                "justify-start px-[var(--hui-field-padding-inline,var(--hui-space-3))]",
                 canClear && committed && "pe-[var(--hui-space-9)]",
                 className
               )}
@@ -386,7 +385,7 @@ function DateRangePicker({
             className={cn(
               "truncate",
               !displayed &&
-                "text-[var(--hui-color-foreground-base-secondary)] [font-weight:var(--hui-font-weight-regular)]"
+                "text-[var(--hui-color-foreground-base-tertiary)]"
             )}
           >
             {triggerText}
@@ -418,35 +417,21 @@ function DateRangePicker({
         <PopoverContent
           align="start"
           sideOffset={6}
-          className="max-w-[calc(100vw_-_var(--hui-space-8))] p-[var(--hui-space-4)]"
+          className="max-w-[calc(100vw_-_var(--hui-space-8))] p-0! [font-size:var(--hui-font-size-small)]"
         >
-          <div className="flex flex-col gap-y-[var(--hui-space-3)] min-[52rem]:flex-row min-[52rem]:gap-x-[var(--hui-space-3)]">
+          <div className="flex flex-col min-[52rem]:flex-row">
             {presets && presets.length > 0 && (
-              <>
-                <DateRangePresets
-                  presets={presets}
-                  value={displayed}
-                  onSelect={handlePresetSelect}
-                  ariaLabel={labels.presetsGroup}
-                  disabled={disabled}
-                  className="flex-row gap-x-[var(--hui-space-2)] overflow-x-auto pb-[var(--hui-space-1)] min-[52rem]:w-40 min-[52rem]:shrink-0 min-[52rem]:flex-col min-[52rem]:overflow-visible"
-                />
-                <Separator
-                  orientation="vertical"
-                  size="full"
-                  variant="secondary"
-                  className="hidden min-[52rem]:block"
-                />
-                <Separator
-                  orientation="horizontal"
-                  size="full"
-                  variant="secondary"
-                  className="min-[52rem]:hidden"
-                />
-              </>
+              <DateRangePresets
+                presets={presets}
+                value={displayed}
+                onSelect={handlePresetSelect}
+                ariaLabel={labels.presetsGroup}
+                disabled={disabled}
+                className="flex-row gap-x-(--hui-space-1) overflow-x-auto border-b-[0.5px] border-[var(--hui-color-border-base-primary)] p-(--hui-space-3) min-[52rem]:w-40 min-[52rem]:shrink-0 min-[52rem]:flex-col min-[52rem]:overflow-visible min-[52rem]:border-e-[0.5px] min-[52rem]:border-b-0"
+              />
             )}
 
-            <div className="flex-1">
+            <div className="flex-1 p-(--hui-space-4)">
               <DateRangeCalendar
                 selected={draftActive ? draftValue : committed}
                 onDaySelect={handleDaySelect}
@@ -464,38 +449,41 @@ function DateRangePicker({
           </div>
 
           {showFooter && (
-            <>
-              <Separator size="full" variant="secondary" className="mt-[var(--hui-space-4)] mb-[var(--hui-space-3)]" />
-              <div className="flex items-center justify-between">
+            <div
+              data-slot="date-range-footer"
+              className="flex items-center justify-between gap-(--hui-space-3) border-t-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] px-(--hui-space-4) py-(--hui-space-3)"
+            >
+              <div className="flex min-w-0 items-center gap-(--hui-space-3)">
                 {canClear ? (
-                  <Button type="button" variant="ghost" size="sm" onClick={handleClear}>
+                  <Button type="button" variant="link" size="sm" className="text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)]" onClick={handleClear}>
                     Clear
                   </Button>
-                ) : (
-                  <span />
-                )}
-                <div className="flex items-center gap-[var(--hui-space-2)]">
-                  <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={!isRangeComplete(draftActive ? draftValue : committed)}
-                    onClick={() => {
-                      const pending = draftActive ? draftValue : committed
-                      if (!isRangeComplete(pending)) {
-                        return
-                      }
-                      commit(pending)
-                      setOpen(false)
-                    }}
-                  >
-                    Apply
-                  </Button>
-                </div>
+                ) : null}
+                <span className="truncate text-[var(--hui-color-foreground-base-secondary)] tabular-nums [font-size:var(--hui-font-size-small)]">
+                  {describeRangeLength(draftActive ? draftValue : committed)}
+                </span>
               </div>
-            </>
+              <div className="flex shrink-0 items-center gap-(--hui-space-2)">
+                <Button type="button" variant="outline" size="sm" className="shadow-none" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={!isRangeComplete(draftActive ? draftValue : committed)}
+                  onClick={() => {
+                    const pending = draftActive ? draftValue : committed
+                    if (!isRangeComplete(pending)) {
+                      return
+                    }
+                    commit(pending)
+                    setOpen(false)
+                  }}
+                >
+                  Apply
+                </Button>
+              </div>
+            </div>
           )}
         </PopoverContent>
       </Popover>
@@ -507,13 +495,26 @@ function DateRangePicker({
   )
 }
 
+/** "11 days" for a complete range, nothing otherwise. Counts both endpoints. */
+function describeRangeLength(range: DateRange | undefined): string {
+  if (!range?.from || !range.to) {
+    return ""
+  }
+  const from = new Date(range.from.getFullYear(), range.from.getMonth(), range.from.getDate())
+  const to = new Date(range.to.getFullYear(), range.to.getMonth(), range.to.getDate())
+  const days = Math.round((to.getTime() - from.getTime()) / 86_400_000) + 1
+  return days === 1 ? "1 day" : `${days} days`
+}
+
 interface TriggerStyleInput {
   invalid: boolean
 }
 
 function triggerClassNames({ invalid }: TriggerStyleInput): string {
   return cn(
-    "inline-flex h-[var(--hui-space-10)] w-full min-w-0 items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] bg-[var(--hui-color-background-base-primary)] text-left text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-small)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [transition:var(--hui-transition-interactive)]",
+    // Sized and typeset like Input and Select, so the trigger lines up with them
+    // in a form row.
+    "inline-flex h-[var(--hui-density-control-height,36px)] w-full min-w-0 items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] text-left text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] [font-size:var(--hui-font-size-control,13px)] [font-weight:var(--hui-font-weight-regular)] [letter-spacing:var(--hui-letter-spacing-control,-0.003em)] [transition:var(--hui-transition-interactive)]",
     invalid
       ? "border-[var(--hui-color-border-danger-emphasis)]"
       : "border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))]"

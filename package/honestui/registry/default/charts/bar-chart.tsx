@@ -47,6 +47,7 @@ import {
   withAlpha,
   type ChartConfig,
   type ResolvedColors,
+  withChartFont,
 } from "@/registry/default/ui/charts/chart";
 import {
   collectDataQuality,
@@ -1696,7 +1697,7 @@ export function BarChart<TData extends Record<string, unknown>>({
 
       const apply = () => {
         const option = buildOption();
-        const merged = chartOptions ? { ...option, ...chartOptions } : option;
+        const merged = withChartFont(chartOptions ? { ...option, ...chartOptions } : option, container);
         Object.assign(merged, {
           animation: withEntrance,
           animationDuration: BAR_GROW_DURATION,
