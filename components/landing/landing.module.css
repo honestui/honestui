@@ -1,0 +1,1703 @@
+/* Landing page. Every value reads a public --hui-* token so the retheme
+   console can restyle the whole page from one wrapper. */
+
+/* ------------------------------------------------------------------ */
+/* Split text                                                          */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Hidden until GSAP has split it; the fallback reveals it if scripts fail. */
+  .splitPending {
+    visibility: hidden;
+    animation: split-fallback 0s 1.6s forwards;
+  }
+}
+
+/* Line masks clip at the line box; give descenders room without shifting
+   the layout. */
+.splitPending :global(.split-line-mask) {
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+@keyframes split-fallback {
+  to {
+    visibility: visible;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Hero                                                                */
+/* ------------------------------------------------------------------ */
+
+.hero {
+  position: relative;
+  container-type: inline-size;
+}
+
+.heroCopy {
+  display: flex;
+  align-items: center;
+  padding: var(--hui-space-13) var(--hui-space-6) var(--hui-space-12);
+}
+
+.heroInner {
+  width: 100%;
+  max-width: 40rem;
+}
+
+/* Inline text, so on narrow screens it wraps like a sentence instead of
+   breaking into columns. */
+.newsLink {
+  display: inline-block;
+  margin-bottom: var(--hui-space-9);
+  border-radius: var(--hui-radius-1);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-regular);
+  line-height: 20px;
+  transition: color var(--hui-duration-fast) var(--hui-ease-out);
+}
+
+.newsLink svg {
+  display: inline;
+  width: 14px;
+  height: 14px;
+  margin-left: var(--hui-space-2);
+  vertical-align: -2px;
+  transition: transform var(--hui-duration-fast) var(--hui-ease-out);
+}
+
+.newsLink:hover {
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.newsLink:hover svg {
+  transform: translateX(2px);
+}
+
+.newsLink:focus-visible {
+  outline: var(--hui-focus-ring);
+  outline-offset: 4px;
+}
+
+.newsLabel {
+  margin-right: var(--hui-space-3);
+  color: var(--hui-color-foreground-base-primary);
+  white-space: nowrap;
+  font-weight: var(--hui-font-weight-medium);
+}
+
+/* Matches the specificity of the global h1:not([data-slot]) rule it overrides. */
+h1.heroTitle:not([data-slot]) {
+  font-size: clamp(2.5rem, 4.4vw, 4rem);
+  line-height: 1;
+  font-weight: var(--hui-font-weight-medium);
+  letter-spacing: -0.035em;
+}
+
+.heroLede {
+  max-width: 34rem;
+  margin-top: var(--hui-space-7);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.heroButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hui-space-4);
+}
+
+/* When the pair wraps on a narrow screen, both stretch to the same width
+   as the install command below them. */
+.heroButtons > * {
+  flex: 1 1 auto;
+}
+
+.heroActions {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  flex-direction: column;
+  gap: var(--hui-space-4);
+  margin-top: var(--hui-space-10);
+}
+
+.heroWall {
+  position: relative;
+  height: 38rem;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .heroCopy {
+    padding-inline: var(--hui-space-9);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    display: grid;
+    height: calc(100svh - 4rem);
+    min-height: 42rem;
+    grid-template-columns: minmax(32rem, 5fr) 6fr;
+    overflow: hidden;
+  }
+
+  /* Starts on the same edge as the header and every section below:
+     the 80rem container plus its 32px gutter. */
+  .heroCopy {
+    padding-block: var(--hui-space-9) var(--hui-space-15);
+    padding-inline: max(var(--hui-space-9), calc((100cqi - 80rem) / 2 + var(--hui-space-9)))
+      var(--hui-space-12);
+  }
+
+  .heroWall {
+    height: auto;
+  }
+}
+
+/* The tilted wall of live components. Both x-ray layers render it the same
+   way so the blueprint lines up with the real UI to the pixel. */
+.wall {
+  width: 74.5rem;
+  padding-bottom: var(--hui-space-10);
+  transform-origin: top left;
+  transform: translate(var(--hui-space-6), var(--hui-space-6)) scale(0.72);
+}
+
+@media (min-width: 1024px) {
+  .wall {
+    transform: translate(5rem, 2.5rem) rotate(4deg);
+  }
+}
+
+@media (min-width: 1280px) {
+  .wall {
+    transform: translate(7rem, 2.5rem) rotate(4deg);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* X-ray lens                                                          */
+/* ------------------------------------------------------------------ */
+
+.xrayStage {
+  --xr: var(--hui-color-foreground-accent-primary);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.xrayViewport,
+.xrayLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.xrayLayer {
+  pointer-events: none;
+  /* The page's own background, so the blueprint has no edge of its own. */
+  background-color: var(--hui-color-background-base-primary);
+  -webkit-mask-image: radial-gradient(
+    circle var(--lr, 0px) at var(--lx, 50%) var(--ly, 50%),
+    #000 calc(100% - 1px),
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--lr, 0px) at var(--lx, 50%) var(--ly, 50%),
+    #000 calc(100% - 1px),
+    transparent 100%
+  );
+}
+
+/* The drafting grid fades out toward the copy and the hero's edges
+   instead of ending on a hard rectangle. */
+.xrayLayer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--xr) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--xr) 10%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, #000 32%),
+    linear-gradient(transparent, #000 18%, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent, #000 32%),
+    linear-gradient(transparent, #000 18%, #000 78%, transparent);
+  mask-composite: intersect;
+}
+
+.xrayLayer * {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--xr) !important;
+  border-color: color-mix(in oklch, var(--xr) 55%, transparent) !important;
+  border-style: dashed !important;
+  text-shadow: none !important;
+}
+
+.xrayLayer :is([data-slot], button, input, select, textarea, label, h3, p, li, fieldset, [data-xray-field]) {
+  outline: 0.5px dashed color-mix(in oklch, var(--xr) 40%, transparent);
+  outline-offset: 1px;
+}
+
+.xrayLayer input::placeholder,
+.xrayLayer textarea::placeholder {
+  color: color-mix(in oklch, var(--xr) 60%, transparent) !important;
+}
+
+.xrayLayer [data-slot="card"] {
+  border: 1px solid var(--xr) !important;
+  border-style: solid !important;
+}
+
+.xrayLayer [data-xray] {
+  position: relative;
+}
+
+.xrayLayer [data-xray]::before {
+  content: attr(data-xray);
+  position: absolute;
+  bottom: 100%;
+  left: -1px;
+  padding: 3px 8px;
+  border-radius: 6px 6px 0 0;
+  background: var(--xr);
+  color: var(--hui-color-foreground-accent-emphasis);
+  font-family: var(--hui-font-mono);
+  font-size: 11px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.xrayLayer [data-xray-fill] {
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in oklch, var(--xr) 18%, transparent) 0 1px,
+    transparent 1px 8px
+  ) !important;
+  outline: 1px dashed var(--xr);
+  border-radius: var(--hui-radius-3);
+}
+
+.lensRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 300px;
+  margin: -150px 0 0 -150px;
+  border: 1px solid var(--xr);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lensTag {
+  position: absolute;
+  top: calc(100% + var(--hui-space-3));
+  left: 50%;
+  display: inline-flex;
+  gap: var(--hui-space-4);
+  padding: var(--hui-space-2) var(--hui-space-4);
+  border-radius: var(--hui-radius-1);
+  background: var(--hui-color-background-accent-emphasis);
+  color: var(--hui-color-foreground-accent-emphasis);
+  font-family: var(--hui-font-mono);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.lensTag span {
+  opacity: 0.75;
+}
+
+.lensTag strong {
+  font-weight: var(--hui-font-weight-medium);
+}
+
+/* Sits in the hero copy, under the actions, so it never covers the wall. */
+.xrayControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hui-space-2) var(--hui-space-3);
+  margin-top: var(--hui-space-9);
+}
+
+.xrayHint {
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-regular);
+  line-height: 20px;
+  transition: opacity var(--hui-duration-normal) var(--hui-ease-out);
+}
+
+.xrayHint[data-hidden] {
+  opacity: 0;
+}
+
+@media (hover: none) {
+  .xrayHint {
+    display: none;
+  }
+}
+
+/* An inline control, like the news link above the headline: no pill, just
+   the label and a dashed redline square that fills while the view is on. */
+.xrayToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hui-space-3);
+  padding: 0;
+  border: 0;
+  border-radius: var(--hui-radius-1);
+  background: none;
+  color: var(--hui-color-foreground-base-primary);
+  font-size: var(--hui-font-size-regular);
+  font-weight: var(--hui-font-weight-medium);
+  line-height: 20px;
+  cursor: pointer;
+  transition: color var(--hui-duration-fast) var(--hui-ease-out);
+}
+
+.xrayToggle:focus-visible {
+  outline: var(--hui-focus-ring);
+  outline-offset: 4px;
+}
+
+.xrayToggleDot {
+  width: 12px;
+  height: 12px;
+  border: 1px dashed var(--hui-color-foreground-accent-primary);
+  border-radius: 2px;
+  transition:
+    background var(--hui-duration-normal) var(--hui-ease-out),
+    border-style var(--hui-duration-normal);
+}
+
+.xrayToggle:hover .xrayToggleDot {
+  background: color-mix(in oklch, var(--hui-color-foreground-accent-primary) 20%, transparent);
+}
+
+.xrayToggle[aria-pressed="true"] .xrayToggleDot {
+  border-style: solid;
+  background: var(--hui-color-foreground-accent-primary);
+}
+
+/* Highlighted inline code: per-token colors from code-tokens.tsx. */
+.hl span {
+  color: var(--l);
+}
+
+:global(.dark) .hl span {
+  color: var(--d);
+}
+
+/* On the shader the syntax hues fight the gradient, so the snippet keeps
+   its structure in white at two strengths instead. */
+.hl[data-on-media] {
+  color: rgb(255 255 255 / 0.95);
+}
+
+.hl[data-on-media] span {
+  color: rgb(255 255 255 / 0.62);
+}
+
+/* Shiki output from lib/highlight-code carries its colors as variables but
+   no .shiki class, so the global theme rule never reaches it here. */
+.editorCode [style*="--shiki-light"],
+.codeStack [style*="--shiki-light"] {
+  color: var(--shiki-light);
+}
+
+:global(.dark) .editorCode [style*="--shiki-dark"],
+:global(.dark) .codeStack [style*="--shiki-dark"] {
+  color: var(--shiki-dark);
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared section rhythm                                               */
+/* ------------------------------------------------------------------ */
+
+.section,
+.sectionInner {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: var(--hui-space-6);
+}
+
+.section {
+  padding-block: var(--hui-space-17);
+}
+
+.sectionWide {
+  padding-block: var(--hui-space-17);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .section,
+  .sectionInner {
+    padding-inline: var(--hui-space-9);
+  }
+}
+
+.intro {
+  max-width: 46rem;
+  margin-bottom: var(--hui-space-13);
+}
+
+/* The signature: a redline annotation, the same dashed ink and mono
+   measurement the x-ray lens and the assembly drawing use. */
+.redline {
+  display: inline-flex;
+  margin-bottom: var(--hui-space-6);
+  padding: var(--hui-space-1) var(--hui-space-3);
+  border: 1px dashed color-mix(in oklch, var(--hui-color-foreground-accent-primary) 50%, transparent);
+  border-radius: var(--hui-radius-1);
+  color: var(--hui-color-foreground-accent-primary);
+  font-family: var(--hui-font-mono);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* Matches the specificity of the global h2 rule it overrides. */
+h2.sectionTitle:not([data-slot]) {
+  max-width: 20em;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 1.06;
+  font-weight: var(--hui-font-weight-medium);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: 38rem;
+  margin-top: var(--hui-space-6);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-large);
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------------ */
+/* Assembly                                                            */
+/* ------------------------------------------------------------------ */
+
+.assembly {
+  position: relative;
+}
+
+.assemblyPin {
+  display: flex;
+  align-items: center;
+  padding-block: var(--hui-space-16);
+}
+
+.assembly[data-pinned] .assemblyPin {
+  height: 100svh;
+  padding-block: var(--hui-space-9);
+}
+
+.assemblyGrid {
+  display: grid;
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  gap: var(--hui-space-11);
+  padding-inline: var(--hui-space-6);
+}
+
+@media (min-width: 640px) {
+  .assemblyGrid {
+    padding-inline: var(--hui-space-9);
+  }
+}
+
+@media (min-width: 1024px) {
+  .assemblyGrid {
+    grid-template-columns: 5fr 7fr;
+    align-items: center;
+    gap: var(--hui-space-15);
+  }
+}
+
+.assemblyCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hui-space-9);
+}
+
+.assemblyCopy .intro {
+  margin-bottom: 0;
+}
+
+/* The pinned column shares the viewport with the steps and the code, so its
+   title steps down one size. */
+.assemblyCopy h2.sectionTitle:not([data-slot]) {
+  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+}
+
+.steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: var(--hui-space-5);
+  padding-block: var(--hui-space-4);
+  border-top: 1px solid var(--hui-color-border-base-primary);
+  opacity: 0.38;
+  transition: opacity var(--hui-duration-slow) var(--hui-ease-out);
+}
+
+.steps li[data-active] {
+  opacity: 1;
+}
+
+.stepTitle {
+  font-size: var(--hui-font-size-regular);
+  font-weight: var(--hui-font-weight-medium);
+}
+
+.stepBody {
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-regular);
+  line-height: 1.5;
+}
+
+.codePanel {
+  overflow: hidden;
+  border: 1px solid var(--hui-color-border-base-primary);
+  border-radius: var(--hui-radius-4);
+  background: var(--hui-color-background-base-secondary);
+}
+
+.codeBar {
+  display: flex;
+  align-items: center;
+  height: var(--hui-space-10);
+  padding-inline: var(--hui-space-5);
+  border-bottom: 1px solid var(--hui-color-border-base-primary);
+}
+
+.codeFile {
+  color: var(--hui-color-foreground-base-secondary);
+  font-family: var(--hui-font-mono);
+  font-size: var(--hui-font-size-mono-small);
+}
+
+/* Every snippet shares one grid cell, so the panel is exactly as tall as the
+   longest one and never leaves a dead band. */
+.codeStack {
+  display: grid;
+}
+
+.codeLayer {
+  grid-area: 1 / 1;
+  padding-inline: var(--hui-space-5);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity var(--hui-duration-slow) var(--hui-ease-out),
+    transform var(--hui-duration-slow) var(--hui-ease-out);
+}
+
+.codeLayer[data-active] {
+  opacity: 1;
+  transform: none;
+}
+
+.codeLayer pre {
+  font-size: 12.5px !important;
+  line-height: 1.65;
+}
+
+.assemblyStage {
+  --xr: var(--hui-color-foreground-accent-primary);
+  position: relative;
+  width: 100%;
+  aspect-ratio: 640 / 396;
+  overflow: hidden;
+  border: 1px solid var(--hui-color-border-base-primary);
+  border-radius: var(--hui-radius-5);
+  background-color: color-mix(in oklch, var(--hui-color-background-base-primary) 95%, var(--xr));
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--xr) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--xr) 8%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@media (min-width: 1024px) {
+  .assembly[data-pinned] .assemblyStage {
+    aspect-ratio: auto;
+    height: min(74svh, 40rem);
+  }
+}
+
+.camera {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.solidLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.compWire,
+.compSolid {
+  position: absolute;
+  inset: 0;
+  font-size: var(--hui-font-size-regular);
+}
+
+.compSolid {
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--hui-color-background-base-primary);
+}
+
+.compWire > div,
+.compSolid > div {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+}
+
+.compPanel {
+  gap: var(--hui-space-1);
+}
+
+.compSolid .compPanel {
+  border-right: 1px solid var(--hui-color-border-base-primary);
+  background: var(--hui-color-background-base-secondary);
+}
+
+.compLogo {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--hui-color-background-accent-emphasis);
+}
+
+.compNav {
+  display: flex;
+  align-items: center;
+  gap: var(--hui-space-3);
+  height: 30px;
+  margin-inline: var(--hui-space-3);
+  padding-inline: var(--hui-space-4);
+  border-radius: var(--hui-radius-1);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: 13px;
+}
+
+.compSolid .compNav[data-active] {
+  background: var(--hui-color-background-neutral-secondary);
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.compNavDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.compSolid > .compBar,
+.compWire > .compBar {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--hui-space-5);
+  padding-inline: var(--hui-space-5);
+}
+
+.compSolid .compBar {
+  border-bottom: 1px solid var(--hui-color-border-base-primary);
+}
+
+.compSearch {
+  display: flex;
+  align-items: center;
+  width: 180px;
+  height: 30px;
+  margin-left: auto;
+  padding-inline: var(--hui-space-4);
+  border: 0.5px solid var(--hui-color-border-base-tertiary);
+  border-radius: var(--hui-radius-2);
+  color: var(--hui-color-foreground-base-tertiary);
+  font-size: 12px;
+}
+
+.compAvatar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--hui-color-background-neutral-secondary);
+  font-size: 11px;
+  font-weight: var(--hui-font-weight-medium);
+}
+
+.compTile,
+.compCard {
+  gap: var(--hui-space-2);
+  padding: var(--hui-space-4) var(--hui-space-5);
+  border-radius: var(--hui-radius-3);
+}
+
+.compCard {
+  gap: var(--hui-space-3);
+  padding: var(--hui-space-5);
+}
+
+.compSolid .compTile,
+.compSolid .compCard {
+  border: 1px solid var(--hui-color-border-base-primary);
+  background: var(--hui-color-background-base-primary);
+}
+
+.compSolid .compCard {
+  box-shadow: var(--hui-shadow-soft);
+}
+
+.compMuted {
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.compBars {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: var(--hui-space-5);
+}
+
+.compBars span {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Neutral history, one accent for the current week. */
+.compSolid .compBars span {
+  background: var(--hui-color-background-neutral-tertiary);
+}
+
+.compSolid .compBars span:last-child {
+  background: var(--hui-color-background-accent-emphasis);
+}
+
+/* Blueprint drawing */
+.compWire {
+  color: var(--xr);
+}
+
+.compWire > div {
+  border: 1px dashed color-mix(in oklch, var(--xr) 65%, transparent);
+  border-radius: 8px;
+}
+
+.compWire .compSearch,
+.compWire .compAvatar,
+.compWire .compLogo,
+.compWire .compBars span {
+  border: 1px dashed color-mix(in oklch, var(--xr) 65%, transparent);
+  background: transparent;
+  color: inherit;
+}
+
+.compWire .compMuted,
+.compWire .compNav {
+  color: color-mix(in oklch, var(--xr) 75%, transparent);
+}
+
+.compWire > .compButton {
+  border: 0;
+}
+
+.wireTag {
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  padding-inline: 4px;
+  background: color-mix(in oklch, var(--hui-color-background-base-primary) 95%, var(--xr));
+  font-family: var(--hui-font-mono);
+  font-size: 9px;
+  line-height: 14px;
+}
+
+.wireBlock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 1px dashed color-mix(in oklch, var(--xr) 65%, transparent);
+  border-radius: 6px;
+  font-family: var(--hui-font-mono);
+  font-size: 10px;
+}
+
+/* Floating design tokens */
+.tokenSlot {
+  position: absolute;
+  z-index: 2;
+}
+
+.assembly:not([data-pinned]) .tokenSlot {
+  display: none;
+}
+
+.token {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hui-space-3);
+  padding: 5px var(--hui-space-4) 5px 5px;
+  border: 0.5px solid var(--hui-color-border-base-secondary);
+  border-radius: var(--hui-radius-full);
+  background: var(--hui-color-background-base-primary);
+  box-shadow: var(--hui-shadow-lifted);
+  white-space: nowrap;
+}
+
+.token code {
+  font-family: var(--hui-font-mono);
+  font-size: 11px;
+  color: var(--hui-color-foreground-base-secondary);
+}
+
+.tokenSpecimen {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: var(--hui-font-weight-semibold);
+}
+
+.tokenSpecimen[data-kind="accent"] {
+  background: var(--hui-color-background-accent-emphasis);
+}
+
+.tokenSpecimen[data-kind="ink"] {
+  background: var(--hui-color-background-neutral-emphasis);
+}
+
+.tokenSpecimen[data-kind="radius"] {
+  border-radius: 50% 6px 6px 6px;
+  border-top: 2px solid var(--hui-color-foreground-accent-primary);
+  border-left: 2px solid var(--hui-color-foreground-accent-primary);
+  border-radius: 10px 2px 2px 2px;
+}
+
+.tokenSpecimen[data-kind="space"] {
+  background:
+    linear-gradient(var(--hui-color-foreground-accent-primary), var(--hui-color-foreground-accent-primary)) center / 16px 1.5px no-repeat,
+    linear-gradient(var(--hui-color-foreground-accent-primary), var(--hui-color-foreground-accent-primary)) 4px center / 1.5px 8px no-repeat,
+    linear-gradient(var(--hui-color-foreground-accent-primary), var(--hui-color-foreground-accent-primary)) 18.5px center / 1.5px 8px no-repeat;
+}
+
+.tokenSpecimen[data-kind="type"] {
+  background: var(--hui-color-background-neutral-secondary);
+}
+
+.tokenSpecimen[data-kind="shadow"] {
+  width: 16px;
+  height: 16px;
+  margin: 4px;
+  border-radius: 4px;
+  background: var(--hui-color-background-neutral-tertiary);
+  box-shadow:
+    0 0 0 0.5px var(--hui-color-border-base-secondary),
+    3px 4px 0 -1px color-mix(in oklch, var(--hui-color-foreground-base-primary) 22%, transparent);
+}
+
+.tokenSpecimen[data-kind="focus"] {
+  width: 18px;
+  height: 18px;
+  margin: 3px;
+  border-radius: 6px;
+  background: var(--hui-color-background-base-primary);
+  outline: var(--hui-focus-ring);
+}
+
+/* ------------------------------------------------------------------ */
+/* Install playground                                                  */
+/* ------------------------------------------------------------------ */
+
+.installGrid {
+  display: grid;
+  gap: var(--hui-space-9);
+}
+
+@media (min-width: 1024px) {
+  .installGrid {
+    grid-template-columns: 4fr 8fr;
+    align-items: start;
+    gap: var(--hui-space-12);
+  }
+}
+
+.trayHint {
+  margin-bottom: var(--hui-space-5);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-regular);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hui-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 1024px) {
+  .chips {
+    flex-direction: column;
+    max-width: 18rem;
+  }
+
+  .chip {
+    width: 100%;
+  }
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hui-space-4);
+  height: var(--hui-space-11);
+  padding: 0 var(--hui-space-5) 0 var(--hui-space-4);
+  border: 0.5px solid var(--hui-color-border-base-secondary);
+  border-radius: var(--hui-radius-3);
+  background: var(--hui-color-background-base-primary);
+  box-shadow: var(--hui-shadow-feather);
+  color: var(--hui-color-foreground-base-primary);
+  font-size: var(--hui-font-size-large);
+  font-weight: var(--hui-font-weight-medium);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition:
+    border-color var(--hui-duration-fast),
+    box-shadow var(--hui-duration-fast);
+}
+
+.chip:hover {
+  border-color: var(--hui-color-border-base-focus);
+  box-shadow: var(--hui-shadow-lifted);
+}
+
+.chip:active {
+  cursor: grabbing;
+}
+
+.chip:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+/* Added: the chip now stands for a file in the repo. A quiet accent wash,
+   a filled check where the grip was, and the path instead of a count. */
+.chip[data-installed] {
+  border-color: color-mix(in oklch, var(--hui-color-foreground-accent-primary) 32%, transparent);
+  background: color-mix(in oklch, var(--hui-color-foreground-accent-primary) 7%, var(--hui-color-background-base-primary));
+  box-shadow: none;
+}
+
+.chip[data-installed]:hover {
+  border-color: color-mix(in oklch, var(--hui-color-foreground-accent-primary) 55%, transparent);
+  box-shadow: none;
+}
+
+.chip[data-installed] .chipMeta {
+  color: var(--hui-color-foreground-accent-primary);
+}
+
+.chipCheck {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-inline: -4px;
+  border-radius: 50%;
+  background: var(--hui-color-background-accent-emphasis);
+  color: var(--hui-color-foreground-accent-emphasis);
+  animation: chipCheckIn 360ms var(--hui-ease-out) both;
+}
+
+.chipCheck svg {
+  width: 10px;
+  height: 10px;
+  stroke-width: 2.5;
+}
+
+@keyframes chipCheckIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chipCheck {
+    animation: none;
+  }
+}
+
+.chipGrip {
+  width: 8px;
+  height: 14px;
+  background: radial-gradient(circle, var(--hui-color-foreground-base-tertiary) 1.1px, transparent 1.4px) 0 0 / 4px 4.6px;
+  opacity: 0.8;
+}
+
+.chipMeta {
+  margin-left: auto;
+  color: var(--hui-color-foreground-base-tertiary);
+  font-family: var(--hui-font-mono);
+  font-size: 11px;
+  font-weight: var(--hui-font-weight-regular);
+}
+
+.ide {
+  overflow: hidden;
+  border: 1px solid var(--hui-color-border-base-primary);
+  border-radius: var(--hui-radius-5);
+  background: var(--hui-color-background-base-primary);
+  box-shadow: var(--hui-shadow-lifted);
+  outline: 2px dashed transparent;
+  outline-offset: 6px;
+  transition:
+    outline-color var(--hui-duration-normal),
+    transform var(--hui-duration-moderate) var(--hui-ease-out);
+}
+
+.ide[data-hover] {
+  outline-color: var(--hui-color-border-accent-emphasis);
+  transform: scale(0.992);
+}
+
+.ideBar {
+  display: flex;
+  align-items: center;
+  gap: var(--hui-space-5);
+  height: var(--hui-space-10);
+  padding-inline: var(--hui-space-5);
+  border-bottom: 1px solid var(--hui-color-border-base-primary);
+  color: var(--hui-color-foreground-base-secondary);
+  font-family: var(--hui-font-mono);
+  font-size: 12px;
+}
+
+.ideDots {
+  display: flex;
+  gap: 6px;
+}
+
+.ideDots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--hui-color-background-neutral-tertiary);
+}
+
+.ideBody {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 20rem;
+}
+
+@media (min-width: 640px) {
+  .ideBody {
+    grid-template-columns: 11rem 1fr;
+  }
+}
+
+.ideTree {
+  display: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--hui-space-4) var(--hui-space-3);
+  border-right: 1px solid var(--hui-color-border-base-primary);
+  font-family: var(--hui-font-mono);
+  font-size: 12px;
+}
+
+@media (min-width: 640px) {
+  .ideTree {
+    display: flex;
+  }
+}
+
+.treeDir {
+  padding: 3px var(--hui-space-3);
+  color: var(--hui-color-foreground-base-secondary);
+}
+
+.treeDir[data-depth="2"] {
+  padding-left: var(--hui-space-7);
+}
+
+.treeFile {
+  padding: 3px var(--hui-space-3) 3px var(--hui-space-11);
+  border: 0;
+  border-radius: var(--hui-radius-1);
+  background: transparent;
+  color: var(--hui-color-foreground-base-tertiary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.treeFile:disabled {
+  cursor: default;
+}
+
+.treeFile[data-added] {
+  color: var(--hui-color-foreground-accent-primary);
+  animation: tree-flash 1.2s var(--hui-ease-out);
+}
+
+.treeFile[data-active] {
+  background: var(--hui-color-background-neutral-secondary);
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.treeFile:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+@keyframes tree-flash {
+  from {
+    background: var(--hui-color-background-accent-primary);
+  }
+}
+
+.ideEditor {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editorHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hui-space-4);
+  height: var(--hui-space-10);
+  padding-inline: var(--hui-space-5);
+  border-bottom: 1px solid var(--hui-color-border-base-primary);
+  font-size: 12px;
+}
+
+.editorHead code {
+  font-family: var(--hui-font-mono);
+}
+
+.editorHead span {
+  color: var(--hui-color-foreground-base-tertiary);
+  white-space: nowrap;
+}
+
+.editorCode {
+  flex: 1;
+  overflow: auto;
+  padding-inline: var(--hui-space-5);
+}
+
+.editorCode pre {
+  font-size: 12.5px !important;
+  line-height: 1.6;
+}
+
+.editorEmpty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--hui-space-1);
+  padding: var(--hui-space-5);
+  color: var(--hui-color-foreground-base-tertiary);
+  font-family: var(--hui-font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.terminal {
+  display: flex;
+  height: 8rem;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: var(--hui-space-4) var(--hui-space-5);
+  border-top: 1px solid var(--hui-color-border-base-primary);
+  background: var(--hui-color-background-base-secondary);
+  font-family: var(--hui-font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.terminal [data-kind="cmd"] {
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.terminal [data-kind="ok"] {
+  color: var(--hui-color-foreground-success-primary);
+}
+
+.terminal [data-kind="file"] {
+  color: var(--hui-color-foreground-accent-primary);
+  white-space: pre;
+}
+
+.terminal [data-kind="muted"] {
+  color: var(--hui-color-foreground-base-tertiary);
+}
+
+/* ------------------------------------------------------------------ */
+/* Retheme console                                                     */
+/* ------------------------------------------------------------------ */
+
+.retheme {
+  display: grid;
+  gap: var(--hui-space-9);
+}
+
+@media (min-width: 1024px) {
+  .retheme {
+    grid-template-columns: 22rem 1fr;
+    align-items: start;
+  }
+
+  .console {
+    position: sticky;
+    top: var(--hui-space-9);
+  }
+}
+
+.console {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hui-space-7);
+  padding: var(--hui-space-7);
+  border: 0.5px solid var(--hui-color-border-base-secondary);
+  border-radius: var(--hui-radius-5);
+  background: var(--hui-color-background-base-primary);
+  box-shadow: var(--hui-shadow-lifted);
+}
+
+.consoleHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: var(--hui-font-weight-medium);
+}
+
+.consoleReset {
+  border: 0;
+  background: none;
+  color: var(--hui-color-foreground-accent-primary);
+  font-size: var(--hui-font-size-regular);
+  cursor: pointer;
+}
+
+.consoleReset:disabled {
+  color: var(--hui-color-foreground-base-tertiary);
+  cursor: default;
+}
+
+.consoleReset:focus-visible {
+  outline: var(--hui-focus-ring);
+  border-radius: var(--hui-radius-1);
+}
+
+.consoleRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hui-space-4);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.consoleRow legend,
+.consoleLabel {
+  padding: 0;
+  margin-bottom: var(--hui-space-4);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-small);
+  font-weight: var(--hui-font-weight-medium);
+}
+
+.consoleLabel {
+  margin: 0;
+}
+
+.consoleValue {
+  font-family: var(--hui-font-mono);
+  font-size: 12px;
+  color: var(--hui-color-foreground-base-secondary);
+}
+
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--hui-radius-2);
+  background: var(--hui-color-background-neutral-secondary);
+}
+
+.segmented label {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hui-space-3);
+  height: 30px;
+  min-width: 0;
+  padding-inline: var(--hui-space-3);
+  border-radius: calc(var(--hui-radius-2) - 3px);
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background var(--hui-duration-fast),
+    color var(--hui-duration-fast);
+}
+
+.segmented label:hover {
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.segmented label[data-checked] {
+  background: var(--hui-color-background-base-primary);
+  color: var(--hui-color-foreground-base-primary);
+  box-shadow: var(--hui-shadow-feather);
+}
+
+.segmented label:has(:focus-visible) {
+  outline: var(--hui-focus-ring);
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.consoleSwitch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.consoleCode {
+  position: relative;
+  padding: var(--hui-space-4) var(--hui-space-11) var(--hui-space-4) var(--hui-space-4);
+  border-radius: var(--hui-radius-2);
+  background: var(--hui-color-background-base-secondary);
+}
+
+.consoleCode pre {
+  margin: 0;
+  color: var(--hui-color-foreground-base-secondary);
+  font-family: var(--hui-font-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.consoleCopy {
+  position: absolute;
+  top: var(--hui-space-3);
+  right: var(--hui-space-3);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--hui-radius-1);
+  background: transparent;
+  color: var(--hui-color-foreground-base-secondary);
+  cursor: pointer;
+}
+
+.consoleCopy:hover {
+  background: var(--hui-color-background-base-primary-hover);
+  color: var(--hui-color-foreground-base-primary);
+}
+
+.consoleCopy:focus-visible {
+  outline: var(--hui-focus-ring);
+}
+
+.consoleCopy svg {
+  width: 14px;
+  height: 14px;
+}
+
+.specimens {
+  display: grid;
+  gap: var(--hui-space-5);
+}
+
+@media (min-width: 640px) {
+  .specimens {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .specimen[data-span="2"] {
+    grid-column: span 2;
+  }
+}
+
+.specimen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hui-space-5);
+  padding: var(--hui-space-7);
+  border: 1px solid var(--hui-color-border-base-primary);
+  border-radius: var(--hui-radius-5);
+  background: var(--hui-color-background-base-primary);
+}
+
+.specimenLabel {
+  color: var(--hui-color-foreground-base-tertiary);
+  font-family: var(--hui-font-mono);
+  font-size: 11px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Collections                                                         */
+/* ------------------------------------------------------------------ */
+
+.marquee {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hui-space-2);
+  margin-block: 0 var(--hui-space-13);
+  padding-block: var(--hui-space-6);
+}
+
+.marqueeRow {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+}
+
+.marqueeChunk {
+  display: flex;
+}
+
+.marqueeChunk > span {
+  display: inline-flex;
+  align-items: center;
+  font-size: clamp(2.25rem, 6vw, 4.75rem);
+  line-height: 1.1;
+  font-weight: var(--hui-font-weight-medium);
+  letter-spacing: -0.045em;
+}
+
+.marqueeRow:nth-child(2) .marqueeChunk > span {
+  color: var(--hui-color-foreground-base-tertiary);
+}
+
+.marqueeChunk i {
+  width: 1px;
+  height: 0.6em;
+  margin-inline: 0.5em;
+  background: var(--hui-color-border-base-secondary);
+  transform: rotate(18deg);
+}
+
+.bento {
+  display: grid;
+  gap: var(--hui-space-5);
+}
+
+@media (min-width: 1024px) {
+  .bento {
+    grid-template-columns: 7fr 5fr;
+    grid-template-areas:
+      "icons chart"
+      "icons shader";
+  }
+
+  .tile[data-area="icons"] {
+    grid-area: icons;
+  }
+
+  .tile[data-area="chart"] {
+    grid-area: chart;
+  }
+
+  .tile[data-area="shader"] {
+    grid-area: shader;
+  }
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--hui-color-border-base-primary);
+  border-radius: var(--hui-radius-5);
+  background: var(--hui-color-background-base-primary);
+}
+
+.tile[data-area="shader"] {
+  min-height: 16rem;
+  justify-content: flex-end;
+}
+
+.tileHead {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hui-space-3);
+  padding: var(--hui-space-7) var(--hui-space-7) var(--hui-space-5);
+}
+
+.tileHead h3:not([data-slot]) {
+  font-size: var(--hui-font-size-t1);
+  font-weight: var(--hui-font-weight-medium);
+  letter-spacing: -0.02em;
+}
+
+.tileHead code {
+  color: var(--hui-color-foreground-base-secondary);
+  font-family: var(--hui-font-mono);
+  font-size: 12px;
+}
+
+.tileHead[data-on-media] {
+  isolation: isolate;
+  color: #fff;
+}
+
+/* A soft wash under the title so it reads on any part of the gradient. */
+.tileHead[data-on-media]::before {
+  content: "";
+  position: absolute;
+  inset: -40% 0 0;
+  z-index: -1;
+  background: linear-gradient(transparent, rgb(8 10 20 / 0.42));
+  pointer-events: none;
+}
+
+.tileHead[data-on-media] code {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.tileNote {
+  padding-inline: var(--hui-space-7);
+  color: var(--hui-color-foreground-base-tertiary);
+  font-size: var(--hui-font-size-small);
+}
+
+.chartFill {
+  height: 13rem;
+  padding: var(--hui-space-3) var(--hui-space-5) var(--hui-space-5);
+}
+
+.shaderFill {
+  position: absolute;
+  inset: 0;
+}
+
+.iconField {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-auto-rows: minmax(var(--hui-space-12), 1fr);
+  padding: 0 var(--hui-space-5) var(--hui-space-5);
+}
+
+@media (min-width: 640px) {
+  .iconField {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+.iconField span {
+  --p: 0;
+  display: grid;
+  place-items: center;
+  color: color-mix(
+    in oklch,
+    var(--hui-color-foreground-accent-primary) calc(var(--p) * 100%),
+    var(--hui-color-foreground-base-tertiary)
+  );
+  opacity: calc(0.75 + var(--p) * 0.25);
+  transform: scale(calc(1 + var(--p) * 0.85));
+}
+
+.iconField svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Finale                                                              */
+/* ------------------------------------------------------------------ */
+
+.finale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hui-space-9);
+  padding: var(--hui-space-17) var(--hui-space-6) var(--hui-space-9);
+  text-align: center;
+}
+
+.finaleWord {
+  display: block;
+  font-size: clamp(4.5rem, 17vw, 15rem);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.finaleLede {
+  max-width: 32rem;
+  color: var(--hui-color-foreground-base-secondary);
+  font-size: var(--hui-font-size-large);
+  line-height: 1.6;
+}
+
+.finaleFooter {
+  justify-content: center;
+  margin-top: var(--hui-space-15);
+}

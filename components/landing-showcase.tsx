@@ -30,6 +30,22 @@ import {
 import { Label } from "@/components/ui/label"
 import { HONEST_AI_TAGLINE, HONEST_AI_URL } from "@/globals/constants/site"
 import styles from "@/components/landing-showcase.module.css"
+import { Assembly } from "@/components/landing/assembly"
+import { CollectionsBento, VelocityMarquee } from "@/components/landing/collections"
+import { InstallPlayground } from "@/components/landing/install-playground"
+import landing from "@/components/landing/landing.module.css"
+import { RethemeConsole } from "@/components/landing/retheme-console"
+import {
+  getAssemblySteps,
+  getComponentNames,
+  getInstallItems,
+} from "@/components/landing/sources"
+import { SplitReveal } from "@/components/landing/split-reveal"
+import { VariableProximity } from "@/components/landing/variable-proximity"
+import { XrayProvider, XrayStage, XrayToggle } from "@/components/landing/xray-stage"
+
+// Counted from the honestui/icons index (each style variant is its own export).
+const ICON_COUNT = "4,084"
 
 const previewCardClass = styles.previewCard
 
@@ -120,7 +136,7 @@ function PreviewField({
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <span className={styles.inputControl}>
+      <span className={styles.inputControl} data-xray-field="">
         <input
           className={styles.input}
           id={id}
@@ -132,15 +148,16 @@ function PreviewField({
   )
 }
 
-function SignUpCard() {
+function SignUpCard({ xray = false }: { xray?: boolean }) {
+  const id = (value: string) => (xray ? `xray-${value}` : value)
   return (
-    <Card className={previewCardClass}>
+    <Card className={previewCardClass} data-xray="<Card> · auth flow">
       <CardHeader>
         <CardTitle>
           <h3>Sign up</h3>
         </CardTitle>
         <CardDescription>
-          An account-flow composition built from components you can edit.
+          Create an account to start your first workspace.
         </CardDescription>
       </CardHeader>
       <CardPanel className="space-y-4">
@@ -158,13 +175,13 @@ function SignUpCard() {
           or continue with email
         </p>
         <PreviewField
-          id="signup-email"
+          id={id("signup-email")}
           label="Email"
           type="email"
           placeholder="you@example.com"
         />
         <PreviewField
-          id="signup-password"
+          id={id("signup-password")}
           label="Password"
           type="password"
           placeholder="Enter your password"
@@ -185,7 +202,7 @@ const notificationOptions = [
   },
   {
     label: "New collections",
-    description: "New charts, icons, and visual tools.",
+    description: "New charts, icons and visual tools.",
     checked: true,
   },
   {
@@ -197,7 +214,7 @@ const notificationOptions = [
 
 function NotificationsCard() {
   return (
-    <Card className={previewCardClass}>
+    <Card className={previewCardClass} data-xray="<Card> · 3 × role=switch">
       <CardHeader>
         <CardTitle>
           <h3>Notifications</h3>
@@ -232,14 +249,15 @@ function NotificationsCard() {
   )
 }
 
-function PaymentCard() {
+function PaymentCard({ xray = false }: { xray?: boolean }) {
+  const id = (value: string) => (xray ? `xray-${value}` : value)
   return (
-    <Card className={previewCardClass}>
+    <Card className={previewCardClass} data-xray="<Card> · aria-pressed group">
       <CardHeader>
         <CardTitle>
           <h3>Payment method</h3>
         </CardTitle>
-        <CardDescription>Add a payment method to this example account.</CardDescription>
+        <CardDescription>Add a card or account for future payments.</CardDescription>
       </CardHeader>
       <CardPanel className="space-y-4">
         <div className="grid grid-cols-3 gap-3" role="group" aria-label="Payment type">
@@ -259,12 +277,12 @@ function PaymentCard() {
             </button>
           ))}
         </div>
-        <PreviewField id="payment-owner" label="Cardholder" placeholder="Name on card" />
-        <PreviewField id="payment-number" label="Card number" placeholder="0000 0000 0000 0000" />
+        <PreviewField id={id("payment-owner")} label="Cardholder" placeholder="Name on card" />
+        <PreviewField id={id("payment-number")} label="Card number" placeholder="0000 0000 0000 0000" />
         <div className="grid grid-cols-3 gap-3">
-          <PreviewField id="payment-month" label="Month" placeholder="MM" />
-          <PreviewField id="payment-year" label="Year" placeholder="YY" />
-          <PreviewField id="payment-cvv" label="CVV" placeholder="000" />
+          <PreviewField id={id("payment-month")} label="Month" placeholder="MM" />
+          <PreviewField id={id("payment-year")} label="Year" placeholder="YY" />
+          <PreviewField id={id("payment-cvv")} label="CVV" placeholder="000" />
         </div>
       </CardPanel>
       <CardFooter>
@@ -278,7 +296,7 @@ function EcommerceCard() {
   const sizes = ["38", "39", "40", "41", "42", "43"]
 
   return (
-    <Card className={previewCardClass}>
+    <Card className={previewCardClass} data-xray="<Card> · <fieldset> sizes">
       <CardHeader className="gap-3">
         <div className="w-fit">
           <PreviewBadge variant="success">In stock</PreviewBadge>
@@ -293,7 +311,7 @@ function EcommerceCard() {
           </p>
         </div>
         <CardDescription>
-          A responsive product card with choices, status, and supporting details.
+          Lightweight canvas upper on a cushioned rubber sole.
         </CardDescription>
       </CardHeader>
       <CardPanel className="space-y-5">
@@ -330,7 +348,8 @@ function EcommerceCard() {
   )
 }
 
-function SharingCard() {
+function SharingCard({ xray = false }: { xray?: boolean }) {
+  const id = (value: string) => (xray ? `xray-${value}` : value)
   const members = [
     { initials: "DT", label: "Design team", access: "Edit" },
     { initials: "FE", label: "Frontend team", access: "Edit" },
@@ -338,7 +357,7 @@ function SharingCard() {
   ]
 
   return (
-    <Card className={previewCardClass}>
+    <Card className={previewCardClass} data-xray="<Card> · read-only <Input>">
       <CardHeader>
         <CardTitle>
           <h3>Share document</h3>
@@ -347,12 +366,12 @@ function SharingCard() {
       </CardHeader>
       <CardPanel className="space-y-5">
         <div className="space-y-2">
-          <Label htmlFor="share-link">Document link</Label>
+          <Label htmlFor={id("share-link")}>Document link</Label>
           <div className="flex gap-2">
             <span className={styles.inputControl}>
               <input
                 className={styles.input}
-                id="share-link"
+                id={id("share-link")}
                 readOnly
                 value="https://honestui.com/docs"
               />
@@ -381,9 +400,10 @@ function SharingCard() {
   )
 }
 
-function IssueCard() {
+function IssueCard({ xray = false }: { xray?: boolean }) {
+  const id = (value: string) => (xray ? `xray-${value}` : value)
   return (
-    <Card className={previewCardClass}>
+    <Card className={previewCardClass} data-xray="<Card> · <form> fields">
       <CardHeader>
         <CardTitle>
           <h3>Report an issue</h3>
@@ -391,11 +411,11 @@ function IssueCard() {
         <CardDescription>Describe a problem clearly enough to reproduce it.</CardDescription>
       </CardHeader>
       <CardPanel className="space-y-4">
-        <PreviewField id="issue-title" label="Title" placeholder="A short, descriptive title" />
+        <PreviewField id={id("issue-title")} label="Title" placeholder="A short, descriptive title" />
         <div className="space-y-2">
-          <Label htmlFor="issue-framework">Framework</Label>
+          <Label htmlFor={id("issue-framework")}>Framework</Label>
           <select
-            id="issue-framework"
+            id={id("issue-framework")}
             defaultValue="react"
             className="h-9 w-full rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-tertiary)] bg-[var(--hui-color-background-base-primary)] px-3 text-sm outline-none focus:border-[var(--hui-color-border-accent-emphasis)]"
           >
@@ -405,10 +425,10 @@ function IssueCard() {
           </select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="issue-description">Description</Label>
+          <Label htmlFor={id("issue-description")}>Description</Label>
           <textarea
             className={styles.textarea}
-            id="issue-description"
+            id={id("issue-description")}
             rows={4}
             placeholder="What happened, and what did you expect?"
           />
@@ -451,40 +471,97 @@ function LandingFooter({ className }: { className?: string }) {
   )
 }
 
-export function LandingShowcase() {
+function CardWall({ xray = false }: { xray?: boolean }) {
+  return (
+    <div className={landing.wall}>
+      <div className="grid grid-cols-3 gap-7">
+        <div className="flex flex-col gap-7">
+          <LandingChartCard cardClassName={previewCardClass} xray={xray} />
+          <SignUpCard xray={xray} />
+          <NotificationsCard />
+        </div>
+        <div className="flex flex-col gap-7">
+          <LandingShaderCard cardClassName={previewCardClass} xray={xray} />
+          <LandingTickerCard cardClassName={previewCardClass} xray={xray} />
+          <PaymentCard xray={xray} />
+          <EcommerceCard />
+        </div>
+        <div className="flex flex-col gap-7">
+          <SharingCard xray={xray} />
+          <IssueCard xray={xray} />
+          <LandingAccountTabs
+            cardClassName={previewCardClass}
+            idPrefix={xray ? "xray-" : ""}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SectionIntro({
+  id,
+  kicker,
+  title,
+  children,
+}: {
+  id: string
+  kicker: string
+  title: string
+  children?: React.ReactNode
+}) {
+  return (
+    <div className={landing.intro}>
+      <p className={landing.redline}>{kicker}</p>
+      <SplitReveal as="h2" className={landing.sectionTitle} id={id} trigger="view" type="words">
+        {title}
+      </SplitReveal>
+      {children ? <p className={landing.lede}>{children}</p> : null}
+    </div>
+  )
+}
+
+export async function LandingShowcase() {
+  const [steps, installItems, componentNames] = await Promise.all([
+    getAssemblySteps(),
+    getInstallItems(),
+    getComponentNames(),
+  ])
+
   return (
     <main
       id="main-content"
       tabIndex={-1}
     >
-      <div className="lg:grid lg:h-[calc(100svh-4rem)] lg:grid-cols-[minmax(30rem,5fr)_6fr] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden">
-      <section className="flex flex-col px-5 py-16 sm:px-8 md:py-24 lg:min-h-0 lg:py-6">
-        <div className="flex flex-1 items-center lg:justify-end">
-          <div className="w-full max-w-[42rem] lg:max-w-[34rem]">
-            <a className={cx(styles.announcement, "mb-7")} href={HONEST_AI_URL}>
-              <PreviewBadge size="small" variant="accent">New</PreviewBadge>
+      <XrayProvider>
+      <div className={landing.hero}>
+        <section className={landing.heroCopy}>
+          <div className={landing.heroInner}>
+            <a className={landing.newsLink} href={HONEST_AI_URL}>
+              <span className={landing.newsLabel}>Honest AI</span>
+              <span className="sr-only">: </span>
               <span>
-                <strong>Honest AI</strong>
-                <span className="sr-only">: </span>
-                <span aria-hidden="true"> · </span>
-                {HONEST_AI_TAGLINE}
+                {HONEST_AI_TAGLINE.split(" ").slice(0, -1).join(" ")}{" "}
+                <span className="whitespace-nowrap">
+                  {HONEST_AI_TAGLINE.split(" ").at(-1)}
+                  <ArrowRight aria-hidden="true" />
+                </span>
               </span>
-              <ArrowRight aria-hidden="true" />
             </a>
-            <p className="mb-4 text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
-              Open-source React UI components and charts
-            </p>
-            <h1 className="text-[clamp(2.375rem,10vw,3.25rem)]! leading-[0.94]! font-medium tracking-[var(--hui-letter-spacing-t4)]">
+            <h1 className={landing.heroTitle}>
               <span className="sr-only">Honest UI: </span>
-              <span className="block whitespace-nowrap">Good interfaces.</span>
-              {" "}
-              <span className="block whitespace-nowrap">Honest code.</span>
+              <SplitReveal className="block whitespace-nowrap" delay={0.1}>
+                Good interfaces.
+              </SplitReveal>{" "}
+              <SplitReveal className="block whitespace-nowrap" delay={0.35}>
+                Honest code.
+              </SplitReveal>
             </h1>
-            <p className="mt-7 max-w-[38rem] text-lg leading-7 text-[var(--hui-color-foreground-base-secondary)]">
-              Honest UI is a React component library with good defaults and no lock-in. Copy components into your project, change the source, and import charts, icons, and visual effects only when you need them.
+            <p className={landing.heroLede}>
+              Open-source React components with good defaults and no lock-in. Copy the source into your project, and import charts, icons and shaders only when you need them.
             </p>
-            <div className="mt-9 flex w-fit max-w-full flex-col gap-3">
-              <div className="flex flex-wrap gap-3">
+            <div className={landing.heroActions}>
+              <div className={landing.heroButtons}>
                 <Link
                   className={previewButtonClass({ size: "large" })}
                   href="/docs/get-started"
@@ -504,48 +581,76 @@ export function LandingShowcase() {
               </div>
               <LandingInstallCommand />
             </div>
+            <XrayToggle />
           </div>
-        </div>
-        <div className="mt-8 hidden lg:flex lg:justify-end">
-          <LandingFooter className="w-full max-w-[34rem]" />
-        </div>
-      </section>
+        </section>
 
-      <section
-        aria-label="Honest UI component previews"
-        className="min-w-0 overflow-x-auto pb-14 pl-5 sm:pl-8 lg:min-h-0 lg:overflow-visible lg:p-0"
-      >
-        <h2 className="sr-only">Honest UI component previews</h2>
-        <div className="w-[74.5rem] origin-top-left pb-10 lg:rotate-[4deg] lg:translate-x-20 lg:translate-y-10 xl:translate-x-28">
-          <div className="grid grid-cols-3 gap-7">
-            <div className="flex flex-col gap-7">
-              <LandingChartCard cardClassName={previewCardClass} />
-              <SignUpCard />
-              <NotificationsCard />
-            </div>
-            <div className="flex flex-col gap-7">
-              <LandingShaderCard cardClassName={previewCardClass} />
-              <LandingTickerCard cardClassName={previewCardClass} />
-              <PaymentCard />
-              <EcommerceCard />
-            </div>
-            <div className="flex flex-col gap-7">
-              <SharingCard />
-              <IssueCard />
-              <LandingAccountTabs cardClassName={previewCardClass} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <LandingFooter className="px-5 pb-8 sm:px-8 lg:hidden" />
+        <section aria-label="Honest UI component previews" className={landing.heroWall}>
+          <h2 className="sr-only">Honest UI component previews</h2>
+          <XrayStage live={<CardWall />} xray={<CardWall xray />} />
+        </section>
       </div>
+      </XrayProvider>
+
+      <Assembly steps={steps} />
+
+      <section aria-labelledby="install-title" className={landing.section}>
+        <SectionIntro id="install-title" kicker="npx honestui add → components/ui" title="Take the source, not a dependency">
+          Adding a component writes one file into your repository. The editor below opens the real source this site ships, so you can see exactly what you get.
+        </SectionIntro>
+        <InstallPlayground items={installItems} />
+      </section>
+
+      <section aria-labelledby="retheme-title" className={landing.section}>
+        <SectionIntro id="retheme-title" kicker="data-accent-color · data-gray-color · --hui-radius-*" title="This page is built with Honest UI. Restyle it">
+          Every surface on this page, including the hero above, reads the same tokens. Change one and the whole page follows, then copy the attributes into your app.
+        </SectionIntro>
+        <RethemeConsole />
+      </section>
+
+      <section aria-labelledby="collections-title" className={landing.sectionWide}>
+        <div className={landing.sectionInner}>
+          <SectionIntro id="collections-title" kicker="honestui/icons · honestui/charts · honestui/shaders" title="Charts, icons and shaders stay packages">
+            These are too large to copy and paste, so they ship as maintained imports. Each has its own path, so the dependency stays visible in your code.
+          </SectionIntro>
+        </div>
+        <VelocityMarquee items={componentNames} />
+        <div className={landing.sectionInner}>
+          <CollectionsBento iconCount={ICON_COUNT} />
+        </div>
+      </section>
+
+      <section aria-labelledby="finale-title" className={landing.finale}>
+        <h2 className="sr-only" id="finale-title">Start with Honest UI</h2>
+        <VariableProximity className={landing.finaleWord} text="Honest UI" />
+        <p className={landing.finaleLede}>
+          Good defaults. The source in your repo. Nothing you can’t read.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link className={previewButtonClass({ size: "large" })} href="/docs/get-started">
+            Get started
+            <ArrowRight aria-hidden="true" />
+          </Link>
+          <a
+            className={previewButtonClass({ size: "large", variant: "outline" })}
+            href="https://github.com/honestui/honestui"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <GithubIcon aria-hidden="true" />
+            Star on GitHub
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </div>
+        <LandingInstallCommand className="mx-auto" />
+        <LandingFooter className={landing.finaleFooter} />
+      </section>
 
       <section
         aria-labelledby="honest-ui-ownership"
         className="sr-only focus-within:not-sr-only"
       >
-        <div className="border-t border-[var(--hui-color-border-base-primary)] px-5 py-16 sm:px-8 sm:py-20">
+        <div className="px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-5xl">
           <div className="max-w-3xl">
             <p className="text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">
@@ -612,7 +717,7 @@ export function LandingShowcase() {
         aria-labelledby="honest-ui-developer-resources"
         className="sr-only focus-within:not-sr-only"
       >
-        <div className="border-t border-[var(--hui-color-border-base-primary)] px-5 py-16 sm:px-8 sm:py-20">
+        <div className="px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-5xl">
           <div className="max-w-3xl">
             <p className="text-sm font-medium text-[var(--hui-color-foreground-accent-primary)]">

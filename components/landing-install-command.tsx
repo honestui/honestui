@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Check, Copy } from "honestui/icons"
 
 import styles from "@/components/landing-showcase.module.css"
+import { CodeTokens } from "@/components/landing/code-tokens"
 
 const INSTALL_COMMAND = "npx honestui@latest init"
 const COPIED_FEEDBACK_MS = 2000
@@ -31,7 +32,7 @@ export function LandingInstallCommand({ className }: { className?: string }) {
       <span aria-hidden="true" className={styles.commandPrompt}>
         $
       </span>
-      <code>{INSTALL_COMMAND}</code>
+      <CodeTokens code={INSTALL_COMMAND} lang="bash" />
       <button
         aria-label="Copy install command"
         className={styles.commandCopy}

@@ -17,8 +17,9 @@ const chartConfig = {
   rentals: {
     label: "Bike rentals",
     colors: {
-      light: ["#3b5bdb", "#4c6ef5", "#7950f2"],
-      dark: ["#748ffc", "#91a7ff", "#b197fc"],
+      // One hue: the line is a single series, so it gets a single color.
+      light: ["#3b5bdb", "#3b5bdb", "#3b5bdb"],
+      dark: ["#748ffc", "#748ffc", "#748ffc"],
     },
   },
 } satisfies ChartConfig

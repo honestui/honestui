@@ -46,7 +46,13 @@ function AccountField({
   )
 }
 
-export function LandingAccountTabs({ cardClassName }: { cardClassName: string }) {
+export function LandingAccountTabs({
+  cardClassName,
+  idPrefix = "",
+}: {
+  cardClassName: string
+  idPrefix?: string
+}) {
   const [activeTab, setActiveTab] = useState<Tab>("login")
   const tabRefs = useRef<Record<Tab, HTMLButtonElement | null>>({
     login: null,
@@ -61,15 +67,15 @@ export function LandingAccountTabs({ cardClassName }: { cardClassName: string })
   }
 
   return (
-    <Card className={cardClassName}>
+    <Card className={cardClassName} data-xray="<Tabs> · roving tabindex">
       <div className={styles.tabs}>
         <div aria-label="Account action" className={styles.tabsList} role="tablist">
           {tabs.map((tab) => (
             <button
-              aria-controls={`${tab}-panel`}
+              aria-controls={`${idPrefix}${tab}-panel`}
               aria-selected={activeTab === tab}
               className={cx(styles.tab, activeTab === tab && styles.tabActive)}
-              id={`${tab}-tab`}
+              id={`${idPrefix}${tab}-tab`}
               key={tab}
               onClick={() => setActiveTab(tab)}
               onKeyDown={(event) => {
@@ -105,9 +111,9 @@ export function LandingAccountTabs({ cardClassName }: { cardClassName: string })
         </div>
 
         <div
-          aria-labelledby={`${activeTab}-tab`}
+          aria-labelledby={`${idPrefix}${activeTab}-tab`}
           className={styles.tabPanel}
-          id={`${activeTab}-panel`}
+          id={`${idPrefix}${activeTab}-panel`}
           role="tabpanel"
           tabIndex={0}
         >
@@ -117,19 +123,19 @@ export function LandingAccountTabs({ cardClassName }: { cardClassName: string })
             </CardTitle>
             <CardDescription>
               {activeTab === "login"
-                ? "Enter your credentials to continue."
+                ? "Log in with your email and password."
                 : "Start with your email and a password."}
             </CardDescription>
           </CardHeader>
           <CardPanel className="mt-5 space-y-4">
             <AccountField
-              id={`${activeTab}-email`}
+              id={`${idPrefix}${activeTab}-email`}
               label="Email"
               placeholder="you@example.com"
               type="email"
             />
             <AccountField
-              id={`${activeTab}-password`}
+              id={`${idPrefix}${activeTab}-password`}
               label="Password"
               placeholder={activeTab === "login" ? "Enter your password" : "Choose a password"}
               type="password"

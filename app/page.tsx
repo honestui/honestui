@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 import { LandingShowcase } from "@/components/landing-showcase"
+import { ThemeScope } from "@/components/landing/theme-scope"
 import { SiteHeader } from "@/components/site-header"
 
 export const metadata: Metadata = {
@@ -27,9 +28,11 @@ export default function Home() {
         Skip to main content
       </a>
 
-      <SiteHeader />
+      <ThemeScope className="min-h-screen bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)]">
+        <SiteHeader />
 
-      <LandingShowcase />
+        <LandingShowcase />
+      </ThemeScope>
     </div>
   )
 }
