@@ -213,3 +213,11 @@ export function groupDigits(value: unknown, years = false): string {
   const sign = whole === "-0" ? "-" : "";
   return fraction === undefined ? sign + grouped : `${sign}${grouped}${point}${fraction}`;
 }
+
+/**
+ * A chosen option row or card: a soft neutral fill and a slightly firmer
+ * hairline. The accent radio or checkbox inside already marks the choice, so
+ * the frame stays quiet instead of drawing a bright outline.
+ */
+export const selectedChoice =
+  "border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-neutral-primary)]";

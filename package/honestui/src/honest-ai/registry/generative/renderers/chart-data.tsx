@@ -28,13 +28,13 @@ export function ChartDataTable({
       <div className="mt-2 overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b border-[var(--hui-color-border-base-primary)] text-start text-xs text-muted-foreground">
+            <tr className="border-b border-[var(--hui-color-border-base-primary)] text-start text-[13px] text-muted-foreground">
               {columns.map((column, i) => (
                 <th
                   key={i}
                   scope="col"
                   // A <th> centres by default; the first column labels rows, at the start.
-                  className={i === 0 ? "py-1.5 pe-4 text-start font-medium" : "py-1.5 ps-4 text-end font-medium"}
+                  className={i === 0 ? "py-1.5 pe-4 text-start font-medium" : "py-1.5 ps-4 text-end font-medium whitespace-nowrap"}
                 >
                   {column}
                 </th>
@@ -50,7 +50,7 @@ export function ChartDataTable({
                       {cell}
                     </th>
                   ) : (
-                    <td key={j} className="py-1.5 ps-4 text-end">
+                    <td key={j} className="py-1.5 ps-4 text-end whitespace-nowrap tabular-nums">
                       {cell}
                     </td>
                   ),

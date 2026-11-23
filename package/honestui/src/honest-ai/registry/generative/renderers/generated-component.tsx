@@ -24,7 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../components/ui/dialog.js";
-import { Alert, AlertTitle, AlertDescription } from "../../../components/ui/alert.js";
 import { Markdown } from "../../ai/markdown.js";
 import { cn } from "../../../lib/utils.js";
 import { ProseCodeBlock } from "../../ai/prose-code-block.js";
@@ -36,8 +35,13 @@ import * as Icons from "honestui/icons";
 import {
   ArrowDownRight as ArrowDownRightIcon,
   ArrowUpRight as ArrowUpRightIcon,
+  ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
+  CircleAlert as CircleAlertIcon,
+  CircleCheck as CircleCheckIcon,
   CornerDownRight as CornerDownRightIcon,
+  Info as InfoIcon,
+  TriangleAlert as TriangleAlertIcon,
 } from "honestui/icons";
 import {
   FormNameContext,
@@ -180,6 +184,46 @@ const itemCard = "rounded-[var(--hui-radius-4)] shadow-none gap-[var(--hui-space
 // bottom even when one label wraps onto a second line.
 const itemCardContent = "flex-1 px-[var(--hui-space-5)]";
 
+const calloutIcons: Record<Tone, React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
+  neutral: InfoIcon,
+  info: InfoIcon,
+  success: CircleCheckIcon,
+  warning: TriangleAlertIcon,
+  danger: CircleAlertIcon,
+};
+
+/**
+ * An aside in a reply: a quiet surface with a hairline edge. Only the icon
+ * carries the tone, so a warning reads as one without the box shouting. It is
+ * a note, not a live alert: the reply around it is already being read.
+ */
+function GeneratedCallout({ props: p }: Pick<GeneratedComponentProps, "props">) {
+  const variant = text(p.variant);
+  const tone: Tone = variant === "error" ? "danger" : (tones[variant] ?? "neutral");
+  const Icon = calloutIcons[tone];
+  const title = text(p.title);
+  const description = text(p.description);
+  return (
+    <div
+      data-slot="alert"
+      data-tone={tone}
+      role="note"
+      className="grid min-w-0 grid-cols-[1rem_minmax(0,1fr)] gap-x-2.5 gap-y-0.5 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] px-4 py-3 text-sm"
+    >
+      <span
+        aria-hidden="true"
+        // One line tall, so the icon centers on the first line of text.
+        className={cn("flex h-5 items-center", title && description && "row-span-2")}
+        style={{ color: tone === "neutral" ? "var(--hui-color-foreground-base-secondary)" : toneTextColor(tone) }}
+      >
+        <Icon aria-hidden className="size-4" />
+      </span>
+      {!!title && <p className="m-0 font-medium text-[var(--hui-color-foreground-base-primary)]">{title}</p>}
+      {!!description && <p className="m-0 text-pretty text-muted-foreground">{description}</p>}
+    </div>
+  );
+}
+
 /** A ListItem's position in a numbered ListBlock. */
 const ListNumberContext = React.createContext<number | undefined>(undefined);
 
@@ -254,7 +298,7 @@ function GeneratedFormControl({ props, renderNode }: GeneratedComponentProps) {
         <div className="grid gap-1.5">
           {renderNode(props.input)}
           {!!props.hint && (
-            <p id={`${id}-hint`} className="m-0 text-xs text-muted-foreground">
+            <p id={`${id}-hint`} className="m-0 text-[13px] text-muted-foreground">
               {text(props.hint)}
             </p>
           )}
@@ -368,7 +412,11 @@ function GeneratedText({ name, props: p }: Pick<GeneratedComponentProps, "name" 
       ) : (
         <span
           style={textColorStyle(p.color)}
-          className={cn(p.variant === "number" && "tabular-nums", textSizes[text(p.size)])}
+          className={cn(
+            p.variant === "number" && "tabular-nums",
+            // Beside a metric's figure, plain text is its quiet label.
+            metric && !p.color ? "text-[13px] font-medium text-muted-foreground" : textSizes[text(p.size)],
+          )}
         >
           {value}
         </span>
@@ -513,24 +561,30 @@ function GeneratedCarousel({ props, renderNode }: GeneratedComponentProps) {
   const active = Math.min(index, Math.max(0, slides.length - 1));
   return (
     <section aria-label="Carousel" className="grid gap-3">
-      <div>{renderNode(slides[active])}</div>
-      <div className="flex items-center gap-3">
+      <div className="min-w-0">{renderNode(slides[active])}</div>
+      <div className="flex items-center gap-1">
         <Button
-          variant="secondary"
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Previous slide"
+          title="Previous slide"
           disabled={active === 0}
           onClick={() => setIndex(active - 1)}
         >
-          Previous slide
+          <ChevronLeftIcon aria-hidden="true" />
         </Button>
-        <span role="status">
+        <span role="status" className="min-w-12 text-center text-[13px] text-muted-foreground tabular-nums">
           {slides.length ? active + 1 : 0} of {slides.length}
         </span>
         <Button
-          variant="secondary"
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Next slide"
+          title="Next slide"
           disabled={active >= slides.length - 1}
           onClick={() => setIndex(active + 1)}
         >
-          Next slide
+          <ChevronRightIcon aria-hidden="true" />
         </Button>
       </div>
     </section>
@@ -542,7 +596,7 @@ function Image({ src, alt }: { src: unknown; alt: unknown }) {
     <img
       src={url}
       alt={text(alt)}
-      className="max-h-96 max-w-full rounded-md object-contain"
+      className="max-h-96 max-w-full rounded-[var(--hui-radius-2)] object-contain"
       loading="lazy"
     />
   ) : null;
@@ -551,6 +605,7 @@ export function GeneratedComponent(
   input: GeneratedComponentProps,
 ): React.ReactNode {
   const { name, props: p, renderNode: render } = input;
+  const insideCard = React.useContext(InsideCardContext);
   if (virtual.has(name)) return null;
   if (fields.has(name))
     return <GeneratedField name={name} props={p} renderNode={render} />;
@@ -604,20 +659,25 @@ export function GeneratedComponent(
         <>
           {render(p.children)}
           {array(p.sources).length > 0 && (
-            <ol aria-label="Sources" className="m-0 grid gap-2 p-0 text-sm">
+            <ol
+              aria-label="Sources"
+              className="m-0 grid list-none gap-1 border-t border-[var(--hui-color-border-base-primary)] p-0 pt-3 text-[13px] text-muted-foreground"
+            >
               {array(p.sources).map((source, i) => {
                 const item = record(source),
                   url = safeUrl(item.url);
                 return (
-                  <li key={i} className="list-inside">
+                  <li key={i} className="flex min-w-0 gap-2">
+                    <span aria-hidden="true" className="tabular-nums">{i + 1}.</span>
                     {url ? (
                       <a
                         href={url}
                         rel="noreferrer"
                         target="_blank"
-                        className="underline"
+                        className="min-w-0 underline decoration-[var(--hui-color-border-base-secondary)] underline-offset-2 hover:text-[var(--hui-color-foreground-base-primary)] hover:decoration-current"
                       >
-                        {text(item.title)} (opens in a new tab)
+                        {text(item.title)}
+                        <span className="sr-only"> (opens in a new tab)</span>
                       </a>
                     ) : (
                       text(item.title)
@@ -629,7 +689,9 @@ export function GeneratedComponent(
           )}
         </>
       );
-      return name === "Card" && p.variant !== "clear" ? (
+      // A card inside a card would draw a second frame; the inner one keeps
+      // only its layout.
+      return name === "Card" && p.variant !== "clear" && !insideCard ? (
         <Card
           style={{ minWidth: 0, flex: 1 }}
           className={cn(flatCard, p.variant === "sunk" && "bg-muted")}
@@ -648,9 +710,9 @@ export function GeneratedComponent(
         // The extra space below sets the header apart from the first field.
         <CardHeader className="px-0 pb-[var(--hui-space-2)]">
           {/* Semibold, so the title outranks the medium-weight field labels. */}
-          <CardTitle className="[font-weight:var(--hui-font-weight-semibold)]">{text(p.title)}</CardTitle>
+          <CardTitle className="text-base [font-weight:var(--hui-font-weight-semibold)]">{text(p.title)}</CardTitle>
           {!!p.subtitle && (
-            <CardDescription>{text(p.subtitle)}</CardDescription>
+            <CardDescription className="text-sm">{text(p.subtitle)}</CardDescription>
           )}
         </CardHeader>
       );
@@ -679,18 +741,7 @@ export function GeneratedComponent(
       return <GeneratedText name={name} props={p} />;
     case "Callout":
     case "TextCallout":
-      return p.visible === false ? null : (
-        <Alert
-          variant={
-            p.variant === "error" || p.variant === "danger"
-              ? "error"
-              : "default"
-          }
-        >
-          <AlertTitle>{text(p.title)}</AlertTitle>
-          <AlertDescription>{text(p.description)}</AlertDescription>
-        </Alert>
-      );
+      return p.visible === false ? null : <GeneratedCallout props={p} />;
     case "Label":
       return <Label>{text(p.text)}</Label>;
     case "Image":
@@ -698,14 +749,14 @@ export function GeneratedComponent(
       return <Image src={p.src} alt={p.alt} />;
     case "ImageGallery":
       return (
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(10rem,100%),1fr))] gap-3">
           {array(p.images).map((image, i) => {
             const item = record(image);
             return (
-              <figure key={i} className="m-0">
+              <figure key={i} className="m-0 grid min-w-0 content-start gap-1.5">
                 <Image src={item.src} alt={item.alt} />
                 {!!item.details && (
-                  <figcaption>{text(item.details)}</figcaption>
+                  <figcaption className="text-[13px] text-muted-foreground">{text(item.details)}</figcaption>
                 )}
               </figure>
             );
@@ -723,29 +774,60 @@ export function GeneratedComponent(
           React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>
         >
       )[key];
-      return Icon ? <Icon className="size-5" aria-hidden /> : null;
+      return Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null;
+    }
+    case "ImageTextLarge": {
+      // A banner: the image fills the width at a fixed ratio, the text sits below.
+      const url = safeUrl(p.src);
+      return (
+        <div className="grid min-w-0 gap-3 text-sm">
+          {url && (
+            <img
+              src={url}
+              alt={text(p.alt)}
+              loading="lazy"
+              className="aspect-[16/9] w-full rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] object-cover"
+            />
+          )}
+          <span className="grid min-w-0 gap-0.5">
+            <strong className="font-medium break-words">{text(p.title)}</strong>
+            {!!p.subtitle && (
+              <small className="text-sm text-muted-foreground">{text(p.subtitle)}</small>
+            )}
+          </span>
+        </div>
+      );
     }
     case "IconText":
-    case "ImageText":
-    case "ImageTextLarge":
+    case "ImageText": {
+      // A thumbnail is a small fixed square, never the image's own size.
+      const url = name === "ImageText" ? safeUrl(p.src) : null;
+      const size = Math.min(Math.max(Number(p.imageSize) || 40, 20), 96);
       return (
         // Top-aligned, so the icon sits on the title's line when a subtitle wraps.
-        <div className="flex min-w-0 items-start gap-3 [&>svg]:mt-0.5">
-          {name === "IconText" ? (
-            render(p.icon)
-          ) : (
-            <Image src={p.src} alt={p.alt} />
-          )}
-          <span className="grid gap-1">
-            <strong>{text(p.title)}</strong>
+        <div className="flex min-w-0 items-start gap-3 text-sm [&>svg]:mt-0.5 [&>svg]:text-muted-foreground">
+          {name === "IconText"
+            ? render(p.icon)
+            : url && (
+                <img
+                  src={url}
+                  alt={text(p.alt)}
+                  loading="lazy"
+                  style={{ width: size, height: size }}
+                  className="shrink-0 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] object-contain"
+                />
+              )}
+          <span className="grid min-w-0 gap-0.5">
+            <strong className="font-medium">{text(p.title)}</strong>
             {!!p.subtitle && (
-              <small className="[font-size:var(--hui-font-size-small)] text-muted-foreground">
+              <small className="text-sm text-muted-foreground">
                 {text(p.subtitle)}
               </small>
             )}
           </span>
         </div>
       );
+    }
     case "Tag": {
       const tone = tones[text(p.variant)] ?? "neutral";
       return p.fill === "solid" ? (
@@ -845,18 +927,26 @@ export function GeneratedComponent(
       return <GeneratedHtmlVisual props={p} />;
     case "EntityList":
       return (
-        <dl className="m-0 grid gap-2">
-          {[p.header, ...array(p.rows), p.footer]
-            .filter(Boolean)
-            .map((row, i) => {
+        <dl className="m-0 grid divide-y divide-[var(--hui-color-border-base-primary)] text-sm">
+          {[
+            p.header && { row: p.header, kind: "header" },
+            ...array(p.rows).map((row) => ({ row, kind: "row" })),
+            p.footer && { row: p.footer, kind: "footer" },
+          ]
+            .filter((entry): entry is { row: unknown; kind: string } => !!entry)
+            .map(({ row, kind }, i) => {
               const item = record(row);
               return (
                 <div
                   key={i}
-                  className="flex justify-between gap-4 border-b pb-2"
+                  className={cn(
+                    "flex min-w-0 items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0",
+                    kind === "header" && "text-[13px] font-medium text-muted-foreground",
+                    kind === "footer" && "font-medium",
+                  )}
                 >
-                  <dt>{text(item.left)}</dt>
-                  <dd className="m-0 tabular-nums">{text(item.right)}</dd>
+                  <dt className={cn("min-w-0", kind === "row" && "text-muted-foreground")}>{text(item.left)}</dt>
+                  <dd className="m-0 shrink-0 text-right tabular-nums">{text(item.right)}</dd>
                 </div>
               );
             })}
@@ -876,13 +966,27 @@ export function GeneratedComponent(
       return <GeneratedDiagram props={p} />;
     case "Steps":
       return (
-        <ol className="grid gap-4">
+        // Each number sits on a hairline that runs down to the next step.
+        <ol className="m-0 grid list-none p-0 text-sm">
           {array(p.items).map((value, i) => {
             const item = nodeProps(value);
             return (
-              <li key={i}>
-                <strong>{text(item.title)}</strong>
-                <p>{text(item.details)}</p>
+              <li
+                key={i}
+                className="relative grid min-w-0 grid-cols-[1.5rem_minmax(0,1fr)] gap-x-3 pb-5 last:pb-0 before:absolute before:top-7 before:bottom-1 before:left-3 before:w-px before:bg-[var(--hui-color-border-base-primary)] last:before:hidden"
+              >
+                <span
+                  aria-hidden="true"
+                  className="flex size-6 items-center justify-center rounded-full border border-[var(--hui-color-border-base-secondary)] text-[12px] font-medium text-muted-foreground tabular-nums"
+                >
+                  {i + 1}
+                </span>
+                <div className="grid min-w-0 gap-0.5 pt-0.5">
+                  <strong className="font-medium">{text(item.title)}</strong>
+                  {!!text(item.details) && (
+                    <p className="m-0 text-pretty text-muted-foreground">{text(item.details)}</p>
+                  )}
+                </div>
               </li>
             );
           })}
@@ -968,7 +1072,8 @@ export function GeneratedComponent(
         </MetricCardContext.Provider>
       );
       return p.layout === "carousel" ? (
-        <div className="flex gap-3 overflow-x-auto">{items}</div>
+        // Each card keeps a readable width and the row scrolls.
+        <div className="flex snap-x gap-3 overflow-x-auto pb-1 [&>*]:w-56 [&>*]:shrink-0 [&>*]:snap-start">{items}</div>
       ) : (
         // The block measures itself: two columns when narrow, with an odd
         // last card spanning both; as many as fit when wide, so three
@@ -986,15 +1091,22 @@ export function GeneratedComponent(
     case "VisualCardItem":
     case "ContextCardItem":
       return (
-        <Card className={itemCard}>
-          <CardContent className={cn(itemCardContent, "grid content-between gap-3")}>
+        // Inside a card, a tile instead of a second framed card.
+        <Card
+          className={cn(
+            itemCard,
+            insideCard && "border-0 bg-[var(--hui-color-background-base-secondary)]",
+          )}
+        >
+          {/* Content starts at the top; in a row of equal-height cards only the footer drops to the bottom. */}
+          <CardContent className={cn(itemCardContent, "flex flex-col gap-3")}>
             <Image src={p.bgImageSrc} alt={p.bgImageAlt} />
             {render(p.lhs ?? p.top ?? p.header)}
             {render(p.rhs ?? p.bottom ?? p.body)}
-            {!!p.title && <strong>{text(p.title)}</strong>}
+            {!!p.title && <strong className="text-sm font-medium">{text(p.title)}</strong>}
             {render(p.tag)}
             {!!p.footer && (
-              <footer className="flex items-center justify-between gap-3">
+              <footer className="mt-auto flex items-center justify-between gap-3">
                 {render(record(p.footer).price)}
                 {render(record(p.footer).button)}
               </footer>

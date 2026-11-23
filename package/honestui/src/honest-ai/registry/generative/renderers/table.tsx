@@ -399,102 +399,125 @@ export function GeneratedTable({
   // filter or push the toolbar past the table's edge.
   // Said once, in the card: an empty table reads "No rows".
   const rowCount = length === 0 ? "No rows" : `${length} ${length === 1 ? "row" : "rows"}`;
+  const filterable = length > FILTER_AT && !streaming;
+  const actionable = !streaming && length > 0;
   const toolbar = (
-    <div className="flex min-h-8 flex-wrap items-center justify-between gap-x-3 gap-y-2">
-      {title && (
+    // One row: what the table is on the left, its controls together on the
+    // right. Where a filter would crowd the title, the controls take a row of
+    // their own beneath it: the filter stretching from the start, the buttons
+    // at the end.
+    <div className="@container flex min-h-8 flex-wrap items-center gap-x-3 gap-y-2">
+      {title ? (
         <p className="m-0 min-w-0 text-sm font-medium text-[var(--hui-color-foreground-base-primary)]">
           {title}
           {!streaming && (
-            <span className="ms-2 text-xs font-normal text-muted-foreground">
+            <span className="ms-2 text-[13px] font-normal tabular-nums text-muted-foreground">
               {rowCount}
             </span>
           )}
         </p>
+      ) : (
+        !filterable && (
+          <span className="text-[13px] tabular-nums text-muted-foreground">
+            {streaming ? "" : rowCount}
+          </span>
+        )
       )}
-      {length > FILTER_AT && !streaming ? (
-        <div className="relative w-full max-w-60 min-w-40 flex-1 max-sm:max-w-none">
-          <label htmlFor={filterId} className="sr-only">
-            Filter {label}
-          </label>
-          <SearchIcon
-            aria-hidden="true"
-            className="pointer-events-none absolute start-2.5 top-1/2 z-1 size-3.5 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            id={filterId}
-            type="search"
-            size="sm"
-            value={query}
-            // An untitled table says its size here, where a title would.
-            placeholder={title ? "Filter rows" : `Filter ${length} rows`}
-            onChange={(event) => setQuery(event.target.value)}
-            className="[&_input]:ps-8"
-          />
-        </div>
-      ) : title ? null : (
-        <span className="text-xs text-muted-foreground">
-          {streaming ? "" : rowCount}
-        </span>
-      )}
-      {!streaming && length > 0 && (
-        <div className="ms-auto flex flex-wrap items-center justify-end gap-1 max-sm:ms-0">
-          {selecting ? (
-            <>
-              <Button size="sm" disabled={selected.size === 0 || (busy && !views)} onClick={ask}>
-                {selected.size === 0
-                  ? "Choose rows to ask about"
-                  : `Ask about ${selected.size} ${selected.size === 1 ? "row" : "rows"}${
-                      hiddenSelected > 0 ? ` (${hiddenSelected} hidden by filter)` : ""
-                    }`}
-              </Button>
-              <Button
+      {(filterable || actionable) && (
+        <div
+          className={
+            filterable
+              ? "flex w-full min-w-0 flex-wrap items-center gap-1 @2xl:ms-auto @2xl:w-auto"
+              : "ms-auto flex min-w-0 flex-wrap items-center justify-end gap-1"
+          }
+        >
+          {filterable && (
+            <div className="relative min-w-36 flex-1 basis-full @md:me-1 @md:basis-auto @2xl:w-48 @2xl:flex-none">
+              <label htmlFor={filterId} className="sr-only">
+                Filter {label}
+              </label>
+              <SearchIcon
+                aria-hidden="true"
+                className="pointer-events-none absolute start-2.5 top-1/2 z-1 size-3.5 -translate-y-1/2 text-muted-foreground"
+              />
+              <Input
+                id={filterId}
+                type="search"
                 size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setSelecting(false);
-                  setSelected(new Set());
-                }}
-              >
-                Cancel
-              </Button>
-            </>
-          ) : (
-            // Named on screen: it is what sets a generated table apart, and an
-            // icon alone hid it. The accessible name starts with the same words.
-            <Button
-              variant="ghost"
-              size="sm"
-              ref={askButton}
-              aria-label={`Ask about rows of ${label}`}
-              className="text-muted-foreground"
-              onClick={() => setSelecting(true)}
-            >
-              <AskIcon aria-hidden="true" />
-              Ask about rows
-            </Button>
+                value={query}
+                // An untitled table says its size here, where a title would.
+                placeholder={title ? "Filter rows" : `Filter ${length} rows`}
+                onChange={(event) => setQuery(event.target.value)}
+                className="[&_input]:ps-8"
+              />
+            </div>
           )}
-          <BlockActions
-            label={label}
-            // With a filter on, the controls say they act on the rows shown.
-            scope={needle ? `${order.length} of ${length} rows of ${label}` : undefined}
-            // The data as written (1200, not "1,200"), so a spreadsheet in
-            // any locale reads it as a number; grouping is for the screen.
-            rows={() => [header, ...order.map((row) => columns.map((_, i) => rawText(row, i)))]}
-            expanded={table(order)}
-          />
+          {actionable &&
+            (selecting ? (
+              <>
+                <Button size="sm" disabled={selected.size === 0 || (busy && !views)} onClick={ask}>
+                  {selected.size === 0
+                    ? "Choose rows to ask about"
+                    : `Ask about ${selected.size} ${selected.size === 1 ? "row" : "rows"}${
+                        hiddenSelected > 0 ? ` (${hiddenSelected} hidden by filter)` : ""
+                      }`}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setSelecting(false);
+                    setSelected(new Set());
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              // Named on screen: it is what sets a generated table apart, and an
+              // icon alone hid it. The accessible name starts with the same words.
+              <Button
+                variant="ghost"
+                size="sm"
+                ref={askButton}
+                aria-label={`Ask about rows of ${label}`}
+                className="text-muted-foreground"
+                onClick={() => setSelecting(true)}
+              >
+                <AskIcon aria-hidden="true" />
+                Ask about rows
+              </Button>
+            ))}
+          {actionable && (
+            <BlockActions
+              label={label}
+              // With a filter on, the controls say they act on the rows shown.
+              scope={needle ? `${order.length} of ${length} rows of ${label}` : undefined}
+              // The data as written (1200, not "1,200"), so a spreadsheet in
+              // any locale reads it as a number; grouping is for the screen.
+              rows={() => [header, ...order.map((row) => columns.map((_, i) => rawText(row, i)))]}
+              expanded={table(order)}
+            />
+          )}
         </div>
       )}
     </div>
   );
 
   return (
-    <div ref={frame} data-slot="generated-table" className="grid min-w-0 gap-2">
+    <div
+      ref={frame}
+      data-slot="generated-table"
+      // Body cells read in the primary text color; the shared table mutes all
+      // but the first column, which greys out real data in a reply.
+      className="grid min-w-0 gap-2 [--table-cell-color:var(--hui-color-foreground-base-primary)]"
+    >
       {table(order, selecting, toolbar)}
       {/* Written by the effect above, so a repeated note is heard again. */}
-      <p ref={note} role="status" className={attached ? "m-0 text-xs text-muted-foreground" : "sr-only"} />
+      <p ref={note} role="status" className={attached ? "m-0 text-[13px] text-muted-foreground" : "sr-only"} />
       {/* Mounted with the filter, so a screen reader hears its first message. */}
-      {length > FILTER_AT && !streaming && (
-        <div className="flex flex-wrap items-baseline gap-x-2 text-xs text-muted-foreground">
+      {filterable && (
+        <div className="flex flex-wrap items-baseline gap-x-2 text-[13px] tabular-nums text-muted-foreground">
           <p role="status" className="m-0">
             {needle ? (order.length === 0 ? `No rows match “${query.trim()}”.` : `${order.length} of ${length} rows`) : ""}
           </p>
@@ -502,7 +525,7 @@ export function GeneratedTable({
             <Button
               variant="link"
               size="sm"
-              className="h-auto p-0 text-xs"
+              className="h-auto p-0 text-[13px]"
               onClick={() => {
                 setQuery("");
                 document.getElementById(filterId)?.focus();

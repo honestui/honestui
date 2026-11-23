@@ -199,27 +199,27 @@ export function GeneratedMap({ props }: { props: Props }) {
               : "border-b border-[var(--hui-color-border-base-primary)]",
           )}
         >
-        {services && !streaming && !canvasFailed && found.length > 0 && imageryCovers === undefined && (
-          <MapPlaceholder text="Loading the map…" />
-        )}
-        {services && !streaming && !canvasFailed && found.length > 0 && imageryCovers !== undefined && (
-          <React.Suspense fallback={<MapPlaceholder text="Loading the map…" />}>
-            <MapCanvas
-              services={services}
-              imageryCovers={imageryCovers}
-              points={found.map(({ lat, lon, index }) => ({
-                lat,
-                lon,
-                mark: numbered ? String(index + 1) : undefined,
-              }))}
-              label={`Map of ${found.length} ${found.length === 1 ? "place" : "places"}. The same places are listed below.`}
-              onFail={() => setCanvasFailed(true)}
-            />
-          </React.Suspense>
-        )}
-        {services && !streaming && !canvasFailed && found.length === 0 && pending && (
-          <MapPlaceholder text="Finding places…" />
-        )}
+          {services && !streaming && !canvasFailed && found.length > 0 && imageryCovers === undefined && (
+            <MapPlaceholder text="Loading the map…" />
+          )}
+          {services && !streaming && !canvasFailed && found.length > 0 && imageryCovers !== undefined && (
+            <React.Suspense fallback={<MapPlaceholder text="Loading the map…" />}>
+              <MapCanvas
+                services={services}
+                imageryCovers={imageryCovers}
+                points={found.map(({ lat, lon, index }) => ({
+                  lat,
+                  lon,
+                  mark: numbered ? String(index + 1) : undefined,
+                }))}
+                label={`Map of ${found.length} ${found.length === 1 ? "place" : "places"}. The same places are listed below.`}
+                onFail={() => setCanvasFailed(true)}
+              />
+            </React.Suspense>
+          )}
+          {services && !streaming && !canvasFailed && found.length === 0 && pending && (
+            <MapPlaceholder text="Finding places…" />
+          )}
         </div>
         {notice && (
           <p
@@ -247,25 +247,25 @@ export function GeneratedMap({ props }: { props: Props }) {
             </Button>
           </div>
         )}
-        <List className={cn("m-0 grid list-none gap-3", inCard ? "p-0" : "p-5")}>
+        <List className={cn("m-0 grid list-none gap-3", inCard ? "p-0" : "px-5 py-4")}>
           {places.map((place, index) => {
             const result = results[index];
             return (
-              <li key={index} className="flex gap-3">
+              <li key={index} className="flex gap-3 text-sm">
                 <span
                   aria-hidden="true"
                   className={
                     numbered
-                      ? "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--hui-color-background-accent-emphasis)] text-xs font-semibold text-[var(--hui-color-foreground-accent-emphasis)]"
-                      : "mt-1.5 size-3 shrink-0 rounded-full bg-[var(--hui-color-background-accent-emphasis)]"
+                      ? "flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--hui-color-background-accent-emphasis)] text-[11px] font-semibold tabular-nums text-[var(--hui-color-foreground-accent-emphasis)]"
+                      : "mx-1.5 mt-1.5 size-2 shrink-0 rounded-full bg-[var(--hui-color-background-accent-emphasis)]"
                   }
                 >
                   {numbered ? index + 1 : ""}
                 </span>
                 <span className="grid min-w-0 gap-0.5">
-                  <span className="font-medium">{place.name}</span>
-                  {!!place.note && <span className="text-sm">{place.note}</span>}
-                  <span className="text-xs text-muted-foreground [overflow-wrap:anywhere]">
+                  <span className="font-medium break-words">{place.name}</span>
+                  {!!place.note && <span className="text-pretty">{place.note}</span>}
+                  <span className="text-xs text-muted-foreground break-words empty:hidden">
                     {!services || streaming
                       ? null
                       : result.status === "found"
@@ -292,7 +292,7 @@ export function GeneratedMap({ props }: { props: Props }) {
           </p>
         )}
       </div>
-      {!!caption && <figcaption className="text-sm text-muted-foreground">{caption}</figcaption>}
+      {!!caption && <figcaption className="text-sm text-pretty text-muted-foreground">{caption}</figcaption>}
     </figure>
   );
 }

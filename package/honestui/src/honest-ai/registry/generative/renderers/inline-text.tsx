@@ -1,8 +1,10 @@
 "use client";
 import * as React from "react";
 
+// Inside generated blocks, code reads as the surrounding text set in mono on
+// a faint fill: no border and no syntax tint, so it never outweighs a title.
 const code =
-  "mx-0.5 rounded-[var(--hui-radius-1)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[0.3rem] py-px font-mono text-[0.85em] text-[var(--prose-code-color,inherit)]";
+  "rounded-[var(--hui-radius-1)] bg-[color-mix(in_oklab,currentColor_7%,transparent)] px-[0.3em] py-px font-mono text-[0.88em] [box-decoration-break:clone]";
 
 // Emphasis follows Markdown's flanking rule: the inside of a delimiter never
 // touches a space, and a single * never sits against a letter or another *.

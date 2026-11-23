@@ -55,7 +55,7 @@ export function GeneratedCalculator({ props, renderNode }: GeneratedProps) {
         <InputsValidContext.Provider value={inputsValid}>
           <dl
             className={cn(
-              "m-0 grid content-start gap-5 bg-[var(--hui-color-background-base-secondary)] p-5 [&>*:first-child]:[--result-size:2.25rem] [&>*:not(:first-child)_[data-slot=result-incomplete]]:hidden",
+              "m-0 grid content-start gap-5 bg-[var(--hui-color-background-base-secondary)] p-5 [&>*:first-child]:[--result-size:1.875rem] [&>*:not(:first-child)_[data-slot=result-incomplete]]:hidden",
               inCard
                 ? "rounded-[var(--hui-radius-2)]"
                 : "border-t border-[var(--hui-color-border-base-primary)] @2xl:border-t-0 @2xl:border-l",
@@ -124,13 +124,13 @@ export function GeneratedResult({ props }: { props: Props }) {
 
   return (
     <div className="grid gap-1">
-      <dt className="text-sm text-muted-foreground">
+      <dt className="text-[13px] font-medium text-muted-foreground">
         {label}
         {/* Mounted once the reply is complete, so the finished stream is not read out. */}
         {!streaming && <Announcer text={`${label}: ${value ?? explanation}`} />}
       </dt>
       <dd
-        className="m-0 text-[length:var(--result-size,1.5rem)] leading-tight font-semibold tracking-tight [overflow-wrap:anywhere]"
+        className="m-0 text-[length:var(--result-size,1.25rem)] leading-tight font-semibold tracking-tight tabular-nums break-words"
         aria-hidden={value === undefined || undefined}
       >
         {value ?? "—"}
@@ -138,7 +138,7 @@ export function GeneratedResult({ props }: { props: Props }) {
       {!!explanation && (
         <dd
           data-slot={inputsValid ? undefined : "result-incomplete"}
-          className="m-0 text-sm text-muted-foreground"
+          className="m-0 text-sm text-pretty text-muted-foreground"
         >
           {explanation}
         </dd>

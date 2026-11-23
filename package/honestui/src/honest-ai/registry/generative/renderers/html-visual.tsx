@@ -498,7 +498,7 @@ function VisualFrame({
         )}
       >
         {paused && (
-          <p className="pointer-events-auto m-0 flex flex-wrap items-center gap-2 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-2.5 py-1.5 text-xs text-muted-foreground shadow-[var(--hui-shadow-feather)]">
+          <p className="pointer-events-auto m-0 flex flex-wrap items-center gap-2 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-2.5 py-1.5 text-xs text-muted-foreground">
             {paused === "wait"
               ? "Links from this visual are paused for a moment."
               : "Links from this visual are off because you declined them."}
@@ -565,7 +565,7 @@ export function GeneratedHtmlVisual({ props }: { props: Props }) {
         <VisualFrame html={html} title={title} initialHeight={initialHeight} />
       )}
       <div className="flex min-h-8 items-center justify-between gap-3">
-        <figcaption className="m-0 min-w-0 text-xs text-muted-foreground">
+        <figcaption className="m-0 min-w-0 text-[13px] text-muted-foreground">
           <span className="font-medium text-[var(--hui-color-foreground-base-primary)]">{title}</span>
           {description && <span> · {description}</span>}
         </figcaption>

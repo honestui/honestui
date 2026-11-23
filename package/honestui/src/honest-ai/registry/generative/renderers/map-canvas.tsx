@@ -61,7 +61,7 @@ function markerElement(mark: string | undefined) {
   // The list under the map names every place, so markers are not read twice.
   element.setAttribute("aria-hidden", "true");
   element.className = mark
-    ? "flex size-7 items-center justify-center rounded-full border-2 border-white bg-[var(--hui-color-background-accent-emphasis)] text-xs font-semibold text-[var(--hui-color-foreground-accent-emphasis)] shadow-[var(--hui-shadow-soft)]"
+    ? "flex size-7 items-center justify-center rounded-full border-2 border-white bg-[var(--hui-color-background-accent-emphasis)] text-xs font-semibold tabular-nums text-[var(--hui-color-foreground-accent-emphasis)] shadow-[var(--hui-shadow-soft)]"
     : "size-4 rounded-full border-2 border-white bg-[var(--hui-color-background-accent-emphasis)] shadow-[var(--hui-shadow-soft)]";
   element.textContent = mark ?? "";
   return element;
@@ -185,7 +185,7 @@ export default function MapCanvas({
         <div
           role="group"
           aria-label="Map view"
-          className="absolute top-2.5 left-2.5 z-10 flex gap-0.5 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-0.5 shadow-[var(--hui-shadow-soft)]"
+          className="absolute top-2.5 left-2.5 z-10 flex gap-0.5 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-0.5"
         >
           {(["satellite", "map"] as const).map((option) => (
             <button

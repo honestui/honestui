@@ -93,6 +93,10 @@ export function GeneratedChart({ name, props }: { name: string; props: Props }) 
   const table = chartTable(name, props);
   const missingAxis = name === "ScatterChart" ? unlabeledAxes(props) : "";
   const plotName = sideways ? "HorizontalBarChart" : name;
+  // Bars lying down take their height from their rows (36px each, plus the
+  // value axis and any legend), so a few categories never make thick slabs.
+  const byRows = plotName === "HorizontalBarChart";
+  const rowsHeight = categories * 36 + 40 + (array(props.series).length > 1 ? 34 : 0);
   return (
     <figure
       ref={measure}
@@ -133,13 +137,13 @@ export function GeneratedChart({ name, props }: { name: string; props: Props }) 
         )}
       </div>
       {/* A scatter's points mean nothing without its axes; say what is missing. */}
-      {missingAxis && <p className="m-0 text-xs text-muted-foreground">{missingAxis}</p>}
-      <div ref={plot} style={sideways ? { height: categories * 36 + 48 } : undefined}>
+      {missingAxis && <p className="m-0 text-[13px] text-muted-foreground">{missingAxis}</p>}
+      <div ref={plot} style={byRows ? { height: rowsHeight } : undefined}>
         <ChartBody
           name={plotName}
           props={props}
           label={accessibleName}
-          fill={sideways}
+          fill={byRows}
           width={chartWidth}
         />
       </div>
@@ -330,7 +334,7 @@ function ChartBody({
     // caption, or else the series ("Orders"), or the slices of a pie.
     ariaLabel: label || "Chart",
   };
-  if (name === "RadarChart" || name === "RadialChart")
+  if (name === "RadarChart" || name === "RadialChart" || name === "SingleStackedBarChart")
     return <SpecializedChart name={name} props={props} label={label} />;
   if (name === "PieChart") {
     const pieData = labels.map((label, i) => ({
@@ -343,7 +347,9 @@ function ChartBody({
     return (
       <PieChart {...common} data={pieData} dataKey="value" nameKey="label">
         <PieChart.Pie
-          innerRadius={props.variant === "donut" ? "55%" : 0}
+          innerRadius={props.variant === "donut" ? "62%" : 0}
+          // A hairline of surface between slices, so neighbours never merge.
+          paddingAngle={1}
           startAngle={props.appearance === "semiCircular" ? 180 : 90}
           endAngle={props.appearance === "semiCircular" ? 0 : -270}
         />
@@ -377,7 +383,7 @@ function ChartBody({
       >
         {/* One Scatter per series: each draws the points whose group is its key. */}
         {datasets.map((_, i) => (
-          <ScatterChart.Scatter key={i} dataKey={`series${i}`} />
+          <ScatterChart.Scatter key={i} dataKey={`series${i}`} symbolSize={9} />
         ))}
         <ScatterChart.Grid />
         {/* The caption names both axes, so they carry no titles of their own. */}
@@ -389,7 +395,7 @@ function ChartBody({
           hideDots
           {...axisFor(points.map((point) => point.y), text(props.yLabel), false)}
         />
-        {datasets.length > 1 && <ScatterChart.Legend />}
+        {datasets.length > 1 && <ScatterChart.Legend align="left" />}
         <ScatterChart.Tooltip />
       </ScatterChart>
     );
@@ -403,7 +409,7 @@ function ChartBody({
         <LineChart.Grid />
         <LineChart.XAxis dataKey="label" hideDots />
         <LineChart.YAxis hideDots />
-        {series.length > 1 && <LineChart.Legend />}
+        {series.length > 1 && <LineChart.Legend align="left" />}
         <LineChart.Tooltip />
       </LineChart>
     );
@@ -414,51 +420,39 @@ function ChartBody({
         stackType={props.variant === "stacked" ? "stacked" : "default"}
       >
         {series.map((_, i) => (
-          <AreaChart.Area key={i} dataKey={`series${i}`} />
+          // A solid line over a flat tint: no dashes, no fade.
+          <AreaChart.Area key={i} dataKey={`series${i}`} variant="solid" strokeVariant="solid" strokeWidth={2} />
         ))}
         <AreaChart.Grid />
         <AreaChart.XAxis dataKey="label" hideDots />
         <AreaChart.YAxis hideDots />
-        {series.length > 1 && <AreaChart.Legend />}
+        {series.length > 1 && <AreaChart.Legend align="left" />}
         <AreaChart.Tooltip />
       </AreaChart>
     );
-  if (name === "SingleStackedBarChart") {
-    const row: Record<string, unknown> = { label: "Total" };
-    labels.forEach((label, i) => {
-      row[`series${i}`] = array(props.values)[i];
-      config[`series${i}`] = {
-        label,
-        colors: { light: [colors[i % colors.length]] },
-      };
-    });
-    return (
-      <BarChart
-        {...common}
-        data={[row]}
-        layout="horizontal"
-        stackType="stacked"
-      >
-        {labels.map((_, i) => (
-          <BarChart.Bar key={i} dataKey={`series${i}`} />
-        ))}
-        <BarChart.Legend />
-        <BarChart.Tooltip />
-      </BarChart>
-    );
-  }
   const horizontal = name === "HorizontalBarChart";
   const stacked = props.variant === "stacked";
-  // A few categories across a wide reply make slabs; past 96px a bar stops
+  // A few categories across a wide reply make slabs; past 40px a bar stops
   // growing and the gap takes the rest. The 56px is the value axis.
   const pitch = width > 0 && !horizontal ? (width - 56) / Math.max(labels.length, 1) : 0;
-  const barWidth = 96 * (stacked ? 1 : Math.max(series.length, 1));
+  const barWidth = 40 * (stacked ? 1 : Math.max(series.length, 1));
   return (
     <BarChart
       {...common}
       layout={horizontal ? "horizontal" : "vertical"}
       stackType={stacked ? "stacked" : "default"}
-      barCategoryGap={pitch > barWidth * 1.25 ? pitch - barWidth : undefined}
+      // ECharts reads a number as pixels and a string as a share of the slot.
+      // Lying down, a bar takes half its row rather than filling it.
+      barCategoryGap={
+        horizontal
+          ? ("50%" as unknown as number)
+          : pitch > barWidth * 1.25
+            ? pitch - barWidth
+            : undefined
+      }
+      // A grouped bar keeps a sliver of surface from its neighbour (a share
+      // of the bar's width), so two series never read as one slab.
+      barGap={stacked ? undefined : ("8%" as unknown as number)}
     >
       {series.map((_, i) => (
         <BarChart.Bar
@@ -478,7 +472,7 @@ function ChartBody({
       <BarChart.Grid />
       <BarChart.XAxis dataKey="label" hideDots />
       <BarChart.YAxis hideDots />
-      {series.length > 1 && <BarChart.Legend />}
+      {series.length > 1 && <BarChart.Legend align="left" />}
       <BarChart.Tooltip />
     </BarChart>
   );

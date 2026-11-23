@@ -22,7 +22,8 @@ import {
   useFormValidation,
   parseStructuredRules,
 } from "../runtime/react";
-import { array, nodeProps, record, text, type Props } from "./shared";
+import { cn } from "../../../lib/utils.js";
+import { array, nodeProps, record, selectedChoice, text, type Props } from "./shared";
 /**
  * True inside a Calculator, where results update as inputs change, so each
  * input checks its rules whenever its value changes rather than on submit.
@@ -44,6 +45,11 @@ function sliderValues(value: unknown, min: unknown): number[] {
     .filter(Number.isFinite);
   return values.length ? values : [Number(min) || 0];
 }
+
+// A checkbox, switch or radio beside its label: the control sits on the
+// label's first line when a description wraps under it.
+const choiceRow = "flex items-start gap-2.5 text-sm [&>:first-child]:mt-0.5 [&>:first-child]:shrink-0";
+const choiceDescription = "block text-muted-foreground";
 
 export function GeneratedField({
   name,
@@ -185,23 +191,33 @@ export function GeneratedField({
         );
       break;
     }
-    case "Slider":
+    case "Slider": {
+      const values = sliderValues(value, props.min);
       control = (
-        <Slider
-          {...common}
-          min={Number(props.min)}
-          max={Number(props.max)}
-          step={Number(props.step ?? 1)}
-          value={sliderValues(value, props.min)}
-          // A drag reports a bare number; store [n] like every other slider value.
-          onValueChange={(next) => change(Array.isArray(next) ? next : [next])}
-          getAriaLabel={() => common["aria-label"]}
-          // Room for the value bubble, which sits above the thumb, below the label.
-          className="mt-[var(--hui-space-8)]"
-          showValue
-        />
+        // The value reads at the end of the track, so nothing floats over the
+        // label and the number never moves while the thumb does.
+        <div className="flex items-center gap-3">
+          <Slider
+            {...common}
+            min={Number(props.min)}
+            max={Number(props.max)}
+            step={Number(props.step ?? 1)}
+            value={values}
+            // A drag reports a bare number; store [n] like every other slider value.
+            onValueChange={(next) => change(Array.isArray(next) ? next : [next])}
+            getAriaLabel={() => common["aria-label"]}
+            className="flex-1"
+          />
+          <output
+            aria-hidden
+            className="min-w-[4ch] shrink-0 text-right text-sm font-medium tabular-nums"
+          >
+            {values.map((n) => Number(n).toLocaleString()).join(" – ")}
+          </output>
+        </div>
       );
       break;
+    }
     case "Select":
       control = (
         <Select value={text(value)} onValueChange={change} disabled={streaming}>
@@ -224,17 +240,17 @@ export function GeneratedField({
       control = (
         <RadioGroup {...common} value={text(value)} onValueChange={change}>
           {items.map((item, index) => (
-            <label key={text(item.value)} className="flex items-center gap-3">
+            <label key={text(item.value)} className={choiceRow}>
               <RadioGroupItem
                 id={`${id}-${index}`}
                 value={text(item.value)}
                 aria-label={text(item.label)}
                 aria-describedby={item.description ? `${id}-${index}-description` : undefined}
               />
-              <span>
+              <span className="min-w-0">
                 {text(item.label)}
                 {item.description ? (
-                  <span id={`${id}-${index}-description`} className="block text-muted-foreground">
+                  <span id={`${id}-${index}-description`} className={choiceDescription}>
                     {text(item.description)}
                   </span>
                 ) : null}
@@ -258,7 +274,7 @@ export function GeneratedField({
           {items.map((item, index) => {
             const Control = name === "SwitchGroup" ? Switch : Checkbox;
             return (
-              <label key={text(item.name)} className="flex items-center gap-3">
+              <label key={text(item.name)} className={choiceRow}>
                 <Control
                   id={`${id}-${index}`}
                   disabled={streaming}
@@ -269,10 +285,10 @@ export function GeneratedField({
                     change({ ...record(value), [text(item.name)]: checked })
                   }
                 />
-                <span>
+                <span className="min-w-0">
                   {text(item.label ?? item.name)}
                   {item.description ? (
-                    <span id={`${id}-${index}-description`} className="block text-muted-foreground">
+                    <span id={`${id}-${index}-description`} className={choiceDescription}>
                       {text(item.description)}
                     </span>
                   ) : null}
@@ -286,6 +302,11 @@ export function GeneratedField({
     case "Chips":
     case "OptionCards": {
       const multiple = props.type === "multiple";
+      // Option cards share a grid, so a row of them is one height; chips wrap.
+      const choiceLayout =
+        name === "OptionCards"
+          ? "grid grid-cols-[repeat(auto-fill,minmax(min(12rem,100%),1fr))] gap-2"
+          : "flex flex-wrap gap-2";
       const choices = items.map((item, index) => {
         const selected = multiple
           ? array(value).includes(item.value)
@@ -293,10 +314,12 @@ export function GeneratedField({
         return (
           <label
             key={text(item.value)}
-            className={
-              "flex cursor-pointer items-center gap-2 rounded-md border p-3 " +
-              (selected ? "bg-accent" : "")
-            }
+            data-selected={selected || undefined}
+            className={cn(
+              "flex min-w-0 cursor-pointer gap-2.5 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] text-sm motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] has-data-disabled:cursor-not-allowed has-data-disabled:opacity-60 has-data-disabled:hover:bg-transparent",
+              name === "OptionCards" ? "items-start px-3.5 py-3 [&>:first-child]:mt-0.5 [&>:first-child]:shrink-0" : "items-center px-3 py-1.5",
+              selected && cn(selectedChoice, "hover:bg-[var(--hui-color-background-neutral-primary)]"),
+            )}
           >
             {multiple ? (
               <Checkbox
@@ -323,10 +346,10 @@ export function GeneratedField({
               />
             )}
             {renderNode(item.icon ?? item.topContent)}
-            <span>
+            <span className="min-w-0">
               {text(item.title ?? item.label)}
               {item.subtitle ? (
-                <span id={`${id}-${index}-description`} className="block text-muted-foreground">
+                <span id={`${id}-${index}-description`} className={choiceDescription}>
                   {text(item.subtitle)}
                 </span>
               ) : null}
@@ -340,7 +363,7 @@ export function GeneratedField({
           disabled={streaming}
           aria-label={common["aria-label"]}
           aria-describedby={common["aria-describedby"]}
-          className="flex flex-wrap gap-3"
+          className={choiceLayout}
         >
           {choices}
         </fieldset>
@@ -349,7 +372,7 @@ export function GeneratedField({
           {...common}
           value={text(value)}
           onValueChange={change}
-          className="flex flex-wrap gap-3"
+          className={choiceLayout}
         >
           {choices}
         </RadioGroup>
@@ -363,7 +386,7 @@ export function GeneratedField({
     <div className="grid gap-2">
       {control}
       {error && (
-        <p id={`${id}-error`} role="alert" className="text-sm text-destructive">
+        <p id={`${id}-error`} role="alert" className="m-0 text-[13px] text-destructive">
           {error}
         </p>
       )}

@@ -7,3 +7,13 @@
   scrollbar-width: thin;
   scrollbar-color: var(--hui-color-overlay-base-a5) transparent;
 }
+
+/* Stroked icons draw round caps and joins. The honestui icon set leaves
+   them unset, so the zero-length dot in an alert or info icon (M12 17h.01)
+   draws nothing with the default butt cap, and line ends look clipped. A
+   path that sets its own cap keeps it: its attribute beats the inherited
+   value. Zero specificity, so any component rule still wins. */
+:where(svg[stroke="currentColor"][fill="none"]) {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

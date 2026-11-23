@@ -128,7 +128,7 @@ export function GeneratedQuiz({ props }: { props: Props }) {
       <div data-frame={frame ? "" : undefined} className={frame}>
         <div className={cn("grid gap-1 border-b border-[var(--hui-color-border-base-primary)] pb-4", pad, !!pad && "pt-4")}>
           {/* data-slot opts out of the site's page-heading size for bare h2s. */}
-          <h2 ref={heading} tabIndex={-1} data-slot="quiz-score" className="m-0 text-2xl font-semibold tracking-tight outline-none">
+          <h2 ref={heading} tabIndex={-1} data-slot="quiz-score" className="m-0 text-base font-semibold tabular-nums outline-none">
             {scored.length > 0 ? `${correct} of ${scored.length} correct` : "Answers submitted"}
           </h2>
           <p className="m-0 text-sm text-muted-foreground">
@@ -137,7 +137,7 @@ export function GeneratedQuiz({ props }: { props: Props }) {
               : "Review each answer below."}
           </p>
         </div>
-        <ol className={cn("m-0 grid list-none gap-7 py-5", pad)}>
+        <ol className={cn("m-0 grid list-none gap-6 py-5", pad)}>
           {questions.map((item, i) => (
             <li key={i}>
               <QuestionView
@@ -168,7 +168,7 @@ export function GeneratedQuiz({ props }: { props: Props }) {
   return (
     <div data-frame={frame ? "" : undefined} className={frame}>
       <div className={cn("grid gap-2", pad, !!pad && "pt-4")}>
-        <p className="m-0 text-sm text-muted-foreground" aria-hidden="true">
+        <p className="m-0 text-[13px] font-medium text-muted-foreground tabular-nums" aria-hidden="true">
           Question {current + 1} of {questions.length}
         </p>
         <div
@@ -253,7 +253,7 @@ function QuestionView({
         id={`${id}-question`}
         data-slot="quiz-question"
         tabIndex={headingRef ? -1 : undefined}
-        className="m-0 text-base font-medium outline-none"
+        className="m-0 text-base font-medium text-pretty outline-none"
       >
         <span className="sr-only">{`Question ${number} of ${total}: `}</span>
         {reviewing && <span aria-hidden="true">{number}. </span>}
@@ -280,8 +280,9 @@ function QuestionView({
             <label
               key={j}
               className={cn(
-                "flex items-center gap-3 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] px-3 py-2.5",
-                !reviewing && "cursor-pointer hover:bg-[var(--hui-color-background-base-secondary)]",
+                "flex items-center gap-3 rounded-[var(--hui-radius-2)] border border-[var(--hui-color-border-base-primary)] px-3 py-2.5 text-sm break-words text-foreground",
+                !reviewing &&
+                  "cursor-pointer hover:bg-[var(--hui-color-background-base-secondary)] has-[[data-checked]]:border-[var(--hui-color-border-base-secondary)] has-[[data-checked]]:bg-[var(--hui-color-background-neutral-primary)]",
                 reviewing && !isAnswer && !isWrongChoice && "text-muted-foreground",
                 isAnswer &&
                   "border-[var(--hui-color-foreground-success-primary)] bg-[var(--hui-color-background-success-primary)]",
@@ -316,7 +317,7 @@ function QuestionView({
         })}
       </RadioGroup>
       {reviewing && (
-        <p id={`${id}-feedback`} className="m-0 text-sm">
+        <p id={`${id}-feedback`} className="m-0 text-sm text-pretty">
           {!question.gradable ? (
             "This question has no answer key, so it isn't scored."
           ) : (

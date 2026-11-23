@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { LiteralValue, diagramCanvas, diagramCaption } from "./diagram";
 import { InlineText } from "./inline-text";
 import { array, nodeProps, text, type Props } from "./shared";
 
@@ -28,20 +29,14 @@ function readParts(value: unknown): Part[] {
   return parts;
 }
 
+// The same raised surface as a diagram's boxes.
 const surface =
-  "border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)]";
-
-function Value({ value, className }: { value: string; className?: string }) {
-  return (
-    <span className={`font-mono font-medium [overflow-wrap:anywhere] ${className ?? ""}`}>
-      {value}
-    </span>
-  );
-}
+  "border border-[var(--hui-color-border-base-primary)] bg-[color-mix(in_oklab,var(--hui-color-foreground-base-primary)_3%,var(--hui-color-background-base-primary))]";
 
 /**
- * Parts side by side, as one bar with each label under its segment. Narrow, or
- * with many parts, each part becomes a line: its value beside its label.
+ * Parts side by side, as one bar with each label under its segment, both
+ * starting at the same inset so the column reads as one. Narrow, or with many
+ * parts, each part becomes a line: its value beside its label.
  */
 function RowParts({ parts }: { parts: Part[] }) {
   const asBar = parts.length <= MAX_BAR_PARTS;
@@ -57,23 +52,24 @@ function RowParts({ parts }: { parts: Part[] }) {
       {parts.map((part, i) => (
         <li key={i} className="group/part col-span-2 grid min-w-0 grid-cols-subgrid items-start @2xl:group-data-[layout=bar]/row:col-span-1 @2xl:group-data-[layout=bar]/row:flex @2xl:group-data-[layout=bar]/row:flex-col @2xl:group-data-[layout=bar]/row:gap-2">
           <span
-            className={`${surface} flex min-h-9 shrink-0 items-center justify-start @2xl:group-data-[layout=bar]/row:justify-center rounded-[var(--hui-radius-2)] px-3 py-1.5 text-sm @2xl:group-data-[layout=bar]/row:min-h-14 @2xl:group-data-[layout=bar]/row:w-full @2xl:group-data-[layout=bar]/row:rounded-none @2xl:group-data-[layout=bar]/row:border-l-0 @2xl:group-data-[layout=bar]/row:px-2 @2xl:group-data-[layout=bar]/row:group-first/part:rounded-l-[var(--hui-radius-2)] @2xl:group-data-[layout=bar]/row:group-first/part:border-l @2xl:group-data-[layout=bar]/row:group-last/part:rounded-r-[var(--hui-radius-2)]`}
+            className={`${surface} flex min-h-9 max-w-full min-w-0 shrink-0 items-center rounded-[var(--hui-radius-2)] px-3 py-1.5 text-sm break-words @2xl:group-data-[layout=bar]/row:min-h-11 @2xl:group-data-[layout=bar]/row:w-full @2xl:group-data-[layout=bar]/row:rounded-none @2xl:group-data-[layout=bar]/row:border-l-0 @2xl:group-data-[layout=bar]/row:py-2.5 @2xl:group-data-[layout=bar]/row:group-first/part:rounded-l-[var(--hui-radius-2)] @2xl:group-data-[layout=bar]/row:group-first/part:border-l @2xl:group-data-[layout=bar]/row:group-last/part:rounded-r-[var(--hui-radius-2)]`}
           >
-            <Value value={part.value || part.label} />
+            {part.value ? (
+              <LiteralValue value={part.value} />
+            ) : (
+              <span className="min-w-0 font-medium">
+                <InlineText value={part.label} />
+              </span>
+            )}
           </span>
-          <span className="grid min-w-0 gap-0.5 pt-1.5 @2xl:group-data-[layout=bar]/row:pt-0 @2xl:group-data-[layout=bar]/row:pr-3">
-            {/* The accent tick ties a label to the segment above it. */}
-            <span
-              aria-hidden="true"
-              className="mb-1 hidden h-0.5 w-6 rounded-full bg-[var(--hui-color-foreground-accent-primary)] @2xl:group-data-[layout=bar]/row:block"
-            />
+          <span className="grid min-w-0 gap-0.5 pt-[7px] break-words @2xl:group-data-[layout=bar]/row:px-3 @2xl:group-data-[layout=bar]/row:pt-0">
             {!!part.value && (
-              <span className="text-sm font-medium">
+              <span className="text-[13px] font-medium">
                 <InlineText value={part.label} />
               </span>
             )}
             {!!part.detail && (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-[13px] text-pretty text-muted-foreground">
                 <InlineText value={part.detail} />
               </span>
             )}
@@ -91,16 +87,18 @@ function StackParts({ parts }: { parts: Part[] }) {
       {parts.map((part, i) => (
         <li
           key={i}
-          className="grid gap-1 border border-t-0 border-[var(--hui-color-border-base-primary)] px-4 py-3 first:rounded-t-[var(--hui-radius-2)] first:border-t last:rounded-b-[var(--hui-radius-2)] even:bg-[var(--hui-color-background-base-secondary)] @xl:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] @xl:items-baseline @xl:gap-4"
+          className="grid gap-1 border border-t-0 border-[var(--hui-color-border-base-primary)] bg-[color-mix(in_oklab,var(--hui-color-foreground-base-primary)_3%,var(--hui-color-background-base-primary))] px-4 py-3 text-sm break-words first:rounded-t-[var(--hui-radius-2)] first:border-t last:rounded-b-[var(--hui-radius-2)] @xl:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] @xl:items-baseline @xl:gap-4"
         >
           <span className="flex min-w-0 flex-wrap items-baseline gap-x-2">
             <span className="font-medium">
               <InlineText value={part.label} />
             </span>
-            {!!part.value && <Value value={part.value} className="text-sm" />}
+            {!!part.value && (
+              <LiteralValue value={part.value} className="text-muted-foreground" />
+            )}
           </span>
           {!!part.detail && (
-            <span className="text-sm text-muted-foreground">
+            <span className="text-pretty text-muted-foreground">
               <InlineText value={part.detail} />
             </span>
           )}
@@ -119,22 +117,21 @@ function NestedParts({ parts, depth = 0 }: { parts: Part[]; depth?: number }) {
   const inner = depth + 1 < parts.length;
   return (
     <li
-      className={`grid gap-3 rounded-[var(--hui-radius-4)] border border-[var(--hui-color-border-base-primary)] p-3 @md:p-4 ${
+      className={`grid gap-3 rounded-[var(--hui-radius-2)] border px-4 py-3 break-words ${
         depth % 2 === 0
-          ? "bg-[var(--hui-color-background-base-secondary)]"
-          : "bg-[var(--hui-color-background-base-primary)]"
+          ? "border-[var(--hui-color-border-base-primary)] bg-[color-mix(in_oklab,var(--hui-color-foreground-base-primary)_3%,var(--hui-color-background-base-primary))]"
+          : "border-dashed border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-secondary)]"
       }`}
     >
-      <span className={`grid gap-0.5 ${inner ? "" : "justify-items-center py-3 text-center"}`}>
-        <span className="flex flex-wrap items-baseline gap-x-2 text-sm">
+      <span className="grid gap-0.5 text-sm">
+        <span className="flex min-w-0 flex-wrap items-baseline gap-x-2">
           <span className="font-medium">
             <InlineText value={part.label} />
           </span>
-          {!!part.value && inner && <Value value={part.value} />}
+          {!!part.value && <LiteralValue value={part.value} className="text-muted-foreground" />}
         </span>
-        {!!part.value && !inner && <Value value={part.value} className="text-xl" />}
         {!!part.detail && (
-          <span className="text-sm text-muted-foreground">
+          <span className="text-pretty text-muted-foreground">
             <InlineText value={part.detail} />
           </span>
         )}
@@ -155,16 +152,18 @@ export function GeneratedPartsDiagram({ props }: { props: Props }) {
   if (parts.length === 0) return null;
   const caption = text(props.caption);
   return (
-    <figure className="@container m-0 grid gap-3">
-      {arrangement === "row" && <RowParts parts={parts} />}
-      {arrangement === "stack" && <StackParts parts={parts} />}
-      {arrangement === "nested" && (
-        <ul className="m-0 list-none p-0">
-          <NestedParts parts={parts} />
-        </ul>
-      )}
+    <figure className="@container m-0 grid gap-2">
+      <div className={diagramCanvas}>
+        {arrangement === "row" && <RowParts parts={parts} />}
+        {arrangement === "stack" && <StackParts parts={parts} />}
+        {arrangement === "nested" && (
+          <ul className="m-0 list-none p-0">
+            <NestedParts parts={parts} />
+          </ul>
+        )}
+      </div>
       {!!caption && (
-        <figcaption className="text-sm text-muted-foreground">
+        <figcaption className={diagramCaption}>
           <InlineText value={caption} />
         </figcaption>
       )}
