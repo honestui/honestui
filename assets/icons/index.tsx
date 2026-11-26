@@ -1460,3 +1460,230 @@ export function EChartsIcon({
     </svg>
   );
 }
+
+// Chart icons for the newer chart types. Same 18px grid and two-tone style as
+// the chart icons above: the primary mark in `fill`, context at 40%.
+function ChartIconSvg({
+  width = "1em",
+  height = "1em",
+  children,
+  ...props
+}: Omit<IconProps, "fill" | "secondaryfill"> & { children: React.ReactNode }) {
+  return (
+    <svg
+      height={height}
+      width={width}
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      {children}
+    </svg>
+  );
+}
+
+export function SparklineIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <path d="M1.75 12.5 4.5 9.75l2.5 1.75 3.25-5 2.5 2.25 3.5-4.5" fill="none" stroke={fill} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M1.75 15.25h14.5" stroke={secondary} strokeOpacity="0.4" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="16.25" cy="4.25" r="1.5" fill={fill} />
+    </ChartIconSvg>
+  );
+}
+
+export function RadarChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <path d="M9 1.5 16.25 6.75 13.5 15.25h-9L1.75 6.75Z" fill="none" stroke={secondary} strokeOpacity="0.4" strokeWidth="1.25" strokeLinejoin="round" />
+      <path d="M9 4.25 13.25 7.5 11.75 12.75 6.5 13 4.5 7.25Z" fill={fill} fillOpacity="0.85" stroke={fill} strokeWidth="1" strokeLinejoin="round" />
+    </ChartIconSvg>
+  );
+}
+
+export function RadialChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <circle cx="9" cy="9" r="7" fill="none" stroke={secondary} strokeOpacity="0.4" strokeWidth="1.75" />
+      <circle cx="9" cy="9" r="3.75" fill="none" stroke={secondary} strokeOpacity="0.4" strokeWidth="1.75" />
+      <path d="M9 2a7 7 0 1 1-7 7" fill="none" stroke={fill} strokeWidth="1.75" strokeLinecap="round" />
+      <path d="M9 5.25A3.75 3.75 0 0 1 12.75 9" fill="none" stroke={fill} strokeWidth="1.75" strokeLinecap="round" />
+    </ChartIconSvg>
+  );
+}
+
+export function GaugeChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <path d="M2.25 13.5a6.75 6.75 0 0 1 13.5 0" fill="none" stroke={secondary} strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" />
+      <path d="M2.25 13.5A6.75 6.75 0 0 1 11.6 7.27" fill="none" stroke={fill} strokeWidth="2" strokeLinecap="round" />
+      <path d="M9 13.5 12.25 9.5" stroke={fill} strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="9" cy="13.5" r="1.5" fill={fill} />
+    </ChartIconSvg>
+  );
+}
+
+export function BarListIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <rect x="1.5" y="2.5" width="12" height="3.25" rx="1" fill={fill} />
+      <rect x="1.5" y="7.375" width="8.5" height="3.25" rx="1" fill={secondary} fillOpacity="0.4" />
+      <rect x="1.5" y="12.25" width="5.5" height="3.25" rx="1" fill={secondary} fillOpacity="0.4" />
+      <rect x="15" y="3.5" width="1.5" height="1.25" rx=".5" fill={secondary} fillOpacity="0.4" />
+      <rect x="15" y="8.375" width="1.5" height="1.25" rx=".5" fill={secondary} fillOpacity="0.4" />
+      <rect x="15" y="13.25" width="1.5" height="1.25" rx=".5" fill={secondary} fillOpacity="0.4" />
+    </ChartIconSvg>
+  );
+}
+
+export function TrackerIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  const bars = [1, 1, 1, 0.4, 1, 1, 0.4, 1] as const;
+  return (
+    <ChartIconSvg {...props}>
+      {bars.map((opacity, index) => (
+        <rect
+          key={index}
+          x={1.25 + index * 2}
+          y="4.5"
+          width="1.5"
+          height="9"
+          rx=".6"
+          fill={opacity === 1 ? fill : secondary}
+          fillOpacity={opacity}
+        />
+      ))}
+    </ChartIconSvg>
+  );
+}
+
+export function CategoryBarIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <rect x="1.25" y="7.5" width="6.5" height="3" rx="1.5" fill={fill} />
+      <rect x="8.5" y="7.5" width="4" height="3" rx=".75" fill={secondary} fillOpacity="0.6" />
+      <rect x="13.25" y="7.5" width="3.5" height="3" rx="1.5" fill={secondary} fillOpacity="0.3" />
+      <path d="M10.5 3.25 9.25 5h2.5Z" fill={fill} stroke={fill} strokeWidth=".75" strokeLinejoin="round" />
+      <rect x="1.25" y="12.75" width="2.5" height="1.25" rx=".5" fill={secondary} fillOpacity="0.4" />
+      <rect x="14.25" y="12.75" width="2.5" height="1.25" rx=".5" fill={secondary} fillOpacity="0.4" />
+    </ChartIconSvg>
+  );
+}
+
+export function ComboChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <rect x="1.75" y="9.5" width="3.25" height="6" rx="1" fill={secondary} fillOpacity="0.4" />
+      <rect x="7.375" y="7" width="3.25" height="8.5" rx="1" fill={secondary} fillOpacity="0.4" />
+      <rect x="13" y="10.5" width="3.25" height="5" rx="1" fill={secondary} fillOpacity="0.4" />
+      <path d="M2 6.25 6.5 3.5l4.5 2 5-3.25" fill="none" stroke={fill} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </ChartIconSvg>
+  );
+}
+
+export function WaterfallChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <rect x="1.25" y="7" width="3" height="8.75" rx=".75" fill={fill} />
+      <rect x="5.5" y="3" width="3" height="4" rx=".75" fill={secondary} fillOpacity="0.4" />
+      <rect x="9.75" y="3" width="3" height="5.75" rx=".75" fill={secondary} fillOpacity="0.4" />
+      <rect x="14" y="8.75" width="3" height="7" rx=".75" fill={fill} />
+    </ChartIconSvg>
+  );
+}
+
+export function CandlestickChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <path d="M4 2.5v13M9 4.5v10M14 1.75v11.5" stroke={secondary} strokeOpacity="0.4" strokeWidth="1.25" strokeLinecap="round" />
+      <rect x="2.25" y="5.5" width="3.5" height="6.5" rx=".75" fill={fill} />
+      <rect x="7.25" y="7.5" width="3.5" height="4.5" rx=".75" fill={secondary} fillOpacity="0.4" />
+      <rect x="12.25" y="3.75" width="3.5" height="6.75" rx=".75" fill={fill} />
+    </ChartIconSvg>
+  );
+}
+
+export function BulletChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <rect x="1.25" y="5" width="15.5" height="8" rx="1.25" fill={secondary} fillOpacity="0.2" />
+      <rect x="1.25" y="5" width="10" height="8" rx="1.25" fill={secondary} fillOpacity="0.25" />
+      <rect x="1.25" y="7.75" width="8.5" height="2.5" rx=".75" fill={fill} />
+      <rect x="12.5" y="3.75" width="1.5" height="10.5" rx=".75" fill={fill} />
+    </ChartIconSvg>
+  );
+}
+
+export function FunnelChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <rect x="1.25" y="2.5" width="15.5" height="3.5" rx="1" fill={fill} />
+      <rect x="3.5" y="7.25" width="11" height="3.5" rx="1" fill={secondary} fillOpacity="0.55" />
+      <rect x="6" y="12" width="6" height="3.5" rx="1" fill={secondary} fillOpacity="0.35" />
+    </ChartIconSvg>
+  );
+}
+
+export function TreemapIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <rect x="1.25" y="1.75" width="8.5" height="14.5" rx="1.25" fill={fill} />
+      <rect x="10.75" y="1.75" width="6" height="7.5" rx="1.25" fill={secondary} fillOpacity="0.5" />
+      <rect x="10.75" y="10.25" width="2.5" height="6" rx="1" fill={secondary} fillOpacity="0.35" />
+      <rect x="14.25" y="10.25" width="2.5" height="6" rx="1" fill={secondary} fillOpacity="0.25" />
+    </ChartIconSvg>
+  );
+}
+
+export function SankeyChartIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  return (
+    <ChartIconSvg {...props}>
+      <path d="M3 2.5C9 2.5 9 4 15 4v3.5C9 7.5 9 6.5 3 6.5Z" fill={secondary} fillOpacity="0.4" />
+      <path d="M3 8c6 0 6 4 12 4v3.5c-6 0-6-3.5-12-3.5Z" fill={secondary} fillOpacity="0.4" />
+      <rect x="1.25" y="2.5" width="2" height="9.5" rx=".75" fill={fill} />
+      <rect x="14.75" y="4" width="2" height="11.5" rx=".75" fill={fill} />
+    </ChartIconSvg>
+  );
+}
+
+export function ContributionGraphIcon({ fill = "currentColor", secondaryfill, ...props }: IconProps) {
+  const secondary = secondaryfill || fill;
+  const opacities = [
+    0.2, 0.5, 1, 0.3, 0.75,
+    0.6, 0.2, 0.4, 1, 0.3,
+    1, 0.35, 0.2, 0.6, 0.5,
+  ];
+  return (
+    <ChartIconSvg {...props}>
+      {opacities.map((opacity, index) => {
+        const column = index % 5;
+        const row = Math.floor(index / 5);
+        return (
+          <rect
+            key={index}
+            x={1.25 + column * 3.2}
+            y={4 + row * 3.6}
+            width="2.6"
+            height="2.6"
+            rx=".6"
+            fill={opacity === 1 ? fill : secondary}
+            fillOpacity={opacity}
+          />
+        );
+      })}
+    </ChartIconSvg>
+  );
+}

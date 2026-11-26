@@ -1,0 +1,186 @@
+---
+title: Contribution Graph
+description: A composable calendar heatmap for showing daily activity across weeks and months.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/contribution-graph.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#calendar
+---
+
+<ComponentPreview title="Basic Contribution Graph" name="ex-echarts-contribution-graph" />
+
+## Overview
+
+Use a contribution graph to show daily activity over a long period: commits, workouts, orders, or support load. Each day is a cell in a week column, so streaks, weekly rhythms, quiet seasons, and holidays stand out at a glance. It answers "how consistent was this?" better than a line chart, which hides the day-of-week pattern.
+
+## Anatomy
+
+`ContributionGraph` owns the daily data, the date range, the first day of the week, and the loading state. Every day in the range is drawn; days without data are empty. Add `Cells` for size, gaps, and levels, `Months` and `Weekdays` for labels, `Legend` for the "Less … More" scale, and `Tooltip` for the date and value of a day. Rows on the same day add up.
+
+Cells take discrete levels from the value's `config` color: a single color steps from 30% to full opacity, and a multi-stop color uses one stop per level. The empty level is a faint wash of the foreground.
+
+## Accessibility
+
+When `ariaLabel` is omitted, the generated name gives the date range, the total, and the number of active days. Levels differ in lightness as well as hue, and the legend shows every level in order. The tooltip is pointer-operated, so summarize streaks, totals, or busy days in nearby text when people need them.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+The data has one row per day, or several rows per day that add up. `dateKey` holds a `YYYY-MM-DD` string, a timestamp, or a Date.
+
+```tsx
+import { ContributionGraph, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<ContributionGraph
+  data={data}
+  config={chartConfig}
+  dateKey="date"
+  valueKey="commits"
+  range={2025}
+>
+  <ContributionGraph.Months />
+  <ContributionGraph.Weekdays />
+  <ContributionGraph.Legend />
+  <ContributionGraph.Tooltip />
+  <ContributionGraph.Cells />
+</ContributionGraph>
+```
+
+Without `range`, the graph shows the 52 weeks ending on the latest day in `data`. Cells grow to fill the container's width, up to `maxSize`, and the whole block is centered.
+
+### Thresholds and Week Start
+
+<ComponentPreview title="thresholds and weekStart={1}" name="ex-thresholds-echarts-contribution-graph" />
+
+By default, levels split the range from zero to the busiest day evenly. Pass `thresholds` to set the lower bound of each level yourself, which keeps levels stable as data changes. This example starts weeks on Monday, labels every weekday, uses a four-stop color, and renames the legend ends.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-contribution-graph" />
+
+Pass `isLoading` to reserve the layout with a neutral cell pattern and the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>ContributionGraph</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    Rows with a day and a value. Several rows on one day add up.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Defines the label and theme colors for `valueKey`.
+  </ApiRow>
+  <ApiRow name="dateKey" type="keyof TData & string" required>
+    The field holding each row's day: a `YYYY-MM-DD` string, a timestamp, or a Date.
+  </ApiRow>
+  <ApiRow name="valueKey" type="keyof TData & string" required>
+    The numeric field counted on each day.
+  </ApiRow>
+  <ApiRow name="range" type="number | [start, end]">
+    A year, or a pair of days. Defaults to the 52 weeks ending on the latest day in `data`.
+  </ApiRow>
+  <ApiRow name="weekStart" type="0 | 1 | 2 | 3 | 4 | 5 | 6" default="0">
+    First day of each week column, where 0 is Sunday and 1 is Monday.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Additional CSS classes for the chart container. Give the chart an explicit height.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Enables the intro animation. Reduced-motion preferences disable it automatically.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Replaces the data with a neutral cell pattern and a progress label.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas chart. A summary of the range and total is generated when omitted.
+  </ApiRow>
+  <ApiRow name="onDayClick" type="(day: ContributionDay&lt;TData&gt;) => void">
+    Fires when a day is selected and `Cells` has `isClickable`.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option object.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Cells</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="radius" type="number" default="2">
+    Cell corner radius in pixels.
+  </ApiRow>
+  <ApiRow name="gap" type="number" default="2">
+    Space between cells in pixels.
+  </ApiRow>
+  <ApiRow name="levels" type="number" default="4">
+    Number of colored levels above the empty level.
+  </ApiRow>
+  <ApiRow name="thresholds" type="number[]">
+    Lower bound of each colored level, ascending. Overrides `levels`.
+  </ApiRow>
+  <ApiRow name="maxSize" type="number" default="14">
+    Largest cell size in pixels. Cells shrink to fit the container.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Enables the pointer cursor and `onDayClick`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Months</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(month: number, year: number) => string">
+    Formats a month label, given the month index (0 is January) and year.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Weekdays</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="show" type='"alternate" | "all"' default='"alternate"'>
+    Labels every other row, like Mon, Wed, Fri, or every row.
+  </ApiRow>
+  <ApiRow name="labels" type="string[]">
+    Seven day labels, Sunday first.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="lessLabel" type="string" default='"Less"'>
+    Label before the lowest level.
+  </ApiRow>
+  <ApiRow name="moreLabel" type="string" default='"More"'>
+    Label after the highest level.
+  </ApiRow>
+  <ApiRow name="align" type='"left" | "right"' default='"right"'>
+    Aligns the legend to the grid's left or right edge.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface treatment.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the pointer.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the value shown in the tooltip.
+  </ApiRow>
+  <ApiRow name="dateFormatter" type="(date: Date) => string">
+    Formats the day shown as the tooltip title.
+  </ApiRow>
+</ApiTable>

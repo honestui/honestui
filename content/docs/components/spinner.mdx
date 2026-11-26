@@ -1,0 +1,151 @@
+---
+title: Spinner
+description: Show that work is happening when its length and shape are unknown.
+---
+
+<ComponentPreview name="spinner-demo" />
+
+## Overview
+
+Use Spinner for short waits when there is nothing better to show: a button saving a form, a panel waiting for a first response, a list loading more rows. A spinner shows only that something is happening. It gives no idea how long the wait will be or what the result will look like, so pick it after the other options.
+
+Choose by what you know:
+
+- If you know the layout of the content that is coming, use [Skeleton](/docs/components/skeleton). The page keeps its shape, and people can see what will appear.
+- If you know how far along the work is, use [Progress](/docs/components/progress). A bar that moves tells people how long to wait. A spinner can't.
+- If you know neither, and the wait is a few seconds at most, use Spinner.
+
+For waits longer than a few seconds, add text that says what is happening, such as "Uploading 3 of 12 files", next to the spinner or instead of it.
+
+## Anatomy
+
+A spinner is a status element that holds a rotating arc and a visually hidden label. The arc is the same loader icon used by [Button](/docs/components/button) loading states and the toast loading state, so loading looks the same everywhere. It uses `currentColor`, so it takes the color of the text around it, and its size follows the `size` prop: `sm`, `default`, `lg`, or a number of pixels.
+
+## Accessibility
+
+By default the spinner has `role="status"` and a visually hidden label, "Loading". Screen readers announce the label politely when the spinner appears. Replace the label with what is loading, such as "Loading invoices", so people who can't see the screen know what they're waiting for.
+
+When visible text next to the spinner already says what is happening, such as a button that reads "Saving changes…", set `decorative`. The spinner is then hidden from assistive technology, so the status isn't announced twice. Put `aria-busy` on the region or button that is updating.
+
+The arc spins under `prefers-reduced-motion` too, but much more slowly. A frozen arc looks like a broken icon, while a slow turn still shows that work is happening without fast motion. In forced-colors mode the arc uses the system text color.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["spinner"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install honestui
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="spinner" title="components/ui/spinner.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Spinner } from "@/components/ui/spinner"
+```
+
+```tsx
+<Spinner label="Loading invoices" />
+```
+
+```tsx
+<Button disabled aria-busy>
+  <Spinner decorative />
+  Saving changes…
+</Button>
+```
+
+## Don't do this
+
+### A spinner where the layout is known
+
+```tsx
+// Bad
+{isLoading ? <Spinner /> : <InvoiceTable rows={rows} />}
+```
+
+```tsx
+// Good
+{isLoading ? <Skeleton className="h-64 w-full" /> : <InvoiceTable rows={rows} />}
+```
+
+Swapping a whole table for a spinner makes the page collapse and then jump when the data arrives. A skeleton of the table's shape keeps the layout steady and shows what is coming.
+
+### Announcing the same thing twice
+
+```tsx
+// Bad
+<Button disabled>
+  <Spinner label="Saving" />
+  Saving…
+</Button>
+```
+
+```tsx
+// Good
+<Button disabled aria-busy>
+  <Spinner decorative />
+  Saving…
+</Button>
+```
+
+The button text already says what is happening. A second status announcement only repeats it.
+
+## Examples
+
+### In a button
+
+The label changes while the work runs, so the spinner is decorative.
+
+<ComponentPreview name="spinner-button" />
+
+### Sizes
+
+The three preset sizes and a numeric size, each taking the color of its text.
+
+<ComponentPreview name="spinner-sizes" />
+
+### Waiting for a stream
+
+An empty region waiting for its first data, where the shape of the content is not yet known.
+
+<ComponentPreview name="spinner-card" />
+
+## API reference
+
+`Spinner` renders a `span` and forwards native span props.
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `label` | string | `"Loading"` |
+| `decorative` | boolean | `false` |
+| `size` | `sm`, `default`, `lg`, number | `default` |
+
+Without `decorative`, the root has `role="status"` and a visually hidden label. With `decorative`, it has `aria-hidden="true"` and no label. The arc uses `currentColor`; set a text color on the spinner or its parent to change it.

@@ -1,0 +1,112 @@
+---
+title: Aspect Ratio
+description: Hold media to a fixed width-to-height ratio so layouts do not shift while it loads.
+---
+
+<ComponentPreview name="aspect-ratio-demo" />
+
+## Overview
+
+Use Aspect Ratio to give an image, video, embed, or placeholder a predictable shape. The box takes its height from its width, so it reserves the right space before media arrives. Pages stop jumping as images load, and cards in a grid line up even when their source images have different dimensions.
+
+It is a single element with the CSS `aspect-ratio` property. Older libraries used a padding-top percentage and an absolutely positioned child to fake the same thing; every current browser supports the property directly, so there is no wrapper, no positioning trick, and no extra markup.
+
+## Anatomy
+
+`AspectRatio` renders one `div` with `aspect-ratio` set from the `ratio` prop and `overflow: hidden`. A direct `img`, `video`, or `iframe` child fills the box automatically: images and videos use `object-fit: cover`, and iframes lose their default border. Any other content, such as a placeholder label or a chart, is laid out normally inside the box.
+
+## Choosing a ratio
+
+Pass the ratio as width divided by height. Writing it as a fraction keeps the intent readable: `16 / 9` for video, `4 / 3` for screenshots, `1` for avatars and product tiles, `21 / 9` for banners. Match the ratio to the content people expect to see. Cropping a portrait photo into a wide banner hides the subject; `object-cover` crops from the center, so add `object-top` or another position utility when faces or headlines sit near an edge.
+
+## Accessibility
+
+Aspect Ratio adds no role and no semantics; it is layout only. The media inside still needs what it always needs: meaningful `alt` text on images, captions and a title on video, and a `title` on iframes. Use an empty `alt=""` only when the image is decorative.
+
+Reserving space also helps people who navigate by keyboard or zoom in: focus and reading position do not jump when an image above them finishes loading. Because content is clipped, never put text that must be read in a box whose height depends on its width; at large zoom it can be cut off.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["aspect-ratio"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="aspect-ratio" title="components/ui/aspect-ratio.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+```
+
+```tsx
+<AspectRatio ratio={16 / 9} className="rounded-[var(--hui-radius-3)]">
+  <img src="/cover.jpg" alt="Team at the product launch" />
+</AspectRatio>
+```
+
+Use `render` to change the element, for example a `figure` or a link: `<AspectRatio ratio={1} render={<a href="/gallery/12" />}>`.
+
+## Don't do this
+
+### Text that must stay readable inside a fixed ratio
+
+```tsx
+// Bad
+<AspectRatio ratio={16 / 9}>
+  <p>Long promotional copy that wraps onto several lines…</p>
+</AspectRatio>
+```
+
+When the box narrows or text zooms, the copy overflows and is clipped. Use a fixed ratio for media, and let text containers grow with their content.
+
+## Examples
+
+### Common ratios
+
+<ComponentPreview name="aspect-ratio-ratios" />
+
+### Square gallery
+
+Mixed portrait and landscape sources crop to the same square, so the grid rows stay even.
+
+<ComponentPreview name="aspect-ratio-gallery" />
+
+## API reference
+
+`AspectRatio` accepts all `div` props plus:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `ratio` | positive number (width ÷ height) | `1` |
+| `render` | `ReactElement` or render function | `div` |
+
+A ratio that is zero, negative, or not a finite number falls back to `1`. Any `style` you pass merges with the computed `aspect-ratio`, and `className` merges with the default classes.

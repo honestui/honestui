@@ -1,0 +1,155 @@
+---
+title: Reference Lines
+description: Mark targets, thresholds, ranges, and notable points on a Cartesian chart.
+image: /og/og-image.png
+---
+
+## Usage
+
+Reference marks put context on the plot: a target or service level as a line, an incident or a weekend as a shaded band, and an annotated point such as a peak or a release. Add them as children of the chart root, in any order, next to the series they describe.
+
+```tsx
+import { LineChart } from "honestui/charts";
+
+<LineChart data={data} config={chartConfig} xDataKey="day">
+  <LineChart.ReferenceArea x1="Jun 5" x2="Jun 6" label="Incident" />
+  <LineChart.ReferenceLine y={200} label="SLO 200ms" />
+  <LineChart.ReferenceDot x="Jun 5" y={248} label="Peak" labelPosition="right" color="p95" />
+  <LineChart.Line dataKey="p95" />
+</LineChart>;
+```
+
+Positions use the screen axes: `x` is a place on the horizontal axis and `y` on the vertical axis, in either bar layout. On a category axis pass the category exactly as it appears in the data; on a value axis pass a number. A horizontal bar chart's target is therefore `<BarChart.ReferenceLine x={target} />`, a vertical line across value space.
+
+By default a mark outside the plotted values widens the value axis so it stays visible. Set `extendDomain={false}` to keep the axis fitted to the data and let the mark fall off the plot. Labels are not counted: a dot at the highest value has no room above it, so give its label `labelPosition="right"` or another side with space.
+
+## Examples
+
+### Line chart
+
+A shaded incident window, a dashed objective, and an annotated peak drawn in the series color.
+
+<ComponentPreview className="mb-0" title="<LineChart.ReferenceLine />" name="ex-reference-lines-echarts-line-chart" />
+
+### Bar chart
+
+A goal line across grouped bars, with the label at the start of the line.
+
+<ComponentPreview className="mb-0" title="<BarChart.ReferenceLine />" name="ex-reference-lines-echarts-bar-chart" />
+
+### Area chart
+
+A band marking the target range behind a stacked area.
+
+<ComponentPreview className="mb-0" title="<AreaChart.ReferenceArea />" name="ex-reference-lines-echarts-area-chart" />
+
+### Scatter chart
+
+Average lines on both value axes split the field into four groups.
+
+<ComponentPreview className="mb-0" title="<ScatterChart.ReferenceLine />" name="ex-reference-lines-echarts-scatter-chart" />
+
+### Combo chart
+
+A sale period and a revenue target. Marks are measured against the left value axis.
+
+<ComponentPreview className="mb-0" title="<ComboChart.ReferenceLine />" name="ex-reference-lines-echarts-combo-chart" />
+
+### Waterfall chart
+
+A plan line across the bridge shows where the result lands against it.
+
+<ComponentPreview className="mb-0" title="<WaterfallChart.ReferenceLine />" name="ex-reference-lines-echarts-waterfall-chart" />
+
+## Look
+
+Lines are one pixel wide and dashed like the tooltip cursor, in the muted foreground, so they read as guides rather than data. Labels are small pills on the chart's background with a border in the chart's border color, sitting above a horizontal line or just inside the top of a vertical one. Areas are a faint wash of the foreground, or a tint of their `color`. A `color` may be a key from the chart config, which takes that series' first color in both themes, or any CSS color.
+
+## Accessibility
+
+Reference marks are drawn on the canvas and are not announced. When a threshold matters to the reader, state it in text near the chart or in the chart's `ariaLabel`, for example "p95 latency, objective 200 ms, exceeded on June 5 and 6".
+
+## Supported Charts
+
+`AreaChart`, `BarChart`, `LineChart`, `ScatterChart`, `ComboChart`, `WaterfallChart`, and `CandlestickChart` all expose `ReferenceLine`, `ReferenceArea`, and `ReferenceDot` with the same props.
+
+## API Reference
+
+<ApiHeading>ReferenceLine</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="x" type="string | number">
+    Draws a vertical line at this position on the horizontal axis.
+  </ApiRow>
+  <ApiRow name="y" type="string | number">
+    Draws a horizontal line at this position on the vertical axis.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Text shown in a pill on the line.
+  </ApiRow>
+  <ApiRow name="labelPosition" type='"start" | "center" | "end"' default='"end"'>
+    Where the label sits along the line. A vertical line accepts `start` (bottom) and `end` (top).
+  </ApiRow>
+  <ApiRow name="strokeVariant" type='"dashed" | "solid"' default='"dashed"'>
+    The line's stroke.
+  </ApiRow>
+  <ApiRow name="strokeWidth" type="number" default="1">
+    The line's width in pixels.
+  </ApiRow>
+  <ApiRow name="color" type="string">
+    A chart config key or a CSS color. Defaults to the muted foreground.
+  </ApiRow>
+  <ApiRow name="extendDomain" type="boolean" default="true">
+    Widen the value axis to keep the line visible.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>ReferenceArea</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="x1 / x2" type="string | number">
+    The band's horizontal edges. Omit both for a band across the full width; omit one to run to
+    that edge of the plot.
+  </ApiRow>
+  <ApiRow name="y1 / y2" type="string | number">
+    The band's vertical edges, with the same rules.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Text shown inside the band.
+  </ApiRow>
+  <ApiRow name="labelPosition" type='"start" | "center" | "end"' default='"start"'>
+    Places the label at the band's top left, top center, or top right.
+  </ApiRow>
+  <ApiRow name="color" type="string">
+    A chart config key or a CSS color for the tint. Defaults to a faint foreground wash.
+  </ApiRow>
+  <ApiRow name="extendDomain" type="boolean" default="true">
+    Widen the value axis to keep the band visible.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>ReferenceDot</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="x" type="string | number" required>
+    Horizontal position.
+  </ApiRow>
+  <ApiRow name="y" type="string | number" required>
+    Vertical position.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Text shown in a pill beside the dot.
+  </ApiRow>
+  <ApiRow name="labelPosition" type='"top" | "bottom" | "left" | "right"' default='"top"'>
+    Which side of the dot the label takes.
+  </ApiRow>
+  <ApiRow name="color" type="string">
+    A chart config key or a CSS color. Defaults to the foreground.
+  </ApiRow>
+  <ApiRow name="size" type="number" default="8">
+    Dot diameter in pixels.
+  </ApiRow>
+  <ApiRow name="extendDomain" type="boolean" default="true">
+    Widen the value axes to keep the dot visible.
+  </ApiRow>
+</ApiTable>

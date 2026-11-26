@@ -1,0 +1,82 @@
+---
+title: Period Comparison
+description: Draw an earlier period behind the current one and show the change in the tooltip.
+image: /og/og-image.png
+---
+
+## Usage
+
+Period-over-period comparison answers "is this better than last time?" without a second chart. Put the earlier period's values in the same rows as the current ones, under their own key, and name that key with `compareDataKey` on the series.
+
+```tsx
+import { LineChart } from "honestui/charts";
+
+const data = [
+  { week: "W1", signups: 412, previous: 365 },
+  { week: "W2", signups: 438, previous: 381 },
+  // …
+];
+
+const chartConfig = {
+  signups: { label: "Signups", colors: { light: ["#7c3aed"], dark: ["#a78bfa"] } },
+  previous: { label: "Last quarter" },
+};
+
+<LineChart data={data} config={chartConfig} xDataKey="week">
+  <LineChart.Tooltip />
+  <LineChart.Line dataKey="signups" compareDataKey="previous" />
+</LineChart>;
+```
+
+Aligning the periods is your data's job: row three holds week three of both quarters. The comparison key's `label` in the chart config names the earlier period in the tooltip; without one the tooltip says "Previous". The comparison key needs no colors; the ghost takes the series color.
+
+## Examples
+
+### Line chart
+
+The earlier period is a faded, finely dashed copy of the series. The tooltip shows both values and the change.
+
+<ComponentPreview className="mb-0" title='<LineChart.Line compareDataKey="previous" />' name="ex-period-comparison-echarts-line-chart" />
+
+### Area chart
+
+On an area chart the earlier period is a line only, so it never adds to the filled total.
+
+<ComponentPreview className="mb-0" title='<AreaChart.Area compareDataKey="previous" />' name="ex-period-comparison-echarts-area-chart" />
+
+### Bar chart
+
+On a bar chart each bar carries a tick at the earlier value. The tick crosses the bar's width, so it reads above a bar that fell and on top of a bar that grew.
+
+<ComponentPreview className="mb-0" title='<BarChart.Bar compareDataKey="lastQuarter" />' name="ex-period-comparison-echarts-bar-chart" />
+
+### Combo chart
+
+`ComboChart.Bar` takes a tick and `ComboChart.Line` a ghost line, each on its own value axis. Stacked combo bars compare in the tooltip only.
+
+<ComponentPreview className="mb-0" title='<ComboChart.Bar compareDataKey="lastYear" />' name="ex-reference-lines-echarts-combo-chart" />
+
+## Reading the change
+
+The tooltip row for a compared series gains a line under it: the earlier period's label and value, then the change as a percentage of the earlier value, with an arrow for its direction. The change stays in the tooltip's own ink rather than green and red, because whether a rise is good depends on the measure: more signups is good news, more errors is not. When the earlier value is zero or missing the change shows as a dash.
+
+## Behavior
+
+The ghost is silent: hovering, clicking, and selection only ever act on the current period, and it is not added to the legend. It follows the series' selection dimming. A missing earlier value leaves a gap in the ghost line or skips that bar's tick.
+
+Stacked charts compare in the tooltip only. On stacked and percent bar charts and stacked and expanded area charts, a segment sits on the segments below it, so an earlier value has no single baseline to be drawn against; the ticks and ghost lines are left out, and the tooltip still compares each series' own values, never its share of the total.
+
+## Accessibility
+
+The ghost and its ticks are canvas marks with no text equivalent. When the change is the point of the chart, state it in a nearby summary, such as "Signups up 24% on last quarter".
+
+## API Reference
+
+<ApiHeading>Line, Area, Bar</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="compareDataKey" type="string">
+    The data key holding the same measure for an earlier period. Adds the ghost series or ticks
+    and the comparison line in the tooltip.
+  </ApiRow>
+</ApiTable>

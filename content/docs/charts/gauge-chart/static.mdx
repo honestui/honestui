@@ -1,0 +1,135 @@
+---
+title: Gauge Chart
+description: Show one value on a fixed scale, with optional ranges that say whether it is good or bad.
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/gauge-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-gauge
+---
+
+<ComponentPreview title="Basic Chart" name="ex-echarts-gauge-chart" />
+
+## Overview
+
+A gauge shows a single value on a scale with a known minimum and maximum, such as a score, a utilisation percentage, or progress toward a target. Bands mark the ranges that matter, so readers see at once whether the value is normal or needs attention. A gauge takes a lot of space for one number: use a stat with a [Radial Chart](/docs/charts/radial-chart/static) ring for several progress values, or a line chart when the trend matters more than the current reading.
+
+## Anatomy
+
+`GaugeChart` owns the value, scale, and loading state. `Arc` sets the sweep (`semi`, three-quarter `arc`, or `full`) and thickness. `Bands` draws colored ranges in a thin outer ring and, by default, colors the value with the range it falls in. `Ticks` marks the scale, `Needle` adds a pointer, `Center` prints the value as HTML in the middle, and `Legend` names the bands.
+
+## Accessibility
+
+The plot is exposed as a `meter` with `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and a value text that includes the band name, so assistive technology reads the value directly. The band colors are paired with a band name in the center caption and the legend. Pass `ariaLabel` to give the meter a more specific name.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { GaugeChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const chartConfig = {
+  target: { label: "of monthly target", colors: { light: ["#3b82f6"], dark: ["#60a5fa"] } },
+} satisfies ChartConfig;
+```
+
+```tsx
+<GaugeChart value={72} max={100} dataKey="target" config={chartConfig}>
+  <GaugeChart.Arc type="semi" thickness={16} />
+  <GaugeChart.Center valueFormatter={(value) => `${value}%`} />
+</GaugeChart>
+```
+
+`dataKey` names the `config` entry that labels and colors the value. Values outside `min` and `max` are clamped on the arc; the center still prints the real value. A new `value` eases from the previous one rather than redrawing from the minimum.
+
+## Examples
+
+### Bands and ticks
+
+<ComponentPreview className="mb-0" title="<Bands /> <Ticks />" name="ex-bands-echarts-gauge-chart" />
+<Alert>
+  <AlertContent>
+    Each band runs up to its `to` value and takes its color and name from `config`. The value arc and the center caption follow the band the value falls in; set `colorProgress={false}` to keep the `dataKey` color.
+  </AlertContent>
+</Alert>
+
+### Needle
+
+<ComponentPreview className="mb-0" title="<Needle />" name="ex-needle-echarts-gauge-chart" />
+<Alert>
+  <AlertContent>
+    `Needle` adds a pointer. The readout moves below the pivot so the needle never crosses it. Step the reading to see the value ease between updates.
+  </AlertContent>
+</Alert>
+
+### Loading state
+
+<ComponentPreview title="isLoading" name="ex-loading-state-echarts-gauge-chart" />
+
+## API reference
+
+<ApiHeading>GaugeChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="value" type="number | null" required>The current value. `null` draws the empty track and an em dash.</ApiRow>
+  <ApiRow name="dataKey" type="string" required>The `config` key that labels and colors the value.</ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>Labels and colors for the value and bands. See <Link href="/docs/charts/chart-config">Chart Config</Link>.</ApiRow>
+  <ApiRow name="min" type="number" default="0">Start of the scale.</ApiRow>
+  <ApiRow name="max" type="number" default="100">End of the scale.</ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">Shows the loading track.</ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">Plays the sweep and value easing. Reduced motion turns them off.</ApiRow>
+  <ApiRow name="ariaLabel" type="string">Accessible name for the meter.</ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">Escape hatch merged over the ECharts option.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Arc</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="type" type='"semi" | "arc" | "full"' default='"semi"'>A half circle, a three-quarter arc, or a full ring.</ApiRow>
+  <ApiRow name="thickness" type="number" default="12">Arc width in pixels.</ApiRow>
+  <ApiRow name="roundCap" type="boolean" default="true">Rounds the arc ends.</ApiRow>
+  <ApiRow name="track" type="boolean" default="true">Draws the muted track behind the value.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Bands</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="bands" type="{ to: number; dataKey: string }[]" required>Ranges in order; each ends at `to` and takes its `config` entry.</ApiRow>
+  <ApiRow name="thickness" type="number" default="3">Band ring width in pixels.</ApiRow>
+  <ApiRow name="colorProgress" type="boolean" default="true">Colors the value with its band.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Ticks</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="count" type="number" default="5">Number of scale divisions.</ApiRow>
+  <ApiRow name="showLabels" type="boolean" default="true">Prints the tick values.</ApiRow>
+  <ApiRow name="formatter" type="(value: number) => string">Formats tick values.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Needle</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="length" type="number | string" default='"72%"'>Needle length, in pixels or a percentage of the radius.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Center</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="value" type="ReactNode">Replaces the printed value.</ApiRow>
+  <ApiRow name="label" type="ReactNode">The caption. Defaults to the active band's label, or the `dataKey` label.</ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">Formats the value.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the readout.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>Indicator style.</ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>Horizontal placement.</ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "bottom"' default='"bottom"'>Vertical placement.</ApiRow>
+</ApiTable>

@@ -1,0 +1,154 @@
+---
+title: Treemap
+description: A composable treemap for showing how a total divides into categories and their parts.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/treemap.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-treemap
+---
+
+<ComponentPreview title="Basic Treemap" name="ex-echarts-treemap" />
+
+## Overview
+
+Use a treemap to show which parts of a large total matter most: spend by service, bundle size by package, or tickets by topic. Each tile's area is proportional to its value, and nested tiles show how a category breaks down. A treemap holds far more items than a pie chart, but area is harder to compare precisely than length, so reach for a bar chart when exact ranking is the question.
+
+## Anatomy
+
+`Treemap` owns the hierarchical data, colors, and loading state. Each top-level node is a category with its own `config` entry; its children take lighter steps of the same color, ordered by size, so a family of tiles reads as one group. Add `Tiles` to control radius, gaps, value labels, and drill-down, `Legend` to name the categories, and `Tooltip` for each tile's value and its share of its parent.
+
+## Accessibility
+
+When `ariaLabel` is omitted, the generated name gives the total and the largest categories with their values. Labels pick near-black or near-white text from each tile's fill, so they stay readable on light and dark tints. Small tiles hide their labels instead of overflowing; pair the chart with a table when every value must be readable. Drill-down and the tooltip are pointer-operated.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+The data is an array of nodes. A leaf carries a `value`; a parent's value is the sum of its `children`.
+
+```tsx
+import { Treemap, type ChartConfig, type TreemapNode } from "honestui/charts";
+```
+
+```tsx
+<Treemap data={data} config={chartConfig}>
+  <Treemap.Legend />
+  <Treemap.Tooltip />
+  <Treemap.Tiles />
+</Treemap>
+```
+
+Parent tiles get a tinted frame with a header strip naming the group. Turn it off with `showParentLabels={false}` to draw only the leaves.
+
+### Drill Down
+
+<ComponentPreview title="isDrillable" name="ex-drill-down-echarts-treemap" />
+
+With `isDrillable`, the treemap shows one level at a time. Selecting a tile zooms into it, and a breadcrumb under the chart leads back out. Use it for deep trees, where showing every level at once leaves tiles too small to label.
+
+### Flat Data
+
+<ComponentPreview title="Flat categories" name="ex-flat-echarts-treemap" />
+
+Nodes without children make a flat treemap: one tile per category. This example uses a single-hue ramp in the config, a larger radius, and wider gaps.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-treemap" />
+
+Pass `isLoading` to reserve the layout with neutral tiles and the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>Treemap</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TreemapNode[]" required>
+    Top-level nodes. Each has a `name` and either a `value` or `children`.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Labels and theme colors keyed by top-level node name.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Additional CSS classes for the chart container. Give the chart an explicit height.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Enables the intro and zoom animation. Reduced-motion preferences disable it automatically.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Replaces the data with neutral placeholder tiles and a progress label.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas chart. A summary of the largest categories is generated when omitted.
+  </ApiRow>
+  <ApiRow name="onTileClick" type="(tile: TreemapTile) => void">
+    Fires when a tile is selected and `Tiles` has `isClickable`. The tile carries its value, path, and category.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option object.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tiles</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="radius" type="number" default="2">
+    Tile corner radius in pixels.
+  </ApiRow>
+  <ApiRow name="gap" type="number" default="2">
+    Space between tiles in pixels.
+  </ApiRow>
+  <ApiRow name="showValues" type="boolean" default="true">
+    Shows each tile's value under its name.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats values in tile labels.
+  </ApiRow>
+  <ApiRow name="isDrillable" type="boolean" default="false">
+    Shows one level at a time and zooms into a tile when it is selected, with a breadcrumb back out.
+  </ApiRow>
+  <ApiRow name="showParentLabels" type="boolean" default="true">
+    Frames parent tiles with a header strip naming the group.
+  </ApiRow>
+  <ApiRow name="rootLabel" type="string" default='"All"'>
+    The breadcrumb's first item, which returns to the top level.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Enables the pointer cursor and `onTileClick`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>
+    Indicator shape, shared with the other Honest UI charts.
+  </ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>
+    Horizontal alignment of the legend.
+  </ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "bottom"' default='"bottom"'>
+    Places the legend above or below the tiles.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface treatment.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the pointer.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the value shown in the tooltip.
+  </ApiRow>
+</ApiTable>

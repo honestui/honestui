@@ -1,0 +1,174 @@
+---
+title: Calendar
+description: Pick one date, several dates, or a range from a month grid.
+
+links:
+  doc: https://daypicker.dev/api/interfaces/PropsBase
+---
+
+<ComponentPreview name="calendar-demo" />
+
+## Overview
+
+Use Calendar when the reader needs to see dates in context before choosing: which weekdays are free, how far a range stretches, where a month ends. It renders an inline month grid built on [React DayPicker](https://daypicker.dev) and styled with the same cell size, today marker, and ink selection as the [Date Range Picker](/docs/product/date-range-picker), so the two can sit on one screen without looking like different systems.
+
+Calendar is the grid only. It has no trigger, no input, and no popover. Put it in a [Popover](/docs/components/popover) for a compact date field, in a [Card](/docs/components/card) for a booking panel, or straight on the page for a scheduler. When people already know the date they want, such as a birthday or an expiry date, a typed field is faster than any grid.
+
+## Anatomy
+
+A calendar has a navigation row with previous and next buttons, one caption per visible month, a row of weekday names, and a grid of day buttons. With `captionLayout="dropdown"` the caption becomes month and year [Select](/docs/components/select) menus for long jumps. An optional `footer` renders under the grid and is announced politely when it changes.
+
+## Selection modes
+
+Set `mode` to choose what a click does:
+
+- `single` selects one date and passes a `Date` to `onSelect`.
+- `multiple` toggles dates and passes an array.
+- `range` selects a start and an end and passes `{ from, to }`. Middle days render as a flat band; the endpoints are solid ink.
+
+Selected days use the same ink fill as the default [Button](/docs/components/button). Today carries a small dot under the number rather than a ring, so it never competes with the selection.
+
+## Accessibility
+
+The grid follows the WAI-ARIA date grid pattern. Arrow keys move one day or one week, Page Up and Page Down move one month, Shift with Page Up or Page Down moves one year, and Home and End jump to the start or end of the week. Each day button has a full spoken label, such as "Tuesday, March 4th, 2025, selected", and today is announced as today.
+
+Disabled days stay in the grid so the layout does not shift, are struck through in addition to being dimmed so the state does not rely on contrast alone, and cannot be focused or chosen. The previous and next buttons are marked `aria-disabled` and leave the tab order when `startMonth` or `endMonth` stops navigation. Chevrons flip in right-to-left layouts.
+
+Use `footer` to state the rule behind disabled dates, such as "Weekdays only, up to two months ahead". A reader who cannot see the struck-through cells still needs to know why a date is missing.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["calendar"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install react-day-picker @base-ui/react class-variance-authority
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="calendar" title="components/ui/calendar.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Calendar } from "@/components/ui/calendar"
+```
+
+```tsx
+const [date, setDate] = React.useState<Date | undefined>(new Date())
+
+<Calendar mode="single" selected={date} onSelect={setDate} />
+```
+
+```tsx
+<Calendar
+  mode="range"
+  numberOfMonths={2}
+  selected={range}
+  onSelect={setRange}
+/>
+```
+
+## Don't do this
+
+### A grid for a date people already know
+
+```tsx
+// Bad
+<Calendar mode="single" selected={birthday} onSelect={setBirthday} />
+```
+
+```tsx
+// Good
+<Calendar
+  mode="single"
+  captionLayout="dropdown"
+  startMonth={new Date(1920, 0)}
+  endMonth={new Date()}
+  selected={birthday}
+  onSelect={setBirthday}
+/>
+```
+
+Clicking back through four hundred months to reach a birth year is a punishment. Offer dropdowns, or better, a typed date field, whenever the date is far from today and already known.
+
+### Unexplained disabled dates
+
+```tsx
+// Bad
+<Calendar mode="single" disabled={{ dayOfWeek: [0, 6] }} />
+```
+
+```tsx
+// Good
+<Calendar
+  mode="single"
+  disabled={{ dayOfWeek: [0, 6] }}
+  footer="Deliveries run Monday to Friday."
+/>
+```
+
+A struck-through Saturday says "no" without saying why. State the rule once in words.
+
+## Examples
+
+### Range across two months
+
+Show two months when ranges often cross a month boundary, such as stays and billing periods.
+
+<ComponentPreview name="calendar-range" />
+
+### Disabled dates and limits
+
+`startMonth` and `endMonth` stop navigation; `disabled` matchers block individual days. The footer names the rule.
+
+<ComponentPreview name="calendar-disabled-dates" />
+
+### Month and year dropdowns
+
+`captionLayout="dropdown"` renders month and year pickers with [Select](/docs/components/select), so the open list matches every other Honest UI menu. Years outside `startMonth` and `endMonth` are listed but disabled.
+
+<ComponentPreview name="calendar-dropdown" />
+
+## API reference
+
+`Calendar` accepts every React DayPicker prop. Honest UI sets these defaults:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `mode` | `single`, `multiple`, `range` | — |
+| `showOutsideDays` | boolean | `true` |
+| `fixedWeeks` | boolean | `true` |
+| `captionLayout` | `label`, `dropdown`, `dropdown-months`, `dropdown-years` | `label` |
+| `numberOfMonths` | number | `1` |
+| `startMonth` / `endMonth` | `Date` | — |
+| `disabled` | `Matcher` or `Matcher[]` | — |
+| `footer` | `ReactNode` | — |
+
+Pass `classNames` to override individual parts; your keys merge over the Honest UI classes. Every month renders six weeks by default (`fixedWeeks`), so the calendar keeps one height while paging; set `fixedWeeks={false}` to show only the weeks a month spans. Pass `components` to replace parts such as `Chevron`, `Dropdown`, or `DayButton`. Use `locale` and `weekStartsOn` for regional calendars, and `labels` to localize the spoken labels.
+
+See the [React DayPicker API](https://daypicker.dev/api/interfaces/PropsBase) for every prop and matcher type.

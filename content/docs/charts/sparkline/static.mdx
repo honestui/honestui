@@ -1,0 +1,163 @@
+---
+title: Sparkline
+description: A word-sized trend chart for metric cards, tables, and dense dashboards.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/sparkline.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-line
+---
+
+<ComponentPreview title="Basic Sparkline" name="ex-echarts-sparkline" />
+
+## Overview
+
+A sparkline shows the shape of a series without axes, gridlines, or labels, so it fits beside the number it explains: a metric card, a table row, or a list of services. Use it to answer "which way is this going and how bumpy was it?" at a glance. When readers need exact values, dates, or comparisons between series, use a [Line Chart](/docs/charts/line-chart/static) instead.
+
+## Anatomy
+
+`Sparkline` owns the data, the plotted `dataKey`, its colors, and the value scale. Choose a `variant` of `line`, `area`, or `bar`. Optional parts add context without adding chrome: `Dot` marks the latest point or the extremes, `ReferenceLine` draws a dashed baseline at a value or a statistic such as the average, and `Tooltip` reveals one point at a time on hover.
+
+## Accessibility
+
+The canvas carries a generated accessible name that states the trend direction, the first and last values, and the range, for example "Revenue sparkline, up from $31.2k to $48.2k". Pass `ariaLabel` when the surrounding text already says this, or when the sparkline needs more specific wording. Keep the headline number in real text next to the chart; the tooltip is pointer-operated and must not be the only way to read a value.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Sparkline, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<Sparkline
+  data={data}
+  config={chartConfig}
+  dataKey="revenue"
+  xDataKey="week"
+  variant="area"
+  className="h-12 w-28"
+>
+  <Sparkline.Dot points="last" />
+  <Sparkline.Tooltip valueFormatter={(value) => `$${value}k`} />
+</Sparkline>
+```
+
+Give the sparkline an explicit size. Its plot is inset only as far as the stroke and dots need, so the line reaches the edges of its box. The tooltip is attached to the page rather than the chart, so it can rise above a chart only a few pixels tall.
+
+## Examples
+
+### Variants
+
+<ComponentPreview title="variant='line' | 'area' | 'bar'" name="ex-variants-echarts-sparkline" />
+
+Lines suit continuous measures, areas add weight to a volume, and bars suit discrete counts such as daily signups. Bars start from zero unless the data has negative values; lines scale to the data range so small movements stay visible.
+
+### Dots and reference lines
+
+<ComponentPreview title="ReferenceLine and Dot" name="ex-reference-echarts-sparkline" />
+
+`ReferenceLine` accepts a number or one of `average`, `first`, `min`, or `max`. `Dot` marks the `last` point, the `extremes`, both, or `all` points, using the same dot variants as the Line Chart.
+
+### In a table
+
+<ComponentPreview title="Sparklines in table rows" name="ex-table-echarts-sparkline" />
+
+Each row passes its own `config`, so one data key can take a rising or falling color. A reference line at the `first` value shows where the period started.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-sparkline" />
+
+A loading sparkline draws a neutral placeholder shape. A loading pill would not fit a chart this small, so the state is announced to assistive technology only.
+
+## API Reference
+
+<ApiHeading>Sparkline</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    The ordered points to plot.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    The label and theme colors for `dataKey`. Several colors draw a horizontal gradient.
+  </ApiRow>
+  <ApiRow name="dataKey" type="keyof TData & string" required>
+    The numeric value to plot. Empty or non-numeric values leave a gap.
+  </ApiRow>
+  <ApiRow name="xDataKey" type="keyof TData & string">
+    Labels each point in the tooltip, such as a date.
+  </ApiRow>
+  <ApiRow name="variant" type='"line" | "area" | "bar"' default='"line"'>
+    How the series is drawn.
+  </ApiRow>
+  <ApiRow name="curve" type='"linear" | "smooth" | "step"' default='"linear"'>
+    The line interpolation. Ignored by bars.
+  </ApiRow>
+  <ApiRow name="strokeWidth" type="number" default="1">
+    Line width in pixels.
+  </ApiRow>
+  <ApiRow name="min" type="number">
+    Lower bound of the value scale. Lines default to the smallest value; bars to zero.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    Upper bound of the value scale. Defaults to the largest value.
+  </ApiRow>
+  <ApiRow name="connectNulls" type="boolean" default="false">
+    Draws the line across missing values instead of leaving a gap.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Classes for the container. Give the chart an explicit width and height.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Enables the intro animation. Reduced-motion preferences disable it.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Draws a neutral placeholder and announces the loading state.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the chart. A trend summary is generated when omitted.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    ECharts options merged over the generated option.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Dot</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="points" type='"last" | "extremes" | "last-and-extremes" | "all"' default='"last"'>
+    Which points carry a dot. Ignored by bars.
+  </ApiRow>
+  <ApiRow name="variant" type='"default" | "border" | "colored-border" | "ping"' default='"border"'>
+    The dot style, shared with the Line Chart.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>ReferenceLine</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="y" type='number | "average" | "first" | "min" | "max"' default='"average"'>
+    A fixed value, or a statistic computed from the data. Add several to draw several lines.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    The tooltip surface.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    The tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the value, and the values in the generated accessible name.
+  </ApiRow>
+  <ApiRow name="labelFormatter" type="(label: string, index: number) => string">
+    Formats the `xDataKey` heading.
+  </ApiRow>
+</ApiTable>

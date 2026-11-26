@@ -1,0 +1,153 @@
+---
+title: Resizable
+description: Split a layout into panels that people resize by dragging or with the keyboard.
+---
+
+<ComponentPreview name="resizable-demo" />
+
+## Overview
+
+Use Resizable when people work across adjacent areas at once and need to decide how much room each gets: a file list beside an editor, a request beside its logs, an original beside a revision. Each divider resizes the two panels on either side of it, and every panel can set a minimum, a maximum, and whether it collapses.
+
+Resizable has no dependency. Sizes are percentages of the group, applied as flex ratios, so the layout follows its container without measuring on every frame.
+
+## Anatomy
+
+`ResizablePanelGroup` lays panels out in a row or a column and owns their sizes. Each `ResizablePanel` is one area. A `ResizableHandle` goes between two panels and resizes that pair; `withHandle` adds a visible grip.
+
+## Behavior
+
+Sizes are percentages that always add up to 100. Give every panel a `defaultSize` so the server renders the final layout and nothing shifts when the page hydrates; panels without one share whatever is left. A collapsible panel dragged below its `minSize` snaps to `collapsedSize` or back to `minSize`, whichever is closer, so it never rests at an awkward width. With `autoSaveId`, the group remembers its layout in local storage and restores it after the page loads.
+
+## Accessibility
+
+Each handle follows the WAI-ARIA window splitter pattern. It is a focusable `separator` whose `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` describe the panel before it, and `aria-controls` points to that panel. The orientation is perpendicular to the group: a row of panels has vertical dividers.
+
+With a handle focused, the Arrow keys along the group's direction resize by 5% (10% with Shift), Home and End move to the panel's minimum and maximum, and Enter collapses or restores a collapsible panel. Directions flip in right-to-left layouts. The visible divider is a hairline, but the pointer target is 12px wide, and 24px on touch screens. Name each handle with `aria-label` when there is more than one, such as "Resize file list".
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["resizable"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="resizable" title="components/ui/resizable.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+```
+
+```tsx
+<ResizablePanelGroup orientation="horizontal" className="h-80">
+  <ResizablePanel defaultSize={30} minSize={20}>
+    Files
+  </ResizablePanel>
+  <ResizableHandle aria-label="Resize file list" />
+  <ResizablePanel defaultSize={70}>Editor</ResizablePanel>
+</ResizablePanelGroup>
+```
+
+Control a panel from elsewhere with `panelRef`:
+
+```tsx
+const sidebar = React.useRef<ResizablePanelHandle>(null)
+
+<ResizablePanel panelRef={sidebar} collapsible defaultSize={25} minSize={15}>
+  ...
+</ResizablePanel>
+
+<Button onClick={() => sidebar.current?.collapse()}>Hide sidebar</Button>
+```
+
+## Don't do this
+
+### Panels without a size floor
+
+```tsx
+// Bad
+<ResizablePanel defaultSize={30}>Settings form</ResizablePanel>
+```
+
+```tsx
+// Good
+<ResizablePanel defaultSize={30} minSize={20} collapsible>
+  Settings form
+</ResizablePanel>
+```
+
+With no minimum, a panel can be dragged to a sliver where its content is clipped but still focusable. Set `minSize`, and make the panel `collapsible` if hiding it completely is a real option.
+
+### Resizing as the only way to reach content
+
+A panel collapsed to zero is out of view. Give people a visible way back, such as a toggle button, instead of expecting them to find and drag a hairline divider.
+
+## Examples
+
+### Vertical
+
+<ComponentPreview name="resizable-vertical" />
+
+### With handle
+
+<ComponentPreview name="resizable-with-handle" />
+
+### Collapsible sidebar
+
+A collapsible panel with a toggle button, `onCollapse`/`onExpand` callbacks, and a layout saved with `autoSaveId`.
+
+<ComponentPreview name="resizable-collapsible" />
+
+## API reference
+
+`ResizablePanelGroup` accepts native `div` props plus:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `orientation` | `horizontal`, `vertical` | `horizontal` |
+| `direction` | alias of `orientation` | — |
+| `onLayout` | `(sizes: number[]) => void` | — |
+| `autoSaveId` | string | — |
+
+`ResizablePanel` accepts native `div` props plus:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `defaultSize` | percent | shared remainder |
+| `minSize` / `maxSize` | percent | `0` / `100` |
+| `collapsible` | boolean | `false` |
+| `collapsedSize` | percent | `0` |
+| `onResize` | `(size: number) => void` | — |
+| `onCollapse` / `onExpand` | `() => void` | — |
+| `panelRef` | `Ref<ResizablePanelHandle>` | — |
+
+`ResizablePanelHandle` provides `getSize()`, `resize(size)`, `collapse()`, `expand()`, and `isCollapsed()`. A collapsed panel has a `data-collapsed` attribute.
+
+`ResizableHandle` accepts native `div` props plus `withHandle` (boolean), `keyboardStep` (percent, default `5`), and `disabled`. It carries `data-orientation` with the group's orientation and `data-dragging` while dragged.

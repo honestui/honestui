@@ -1,0 +1,198 @@
+---
+title: Drawer
+description: Slide a panel in from an edge that people can drag, snap, and swipe away.
+
+links:
+  doc: https://base-ui.com/react/components/drawer#api-reference
+---
+
+<ComponentPreview name="drawer-demo" />
+
+## Overview
+
+Use Drawer for a panel that people handle with their fingers: a bottom sheet on a phone, a route summary that peeks above a map, an action sheet of choices for one item. A drawer follows the pointer while it is dragged, settles at preset heights called snap points, and closes when it is swiped back toward its edge.
+
+Drawer and [Sheet](/docs/components/sheet) look the same. They share the overlay surface, backdrop, header, footer, title, and close button. The difference is gestures. A Sheet is a dialog placed at an edge, and it opens and closes only through buttons, the backdrop, and <kbd>Escape</kbd>. A Drawer adds swipe-to-dismiss, snap points, and drag tracking on top of the same dialog behavior. If nobody will drag the panel, use Sheet: it is simpler and has nothing to swipe by accident.
+
+## Anatomy
+
+A drawer has a root, a trigger, a backdrop, a viewport that positions the panel, the popup panel, a scrollable content region, and optional header, footer, title, description, and close parts. Top and bottom drawers draw a grab handle, which tells people the panel can be dragged. Left and right drawers show the close button instead, because a horizontal swipe is harder to discover.
+
+`DrawerPopup` wraps its children in the Base UI content part. Text inside that region can be selected with a mouse without starting a drag. Add `data-base-ui-swipe-ignore` to any descendant that should never start a swipe, such as a horizontal slider.
+
+## Sides and snap points
+
+Set `side` on `Drawer` to `"bottom"` (the default), `"top"`, `"left"`, or `"right"`. The side also sets the dismiss gesture, so a bottom drawer closes with a downward swipe and a right drawer with a swipe to the right.
+
+Pass `snapPoints` to stop a bottom drawer at preset heights. Numbers from 0 to 1 are fractions of the viewport height, larger numbers are pixels, and strings accept `px` or `rem`. The panel moves by `--drawer-snap-point-offset` and pads its bottom by the same amount, so the end of a long list stays reachable when the drawer is half open.
+
+## Accessibility
+
+A drawer is a modal dialog. Focus moves into the panel when it opens and stays there, <kbd>Escape</kbd> closes it, and focus returns to the trigger afterwards. Always render a `DrawerTitle`, because it names the dialog for screen readers.
+
+Swiping is never the only way to close a drawer. Keyboard and switch users can press <kbd>Escape</kbd> or use a `DrawerClose` button, and pointer users can tap the backdrop. Put a visible close or cancel action in drawers that hold a form, because people who use a mouse often don't think to swipe. The grab handle is decorative and hidden from assistive technology.
+
+With reduced motion, the drawer fades in and out instead of sliding, and dragging still follows the pointer directly. The backdrop lightens as the drawer is dragged away, and the release animation runs faster after a quick flick. The panel honors safe-area insets, so content stays clear of the home indicator on phones.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["drawer"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="drawer" title="components/ui/drawer.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Drawer,
+  DrawerClose,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerPopup,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+```
+
+```tsx
+<Drawer>
+  <DrawerTrigger render={<Button variant="outline" />}>Open</DrawerTrigger>
+  <DrawerPopup>
+    <DrawerHeader>
+      <DrawerTitle>Move to folder</DrawerTitle>
+      <DrawerDescription>Choose where this file should live.</DrawerDescription>
+    </DrawerHeader>
+    {/* Body */}
+    <DrawerFooter>
+      <Button>Move</Button>
+      <DrawerClose render={<Button variant="ghost" />}>Cancel</DrawerClose>
+    </DrawerFooter>
+  </DrawerPopup>
+</Drawer>
+```
+
+```tsx
+<Drawer snapPoints={["220px", 1]}>{/* ... */}</Drawer>
+```
+
+## Don't do this
+
+### A desktop side panel that nobody will swipe
+
+```tsx
+// Bad
+<Drawer side="right">{/* settings form on a desktop layout */}</Drawer>
+```
+
+```tsx
+// Good
+<Sheet>
+  <SheetPopup side="right">{/* settings form */}</SheetPopup>
+</Sheet>
+```
+
+On a desktop layout that people use with a mouse, gestures add nothing. They only add a way to drag a form shut by accident. Sheet gives the same surface with plain dialog behavior.
+
+### Swiping as the only way out
+
+```tsx
+// Bad
+<DrawerPopup showHandle>{/* a form with no cancel button */}</DrawerPopup>
+```
+
+```tsx
+// Good
+<DrawerFooter>
+  <Button type="submit">Save</Button>
+  <DrawerClose render={<Button variant="ghost" />}>Cancel</DrawerClose>
+</DrawerFooter>
+```
+
+A handle shows that the panel can be dragged, but it doesn't say how to leave. Give every drawer that collects input a visible way to cancel.
+
+## Examples
+
+### Snap points
+
+A compact summary that people can drag up to see every stop.
+
+<ComponentPreview name="drawer-snap-points" />
+
+### Sides
+
+Each side swipes toward its own edge to dismiss.
+
+<ComponentPreview name="drawer-side" />
+
+### Action sheet
+
+Choices for one item, with the destructive action set apart from the list.
+
+<ComponentPreview name="drawer-action-sheet" />
+
+## API reference
+
+All parts forward their matching Base UI Drawer props. `DrawerOverlay` aliases `DrawerBackdrop` and `DrawerContent` aliases `DrawerPopup`.
+
+| Part | Renders | Notes |
+| --- | --- | --- |
+| `Drawer` | Root | Open state, snap points, and `side` |
+| `DrawerTrigger` | Button | Opens the drawer |
+| `DrawerPortal` | Portal | Mounts the drawer outside the layout tree |
+| `DrawerBackdrop` | Div | Dims the page and fades with swipe progress |
+| `DrawerPopup` | Div | The panel, with its viewport and scrollable content |
+| `DrawerHandle` | Div | Decorative grab handle, rendered automatically on top and bottom drawers |
+| `DrawerHeader` | Div | Title and description block |
+| `DrawerFooter` | Div | Actions pinned to the bottom of the panel |
+| `DrawerTitle` | Heading | Names the drawer for assistive technology |
+| `DrawerDescription` | Paragraph | Gives context for the task |
+| `DrawerClose` | Button | Closes the drawer |
+
+`Drawer` adds:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `side` | `top`, `right`, `bottom`, `left` | `bottom` |
+| `snapPoints` | `(number \| string)[]` | — |
+| `snapPoint` / `onSnapPointChange` | Controlled snap point | — |
+
+`side` sets the Base UI `swipeDirection` for you. `DrawerPopup` adds:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `showBackdrop` | boolean | `true` |
+| `showHandle` | boolean | `true` for top and bottom |
+| `showCloseButton` | boolean | `true` for left and right |
+
+See the [Base UI Drawer API](https://base-ui.com/react/components/drawer#api-reference) for nested drawers, indent effects, and the swipe CSS variables.

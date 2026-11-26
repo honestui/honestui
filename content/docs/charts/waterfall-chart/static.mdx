@@ -1,0 +1,205 @@
+---
+title: Waterfall Chart
+description: Show how a starting value becomes an ending value through a sequence of increases and decreases.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/waterfall-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-custom
+---
+
+<ComponentPreview title="Operating income bridge" name="ex-echarts-waterfall-chart" />
+
+## Overview
+
+Use a waterfall chart, also called a bridge chart, to explain a change between two totals: how revenue became operating income, how last month's users became this month's, or how a budget was spent. Each step floats from where the previous one ended, so the size of every contribution and the running total are both visible.
+
+Rows are ordered steps. Most rows carry a change. Rows marked as totals span from zero to the running total, for subtotals and the final result. A total row with a value resets the running total to it, which is how an opening balance is set.
+
+## Anatomy
+
+`WaterfallChart` computes the running total from `data` and owns the axes and loading state. `Bars` draws the floating bars, dashed connectors that carry the running total from one bar to the next, and optional value labels. Add `XAxis`, `YAxis`, `Grid`, `Legend`, and `Tooltip` for context.
+
+Colors come from three config keys: `increase`, `decrease`, and `total`. Bars that cross zero are drawn correctly, because every bar is a range from its start to its end, not a stack on a hidden base.
+
+## Accessibility
+
+Do not rely on green and red alone: label the steps clearly, consider `showValues` so each change is printed with its sign, and choose colors that differ in lightness. The canvas exposes only its accessible name, which by default reports the number of steps and the final total. `computeWaterfall` returns exactly what the chart draws, so the same steps can fill a nearby table.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { WaterfallChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const data = [
+  { step: "Revenue", amount: 1840, isTotal: true },
+  { step: "Cost of goods", amount: -612 },
+  { step: "Gross profit", isTotal: true },
+  { step: "Salaries", amount: -428 },
+  { step: "Operating income", isTotal: true },
+];
+
+const chartConfig = {
+  increase: { label: "Increase", colors: { light: ["#16a34a"] } },
+  decrease: { label: "Decrease", colors: { light: ["#dc2626"] } },
+  total: { label: "Total", colors: { light: ["#2563eb"] } },
+} satisfies ChartConfig;
+
+<WaterfallChart
+  data={data}
+  config={chartConfig}
+  xDataKey="step"
+  valueDataKey="amount"
+  totalDataKey="isTotal"
+>
+  <WaterfallChart.Grid />
+  <WaterfallChart.XAxis />
+  <WaterfallChart.YAxis />
+  <WaterfallChart.Tooltip />
+  <WaterfallChart.Bars />
+</WaterfallChart>
+```
+
+The tooltip shows each step's change with its sign and the running total after it.
+
+## Examples
+
+### Value Labels
+
+<ComponentPreview title="showValues" name="ex-values-echarts-waterfall-chart" />
+
+`showValues` prints each change above rising bars and below falling ones. Use `valueFormatter` to shorten large numbers; it receives the bar's kind so totals can be written without a sign.
+
+### Reference Line
+
+<ComponentPreview title="<WaterfallChart.ReferenceLine />" name="ex-reference-lines-echarts-waterfall-chart" />
+
+A `ReferenceLine` at the plan or budget shows where the result lands against it. `ReferenceArea` and `ReferenceDot` work the same way; see <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>. Give several waterfalls, or a waterfall and a bar chart over the same steps, one `syncId` to move their tooltips together.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-waterfall-chart" />
+
+`isLoading` reserves the plot with a neutral bridge silhouette and the shared loading label.
+
+## API Reference
+
+<ApiHeading>WaterfallChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per step, in order.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Labels and colors for `increase`, `decrease`, and `total`.
+  </ApiRow>
+  <ApiRow name="xDataKey" type="keyof TData & string" required>
+    The step name.
+  </ApiRow>
+  <ApiRow name="valueDataKey" type="keyof TData & string" required>
+    The change each step contributes. On a total row, an optional value that resets the running total.
+  </ApiRow>
+  <ApiRow name="totalDataKey" type="keyof TData & string">
+    A boolean field that marks total and subtotal rows.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Fades the bars in from left to right. Reduced-motion preferences turn it off.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Shows the loading silhouette and label.
+  </ApiRow>
+  <ApiRow name="syncId" type="string">
+    Charts with the same id move their tooltip together, matched by step name.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas. A summary with the final total is generated when omitted.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Bars</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="radius" type="number" default="2">
+    Corner radius in pixels.
+  </ApiRow>
+  <ApiRow name="width" type="number" default="0.6">
+    Bar width as a share of each category.
+  </ApiRow>
+  <ApiRow name="connectors" type="boolean" default="true">
+    Draws dashed connectors at the running total between bars.
+  </ApiRow>
+  <ApiRow name="showValues" type="boolean" default="false">
+    Prints each change beside its bar.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type='(value: number, kind: "increase" | "decrease" | "total") => string'>
+    Formats the printed values.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>XAxis / YAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(value, index: number) => string">
+    Formats tick labels. Steps are strings and values are numbers.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Axis title.
+  </ApiRow>
+  <ApiRow name="hideDots" type="boolean" default="false">
+    Hides the tick dots.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the pointer.
+  </ApiRow>
+  <ApiRow name="cursor" type="boolean" default="false">
+    Draws the dashed line at the hovered step.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the change and the running total.
+  </ApiRow>
+  <ApiRow name="defaultIndex" type="number">
+    Opens the tooltip at a step after mount.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>
+    Indicator shape. Only kinds present in the data are listed.
+  </ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"right"'>
+    Horizontal alignment.
+  </ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "middle" | "bottom"' default='"top"'>
+    Vertical placement.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>ReferenceLine, ReferenceArea, ReferenceDot</ApiHeading>
+
+Take the props listed in <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>. Pass a step name for `x` and an amount for `y`.
+
+<ApiHeading>computeWaterfall</ApiHeading>
+
+`computeWaterfall(data, xKey, valueKey, totalKey?)` returns one `WaterfallStep` per row with its `kind`, `value`, `start`, `end`, and `runningTotal`, the same numbers the chart draws.

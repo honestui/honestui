@@ -1,0 +1,303 @@
+---
+title: Combo Chart
+description: Plot bars and lines on one category axis, with an optional second value axis for a different unit.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/combo-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#yAxis.alignTicks
+---
+
+<ComponentPreview title="Bars with a line on a second axis" name="ex-echarts-combo-chart" />
+
+## Overview
+
+Use a combo chart when two related measures share a category axis but answer different questions: an amount drawn as bars, and a rate or trend drawn as a line. Revenue with conversion rate, rainfall with temperature, and tickets opened with tickets resolved are typical pairs.
+
+When the two measures use different units, put the line on a right-hand axis. The right axis picks ticks that land on the left axis's grid lines, so one set of dashed lines serves both scales. Reach for a second axis only when the units really differ: two axes on the same unit invite readers to compare heights that are not comparable.
+
+## Anatomy
+
+`ComboChart` owns the data, the category axis, selection, the brush, and loading. `Bar` and `Line` parts add series; each one names the axis it is measured against with `yAxisId`. Add one `YAxis` per side you want labelled, and optional `Grid`, `Legend`, `Tooltip`, and `Brush` parts.
+
+Lines always draw above bars, so a trend is never hidden behind a column. Bars and lines share one axis tooltip that lists every series at the hovered category.
+
+## Accessibility
+
+Two axes make a chart harder to read precisely, so name each axis with `label` or a unit in its `tickFormatter`, and give the chart a clear `ariaLabel`. The canvas exposes only that name: pair the chart with a summary or table when readers need exact values. The tooltip, legend toggles, and brush are pointer-operated; do not make them the only way to reach information.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { ComboChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<ComboChart data={data} config={chartConfig} xDataKey="month">
+  <ComboChart.Grid />
+  <ComboChart.XAxis />
+  <ComboChart.YAxis yAxisId="left" tickFormatter={(value) => `$${value / 1000}k`} />
+  <ComboChart.YAxis yAxisId="right" tickFormatter={(value) => `${value}%`} />
+  <ComboChart.Legend isClickable />
+  <ComboChart.Tooltip />
+  <ComboChart.Bar dataKey="revenue" isClickable />
+  <ComboChart.Line dataKey="conversion" yAxisId="right" isClickable>
+    <ComboChart.Dot variant="border" />
+  </ComboChart.Line>
+</ComboChart>
+```
+
+Give the tooltip a `valueFormatter` when the series use different units. It receives the series key, so each row can carry its own unit:
+
+```tsx
+<ComboChart.Tooltip
+  valueFormatter={(value, key) => (key === "conversion" ? `${value}%` : `$${value}`)}
+/>
+```
+
+## Examples
+
+### Stacked Bars
+
+<ComponentPreview title="stackType='stacked'" name="ex-stacked-type-echarts-combo-chart" />
+
+`stackType="stacked"` stacks every bar series that shares an axis, so the line can show a total, a target, or an outcome against the composition. Lines are never stacked.
+
+### Brush
+
+<ComponentPreview title="ComboChart.Brush" name="ex-brush-echarts-combo-chart" />
+
+Add `ComboChart.Brush` to zoom a long series. The preview strip shows the first bar series; dragging the selection filters bars and lines together.
+
+### Reference Lines and Comparison
+
+<ComponentPreview title="ReferenceLine and compareDataKey" name="ex-reference-lines-echarts-combo-chart" />
+
+`ComboChart.ReferenceLine`, `ReferenceArea`, and `ReferenceDot` mark targets and periods; they are measured against the left value axis. `compareDataKey` on a `Bar` draws last period's value as a tick across the column, and on a `Line` as a faded dashed line on the same axis as the line. The tooltip adds the earlier value and the change under each compared row. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link> and <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
+
+### Synced Crosshair
+
+<ComponentPreview title='syncId="share-day"' name="ex-synced-crosshair-echarts-combo-chart" />
+
+Charts that share a `syncId` show their tooltip at the same category when any one of them is hovered, here a candlestick chart above a combo chart of trading activity. Add `ComboChart.Zoom` to zoom and pan inside the plot; it shares its window with the brush. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link> and <Link href="/docs/charts/ui/brush">Brush and Zoom</Link>.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-combo-chart" />
+
+`isLoading` keeps the layout with a neutral bar and line silhouette and the same loading label as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>ComboChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per category.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Labels and theme colors for every bar and line key. See <Link href="/docs/charts/chart-config">Chart Config</Link>.
+  </ApiRow>
+  <ApiRow name="xDataKey" type="keyof TData & string">
+    The category field. Falls back to the `XAxis` `dataKey`, then the first field that is not a series.
+  </ApiRow>
+  <ApiRow name="stackType" type='"default" | "stacked"' default='"default"'>
+    Places bars side by side or stacks the bars on each axis.
+  </ApiRow>
+  <ApiRow name="barRadius" type="number" default="2">
+    Corner radius for bars. A stacked column rounds only its top segment.
+  </ApiRow>
+  <ApiRow name="curveType" type='"linear" | "smooth" | "step"' default='"smooth"'>
+    Default curve for every line.
+  </ApiRow>
+  <ApiRow name="barGap" type="number">
+    Gap between grouped bars, in pixels.
+  </ApiRow>
+  <ApiRow name="barCategoryGap" type="number">
+    Gap between categories, in pixels.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Plays the intro animation. Reduced-motion preferences turn it off.
+  </ApiRow>
+  <ApiRow name="defaultSelectedDataKey" type="string | null" default="null">
+    The series selected on first render.
+  </ApiRow>
+  <ApiRow name="onSelectionChange" type="(key: string | null) => void">
+    Fires when a clickable bar, line, or legend item is selected or cleared.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Shows the loading silhouette and label.
+  </ApiRow>
+  <ApiRow name="syncId" type="string">
+    Charts with the same id move their crosshair and tooltip together.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas. A description of the series is generated when omitted.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Bar</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string" required>
+    The series field and config key.
+  </ApiRow>
+  <ApiRow name="variant" type='"default" | "gradient" | "hatched" | "duotone"' default='"default"'>
+    Bar fill, matching the Bar Chart variants of the same name.
+  </ApiRow>
+  <ApiRow name="radius" type="number">
+    Overrides `barRadius` for this series.
+  </ApiRow>
+  <ApiRow name="yAxisId" type='"left" | "right"' default='"left"'>
+    The value axis the bar is measured against.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Lets a click select the series.
+  </ApiRow>
+  <ApiRow name="enableHoverHighlight" type="boolean" default="false">
+    Dims the other bars while one is hovered.
+  </ApiRow>
+  <ApiRow name="compareDataKey" type="string">
+    A field holding the same measure for an earlier period, drawn as a tick across the bar and compared in the tooltip. Stacked bars compare in the tooltip only.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Line</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string" required>
+    The series field and config key.
+  </ApiRow>
+  <ApiRow name="yAxisId" type='"left" | "right"' default='"left"'>
+    The value axis the line is measured against.
+  </ApiRow>
+  <ApiRow name="curveType" type='"linear" | "smooth" | "step"'>
+    Overrides the root `curveType`.
+  </ApiRow>
+  <ApiRow name="strokeVariant" type='"solid" | "dashed"' default='"solid"'>
+    Dashes suit targets and forecasts.
+  </ApiRow>
+  <ApiRow name="strokeWidth" type="number" default="1.5">
+    Line width in pixels.
+  </ApiRow>
+  <ApiRow name="connectNulls" type="boolean" default="false">
+    Bridges missing values instead of leaving a gap.
+  </ApiRow>
+  <ApiRow name="compareDataKey" type="string">
+    A field holding the same measure for an earlier period, drawn as a faded dashed line and compared in the tooltip.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Lets a click select the series.
+  </ApiRow>
+  <ApiRow name="children" type="ReactNode">
+    `ComboChart.Dot` for resting points and `ComboChart.ActiveDot` for the hovered point. Both take a `variant` of `"default"`, `"border"`, `"colored-border"`, or `"ping"`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>YAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="yAxisId" type='"left" | "right"' default='"left"'>
+    Which side this axis describes. Add one per side.
+  </ApiRow>
+  <ApiRow name="tickFormatter" type="(value: number, index: number) => string">
+    Formats tick labels.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Axis title.
+  </ApiRow>
+  <ApiRow name="min" type="number">
+    Fixes the lower bound.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    Fixes the upper bound.
+  </ApiRow>
+  <ApiRow name="hideDots" type="boolean" default="false">
+    Hides the tick dots.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>XAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string">
+    The category field, if not set on the root.
+  </ApiRow>
+  <ApiRow name="tickFormatter" type="(value: string, index: number) => string">
+    Formats category labels.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Axis title.
+  </ApiRow>
+  <ApiRow name="hideDots" type="boolean" default="false">
+    Hides the tick dots.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the pointer.
+  </ApiRow>
+  <ApiRow name="cursor" type="boolean" default="true">
+    Draws the dashed line at the hovered category.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number, dataKey: string) => string">
+    Formats each row. Receives the series key.
+  </ApiRow>
+  <ApiRow name="labelFormatter" type="(label: string) => string">
+    Formats the category shown as the tooltip title, such as a date.
+  </ApiRow>
+  <ApiRow name="defaultIndex" type="number">
+    Opens the tooltip at a category after mount.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>
+    Indicator shape, shared with the other charts.
+  </ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"right"'>
+    Horizontal alignment.
+  </ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "middle" | "bottom"' default='"top"'>
+    Vertical placement.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Lets a legend item select its series.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Brush</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="height" type="number" default="56">
+    Height of the preview strip in pixels.
+  </ApiRow>
+  <ApiRow name="formatLabel" type="(value: string, index: number) => string">
+    Formats the range labels shown while the brush is hovered.
+  </ApiRow>
+  <ApiRow name="onChange" type="(range: { startIndex: number; endIndex: number }) => void">
+    Fires when the selected range changes.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Zoom, ReferenceLine, ReferenceArea, ReferenceDot</ApiHeading>
+
+`ComboChart.Zoom` takes the props listed in <Link href="/docs/charts/ui/brush">Brush and Zoom</Link>. The reference parts take the props listed in <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>; a `y` value is read on the left value axis.

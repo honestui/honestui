@@ -1,10 +1,25 @@
 import {
   BarChartIcon,
+  BarListIcon,
+  BulletChartIcon,
+  CandlestickChartIcon,
+  CategoryBarIcon,
   ChartStackedAreaIcon,
   ChartStackedLineIcon,
+  ComboChartIcon,
+  ContributionGraphIcon,
+  FunnelChartIcon,
+  GaugeChartIcon,
   HeatmapIcon,
   PieChartIcon,
+  RadarChartIcon,
+  RadialChartIcon,
+  SankeyChartIcon,
   ScatterChartIcon,
+  SparklineIcon,
+  TrackerIcon,
+  TreemapIcon,
+  WaterfallChartIcon,
 } from "@/assets/icons";
 import {
   ActivitySparkIcon,
@@ -66,6 +81,15 @@ import {
   ToggleOnIcon,
   ToolsIcon,
   UserCircleIcon,
+  Calendar03Icon,
+  CarouselHorizontalIcon,
+  LayoutBottomIcon,
+  PasswordValidationIcon,
+  MenuSquareIcon,
+  Navigation01Icon,
+  LayoutTwoColumnIcon,
+  Loading01Icon,
+  CropIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
@@ -73,20 +97,24 @@ const COMPONENT_ICONS = {
   accordion: Menu01Icon,
   alert: Alert02Icon,
   "alert-dialog": AlertSquareIcon,
+  "aspect-ratio": CropIcon,
   autocomplete: MagicWand01Icon,
   avatar: UserCircleIcon,
   badge: BadgeIcon,
   breadcrumb: Navigation03Icon,
   button: CursorPointer02Icon,
+  calendar: Calendar03Icon,
   card: CreditCardIcon,
+  carousel: CarouselHorizontalIcon,
   checkbox: CheckmarkSquare02Icon,
   collapsible: CollapseIcon,
+  "color-picker": ColorPickerIcon,
   combobox: DropdownFieldTypeIcon,
   command: CommandLineIcon,
   "context-menu": MouseRightClick02Icon,
-  "color-picker": ColorPickerIcon,
   density: DistributeVerticalCenterIcon,
   dialog: BrowserIcon,
+  drawer: LayoutBottomIcon,
   empty: FileEmpty02Icon,
   field: CustomFieldIcon,
   fieldset: LayoutTable01Icon,
@@ -97,19 +125,25 @@ const COMPONENT_ICONS = {
   "kanban-list": KanbanIcon,
   label: Tag01Icon,
   menu: Menu02Icon,
+  menubar: MenuSquareIcon,
   meter: DashboardSquare01Icon,
+  "native-select": Select02Icon,
+  "navigation-menu": Navigation01Icon,
   "number-field": InputNumericIcon,
+  "otp-field": PasswordValidationIcon,
   pagination: MoreHorizontalCircle01Icon,
   popover: Message01Icon,
   "preview-card": CardExchangeIcon,
   progress: Loading03Icon,
   "radio-group": RadioButtonIcon,
+  resizable: LayoutTwoColumnIcon,
   "scroll-area": ScrollVerticalIcon,
   select: Select02Icon,
   separator: MinusSignIcon,
   sheet: PanelRightIcon,
   skeleton: Layout02Icon,
   slider: SlidersHorizontalIcon,
+  spinner: Loading01Icon,
   switch: ToggleOnIcon,
   table: Table01Icon,
   tabs: LayoutTopIcon,
@@ -153,6 +187,36 @@ export function getNavItemIcon(tag?: string) {
       return <HeatmapIcon />;
     case "scatter-chart":
       return <ScatterChartIcon />;
+    case "sparkline":
+      return <SparklineIcon />;
+    case "radar-chart":
+      return <RadarChartIcon />;
+    case "radial-chart":
+      return <RadialChartIcon />;
+    case "gauge-chart":
+      return <GaugeChartIcon />;
+    case "bar-list":
+      return <BarListIcon />;
+    case "tracker":
+      return <TrackerIcon />;
+    case "category-bar":
+      return <CategoryBarIcon />;
+    case "combo-chart":
+      return <ComboChartIcon />;
+    case "waterfall-chart":
+      return <WaterfallChartIcon />;
+    case "candlestick-chart":
+      return <CandlestickChartIcon />;
+    case "bullet-chart":
+      return <BulletChartIcon />;
+    case "funnel-chart":
+      return <FunnelChartIcon />;
+    case "treemap":
+      return <TreemapIcon />;
+    case "sankey-chart":
+      return <SankeyChartIcon />;
+    case "contribution-graph":
+      return <ContributionGraphIcon />;
   }
 
   const componentIcon = COMPONENT_ICONS[item as keyof typeof COMPONENT_ICONS];

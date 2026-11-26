@@ -156,6 +156,24 @@ Examples of the bar chart with different `variants`. Each `<Bar>` sets its own `
 <ComponentPreview className="mb-0" title="Classroom outcomes" name="ex-glowing-desktop-echarts-bar-chart"  />
 <ComponentPreview title="Clinical intake" name="ex-glowing-mobile-echarts-bar-chart"  />
 
+### Reference Lines
+
+A quota or target across every bar with `ReferenceLine`. In the horizontal layout a target is `x={value}`, a vertical line. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>.
+
+<ComponentPreview title="<BarChart.ReferenceLine />" name="ex-reference-lines-echarts-bar-chart" />
+
+### Period Comparison
+
+`compareDataKey` marks each bar with a tick at the earlier period's value. See <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
+
+<ComponentPreview title='compareDataKey="lastQuarter"' name="ex-period-comparison-echarts-bar-chart" />
+
+### Synced Crosshair
+
+A bar chart and a line chart with the same `syncId` share the tooltip position. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link>.
+
+<ComponentPreview title='syncId="store-week"' name="ex-synced-crosshair-echarts-bar-chart" />
+
 ## API Reference
 
 The props below are grouped by the part they belong to. On canvas each part is declarative config the root compiles.
@@ -219,6 +237,9 @@ The root container. It owns the data, shared selection state, loading skeleton, 
   <ApiRow name="dataStatusText" type="DataStatusText">
     Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
   </ApiRow>
+  <ApiRow name="syncId" type="string">
+    Charts with the same id show their crosshair and tooltip at the same category together. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link>.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record<string, unknown>">
     Escape hatch merged over the underlying ECharts option object. See the <Link href="https://echarts.apache.org/en/option.html" _blank>ECharts option documentation</Link>.
   </ApiRow>
@@ -261,6 +282,9 @@ A single bar series. Each `<Bar />` carries its own fill variant, radius, glow, 
   </ApiRow>
   <ApiRow name="upperKey" type="string">
     The row field that holds the upper bound of each value. Set it together with `lowerKey`.
+  </ApiRow>
+  <ApiRow name="compareDataKey" type="string">
+    A data key holding the same measure for an earlier period. Draws it as a tick across each bar and adds the earlier value and the change to the tooltip. Stacked and percent charts compare in the tooltip only. See <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
   </ApiRow>
 </ApiTable>
 
@@ -324,6 +348,14 @@ The series legend, rendered as HTML above the canvas. Include it to show the leg
     Lets each legend entry toggle selection of its series.
   </ApiRow>
 </ApiTable>
+
+<ApiHeading>ReferenceLine, ReferenceArea, and ReferenceDot</ApiHeading>
+
+Targets, bands, and annotated points drawn on the plot, such as `<BarChart.ReferenceLine y={200} label="Goal" />`. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link> for every prop.
+
+<ApiHeading>Zoom</ApiHeading>
+
+Pinch or Ctrl-scroll zoom and drag panning inside the plot, with a Reset zoom button. See <Link href="/docs/charts/ui/brush#zoom">Brush and Zoom</Link>.
 
 <ApiHeading>Brush</ApiHeading>
 

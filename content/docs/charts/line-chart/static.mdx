@@ -136,6 +136,30 @@ Examples with different settings. Change `strokeVariant` on a `<Line>` or `curve
 <ComponentPreview className="mb-0" title="Hospital census" name="ex-glowing-desktop-echarts-line-chart"  />
 <ComponentPreview title="Train punctuality" name="ex-glowing-mobile-echarts-line-chart"  />
 
+### Reference Lines
+
+Mark an objective, an incident window, or a notable point with `ReferenceLine`, `ReferenceArea`, and `ReferenceDot`. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>.
+
+<ComponentPreview title="<LineChart.ReferenceLine />" name="ex-reference-lines-echarts-line-chart" />
+
+### Period Comparison
+
+`compareDataKey` draws an earlier period as a faded, finely dashed ghost of the line, and the tooltip shows the earlier value and the change. See <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
+
+<ComponentPreview title='compareDataKey="previous"' name="ex-period-comparison-echarts-line-chart" />
+
+### Synced Crosshair
+
+Charts that share a `syncId` move their crosshair and tooltip together. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link>.
+
+<ComponentPreview title='syncId="service-health"' name="ex-synced-crosshair-echarts-line-chart" />
+
+### Zoom
+
+`<LineChart.Zoom />` zooms on pinch or Ctrl-scroll and pans on drag, without a brush footer. See <Link href="/docs/charts/ui/brush#zoom">Brush and Zoom</Link>.
+
+<ComponentPreview title="<LineChart.Zoom />" name="ex-zoom-echarts-line-chart" />
+
 ## API Reference
 
 The chart is composed of several parts; the props below are grouped by part. On canvas each part is declarative config the root compiles.
@@ -190,6 +214,9 @@ The root container. It owns the data, shared selection state, loading skeleton, 
   <ApiRow name="dataStatusText" type="DataStatusText">
     Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
   </ApiRow>
+  <ApiRow name="syncId" type="string">
+    Charts with the same id show their crosshair and tooltip at the same category together. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link>.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record<string, unknown>">
     Escape hatch merged over the built ECharts option object. See the <Link href="https://echarts.apache.org/en/option.html" _blank>ECharts option documentation</Link>.
   </ApiRow>
@@ -235,6 +262,9 @@ A single line series. Each `<Line />` is self-contained, its own stroke, glow, a
   </ApiRow>
   <ApiRow name="upperKey" type="string">
     The row field that holds the upper bound of each value. Set it together with `lowerKey`.
+  </ApiRow>
+  <ApiRow name="compareDataKey" type="string">
+    A data key holding the same measure for an earlier period. Draws it as a faded, finely dashed ghost line and adds the earlier value and the change to the tooltip. See <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
   </ApiRow>
   <ApiRow name="children" type="ReactNode">
     Optional `<Dot />` and `<ActiveDot />` config that adds point markers to this line.
@@ -311,6 +341,14 @@ The series legend, rendered as HTML above the canvas. Include it to show the leg
     Lets each legend entry toggle selection of its series.
   </ApiRow>
 </ApiTable>
+
+<ApiHeading>ReferenceLine, ReferenceArea, and ReferenceDot</ApiHeading>
+
+Targets, bands, and annotated points drawn on the plot, such as `<LineChart.ReferenceLine y={200} label="Goal" />`. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link> for every prop.
+
+<ApiHeading>Zoom</ApiHeading>
+
+Pinch or Ctrl-scroll zoom and drag panning inside the plot, with a Reset zoom button. See <Link href="/docs/charts/ui/brush#zoom">Brush and Zoom</Link>.
 
 <ApiHeading>Brush</ApiHeading>
 

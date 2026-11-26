@@ -1,0 +1,148 @@
+---
+title: Native Select
+description: Choose one option with the browser's own select, styled to match Honest UI fields.
+---
+
+<ComponentPreview name="native-select-demo" />
+
+## Overview
+
+Native Select is a real `<select>` element dressed in the same edge, fill, focus ring, and sizes as the [Select](/docs/components/select) trigger. The closed control looks like the rest of your form. In browsers that support customizable selects (`appearance: base-select`, currently Chromium-based browsers), the open list is drawn like the Select popup: the same overlay surface, padded rows, hover tint, and a trailing check on the chosen option. Elsewhere it falls back to the platform's own picker: a wheel on iOS, a system list in Safari and Firefox. Either way it stays a real `<select>`, so the form value, keyboard behavior, and autofill are the browser's.
+
+## Native Select vs Select
+
+Both choose one value from a list. They differ in what opens.
+
+Choose **Native Select** when:
+
+- Most people use the form on a phone. The platform picker is large, familiar, and scrolls with momentum.
+- The form must work before JavaScript loads, or posts as a plain HTML form.
+- The list is long and plain, such as countries or time zones, and typing the first letters to jump is enough.
+- The control sits in a dense table or toolbar where a custom popup would be heavy.
+
+Choose **Select** when options need icons, descriptions, avatars, or custom rendering; when you need multiple selection with chips; or when the open list must look the same in every browser. Choose [Combobox](/docs/components/combobox) when people need to search a long list.
+
+## Anatomy
+
+The component renders a wrapper span, the `<select>` itself, and a chevron drawn over the end of the control. The browser's arrow is removed with `appearance: none`, and the end padding leaves room for the chevron, which ignores pointer events so clicks always reach the select. Children are ordinary `<option>` and `<optgroup>` elements, exported as `NativeSelectOption` and `NativeSelectOptGroup`.
+
+## Accessibility
+
+A native select carries the strongest accessibility support on the web: the `combobox` or `listbox` role, keyboard handling, type-ahead, and screen reader announcements all come from the browser. Give it a name with a visible label. Inside a [Field](/docs/components/field), `FieldLabel` labels it automatically, `FieldDescription` describes it, and validation sets `data-invalid` so the edge turns red alongside a written `FieldError`. Outside a Field, use a `<label htmlFor>` or `aria-label`.
+
+The chevron is `aria-hidden`. Invalid, disabled, and focus states match Input and Select, and the control keeps a system border in forced-colors mode. Option rows use the overlay surface so platforms that paint the open list with page colors stay legible in dark mode.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["native-select"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui/react class-variance-authority
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="native-select" title="components/ui/native-select.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  NativeSelect,
+  NativeSelectOptGroup,
+  NativeSelectOption,
+} from "@/components/ui/native-select"
+```
+
+```tsx
+<NativeSelect aria-label="Status" defaultValue="todo">
+  <NativeSelectOption value="todo">To do</NativeSelectOption>
+  <NativeSelectOption value="done">Done</NativeSelectOption>
+</NativeSelect>
+```
+
+Read the value from `onChange`, as with any select: `onChange={(event) => setStatus(event.target.value)}`.
+
+## Don't do this
+
+### A placeholder that can be submitted
+
+```tsx
+// Bad
+<NativeSelect>
+  <NativeSelectOption value="">Select a country</NativeSelectOption>
+  ...
+</NativeSelect>
+```
+
+```tsx
+// Good
+<NativeSelect required defaultValue="">
+  <NativeSelectOption value="" disabled>
+    Select a country
+  </NativeSelectOption>
+  ...
+</NativeSelect>
+```
+
+An empty, enabled first option is a real answer that slips through validation. Disable it and mark the select `required`.
+
+### Rich content in options
+
+`<option>` renders plain text only. Icons, badges, and secondary lines are dropped or rendered inconsistently across browsers. Use [Select](/docs/components/select) when an option needs more than a label.
+
+## Examples
+
+### Grouped options
+
+`NativeSelectOptGroup` adds non-selectable headings. In the customizable list they take the Select group label style; the platform picker renders them natively.
+
+<ComponentPreview name="native-select-groups" />
+
+### In a form field
+
+Required validation, a description, and an error message through Field.
+
+<ComponentPreview name="native-select-field" />
+
+### Sizes and variants
+
+Small, default, and large heights match Input and Select. The `text` variant drops the edge for toolbars; disabled selects keep their value visible.
+
+<ComponentPreview name="native-select-sizes" />
+
+## API reference
+
+`NativeSelect` accepts every native `<select>` prop except the numeric `size` attribute, plus:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `size` | `sm`, `default`, `lg` | `default` |
+| `variant` | `outline`, `text` | `outline` |
+| `wrapperClassName` | string | — |
+
+`className` styles the `<select>`; `wrapperClassName` styles the span that positions the chevron, which is where width utilities such as `max-w-64` belong. The select is rendered through Base UI's Field control, so `name`, `disabled`, and validation follow a surrounding Field. `NativeSelectOption` and `NativeSelectOptGroup` render plain `<option>` and `<optgroup>` elements. `nativeSelectVariants` is exported for custom compositions.

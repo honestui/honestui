@@ -1,0 +1,131 @@
+---
+title: Category Bar
+description: A single segmented bar that shows how a total splits into parts, with an optional marker.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/category-bar.tsx
+---
+
+<ComponentPreview title="Basic Category Bar" name="ex-echarts-category-bar" />
+
+## Overview
+
+A category bar divides one bar into segments sized by their share of the total. It is the compact choice for a part-to-whole breakdown inside a card or table: storage by file type, budget by category, survey answers, or a score placed on banded ranges with a marker. With more than five or six segments, or when values are close, a [Bar List](/docs/charts/bar-list/static) or [Bar Chart](/docs/charts/bar-chart/static) is easier to compare.
+
+## Anatomy
+
+`CategoryBar` reads a name and a value from each row and draws the segments in data order; each name is a `config` key for its label and color. Optional parts sit around the bar: `showLabels` prints the cumulative value at each boundary, dropping any that would collide; `marker` draws a tick at a value on the same scale; and `showLegend` lists the segments under the bar. The bar is drawn with DOM elements, so it stays crisp at any size.
+
+## Accessibility
+
+The bar is an image whose generated accessible name lists every segment with its value and share, and the marker if there is one, for example "Video 38.4 GB (38.4%), Photos 21.7 GB (21.7%)". Pass `ariaLabel` to replace it. Segment tooltips are pointer-operated, so pair the bar with a legend or written figures when readers need exact values. Choose segment colors with enough contrast against each other and the page.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { CategoryBar, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<CategoryBar
+  data={data}
+  config={chartConfig}
+  nameKey="type"
+  valueKey="gigabytes"
+  valueFormatter={(value) => `${value} GB`}
+  showLegend
+/>
+```
+
+Segments are proportional to the sum of all values. To show remaining capacity, add a row for it with a neutral color, as the "Available" segment does above.
+
+## Examples
+
+### Marker and labels
+
+<ComponentPreview title="marker and showLabels" name="ex-marker-echarts-category-bar" />
+
+A marker places one value on the bar, such as a score on banded ranges. The marker uses the same scale as the summed values, so this example offsets the score by the scale's origin and adds it back in `labelFormatter`, which formats positions on the scale (boundary labels and the marker) separately from segment values.
+
+### Percentages
+
+<ComponentPreview title="percent" name="ex-percent-echarts-category-bar" />
+
+With `percent`, labels and tooltips show each share of the total, and the tooltip detail shows the raw value.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-category-bar" />
+
+Pass `isLoading` to draw a neutral bar with the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>CategoryBar</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per segment, in display order.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    One entry per segment name, with its label and colors.
+  </ApiRow>
+  <ApiRow name="nameKey" type="keyof TData & string" required>
+    The segment name, matching a `config` key.
+  </ApiRow>
+  <ApiRow name="valueKey" type="keyof TData & string" required>
+    The segment value. Negative values count as zero.
+  </ApiRow>
+  <ApiRow name="height" type="number" default="8">
+    Bar height in pixels.
+  </ApiRow>
+  <ApiRow name="gap" type="number" default="2">
+    Gap between segments in pixels.
+  </ApiRow>
+  <ApiRow name="marker" type="{ value: number; label?: ReactNode }">
+    A tick at a value on the summed scale, with its tooltip label.
+  </ApiRow>
+  <ApiRow name="showLabels" type="boolean" default="false">
+    Prints the cumulative value at each segment boundary.
+  </ApiRow>
+  <ApiRow name="percent" type="boolean" default="false">
+    Shows shares of the total instead of values in labels and tooltips.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats segment values in tooltips and the accessible name.
+  </ApiRow>
+  <ApiRow name="labelFormatter" type="(value: number) => string">
+    Formats positions on the scale: boundary labels, the marker, and the range shown in each segment tooltip. Defaults to `valueFormatter`.
+  </ApiRow>
+  <ApiRow name="tooltip" type="boolean" default="true">
+    Shows a tooltip on segment and marker hover.
+  </ApiRow>
+  <ApiRow name="tooltipVariant" type='"default" | "frosted-glass"' default='"default"'>
+    The tooltip surface.
+  </ApiRow>
+  <ApiRow name="tooltipRoundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    The tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="showLegend" type="boolean" default="false">
+    Lists the segments under the bar.
+  </ApiRow>
+  <ApiRow name="legendVariant" type="LegendVariant" default='"rounded-square"'>
+    The legend indicator shape, shared with the other charts.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Grows the segments in on mount. Reduced-motion preferences disable it.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Draws a neutral bar and a loading label.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the bar. A segment summary is generated when omitted.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Classes for the container.
+  </ApiRow>
+</ApiTable>

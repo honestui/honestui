@@ -71,12 +71,37 @@ import {
   type ResolvedDataStatusText,
 } from "@/registry/default/ui/charts/data-quality";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
+import {
+  buildReferenceSeries,
+  collectReferences,
+  ReferenceArea,
+  ReferenceDot,
+  ReferenceLine,
+  referenceColorKeys,
+} from "@/registry/default/ui/charts/reference";
+import {
+  compareLabel,
+  compareSeriesId,
+  compareValues,
+  comparisonDetailHtml,
+  readCompareValue,
+} from "@/registry/default/ui/charts/comparison";
+import { joinChartSync } from "@/registry/default/ui/charts/sync";
+import {
+  buildInsideZoom,
+  collectZoom,
+  isZoomed,
+  Zoom,
+  useZoomWheelGuard,
+  ZOOM_RESET_CLASS,
+} from "@/registry/default/ui/charts/zoom";
 import type { ComposeOption, ImagePatternObject } from "echarts/core";
 import {
   BarChart as BarChartModule,
   CustomChart,
   type BarSeriesOption,
   type CustomSeriesOption,
+  type LineSeriesOption,
 } from "echarts/charts";
 import { sampleGradient } from "@/registry/default/ui/charts/dot";
 import { motion, useReducedMotion } from "motion/react";
@@ -92,6 +117,7 @@ type EChartsInstance = ReturnType<typeof echarts.init>;
 type EChartsOption = ComposeOption<
   | BarSeriesOption
   | CustomSeriesOption
+  | LineSeriesOption
   | GridComponentOption
   | TooltipComponentOption
   | DataZoomComponentOption
@@ -175,6 +201,8 @@ export interface BarChartProps<TData extends Record<string, unknown>> {
   loadingBars?: number; 
   ariaLabel?: string;
   dataStatusText?: DataStatusText; 
+  /** Charts with the same id show their crosshair and tooltip together. */
+  syncId?: string;
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -191,6 +219,11 @@ export interface BarProps {
   statusKey?: string; 
   lowerKey?: string; 
   upperKey?: string; 
+  /**
+   * A data key holding the same measure for an earlier period, marked on each
+   * bar as a tick. On stacked and percent charts only the tooltip compares.
+   */
+  compareDataKey?: string;
 }
 
 const Bar: FC<BarProps> = () => null;
@@ -244,6 +277,7 @@ type BarSeriesConfig = {
   glowing: boolean;
   bufferBar: boolean;
   quality: DataQualityKeys | null;
+  compareDataKey?: string;
 };
 
 type AxisSlot = {
@@ -320,6 +354,7 @@ function collectConfig(children: ReactNode): CollectedConfig {
         glowing: props.glowing ?? false,
         bufferBar: props.bufferBar ?? false,
         quality: dataQualityKeys(props),
+        compareDataKey: props.compareDataKey,
       });
     } else if (type === XAxis) {
       const props = child.props as XAxisProps;
@@ -774,6 +809,9 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
   const { config, selectedDataKey, tooltipSlot, quality, statusText } = ctx;
+  const compareKeys = new Map(
+    ctx.bars.flatMap((bar) => (bar.compareDataKey ? [[bar.dataKey, bar.compareDataKey]] : [])),
+  );
 
   return (params: unknown): string => {
     const rows = Array.isArray(params) ? params : [params];
@@ -810,15 +848,30 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
               ? p.value.toLocaleString()
               : String(p.value ?? "");
 
-        return tooltipRow({
-          indicatorHtml: tooltipIndicatorHtml(key, colorsCount),
-          labelText,
-          valueText: value,
-          dimmed,
-          detailText: point
-            ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
-            : undefined,
-        });
+        // Compared on the series' own values, so a percent chart compares
+        // amounts rather than a share with an amount.
+        const compareKey = compareKeys.get(key);
+        const row = typeof p.dataIndex === "number" ? ctx.data[p.dataIndex] : undefined;
+        const comparison = compareKey
+          ? comparisonDetailHtml({
+              current: readCompareValue(row, key),
+              previous: readCompareValue(row, compareKey),
+              label: compareLabel(config, compareKey),
+              dimmed,
+            })
+          : "";
+
+        return (
+          tooltipRow({
+            indicatorHtml: tooltipIndicatorHtml(key, colorsCount),
+            labelText,
+            valueText: value,
+            dimmed,
+            detailText: point
+              ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
+              : undefined,
+          }) + comparison
+        );
       })
       .join("");
 
@@ -1220,6 +1273,56 @@ function buildBarQualitySeries(ctx: OptionBuildContext): CustomSeriesOption[] {
   });
 }
 
+// The earlier period on each bar: a short tick at its value, as wide as the
+// bar and a little beyond, in the foreground ink so it reads on the bar's
+// fill and on the background above it.
+function buildBarCompareSeries(ctx: OptionBuildContext): CustomSeriesOption[] {
+  const { data, bars, isHorizontal, isStacked, selectedDataKey, barGap, barCategoryGap } = ctx;
+  if (isStacked) return [];
+  const { tokens } = ctx.resolved;
+  const layout = {
+    count: bars.length,
+    ...(barGap !== undefined ? { barGap } : {}),
+    ...(barCategoryGap !== undefined ? { barCategoryGap } : {}),
+  };
+
+  return bars.flatMap((bar, position): CustomSeriesOption[] => {
+    const compareKey = bar.compareDataKey;
+    if (!compareKey) return [];
+    const opacity = selectionOpacity(selectedDataKey, bar.dataKey);
+    const values = compareValues(data, compareKey);
+    const style = {
+      stroke: withAlpha(tokens.foreground, 0.7),
+      lineWidth: 2,
+      lineCap: "round" as const,
+      opacity,
+    };
+    return [
+      {
+        id: compareSeriesId(bar.dataKey),
+        type: "custom",
+        data: values.flatMap((value, index) => (value === null ? [] : [[index, value]])),
+        encode: isHorizontal ? { y: 0, x: 1 } : { x: 0, y: 1 },
+        silent: true,
+        z: QUALITY_Z,
+        tooltip: { show: false },
+        renderItem: (_itemParams, api) => {
+          const index = api.value(0) as number;
+          const value = api.value(1) as number;
+          const slot = (api as RenderItemApi).barLayout(layout)?.[position];
+          const [px, py] = api.coord(isHorizontal ? [value, index] : [index, value]);
+          const half = (slot?.width ?? 8) / 2 + 2;
+          const shift = slot?.offsetCenter ?? 0;
+          const shape = isHorizontal
+            ? { x1: px, y1: py + shift - half, x2: px, y2: py + shift + half }
+            : { x1: px + shift - half, y1: py, x2: px + shift + half, y2: py };
+          return { type: "line", shape, style, emphasis: { style } };
+        },
+      },
+    ];
+  });
+}
+
 type LiveState = {
   resolved: ResolvedColors | null; 
   hasRevealed: boolean; 
@@ -1249,6 +1352,7 @@ type LiveState = {
     expandableKey: string | null; 
     barCategoryGap?: number; 
     isHorizontal: boolean; 
+    onZoomChange?: (range: { startIndex: number; endIndex: number }) => void;
   };
 
   repush: () => void;
@@ -1275,6 +1379,7 @@ export function BarChart<TData extends Record<string, unknown>>({
   loadingBars = LOADING_DEFAULT_BARS,
   ariaLabel,
   dataStatusText,
+  syncId,
   chartOptions,
   children,
 }: BarChartProps<TData>) {
@@ -1347,6 +1452,15 @@ export function BarChart<TData extends Record<string, unknown>>({
 
   const seriesKeys = useMemo(() => bars.map((bar) => bar.dataKey), [bars]);
 
+  const references = useMemo(() => collectReferences(children), [children]);
+  const zoomSlot = useMemo(() => collectZoom(children), [children]);
+  useZoomWheelGuard(containerRef, zoomSlot);
+  const [zoomed, setZoomed] = useState(false);
+  const colorKeys = useMemo(
+    () => [...seriesKeys, ...referenceColorKeys(references, config)],
+    [seriesKeys, references, config],
+  );
+
   // Bounds on a value say nothing about bounds on its share of a total, so a
   // percent chart keeps the status and drops the range.
   const quality = useMemo(
@@ -1412,6 +1526,7 @@ export function BarChart<TData extends Record<string, unknown>>({
       expandableKey: bars.find((bar) => bar.variant === "expandable")?.dataKey ?? null,
       barCategoryGap,
       isHorizontal,
+      onZoomChange: zoomSlot.onChange,
     };
     liveRef.current.dataLength = data.length;
   });
@@ -1514,6 +1629,28 @@ export function BarChart<TData extends Record<string, unknown>>({
     if (isLoading) return buildLoadingOption(ctx, { grid, xAxis, yAxis });
 
     const brush = brushEnabled ? buildBrushOption(ctx, brushBottom) : null;
+    const reference = buildReferenceSeries({
+      refs: references,
+      resolved,
+      valueAxes: isHorizontal ? { x: true, y: false } : { x: false, y: true },
+    });
+
+    // Zoom shares the brush's window: it replaces the brush's own inside
+    // zoom, or stands alone without a brush.
+    const insideZoom = zoomSlot.present
+      ? buildInsideZoom({
+          zoom: zoomSlot,
+          range: liveRef.current.brushRange,
+          axis: isHorizontal ? { yAxisIndex: [0] } : { xAxisIndex: [0] },
+        })
+      : null;
+    const dataZoom = brush
+      ? insideZoom
+        ? [brush.dataZoom[0], insideZoom]
+        : brush.dataZoom
+      : insideZoom
+        ? [insideZoom]
+        : undefined;
 
     return {
       animation: false,
@@ -1521,14 +1658,18 @@ export function BarChart<TData extends Record<string, unknown>>({
       xAxis: brush ? [xAxis, brush.miniXAxis] : xAxis,
       yAxis: brush ? [yAxis, brush.miniYAxis] : yAxis,
       tooltip: buildTooltipOption(ctx),
-      dataZoom: brush?.dataZoom,
+      dataZoom,
       series: [
         ...buildBarSeries(ctx),
         ...buildBarQualitySeries(ctx),
+        ...buildBarCompareSeries(ctx),
+        ...(reference ? [reference] : []),
         ...(brush?.miniSeries ?? []),
       ],
     };
   }, [
+    references,
+    zoomSlot,
     data,
     config,
     bars,
@@ -1617,15 +1758,32 @@ export function BarChart<TData extends Record<string, unknown>>({
       if (!zoom) return;
 
       liveRef.current.brushRange = { start: zoom.start ?? 0, end: zoom.end ?? 100 };
+      setZoomed(isZoomed(liveRef.current.brushRange));
       syncBrushOverlayNow();
 
-      const { onBrushChange: onChange } = liveRef.current.handlers;
-      if (!onChange) return;
+      const { onBrushChange: onChange, onZoomChange } = liveRef.current.handlers;
+      if (!onChange && !onZoomChange) return;
       const len = liveRef.current.dataLength;
       const startIndex = Math.round(((zoom.start ?? 0) / 100) * (len - 1));
       const endIndex = Math.round(((zoom.end ?? 100) / 100) * (len - 1));
-      onChange({ startIndex, endIndex });
+      onChange?.({ startIndex, endIndex });
+      onZoomChange?.({ startIndex, endIndex });
     });
+
+    const onDoubleClick = () => {
+      if (!isZoomed(liveRef.current.brushRange)) return;
+      chart.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    };
+    chart.getZr().on("dblclick", onDoubleClick);
+
+    const leaveSync = syncId
+      ? joinChartSync({
+          syncId,
+          chart,
+          categories: () => liveRef.current.categories,
+          categoryAxis: () => (liveRef.current.handlers.isHorizontal ? "y" : "x"),
+        })
+      : null;
 
     chart.on("finished", () => {
       const { hasStripped, isHorizontal: horiz } = liveRef.current.handlers;
@@ -1669,6 +1827,8 @@ export function BarChart<TData extends Record<string, unknown>>({
     zr.on("globalout", onZrOut);
 
     return () => {
+      leaveSync?.();
+      zr.off("dblclick", onDoubleClick);
       zr.off("mousemove", onZrMove);
       zr.off("globalout", onZrOut);
       resizeObserver.disconnect();
@@ -1681,14 +1841,14 @@ export function BarChart<TData extends Record<string, unknown>>({
       live.hasRevealed = false;
     };
 
-  }, [syncBrushOverlayNow, toggleSelection]);
+  }, [syncBrushOverlayNow, toggleSelection, syncId]);
 
   useEffect(() => {
     const chart = echartsRef.current;
     const container = containerRef.current;
     if (!chart || !container) return;
 
-    liveRef.current.resolved = resolveColors(container, config, seriesKeys);
+    liveRef.current.resolved = resolveColors(container, config, colorKeys);
 
     const push = (withEntrance: boolean) => {
 
@@ -1810,7 +1970,7 @@ export function BarChart<TData extends Record<string, unknown>>({
     push(revealEnabled);
 
     liveRef.current.repush = () => {
-      liveRef.current.resolved = resolveColors(container, config, seriesKeys);
+      liveRef.current.resolved = resolveColors(container, config, colorKeys);
       push(false);
     };
   }, [
@@ -1821,7 +1981,7 @@ export function BarChart<TData extends Record<string, unknown>>({
     effectiveAnimation,
     shouldReduceMotion,
     config,
-    seriesKeys,
+    colorKeys,
     data.length,
     bars,
     isHorizontal,
@@ -1919,6 +2079,17 @@ export function BarChart<TData extends Record<string, unknown>>({
 
       {!statusKeyOnTop && statusKey}
 
+      {zoomSlot.present && zoomSlot.showReset && zoomed && !isLoading && (
+        <button
+          type="button"
+          className={ZOOM_RESET_CLASS}
+          style={{ left: 16, ...(legendSlot.present && legendSlot.verticalAlign === "top" && legendSlot.align !== "right" ? { bottom: 12 } : { top: 12 }) }}
+          onClick={() => echartsRef.current?.dispatchAction({ type: "dataZoom", start: 0, end: 100 })}
+        >
+          Reset zoom
+        </button>
+      )}
+
       {legendSlot.present && !isLoading && (
         <LegendOverlay
           seriesKeys={seriesKeys}
@@ -2006,3 +2177,7 @@ BarChart.Grid = Grid;
 BarChart.Tooltip = Tooltip;
 BarChart.Legend = Legend;
 BarChart.Brush = Brush;
+BarChart.Zoom = Zoom;
+BarChart.ReferenceLine = ReferenceLine;
+BarChart.ReferenceArea = ReferenceArea;
+BarChart.ReferenceDot = ReferenceDot;

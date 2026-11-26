@@ -1,0 +1,175 @@
+---
+title: Funnel Chart
+description: A composable funnel chart for showing how many people or items move through an ordered sequence of stages.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/funnel-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-funnel
+---
+
+<ComponentPreview title="Basic Funnel Chart" name="ex-echarts-funnel-chart" />
+
+## Overview
+
+Use a funnel chart when the question is where people drop out of an ordered process: a signup flow, a checkout, a sales pipeline, or a hiring loop. Each stage is counted once, and every stage after the first is a subset of the one before it.
+
+The default `stepped` variant draws each stage as a bar on a shared scale, with the volume lost since the previous stage shown as a lighter ghost above it. Bars on one baseline are easier to compare than the slanted edges of a classic funnel, and the conversion rate for every stage sits above its bar. The `tapered` variant draws the familiar narrowing shape for presentations where the silhouette matters more than precise comparison.
+
+## Anatomy
+
+`FunnelChart` owns the stage data, colors, layout, and loading state. Stages render in data order. Add `Funnel` for the bars, `Labels` for the conversion rate and count above each stage, `Axis` for the stage names, `Grid` for dashed value guides, and `Tooltip` for the full breakdown of a stage: its count, its share of the first and previous stage, and how many dropped off.
+
+## Accessibility
+
+A descriptive accessible name listing every stage, its count, and its conversion rate is generated when `ariaLabel` is omitted. The conversion labels are drawn in the foreground color and the drop-off ghost is a tint of the stage color, so the chart does not rely on hue alone. The tooltip is pointer-operated, so place any number people must act on in the labels or in nearby text.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+The data is an ordered array with one row per stage. `nameKey` names the stage and `dataKey` selects the count and its chart config entry.
+
+```tsx
+import { FunnelChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<FunnelChart data={data} config={chartConfig} nameKey="stage" dataKey="people">
+  <FunnelChart.Grid />
+  <FunnelChart.Axis />
+  <FunnelChart.Labels />
+  <FunnelChart.Tooltip />
+  <FunnelChart.Funnel />
+</FunnelChart>
+```
+
+A stage that has its own entry in `config`, keyed by its name, takes that color instead of the series color. Use this sparingly, for example to mark the outcome stage.
+
+### Horizontal Layout
+
+<ComponentPreview title="layout='horizontal'" name="ex-horizontal-layout-echarts-funnel-chart" />
+
+Horizontal bars leave room for long stage names. This example sets `calculateFrom="previous"`, so each label shows the step-to-step rate instead of the share of the first stage, which makes the weakest step easy to spot.
+
+### Tapered Variant
+
+<ComponentPreview title="variant='tapered'" name="ex-tapered-variant-echarts-funnel-chart" />
+
+The tapered variant uses the classic funnel shape. Later stages fade so the shape reads as one narrowing flow. Its width encodes each count on the same scale as the first stage, but comparing slanted widths is harder than comparing bars, so prefer `stepped` when people need to compare stages closely.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-funnel-chart" />
+
+Pass `isLoading` to reserve the chart layout with neutral, descending bars and the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>FunnelChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per stage, in funnel order.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Defines the label and theme colors for `dataKey`, and optionally for individual stage names.
+  </ApiRow>
+  <ApiRow name="nameKey" type="keyof TData & string" required>
+    The field holding each stage's name.
+  </ApiRow>
+  <ApiRow name="dataKey" type="keyof TData & string" required>
+    The numeric field counted at each stage.
+  </ApiRow>
+  <ApiRow name="layout" type='"vertical" | "horizontal"' default='"vertical"'>
+    Draws stages as columns or as rows.
+  </ApiRow>
+  <ApiRow name="calculateFrom" type='"first" | "previous"' default='"first"'>
+    Measures each label's conversion rate against the first stage or the stage before it.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Additional CSS classes for the chart container. Give the chart an explicit height.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Enables the intro animation. Reduced-motion preferences disable it automatically.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Replaces the data with neutral placeholder bars and a progress label.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas chart. A label listing every stage is generated when omitted.
+  </ApiRow>
+  <ApiRow name="onStageClick" type="(stage: FunnelStage&lt;TData&gt;) => void">
+    Fires when a stage is selected and `Funnel` has `isClickable`. The stage carries its value, conversion rates, and drop-off.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option object.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Funnel</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"stepped" | "tapered"' default='"stepped"'>
+    Bars on a shared baseline, or the classic narrowing funnel shape.
+  </ApiRow>
+  <ApiRow name="radius" type="number" default="2">
+    Bar corner radius in pixels. Applies to the stepped variant.
+  </ApiRow>
+  <ApiRow name="showDropOff" type="boolean" default="true">
+    Draws the volume lost since the previous stage as a tinted ghost bar.
+  </ApiRow>
+  <ApiRow name="dropOffLabels" type="boolean" default="true">
+    Labels each ghost with its drop-off percentage when the ghost is tall enough to hold it.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Enables the pointer cursor and `onStageClick`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Labels</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the count shown under each conversion rate.
+  </ApiRow>
+  <ApiRow name="percentFormatter" type="(share: number) => string">
+    Formats the conversion rate, given a share from 0 to 1.
+  </ApiRow>
+  <ApiRow name="hideValue" type="boolean" default="false">
+    Shows only the conversion rate.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Axis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(value: string, index: number) => string">
+    Formats stage names without changing the underlying data.
+  </ApiRow>
+  <ApiRow name="hide" type="boolean" default="false">
+    Hides the stage names while keeping the layout.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface treatment.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the pointer.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats counts and drop-off in the tooltip.
+  </ApiRow>
+  <ApiRow name="defaultIndex" type="number">
+    Opens the tooltip on a specific stage after mount.
+  </ApiRow>
+</ApiTable>

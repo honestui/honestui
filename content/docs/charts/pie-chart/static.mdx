@@ -16,7 +16,7 @@ Use a pie or donut chart to show a simple part-to-whole relationship with a smal
 
 ## Anatomy
 
-`PieChart` owns the data, configuration, selection, and loading state. `Pie` controls the sectors and their geometry, while optional `Label`, `Legend`, `Tooltip`, and `Background` parts add context.
+`PieChart` owns the data, configuration, selection, and loading state. `Pie` controls the sectors and their geometry, while optional `Label`, `Legend`, `Tooltip`, `Center`, and `Background` parts add context.
 
 ## Accessibility
 
@@ -125,6 +125,15 @@ Examples of the pie chart in different configurations. Customize `innerRadius`, 
   </AlertContent>
 </Alert>
 
+### Center Label
+
+<ComponentPreview className="mb-0" title='<Center label="Tickets" />' name="ex-center-label-echarts-pie-chart"  />
+<Alert>
+  <AlertContent>
+    Add `<Center />` to a donut to print the total in the hole. Hovering a sector, or selecting one, swaps in that sector's value and name. The readout is HTML over the canvas, so it stays crisp and uses your page font.
+  </AlertContent>
+</Alert>
+
 ### Padded Sectors
 
 <ComponentPreview className="mb-0" title="paddingAngle={4} cornerRadius={8}" name="ex-padded-echarts-pie-chart"  />
@@ -181,7 +190,7 @@ The root container. It owns the data, shared selection state, loading skeleton, 
     Defines the chart's sectors. Each key matches a value from your `nameKey` field, with a `label` and a per-theme `colors` array. Same contract as every Honest UI chart, see <Link href="/docs/charts/chart-config">Chart Config</Link>.
   </ApiRow>
   <ApiRow name="children" type="ReactNode" required>
-    The composed chart parts, `<Legend />`, `<Tooltip />`, `<Background />`, and one `<Pie />`.
+    The composed chart parts, `<Legend />`, `<Tooltip />`, `<Background />`, `<Center />`, and one `<Pie />`.
   </ApiRow>
   <ApiRow name="className" type="string">
     Extra CSS classes for the chart container.
@@ -300,6 +309,28 @@ The sector legend, rendered as HTML over the canvas. Its presence enables the le
   </ApiRow>
   <ApiRow name="isClickable" type="boolean" default="false">
     Lets each legend entry toggle selection of its sector.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Center</ApiHeading>
+
+A readout in the donut hole, rendered as HTML over the canvas. It shows the total at rest and the hovered or selected sector otherwise. Give the `<Pie />` an `innerRadius` so it has room.
+
+<ApiTable>
+  <ApiRow name="value" type="ReactNode">
+    The resting value. Defaults to the sum of `dataKey`.
+  </ApiRow>
+  <ApiRow name="label" type="ReactNode" default='"Total"'>
+    The resting caption under the value.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the computed total and sector values.
+  </ApiRow>
+  <ApiRow name="followHover" type="boolean" default="true">
+    Swaps in the hovered or selected sector's value and name. Set `false` to keep the resting text.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Extra classes for the readout, such as a larger value size.
   </ApiRow>
 </ApiTable>
 

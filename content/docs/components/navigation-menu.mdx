@@ -1,0 +1,163 @@
+---
+title: Navigation Menu
+description: Show a site's main sections as links, with panels that preview the pages under each section.
+
+links:
+  doc: https://base-ui.com/react/components/navigation-menu#api-reference
+---
+
+<ComponentPreview name="navigation-menu-demo" />
+
+## Overview
+
+Use Navigation Menu for the primary navigation of a website or docs site: a short row of sections where some open a panel of links and others go straight to a page. Panels can hold a short list, a grid with descriptions, or a featured card next to secondary links.
+
+Every destination is a real link, so people can middle-click, copy the address, or open it in a new tab. For application commands such as Save or Export, use [Menubar](/docs/components/menubar) or [Menu](/docs/components/menu) instead.
+
+## Anatomy
+
+`NavigationMenu` wraps a `NavigationMenuList` of `NavigationMenuItem`s. An item holds either a `NavigationMenuTrigger` with its `NavigationMenuContent`, or a single `NavigationMenuLink` with `variant="trigger"` that looks like a trigger but navigates. Inside content, `NavigationMenuLink` renders a padded row; add `NavigationMenuLinkTitle` and `NavigationMenuLinkDescription` for the title-and-summary layout.
+
+All items share one popup. The root renders it for you through `NavigationMenuPositioner`, which places a single surface under the active trigger and animates its width and height as people move between items. The content slides in from the side of the previously open trigger, and reduced-motion preferences keep only the fade.
+
+## Accessibility
+
+The root renders a `nav` landmark. Give it an `aria-label` when a page has more than one navigation region. Triggers are buttons with `aria-expanded`, and their content is linked with `aria-controls`. Tab moves through triggers and links in order. Enter, Space, or Down Arrow opens a panel and the next Tab moves into it. Escape closes the panel and returns focus to the trigger.
+
+Panels open on hover after a short delay and close after a matching delay, so moving diagonally into the popup doesn't close it. A transparent bridge covers the gap between trigger and popup. Mark the current page with `active` on its link; Base UI sets `aria-current="page"` and the link gets the same tint as hover, so the state never depends on color alone.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["navigation-menu"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the required dependencies:</Step>
+
+```bash
+npm install @base-ui/react class-variance-authority
+```
+
+<Step>Copy and paste the component into your project.</Step>
+
+<ComponentSource name="navigation-menu" title="components/ui/navigation-menu.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuLinkDescription,
+  NavigationMenuLinkTitle,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
+```
+
+```tsx
+<NavigationMenu>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Product</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <NavigationMenuLink href="/docs/charts">
+          <NavigationMenuLinkTitle>Charts</NavigationMenuLinkTitle>
+          <NavigationMenuLinkDescription>Line, bar, and area charts.</NavigationMenuLinkDescription>
+        </NavigationMenuLink>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink variant="trigger" href="/pricing">
+        Pricing
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+```
+
+For client-side routing, pass your framework's link through `render`:
+
+```tsx
+<NavigationMenuLink render={<NextLink href="/docs/charts" />}>Charts</NavigationMenuLink>
+```
+
+## Don't do this
+
+### A trigger that is also a page
+
+```tsx
+// Bad
+<NavigationMenuTrigger onClick={() => router.push("/product")}>Product</NavigationMenuTrigger>
+```
+
+```tsx
+// Good
+<NavigationMenuContent>
+  <NavigationMenuLink href="/product">Product overview</NavigationMenuLink>
+  ...
+</NavigationMenuContent>
+```
+
+A trigger opens a panel; if clicking it also navigates, keyboard and touch users lose the panel and nobody can predict which one happens. Put the overview page inside the panel as its first link.
+
+### Every link in a panel
+
+Long menus with dozens of links are hard to scan and slow to move through by keyboard. Keep each panel to a handful of destinations and link to an index page for the rest.
+
+## Examples
+
+### Grid and list panels
+
+A two-column product grid, a resource list, and a plain link in the same row.
+
+<ComponentPreview name="navigation-menu-demo" />
+
+### Featured card with icons
+
+A larger lead link next to secondary links with icons. The card is still one link with one accessible name.
+
+<ComponentPreview name="navigation-menu-featured" />
+
+### Current page
+
+Links only, with `viewport={false}` because nothing opens. The `active` link carries `aria-current="page"`.
+
+<ComponentPreview name="navigation-menu-active-link" />
+
+## API reference
+
+`NavigationMenu` accepts all Base UI Navigation Menu root props plus Honest UI's `viewport`:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `viewport` | boolean | `true` |
+| `value` / `defaultValue` | item value or `null` | `null` |
+| `orientation` | `horizontal`, `vertical` | `horizontal` |
+| `delay` / `closeDelay` | number (ms) | `50` / `50` |
+
+`NavigationMenuLink` accepts Base UI Link props, including `active`, `closeOnClick`, and `render`, plus `variant` (`panel` or `trigger`, default `panel`). `NavigationMenuPositioner` (also exported as `NavigationMenuViewport`) accepts Positioner props and defaults to `align="start"` and `sideOffset={8}`; render it yourself with `viewport={false}` to change placement. `navigationMenuTriggerStyle()` returns the trigger classes for custom elements.
+
+See the [Base UI Navigation Menu API](https://base-ui.com/react/components/navigation-menu#api-reference) for the full list.

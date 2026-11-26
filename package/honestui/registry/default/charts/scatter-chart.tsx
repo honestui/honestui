@@ -11,6 +11,23 @@ import {
 } from "@/registry/default/ui/charts/chart";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
 import {
+  buildReferenceSeries,
+  collectReferences,
+  ReferenceArea,
+  ReferenceDot,
+  ReferenceLine,
+  referenceColorKeys,
+  referenceValues,
+} from "@/registry/default/ui/charts/reference";
+import {
+  buildInsideZoom,
+  collectZoom,
+  isZoomed,
+  Zoom,
+  useZoomWheelGuard,
+  ZOOM_RESET_CLASS,
+} from "@/registry/default/ui/charts/zoom";
+import {
   resolveTooltipPosition,
   tooltipIndicatorHtml,
   tooltipRow,
@@ -59,8 +76,10 @@ import {
   CustomChart,
   ScatterChart as ScatterChartModule,
   type CustomSeriesOption,
+  type LineSeriesOption,
   type ScatterSeriesOption,
 } from "echarts/charts";
+import type { DataZoomComponentOption } from "echarts/components";
 import { motion, useReducedMotion } from "motion/react";
 import { CanvasRenderer } from "echarts/renderers";
 import type { ComposeOption } from "echarts/core";
@@ -85,7 +104,12 @@ echarts.use([
 
 type EChartsInstance = ReturnType<typeof echarts.init>;
 type EChartsOption = ComposeOption<
-  ScatterSeriesOption | CustomSeriesOption | GridComponentOption | TooltipComponentOption
+  | ScatterSeriesOption
+  | CustomSeriesOption
+  | LineSeriesOption
+  | GridComponentOption
+  | TooltipComponentOption
+  | DataZoomComponentOption
 >;
 type ArrayItem<T> = T extends readonly (infer U)[] ? U : T;
 type XAxisOption = ArrayItem<NonNullable<EChartsOption["xAxis"]>>;
@@ -533,6 +557,7 @@ function loadingOption(count: number, tokens: ResolvedColors["tokens"]): ECharts
 type LiveState = {
   resolved: ResolvedColors | null;
   repush: () => void;
+  resetZoom: () => void;
   clickability: Map<string, boolean>;
   click: {
     data: Record<string, unknown>[];
@@ -579,6 +604,18 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     [children],
   );
   const seriesKeys = useMemo(() => scatters.map((scatter) => scatter.dataKey), [scatters]);
+  const references = useMemo(() => collectReferences(children), [children]);
+  const zoomSlot = useMemo(() => collectZoom(children), [children]);
+  useZoomWheelGuard(containerRef, zoomSlot);
+  const [zoomed, setZoomed] = useState(false);
+  const zoomRef = useRef({
+    x: { start: 0, end: 100 },
+    y: { start: 0, end: 100 },
+  });
+  const colorKeys = useMemo(
+    () => [...seriesKeys, ...referenceColorKeys(references, config)],
+    [seriesKeys, references, config],
+  );
   const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
   const quality = useMemo(() => {
     if (!statusKey && !xLowerKey && !xUpperKey && !yLowerKey && !yUpperKey) return null;
@@ -621,9 +658,10 @@ export function ScatterChart<TData extends Record<string, unknown>>({
             const range = quality?.x[index].range;
             return [Number(row[xDataKey]), ...(range ? [range.lower, range.upper] : [])];
           })
+          .concat(referenceValues(references, "x"))
           .filter(Number.isFinite),
       ),
-    [data, xDataKey, quality],
+    [data, xDataKey, quality, references],
   );
   const yRange = useMemo(
     () =>
@@ -633,9 +671,10 @@ export function ScatterChart<TData extends Record<string, unknown>>({
             const range = quality?.y[index].range;
             return [Number(row[yDataKey]), ...(range ? [range.lower, range.upper] : [])];
           })
+          .concat(referenceValues(references, "y"))
           .filter(Number.isFinite),
       ),
-    [data, yDataKey, quality],
+    [data, yDataKey, quality, references],
   );
   const css = useMemo(() => buildChartCss(chartId, config), [chartId, config]);
   const defaultAriaLabel = `Scatter chart comparing ${String(
@@ -647,6 +686,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
   const liveRef = useRef<LiveState>({
     resolved: null,
     repush: () => {},
+    resetZoom: () => {},
     clickability: new Map(),
     click: {
       data,
@@ -726,9 +766,35 @@ export function ScatterChart<TData extends Record<string, unknown>>({
       },
     });
 
+    // The axes already make room for the marks, so the carrier holds no points.
+    const reference = buildReferenceSeries({
+      refs: references,
+      resolved,
+      valueAxes: { x: false, y: false },
+    });
+    // Zoom acts on both value axes; points outside the window are clipped,
+    // not filtered, so a point never vanishes because one coordinate left.
+    const dataZoom = zoomSlot.present
+      ? [
+          buildInsideZoom({
+            zoom: zoomSlot,
+            range: zoomRef.current.x,
+            axis: { xAxisIndex: [0] },
+            filterMode: "none",
+          }),
+          buildInsideZoom({
+            zoom: zoomSlot,
+            range: zoomRef.current.y,
+            axis: { yAxisIndex: [0] },
+            filterMode: "none",
+          }),
+        ]
+      : undefined;
+
     return {
       animation: animation && !shouldReduceMotion,
       animationDuration: 520,
+      dataZoom,
       animationDelay: (index: number) => Math.min(index * 12, 260),
       grid: chartGrid,
       xAxis: buildAxis(xAxis, xBounds),
@@ -755,7 +821,8 @@ export function ScatterChart<TData extends Record<string, unknown>>({
           selectedDataKey,
         }),
       },
-      series: scatters.flatMap((scatter, seriesIndex) => {
+      series: [
+        ...scatters.flatMap((scatter, seriesIndex) => {
         const filtered = data
           .map((datum, index) => ({ datum, index }))
           .filter(({ datum }) =>
@@ -870,9 +937,13 @@ export function ScatterChart<TData extends Record<string, unknown>>({
               : undefined,
         };
         return [points, ...whiskers];
-      }),
+        }),
+        ...(reference ? [reference] : []),
+      ],
     };
   }, [
+    references,
+    zoomSlot,
     animation,
     config,
     data,
@@ -933,7 +1004,39 @@ export function ScatterChart<TData extends Record<string, unknown>>({
         index,
       });
     });
+    chart.on("datazoom", () => {
+      const option = chart.getOption() as { dataZoom?: { start?: number; end?: number }[] };
+      const [x, y] = option.dataZoom ?? [];
+      const state = zoomRef.current;
+      state.x = { start: x?.start ?? 0, end: x?.end ?? 100 };
+      state.y = { start: y?.start ?? 0, end: y?.end ?? 100 };
+      setZoomed(isZoomed(state.x) || isZoomed(state.y));
+      // A zoomed window rarely ends on a round number, so its edge labels
+      // (0.26, -1.64) are hidden while zoomed and the inner ticks carry it.
+      const xEdges = !isZoomed(state.x);
+      const yEdges = !isZoomed(state.y);
+      chart.setOption(
+        {
+          xAxis: { axisLabel: { showMinLabel: xEdges, showMaxLabel: xEdges } },
+          yAxis: { axisLabel: { showMinLabel: yEdges, showMaxLabel: yEdges } },
+        },
+        { lazyUpdate: true, silent: true },
+      );
+    });
+    const resetZoom = () => {
+      if (!isZoomed(zoomRef.current.x) && !isZoomed(zoomRef.current.y)) return;
+      chart.dispatchAction({
+        type: "dataZoom",
+        batch: [
+          { dataZoomIndex: 0, start: 0, end: 100 },
+          { dataZoomIndex: 1, start: 0, end: 100 },
+        ],
+      });
+    };
+    liveRef.current.resetZoom = resetZoom;
+    chart.getZr().on("dblclick", resetZoom);
     return () => {
+      chart.getZr().off("dblclick", resetZoom);
       resizeObserver.disconnect();
       themeObserver.disconnect();
       if (resizeFrame) cancelAnimationFrame(resizeFrame);
@@ -946,7 +1049,7 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     const chart = chartRef.current;
     const container = containerRef.current;
     if (!chart || !container) return;
-    liveRef.current.resolved = resolveColors(container, config, seriesKeys);
+    liveRef.current.resolved = resolveColors(container, config, colorKeys);
     const push = () => {
       const option = buildOption();
       chart.setOption(withChartFont(chartOptions ? { ...option, ...chartOptions } : option, container) as EChartsOption, {
@@ -955,10 +1058,10 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     };
     push();
     liveRef.current.repush = () => {
-      liveRef.current.resolved = resolveColors(container, config, seriesKeys);
+      liveRef.current.resolved = resolveColors(container, config, colorKeys);
       push();
     };
-  }, [buildOption, chartOptions, config, seriesKeys]);
+  }, [buildOption, chartOptions, config, colorKeys]);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -1015,6 +1118,17 @@ export function ScatterChart<TData extends Record<string, unknown>>({
       </div>
       {!statusKeyOnTop && statusKeyNode}
 
+      {zoomSlot.present && zoomSlot.showReset && zoomed && !isLoading && (
+        <button
+          type="button"
+          className={ZOOM_RESET_CLASS}
+          style={{ left: 16, ...(legend.present && legend.verticalAlign === "top" && legend.align !== "right" ? { bottom: 12 } : { top: 12 }) }}
+          onClick={() => liveRef.current.resetZoom()}
+        >
+          Reset zoom
+        </button>
+      )}
+
       {legend.present && !isLoading && (
         <LegendOverlay
           seriesKeys={seriesKeys}
@@ -1059,3 +1173,7 @@ ScatterChart.Grid = Grid;
 ScatterChart.Quadrants = Quadrants;
 ScatterChart.Tooltip = Tooltip;
 ScatterChart.Legend = Legend;
+ScatterChart.Zoom = Zoom;
+ScatterChart.ReferenceLine = ReferenceLine;
+ScatterChart.ReferenceArea = ReferenceArea;
+ScatterChart.ReferenceDot = ReferenceDot;

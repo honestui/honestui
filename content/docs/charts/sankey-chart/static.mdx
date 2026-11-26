@@ -1,0 +1,181 @@
+---
+title: Sankey Chart
+description: A composable sankey diagram for showing how quantities flow between stages, sources, and outcomes.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/sankey-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-sankey
+---
+
+<ComponentPreview title="Basic Sankey Chart" name="ex-echarts-sankey-chart" />
+
+## Overview
+
+Use a sankey diagram when the question is where something goes: which traffic sources lead to signups, how a budget splits into spending, or how energy moves through a system. Each link's width is proportional to its value, and each node's height is the larger of what flows in and out of it. Unlike a funnel, flows can split, merge, and skip columns.
+
+## Anatomy
+
+`SankeyChart` takes one row per link and derives the nodes from the source and target names. Add `Nodes` to control node width, spacing, and column alignment, `Links` for link color, opacity, and curvature, `Labels` for node names and totals, and `Tooltip` for a node's inflow and outflow or a link's value and share of its source.
+
+A node with its own `config` entry takes that color. A node without one borrows the color of its largest inflow, so a flow keeps its identity until it reaches a node that defines its own color. Links are tinted by their source at low opacity, and hovering a node or link keeps only its neighbourhood in focus.
+
+## Accessibility
+
+When `ariaLabel` is omitted, the generated name counts the flows and nodes, names the sources, and lists the largest flows. Link width carries the value, and colors only group related flows, so the diagram still reads without color. The tooltip and hover focus are pointer-operated; give people a table of flows when exact values matter.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { SankeyChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<SankeyChart
+  data={data}
+  config={chartConfig}
+  sourceKey="from"
+  targetKey="to"
+  valueKey="visitors"
+>
+  <SankeyChart.Labels />
+  <SankeyChart.Tooltip />
+  <SankeyChart.Links />
+  <SankeyChart.Nodes />
+</SankeyChart>
+```
+
+Links must not form a cycle, and a node cannot link to itself. Self-links and zero values are skipped. Labels on the last column sit inside the diagram so they never run off the edge.
+
+### Gradient Links
+
+<ComponentPreview title="color='gradient'" name="ex-gradient-links-echarts-sankey-chart" />
+
+Gradient links blend from the source color to the target color, which helps when both ends of each flow matter. This example also shows totals next to each label, left-aligns the columns, and passes `nodes` to fix the node order.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-sankey-chart" />
+
+Pass `isLoading` to reserve the layout with a neutral placeholder diagram and the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>SankeyChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per link.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Labels and theme colors keyed by node name.
+  </ApiRow>
+  <ApiRow name="sourceKey" type="keyof TData & string" required>
+    The field naming each link's source node.
+  </ApiRow>
+  <ApiRow name="targetKey" type="keyof TData & string" required>
+    The field naming each link's target node.
+  </ApiRow>
+  <ApiRow name="valueKey" type="keyof TData & string" required>
+    The numeric field that sets each link's width.
+  </ApiRow>
+  <ApiRow name="nodes" type="string[]">
+    Node order within columns. Nodes not listed follow in order of appearance.
+  </ApiRow>
+  <ApiRow name="orient" type='"horizontal" | "vertical"' default='"horizontal"'>
+    Flows left to right or top to bottom.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Additional CSS classes for the chart container. Give the chart an explicit height.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Enables the intro animation. Reduced-motion preferences disable it automatically.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Replaces the data with a neutral placeholder diagram and a progress label.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas chart. A summary of the largest flows is generated when omitted.
+  </ApiRow>
+  <ApiRow name="onNodeClick" type="(node: SankeyNode) => void">
+    Fires when a node is selected and `Nodes` has `isClickable`.
+  </ApiRow>
+  <ApiRow name="onLinkClick" type="(link: SankeyLink&lt;TData&gt;) => void">
+    Fires when a link is selected and `Links` has `isClickable`.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option object.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Nodes</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="width" type="number" default="10">
+    Node thickness in pixels.
+  </ApiRow>
+  <ApiRow name="gap" type="number" default="12">
+    Space between nodes in one column.
+  </ApiRow>
+  <ApiRow name="align" type='"justify" | "left" | "right"' default='"justify"'>
+    Spreads terminal nodes to the last column, or packs columns to one side.
+  </ApiRow>
+  <ApiRow name="radius" type="number" default="2">
+    Node corner radius in pixels.
+  </ApiRow>
+  <ApiRow name="draggable" type="boolean" default="false">
+    Lets people drag nodes to untangle a dense layout.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Enables the pointer cursor and `onNodeClick`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Links</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="color" type='"source" | "target" | "gradient"' default='"source"'>
+    Tints links by their source, their target, or a blend of both.
+  </ApiRow>
+  <ApiRow name="opacity" type="number" default="0.22">
+    Link opacity at rest. Hovered links grow more opaque.
+  </ApiRow>
+  <ApiRow name="curveness" type="number" default="0.5">
+    Link curvature from 0 (straight) to 1.
+  </ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">
+    Enables the pointer cursor and `onLinkClick`.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Labels</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="showValues" type="boolean" default="false">
+    Shows each node's total next to its name.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats node totals.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface treatment.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the pointer.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats values in the tooltip.
+  </ApiRow>
+</ApiTable>

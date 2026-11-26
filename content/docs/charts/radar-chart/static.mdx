@@ -1,0 +1,147 @@
+---
+title: Radar Chart
+description: Compare a few series across several measures that share one scale.
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/radar-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#radar
+---
+
+<ComponentPreview title="Basic Chart" name="ex-echarts-radar-chart" />
+
+## Overview
+
+Use a radar chart to compare the overall shape of one to three series across five to eight measures that share one scale, such as review scores or a skills profile against a target. The shape makes strengths and gaps visible at a glance. Use a bar chart when readers need to compare exact values, when measures use different units, or when there are many series, because overlapping areas become hard to separate.
+
+## Anatomy
+
+`RadarChart` owns the data, scale, selection, and loading state. Each row in `data` is one measure (one spoke), named by `nameKey`. Each `Radar` part draws one series from a numeric field. `Grid` draws the rings and spokes, `Axis` labels the spokes, and optional `Legend` and `Tooltip` parts add context.
+
+## Accessibility
+
+The plot is a canvas with an accessible name that lists the series and measures; pass `ariaLabel` to describe the finding instead. Pair the chart with a table or a short summary when exact values matter. The tooltip compares every series on the spoke nearest the pointer, but it is pointer-operated, so do not make it the only way to read a value. Keep series colors distinct and labelled in the legend, and prefer a dashed `lines` variant for a reference profile so it does not rely on color alone.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { RadarChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const data = [
+  { metric: "Performance", studio: 92, air: 74 },
+  { metric: "Battery", studio: 68, air: 90 },
+  { metric: "Display", studio: 88, air: 76 },
+];
+
+const chartConfig = {
+  studio: { label: "Studio 16", colors: { light: ["#3b82f6"], dark: ["#60a5fa"] } },
+  air: { label: "Air 13", colors: { light: ["#10b981"], dark: ["#34d399"] } },
+} satisfies ChartConfig;
+```
+
+```tsx
+<RadarChart data={data} nameKey="metric" config={chartConfig} max={100}>
+  <RadarChart.Grid />
+  <RadarChart.Axis />
+  <RadarChart.Legend isClickable />
+  <RadarChart.Tooltip />
+  <RadarChart.Radar dataKey="studio" />
+  <RadarChart.Radar dataKey="air" />
+</RadarChart>
+```
+
+Every spoke shares one scale from `min` to `max`. Without `max`, the chart rounds the largest value up so each ring lands on a readable number. Spokes read clockwise from 12 o'clock in data order.
+
+## Examples
+
+### Circle grid
+
+<ComponentPreview className="mb-0" title='shape="circle" variant="filled"' name="ex-grid-circle-echarts-radar-chart" />
+<Alert>
+  <AlertContent>
+    Set the `Grid` `shape` to `"circle"` for round rings, and `variant="filled"` for alternating ring bands. `showValues` on `Axis` labels the rings along the first spoke.
+  </AlertContent>
+</Alert>
+
+### Reference profile
+
+<ComponentPreview className="mb-0" title='variant="lines" dashed' name="ex-lines-echarts-radar-chart" />
+<Alert>
+  <AlertContent>
+    Draw a target or benchmark with `variant="lines"` and `dashed`, so the filled series reads against it. `dot` adds a point at each vertex.
+  </AlertContent>
+</Alert>
+
+### Loading state
+
+<ComponentPreview title="isLoading" name="ex-loading-state-echarts-radar-chart" />
+
+## API reference
+
+<ApiHeading>RadarChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>One row per measure (spoke).</ApiRow>
+  <ApiRow name="nameKey" type="keyof TData & string" required>The row field that names each spoke.</ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>Labels and colors for each series key. See <Link href="/docs/charts/chart-config">Chart Config</Link>.</ApiRow>
+  <ApiRow name="min" type="number" default="0">The value at the center.</ApiRow>
+  <ApiRow name="max" type="number">The value at the outer ring. Defaults to the largest value, rounded up to a readable step.</ApiRow>
+  <ApiRow name="selectedDataKey" type="string | null">Controlled selection; other series dim.</ApiRow>
+  <ApiRow name="defaultSelectedDataKey" type="string | null" default="null">The series selected on first render.</ApiRow>
+  <ApiRow name="onSelectionChange" type="(dataKey: string | null) => void">Fires when a clickable legend entry selects or clears a series.</ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">Shows the loading skeleton.</ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">Plays the entrance. Reduced motion turns it off.</ApiRow>
+  <ApiRow name="ariaLabel" type="string">Accessible name for the plot.</ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">Escape hatch merged over the ECharts option.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Grid</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="shape" type='"polygon" | "circle"' default='"polygon"'>Ring shape.</ApiRow>
+  <ApiRow name="variant" type='"lines" | "filled"' default='"lines"'>Dashed rings only, or rings with alternating bands.</ApiRow>
+  <ApiRow name="rings" type="number" default="4">Number of rings.</ApiRow>
+  <ApiRow name="spokes" type="boolean" default="true">Draws a line from the center to each measure.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Axis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(name: string, index: number) => string">Formats spoke names, also used as the tooltip title.</ApiRow>
+  <ApiRow name="showValues" type="boolean" default="false">Labels ring values along the first spoke.</ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">Formats ring values.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Radar</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string" required>The row field to plot, and its `config` key.</ApiRow>
+  <ApiRow name="variant" type='"filled" | "lines"' default='"filled"'>Filled area with an outline, or outline only.</ApiRow>
+  <ApiRow name="dot" type='"none" | "default" | "border" | "colored-border" | "ping"' default='"none"'>Vertex points, the same styles as Line Chart dots.</ApiRow>
+  <ApiRow name="fillOpacity" type="number" default="0.22">Area opacity for the filled variant.</ApiRow>
+  <ApiRow name="strokeWidth" type="number" default="1.5">Outline width.</ApiRow>
+  <ApiRow name="dashed" type="boolean" default="false">Dashed outline.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>Tooltip surface.</ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>Tooltip corner radius.</ApiRow>
+  <ApiRow name="defaultIndex" type="number">Shows the tooltip on this spoke until the pointer moves.</ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">Formats values in the tooltip.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>Indicator style.</ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>Horizontal placement.</ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "bottom"' default='"bottom"'>Vertical placement.</ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">Lets entries select a series.</ApiRow>
+</ApiTable>

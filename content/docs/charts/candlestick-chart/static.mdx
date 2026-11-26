@@ -1,0 +1,222 @@
+---
+title: Candlestick Chart
+description: Plot open, high, low, and close prices per period, with optional volume and a zoom brush.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/candlestick-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-candlestick
+---
+
+<ComponentPreview title="Daily share price" name="ex-echarts-candlestick-chart" />
+
+## Overview
+
+Use a candlestick chart to show how a price moved within each period: where it opened and closed, shown by the body, and how far it ranged, shown by the wick. Rising periods take the `up` color and falling periods the `down` color. It suits prices, exchange rates, and any measure with a meaningful open, high, low, and close.
+
+When only the closing value matters, a [line chart](/docs/charts/line-chart/static) is easier to read.
+
+## Anatomy
+
+`CandlestickChart` reads four fields per row (`open`, `high`, `low`, and `close` by default) and owns the category axis, zoom, and loading. `Candles` draws the bodies and wicks. `Volume` adds translucent volume bars along the bottom of the same plot, so they line up exactly with their candles; the price scale is lifted so the tallest volume bar never reaches the lowest wick. Add `XAxis`, `YAxis`, `Grid`, `Tooltip`, and `Brush` as needed.
+
+The price axis sits on the right by default, as is usual for financial charts, and follows the zoomed window so the visible candles always fill the plot.
+
+## Accessibility
+
+Up and down are encoded by color, which some readers cannot tell apart. The `hollow` variant adds a second cue: rising bodies are open and falling bodies are filled. The default `ariaLabel` reports the range, the first open, the last close, and the high and low, but readers who need individual periods need a nearby table. The crosshair, tooltip, and brush are pointer-operated.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { CandlestickChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const chartConfig = {
+  up: { label: "Up", colors: { light: ["#16a34a"], dark: ["#22c55e"] } },
+  down: { label: "Down", colors: { light: ["#dc2626"], dark: ["#ef4444"] } },
+} satisfies ChartConfig;
+
+<CandlestickChart data={data} config={chartConfig} xDataKey="date">
+  <CandlestickChart.Grid />
+  <CandlestickChart.XAxis />
+  <CandlestickChart.YAxis />
+  <CandlestickChart.Tooltip />
+  <CandlestickChart.Candles />
+</CandlestickChart>
+```
+
+Rename the price fields with `openDataKey`, `highDataKey`, `lowDataKey`, and `closeDataKey` when your data uses other names. The tooltip lists the change with its percentage, then open, high, low, close, and volume. The crosshair labels both axes with the formatted date and price.
+
+## Examples
+
+### Volume and Brush
+
+<ComponentPreview title="Volume and Brush" name="ex-volume-echarts-candlestick-chart" />
+
+Pass `volumeDataKey` and add `CandlestickChart.Volume` to draw volume bars in the period's direction color. `CandlestickChart.Brush` adds a closing-price preview strip; dragging it zooms the candles and volume together. This example also uses the `hollow` variant.
+
+### Zoom and Reference Line
+
+<ComponentPreview title="<CandlestickChart.Zoom />" name="ex-zoom-echarts-candlestick-chart" />
+
+`CandlestickChart.Zoom` zooms inside the plot: pinch, or scroll with Ctrl held, and drag to pan. The price axis refits to the visible candles, and a Reset zoom button appears while zoomed. It shares its window with the brush. A `ReferenceLine` marks a support or resistance level; see <Link href="/docs/charts/ui/brush">Brush and Zoom</Link> and <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>.
+
+Give the chart a `syncId` to move its crosshair with other charts over the same dates, such as a [combo chart](/docs/charts/combo-chart/static) of trading activity below it.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-candlestick-chart" />
+
+`isLoading` reserves the layout with neutral candles and the shared loading label.
+
+## API Reference
+
+<ApiHeading>CandlestickChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per period, oldest first.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Labels and colors for `up` and `down`.
+  </ApiRow>
+  <ApiRow name="xDataKey" type="keyof TData & string" required>
+    The period field.
+  </ApiRow>
+  <ApiRow name="openDataKey" type="keyof TData & string" default='"open"'>
+    Opening price field.
+  </ApiRow>
+  <ApiRow name="highDataKey" type="keyof TData & string" default='"high"'>
+    High price field.
+  </ApiRow>
+  <ApiRow name="lowDataKey" type="keyof TData & string" default='"low"'>
+    Low price field.
+  </ApiRow>
+  <ApiRow name="closeDataKey" type="keyof TData & string" default='"close"'>
+    Closing price field.
+  </ApiRow>
+  <ApiRow name="volumeDataKey" type="keyof TData & string">
+    Volume field, drawn when `Volume` is present.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Plays the intro animation. Series over 400 periods and reduced-motion preferences skip it.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Shows neutral candles and the loading label.
+  </ApiRow>
+  <ApiRow name="syncId" type="string">
+    Charts with the same id move their crosshair and tooltip together.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas. A price summary is generated when omitted.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Candles</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"filled" | "hollow"' default='"filled"'>
+    `hollow` leaves rising bodies open.
+  </ApiRow>
+  <ApiRow name="width" type="number" default="0.6">
+    Body width as a share of each period.
+  </ApiRow>
+  <ApiRow name="maxWidth" type="number" default="14">
+    Widest a body may grow, in pixels.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Volume</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="height" type="number" default="0.2">
+    Share of the plot height the tallest volume bar may reach.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>YAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="position" type='"left" | "right"' default='"right"'>
+    Side of the price scale.
+  </ApiRow>
+  <ApiRow name="tickFormatter" type="(value: number, index: number) => string">
+    Formats price labels.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Axis title.
+  </ApiRow>
+  <ApiRow name="hideDots" type="boolean" default="false">
+    Hides the tick dots.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>XAxis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickFormatter" type="(value: string, index: number) => string">
+    Formats period labels and the crosshair's period label.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Axis title.
+  </ApiRow>
+  <ApiRow name="hideDots" type="boolean" default="false">
+    Hides the tick dots.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="crosshair" type="boolean" default="true">
+    Draws a dashed crosshair with labels on both axes. When `false`, only a vertical line is drawn.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats prices in the tooltip and the crosshair label.
+  </ApiRow>
+  <ApiRow name="volumeFormatter" type="(value: number) => string">
+    Formats volume. Defaults to compact notation.
+  </ApiRow>
+  <ApiRow name="labelFormatter" type="(label: string) => string">
+    Formats the period shown as the tooltip title. Defaults to the XAxis `tickFormatter`.
+  </ApiRow>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>
+    Pins the tooltip to the top or lets it follow the pointer.
+  </ApiRow>
+  <ApiRow name="defaultIndex" type="number">
+    Opens the tooltip at a period after mount.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Brush</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="height" type="number" default="56">
+    Height of the preview strip in pixels.
+  </ApiRow>
+  <ApiRow name="formatLabel" type="(value: string, index: number) => string">
+    Formats the range labels shown while the brush is hovered.
+  </ApiRow>
+  <ApiRow name="onChange" type="(range: { startIndex: number; endIndex: number }) => void">
+    Fires when the selected range changes.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Zoom, ReferenceLine, ReferenceArea, ReferenceDot</ApiHeading>
+
+`CandlestickChart.Zoom` takes the props listed in <Link href="/docs/charts/ui/brush">Brush and Zoom</Link>. The reference parts take the props listed in <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>; a `y` value is a price.

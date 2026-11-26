@@ -1,0 +1,180 @@
+---
+title: OTP Field
+description: Collect a one-time code with one slot per character, paste support, and autofill.
+
+links:
+  doc: https://base-ui.com/react/components/otp-field#api-reference
+---
+
+<ComponentPreview name="otp-field-demo" />
+
+## Overview
+
+Use OTP Field to collect a short code that someone copies from somewhere else: a sign-in code sent by text message, an authenticator app code, a recovery code, an invite code. Each character gets its own slot, so people can check the code against the source one digit at a time and spot a missing or doubled character.
+
+The field behaves like one input. Typing moves to the next slot, <kbd>Backspace</kbd> moves back, the arrow keys move between slots, and pasting a whole code fills every slot at once. The first slot sets `autocomplete="one-time-code"`, so iOS and Android can offer a code from an incoming message in one tap. The value is submitted under one `name` through a hidden input.
+
+Use OTP Field only for short codes of fixed length. For passwords, use [Input](/docs/components/input) with `type="password"`. For numbers that people adjust, use [Number Field](/docs/components/number-field).
+
+## Anatomy
+
+An OTP field has a root that owns the value and length, and one input per character. `OTPFieldGroup` joins neighbouring slots into one segmented control, and `OTPFieldSeparator` draws a dash between groups, so a code reads as `123-456`. With no children, `OTPField` renders `length` slots for you.
+
+Every slot uses the [Input](/docs/components/input) styles: the same hairline edge, field fill, accent focus ring, danger edge when invalid, and muted fill when disabled. The slots are square and match the control height, so an OTP field lines up with buttons and inputs in the same row. Use `size="sm"` or `size="lg"` to match smaller or larger controls.
+
+## Accessibility
+
+Label the field with `FieldLabel` inside a [Field](/docs/components/field), or with a native `label` whose `htmlFor` matches the root `id`. The label belongs to the first slot. Give every other slot an `aria-label` such as "Character 2 of 6", so screen readers say which slot has focus. The automatic slots follow this pattern already.
+
+Put the length and format of the code in a `FieldDescription`, such as "Enter the 6-digit code we sent to your phone", and say where the code was sent. Report a wrong code with `FieldError` in words. A red edge on the slots is not enough on its own.
+
+The slots set `inputMode` from `validationType`, so numeric codes open the number keypad on phones. Characters the validation rejects are never entered. Don't auto-advance past a wrong code or clear the slots when verification fails: people need to see what they typed to find the mistake.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["otp-field"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the following dependencies:</Step>
+
+```bash
+npm install @base-ui/react
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="otp-field" title="components/ui/otp-field.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  OTPField,
+  OTPFieldGroup,
+  OTPFieldInput,
+  OTPFieldSeparator,
+} from "@/components/ui/otp-field"
+```
+
+```tsx
+<Field name="code">
+  <FieldLabel>Verification code</FieldLabel>
+  <OTPField length={6} />
+</Field>
+```
+
+```tsx
+<OTPField length={6}>
+  <OTPFieldGroup>
+    <OTPFieldInput />
+    <OTPFieldInput aria-label="Character 2 of 6" />
+    <OTPFieldInput aria-label="Character 3 of 6" />
+  </OTPFieldGroup>
+  <OTPFieldSeparator />
+  <OTPFieldGroup>
+    <OTPFieldInput aria-label="Character 4 of 6" />
+    <OTPFieldInput aria-label="Character 5 of 6" />
+    <OTPFieldInput aria-label="Character 6 of 6" />
+  </OTPFieldGroup>
+</OTPField>
+```
+
+Use `onValueComplete` to verify as soon as the last slot is filled, or `autoSubmit` to submit the surrounding form.
+
+## Don't do this
+
+### Unnamed slots
+
+```tsx
+// Bad
+<OTPField length={6}>
+  {Array.from({ length: 6 }, (_, index) => <OTPFieldInput key={index} />)}
+</OTPField>
+```
+
+```tsx
+// Good
+<OTPField length={6} />
+```
+
+Six unnamed inputs are announced as six identical "edit text" fields. Either let the root render its slots, or give every slot after the first an `aria-label` that states its position.
+
+### Using slots for a password
+
+```tsx
+// Bad
+<OTPField length={12} validationType="none" mask />
+```
+
+```tsx
+// Good
+<Input type="password" autoComplete="current-password" />
+```
+
+Passwords vary in length and are saved by password managers. A fixed row of slots breaks both. OTP Field is for codes that someone reads from another place and types once.
+
+## Examples
+
+### Grouped
+
+Two groups of three slots, split by a separator.
+
+<ComponentPreview name="otp-field-grouped" />
+
+### Alphanumeric recovery code
+
+`validationType="alphanumeric"` accepts letters, and `normalizeValue` converts them to uppercase.
+
+<ComponentPreview name="otp-field-alphanumeric" />
+
+### Invalid code
+
+A rejected code keeps its characters visible and states the error in words. The slots are masked with `mask`.
+
+<ComponentPreview name="otp-field-invalid" />
+
+## API reference
+
+`OTPField` accepts all Base UI OTP Field root props plus Honest UI's `size`:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `length` | number (required) | — |
+| `size` | `sm`, `default`, `lg` | `default` |
+| `validationType` | `numeric`, `alpha`, `alphanumeric`, `none` | `numeric` |
+| `mask` | boolean | `false` |
+| `autoComplete` | string | `one-time-code` |
+| `autoSubmit` | boolean | `false` |
+| `value` / `defaultValue` / `onValueChange` | string | — |
+| `onValueComplete` | `(value) => void` | — |
+| `normalizeValue` | `(value) => string` | — |
+
+| Part | Renders | Notes |
+| --- | --- | --- |
+| `OTPField` | Div | Owns the value; renders `length` slots when it has no children |
+| `OTPFieldInput` | Input | One character slot |
+| `OTPFieldGroup` | Div | Joins its slots into one segmented control |
+| `OTPFieldSeparator` | Div | Separator between groups, drawn as a dash |
+
+`InputOTP`, `InputOTPSlot`, `InputOTPGroup`, and `InputOTPSeparator` are exported as aliases for teams migrating from other libraries. The root carries `data-complete`, `data-filled`, and `data-focused`, and each slot carries `data-filled` and `data-invalid`. See the [Base UI OTP Field API](https://base-ui.com/react/components/otp-field#api-reference).

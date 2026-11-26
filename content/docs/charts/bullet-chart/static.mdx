@@ -1,0 +1,191 @@
+---
+title: Bullet Chart
+description: Compare a measure with a target against qualitative ranges, one compact row per metric.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/bullet-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#series-custom
+---
+
+<ComponentPreview title="Sales performance against targets" name="ex-echarts-bullet-chart" />
+
+## Overview
+
+A bullet chart, designed by Stephen Few, packs a gauge's information into a single row: the measure is a bar, the target is a tick across it, and shaded bands behind it mark qualitative ranges such as poor, satisfactory, and good. Stack several rows to review many metrics in the space of one gauge.
+
+Each row has its own scale, so revenue in thousands, profit in percent, and satisfaction out of five can sit side by side. Do not compare bar lengths between rows; compare each bar with its own target and bands.
+
+## Anatomy
+
+`BulletChart` turns each data row into a bullet with a title, an optional description line, and a scale running from zero to the row's maximum. The maximum is the last range threshold, the value, or the target, whichever is largest, unless `maxDataKey` sets it. Compose the parts you need: `Ranges` draws the bands, `Measure` the bar, `Target` the tick, and `Axis` the per-row tick labels. Add `Tooltip` and `Legend` for detail.
+
+The bands run from darkest to lightest using shades of the foreground color, as Few recommends, so they stay readable in grayscale and never compete with the measure's color.
+
+## Accessibility
+
+The default `ariaLabel` reads every row's value and target, so a screen reader hears the whole comparison without the canvas. Name ranges with `rangeLabels` so the tooltip can say which band a value falls in. If being over or under target matters, say it in nearby text too: the tick's position alone is a subtle cue.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { BulletChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const data = [
+  { metric: "Revenue", unit: "USD, thousands", actual: 271, target: 250, ranges: [150, 225, 300] },
+  { metric: "Profit", unit: "%", actual: 22.5, target: 26, ranges: [20, 25, 30] },
+];
+
+<BulletChart
+  data={data}
+  config={chartConfig}
+  labelDataKey="metric"
+  descriptionDataKey="unit"
+  valueDataKey="actual"
+  targetDataKey="target"
+  rangesDataKey="ranges"
+  rangeLabels={["Poor", "Satisfactory", "Good"]}
+>
+  <BulletChart.Tooltip />
+  <BulletChart.Axis />
+  <BulletChart.Ranges />
+  <BulletChart.Measure />
+  <BulletChart.Target />
+</BulletChart>
+```
+
+Range thresholds are ascending upper bounds: `[150, 225, 300]` draws bands from 0 to 150, 150 to 225, and 225 to 300. Give the chart roughly 56px per row with an axis, or 36px without one.
+
+## Examples
+
+### Compact
+
+<ComponentPreview title="No axis, thicker measure" name="ex-compact-echarts-bullet-chart" />
+
+Leave out `Axis` for a dense tile, and raise the measure's `thickness` and the target's `length` so the rows stay legible at a small size. Here every row shares the same thresholds, so one set of range labels describes them all.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-bullet-chart" />
+
+`isLoading` draws neutral placeholder rows with the shared loading label.
+
+## API Reference
+
+<ApiHeading>BulletChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per bullet.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Labels and colors for the measure and target keys. Without a target color, the tick uses the foreground color.
+  </ApiRow>
+  <ApiRow name="labelDataKey" type="keyof TData & string" required>
+    The row title.
+  </ApiRow>
+  <ApiRow name="valueDataKey" type="keyof TData & string" required>
+    The measure drawn as the bar.
+  </ApiRow>
+  <ApiRow name="descriptionDataKey" type="keyof TData & string">
+    A second line under the title, such as a unit.
+  </ApiRow>
+  <ApiRow name="targetDataKey" type="keyof TData & string">
+    The comparative measure drawn as the tick.
+  </ApiRow>
+  <ApiRow name="rangesDataKey" type="keyof TData & string">
+    A field holding ascending range thresholds.
+  </ApiRow>
+  <ApiRow name="maxDataKey" type="keyof TData & string">
+    A field that sets each row's scale maximum.
+  </ApiRow>
+  <ApiRow name="rangeLabels" type="string[]">
+    Names for the ranges, from the first threshold up, shown in the tooltip.
+  </ApiRow>
+  <ApiRow name="labelWidth" type="number" default="128">
+    Width of the label column in pixels.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Grows each measure in, row by row. Reduced-motion preferences turn it off.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Shows placeholder rows and the loading label.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the canvas. Every row's value and target are read when omitted.
+  </ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">
+    Escape hatch merged over the generated ECharts option.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Measure</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="thickness" type="number" default="0.36">
+    Bar thickness as a share of the range band.
+  </ApiRow>
+  <ApiRow name="radius" type="number" default="1">
+    Corner radius in pixels.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Target</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="length" type="number" default="0.72">
+    Tick length as a share of the range band.
+  </ApiRow>
+  <ApiRow name="width" type="number" default="2">
+    Tick width in pixels.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Ranges</ApiHeading>
+
+`BulletChart.Ranges` takes no props. Include it to draw the qualitative bands.
+
+<ApiHeading>Axis</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="tickCount" type="number" default="4">
+    About how many ticks each row shows.
+  </ApiRow>
+  <ApiRow name="tickFormatter" type="(value: number, rowIndex: number) => string">
+    Formats tick labels. Receives the row index, since each row can use a different unit.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="valueFormatter" type="(value: number, rowIndex: number) => string">
+    Formats the value and target.
+  </ApiRow>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>
+    Tooltip surface.
+  </ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    Tooltip corner radius.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>
+    Indicator shape.
+  </ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"right"'>
+    Horizontal alignment.
+  </ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "bottom"' default='"top"'>
+    Vertical placement.
+  </ApiRow>
+</ApiTable>

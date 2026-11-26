@@ -1,0 +1,158 @@
+---
+title: Menubar
+description: Group an application's commands into a persistent row of menus, like File, Edit, and View.
+
+links:
+  doc: https://base-ui.com/react/components/menubar#api-reference
+---
+
+<ComponentPreview name="menubar-demo" />
+
+## Overview
+
+Use Menubar for document and canvas tools where people expect desktop-style commands: editors, design tools, spreadsheets, admin consoles with many actions. Each top-level trigger opens a [Menu](/docs/components/menu), and once one menu is open, moving the pointer or pressing the arrow keys switches straight to its neighbor without another click.
+
+A menubar is for commands, not navigation. If the triggers lead to pages on a website, use [Navigation Menu](/docs/components/navigation-menu) so links stay links. If you only have one or two menus, a [Menu](/docs/components/menu) behind a button or a [Toolbar](/docs/components/toolbar) is lighter and easier to discover.
+
+## Anatomy
+
+`Menubar` is the framed row. Inside it, each `MenubarMenu` pairs one `MenubarTrigger` with one `MenubarContent`. The content reuses the Menu component's popup, items, checkbox items, radio groups, labels, separators, shortcuts, and submenus, re-exported with `Menubar` names so a single import covers the whole bar. Because the parts are shared, a menubar always matches the dropdown menus elsewhere in your product.
+
+## Behavior
+
+Menus open below their trigger, aligned to its start edge, the way desktop apps place them. With `orientation="vertical"` the bar stacks and menus open to the inline end instead. The bar is modal by default: while a menu is open, page scrolling is locked and outside pointer events are blocked, except on the bar itself so people can hop between menus.
+
+## Accessibility
+
+The root renders `role="menubar"` with the matching `aria-orientation`. Triggers are reachable with one Tab stop; Left and Right Arrow move between them (Up and Down in a vertical bar), and focus wraps at the ends unless `loopFocus` is false. Enter, Space, or Down Arrow opens a menu and focuses its first item. Inside a menu, Left and Right Arrow close the menu and open the adjacent one, so people can scan every menu without returning to the bar. Escape closes the menu and returns focus to its trigger.
+
+Shortcuts rendered with `MenubarShortcut` are visual hints only; register the real key handlers yourself and keep both in sync. Disabled items stay readable but are skipped by pointer, and a disabled `MenubarMenu` keeps its trigger in place so the layout does not shift.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["menubar"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the required dependency:</Step>
+
+```bash
+npm install @base-ui/react
+```
+
+<Step>Add the [Menu](/docs/components/menu) component, which supplies the popup and item parts.</Step>
+
+<Step>Copy and paste the component into your project.</Step>
+
+<ComponentSource name="menubar" title="components/ui/menubar.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarTrigger,
+} from "@/components/ui/menubar"
+```
+
+```tsx
+<Menubar>
+  <MenubarMenu>
+    <MenubarTrigger>File</MenubarTrigger>
+    <MenubarContent>
+      <MenubarItem>
+        New document <MenubarShortcut>⌘N</MenubarShortcut>
+      </MenubarItem>
+      <MenubarSeparator />
+      <MenubarItem>Print…</MenubarItem>
+    </MenubarContent>
+  </MenubarMenu>
+</Menubar>
+```
+
+## Don't do this
+
+### Site navigation in a menubar
+
+```tsx
+// Bad
+<Menubar>
+  <MenubarMenu>
+    <MenubarTrigger>Pricing</MenubarTrigger>
+    ...
+  </MenubarMenu>
+</Menubar>
+```
+
+```tsx
+// Good
+<NavigationMenu>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuLink variant="trigger" href="/pricing">Pricing</NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+```
+
+Screen readers announce a menubar as an application menu and switch to menu keyboard rules, so pages hidden inside it lose link semantics, middle-click, and "open in new tab".
+
+### A menubar with one menu
+
+A single trigger in a framed bar looks like a broken toolbar. Use a [Menu](/docs/components/menu) behind a button instead.
+
+## Examples
+
+### Application menus
+
+Shortcuts, a submenu, checkbox items, and a radio group for zoom.
+
+<ComponentPreview name="menubar-demo" />
+
+### Vertical with a disabled menu
+
+A stacked bar opens menus to the side. The disabled menu keeps its place so the layout stays stable.
+
+<ComponentPreview name="menubar-vertical" />
+
+## API reference
+
+`Menubar` accepts all Base UI Menubar props:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `orientation` | `horizontal`, `vertical` | `horizontal` |
+| `loopFocus` | boolean | `true` |
+| `modal` | boolean | `true` |
+| `disabled` | boolean | `false` |
+
+`MenubarMenu` is Base UI `Menu.Root` and accepts `open`, `onOpenChange`, `disabled`, and the other root props. `MenubarTrigger` forwards Menu trigger props. `MenubarContent` accepts Menu popup props plus `align` (default `start`), `sideOffset` (default `6`), and `alignOffset` (default `-4`).
+
+Item parts are the [Menu](/docs/components/menu) parts under new names: `MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioGroup`, `MenubarRadioItem`, `MenubarGroup`, `MenubarLabel`, `MenubarSeparator`, `MenubarShortcut`, `MenubarSub`, `MenubarSubTrigger`, `MenubarSubContent`, and `MenubarPortal`.
+
+See the [Base UI Menubar API](https://base-ui.com/react/components/menubar#api-reference) for the full list.

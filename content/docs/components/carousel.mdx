@@ -1,0 +1,156 @@
+---
+title: Carousel
+description: Page through a row of related slides with buttons, keys, or a swipe.
+---
+
+<ComponentPreview name="carousel-demo" />
+
+## Overview
+
+Use Carousel when a set of peers shares one slot and people browse it in order: release notes, template thumbnails, onboarding steps, product photos. Each slide should make sense on its own, because most people will only see the first one or two. If everything in the set is equally important, a grid or a list shows it all at once and is usually the better choice.
+
+Carousel has no dependency. Paging comes from native CSS scroll snapping, so touch swipes, trackpad gestures, and the mouse wheel behave the way the platform already does, and the component only adds buttons, keys, position tracking, and labels on top.
+
+## Anatomy
+
+`Carousel` is the labelled region that holds state. `CarouselContent` is the scroll-snapping viewport, and each `CarouselItem` is one slide. `CarouselPrevious` and `CarouselNext` page one slide at a time, and `CarouselDots` jumps straight to a slide. The controls can sit anywhere inside `Carousel`, above, below, or beside the viewport.
+
+## Sizing slides
+
+A slide fills the viewport by default (`basis-full`). Set a basis on `CarouselItem` to show several at once, such as `basis-1/2 md:basis-1/3`, and set `--hui-carousel-gap` on `CarouselContent` to change the space between slides. A vertical carousel needs an explicit height on `CarouselContent`, because the viewport scrolls inside it.
+
+## Accessibility
+
+The root is a `region` with `aria-roledescription="carousel"`, and its `aria-label` is required so the landmark has a name. Each slide is a `group` with `aria-roledescription="slide"` and an automatic label such as "3 of 8"; pass your own `aria-label` when a title says more.
+
+When focus is inside the carousel, Left and Right Arrow move one slide (Up and Down in a vertical carousel), and the directions flip in right-to-left layouts. Arrow keys inside text fields, selects, and sliders are left alone. A polite live region announces the new position after each move. The buttons are disabled at the ends unless `loop` is set, and smooth scrolling is turned off when people prefer reduced motion. Carousel never advances on its own: auto-rotation moves content away from people who are still reading it.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["carousel"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install the [Button](/docs/components/button) component.</Step>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="carousel" title="components/ui/carousel.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  Carousel,
+  CarouselContent,
+  CarouselDots,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+```
+
+```tsx
+<Carousel aria-label="Recent releases">
+  <CarouselContent>
+    <CarouselItem>...</CarouselItem>
+    <CarouselItem>...</CarouselItem>
+    <CarouselItem>...</CarouselItem>
+  </CarouselContent>
+  <CarouselPrevious />
+  <CarouselNext />
+</Carousel>
+```
+
+Read the position with `setApi` or `onIndexChange` to render a counter or sync another view:
+
+```tsx
+const [api, setApi] = React.useState<CarouselApi | null>(null)
+
+<Carousel aria-label="Steps" setApi={setApi}>
+  ...
+  <p>{api ? `${api.index + 1} / ${api.count}` : null}</p>
+</Carousel>
+```
+
+## Don't do this
+
+### Hiding required content in later slides
+
+```tsx
+// Bad
+<Carousel aria-label="Plan details">
+  <CarouselContent>
+    <CarouselItem>Price</CarouselItem>
+    <CarouselItem>Cancellation terms</CarouselItem>
+  </CarouselContent>
+</Carousel>
+```
+
+Few people page past the first slide. Anything someone must read before deciding, such as terms, limits, or prices, belongs on the page where it is always visible.
+
+### An unnamed carousel
+
+```tsx
+// Bad
+<Carousel aria-label="">...</Carousel>
+```
+
+```tsx
+// Good
+<Carousel aria-label="Customer stories">...</Carousel>
+```
+
+A screen reader announces the region by its name. Without one, people hear "carousel" with no hint of what it holds.
+
+## Examples
+
+### Several slides per view
+
+<ComponentPreview name="carousel-multiple" />
+
+### Dots and counter
+
+`CarouselDots` gives each slide a button, and `setApi` provides the numbers for a visible counter.
+
+<ComponentPreview name="carousel-dots" />
+
+### Vertical
+
+<ComponentPreview name="carousel-vertical" />
+
+## API reference
+
+`Carousel` accepts native `div` props plus:
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `aria-label` | string (required) | — |
+| `orientation` | `horizontal`, `vertical` | `horizontal` |
+| `loop` | boolean | `false` |
+| `setApi` | `(api: CarouselApi) => void` | — |
+| `onIndexChange` | `(index: number) => void` | — |
+
+`CarouselApi` contains `index`, `count`, `canScrollPrev`, `canScrollNext`, `scrollTo(index)`, `scrollPrev()`, and `scrollNext()`. The same values are available to custom controls through the `useCarousel()` hook.
+
+`CarouselContent`, `CarouselItem`, and `CarouselDots` accept native `div` props. `CarouselPrevious` and `CarouselNext` accept [Button](/docs/components/button) props and default to `variant="outline"` and `size="icon-sm"`.

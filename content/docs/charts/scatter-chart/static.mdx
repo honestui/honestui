@@ -65,6 +65,18 @@ Set `variant="bubble"` and provide `sizeDataKey` to encode a third numeric measu
 
 Add `Quadrants` with numeric split points and optional labels. Honest UI renders quiet analytical regions behind the points while retaining exact x/y positioning.
 
+### Reference Lines
+
+Lines at the averages of both measures, and an annotated standout. Positions are numbers on both axes. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>.
+
+<ComponentPreview title="<ScatterChart.ReferenceLine />" name="ex-reference-lines-echarts-scatter-chart" />
+
+### Zoom
+
+`<ScatterChart.Zoom />` zooms both axes around the pointer on pinch or Ctrl-scroll, which separates dense clusters. See <Link href="/docs/charts/ui/brush#zoom">Brush and Zoom</Link>.
+
+<ComponentPreview title="<ScatterChart.Zoom />" name="ex-zoom-echarts-scatter-chart" />
+
 ### Loading State
 
 <ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-scatter-chart" />
@@ -156,6 +168,14 @@ The loading state preserves the plot dimensions with neutral placeholder points 
   <ApiRow name="sizeValueFormatter" type="(value: number) => string">Formats the bubble-size value.</ApiRow>
   <ApiRow name="defaultIndex" type="number">Opens a tooltip after mount.</ApiRow>
 </ApiTable>
+
+<ApiHeading>ReferenceLine, ReferenceArea, and ReferenceDot</ApiHeading>
+
+Lines, bands, and annotated points at numeric positions, such as `<ScatterChart.ReferenceLine x={130} label="Avg" />`. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link> for every prop.
+
+<ApiHeading>Zoom</ApiHeading>
+
+Zooms both value axes on pinch or Ctrl-scroll and pans on drag. Points outside the window are clipped. See <Link href="/docs/charts/ui/brush#zoom">Brush and Zoom</Link>.
 
 <ApiHeading>Legend</ApiHeading>
 

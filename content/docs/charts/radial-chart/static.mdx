@@ -1,0 +1,141 @@
+---
+title: Radial Chart
+description: Draw values as concentric rings, for progress toward a goal or a short ranked list.
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/radial-chart.tsx
+  doc: https://echarts.apache.org/en/index.html
+  api: https://echarts.apache.org/en/option.html#polar
+---
+
+<ComponentPreview title="Basic Chart" name="ex-echarts-radial-chart" />
+
+## Overview
+
+A radial chart draws each row as a ring whose length is its value. It works best for progress toward a known maximum, such as activity goals or storage used, and for short ranked lists where a compact, round shape suits a dashboard tile. Outer rings are longer than inner rings at the same value, so use a bar chart when readers must compare values precisely, and a [Gauge Chart](/docs/charts/gauge-chart/static) for a single value with ranges.
+
+## Anatomy
+
+`RadialChart` owns the data, scale, ring geometry, selection, and loading state. Each row is one ring, named by `nameKey`; the first row is the outermost. `Bar` draws a series, with a muted track behind it. Add several `Bar` parts with one `stackId` to split a ring into segments. `Center` puts an HTML readout in the hole, `Label` names each ring, and `Legend` and `Tooltip` add context.
+
+## Accessibility
+
+The plot has an accessible name listing the series and rings; pass `ariaLabel` to describe the finding instead. Text in `Center` is real text drawn over the canvas, so it stays crisp at any zoom, but it is decorative to assistive technology, so keep the same information in the accessible name or nearby text. The tooltip and ring selection are pointer-operated.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { RadialChart, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<RadialChart data={data} dataKey="visitors" nameKey="browser" config={chartConfig}>
+  <RadialChart.Bar isClickable />
+  <RadialChart.Center label="Visitors" />
+  <RadialChart.Legend isClickable />
+  <RadialChart.Tooltip />
+</RadialChart>
+```
+
+With one series, each ring takes the color of its row's `config` entry, like a pie sector. With several series, colors come from each `Bar`'s `dataKey`. Set `max` when values are a share of a known total; without it the longest ring closes the circle. `startAngle` and `endAngle` follow ECharts: degrees, 0 at 3 o'clock, counterclockwise positive. A partial sweep is fitted to its own bounds, so a half circle fills the width it is given.
+
+## Examples
+
+### Progress rings
+
+<ComponentPreview className="mb-0" title="max={100}" name="ex-progress-echarts-radial-chart" />
+<Alert>
+  <AlertContent>
+    Set `max` to the goal so each ring shows progress toward it. The `Center` shows its own `value` at rest and the hovered ring's value on hover.
+  </AlertContent>
+</Alert>
+
+### Stacked half circle
+
+<ComponentPreview className="mb-0" title="startAngle={180} endAngle={0} stackId" name="ex-stacked-echarts-radial-chart" />
+<Alert>
+  <AlertContent>
+    Give several `Bar` parts one `stackId` to split a single ring. Segments are parted by a background-colored edge.
+  </AlertContent>
+</Alert>
+
+### Ring labels
+
+<ComponentPreview className="mb-0" title="<Label />" name="ex-labels-echarts-radial-chart" />
+<Alert>
+  <AlertContent>
+    `Label` writes each ring's name just before its start. Pair it with a partial sweep, such as `endAngle={-180}`, so the names have an open quarter to sit in.
+  </AlertContent>
+</Alert>
+
+## API reference
+
+<ApiHeading>RadialChart</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>One row per ring.</ApiRow>
+  <ApiRow name="nameKey" type="keyof TData & string" required>The row field that names each ring.</ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>Labels and colors for rows and series. See <Link href="/docs/charts/chart-config">Chart Config</Link>.</ApiRow>
+  <ApiRow name="dataKey" type="keyof TData & string">The default value field for `Bar` parts without their own.</ApiRow>
+  <ApiRow name="max" type="number">The value that closes the sweep. Defaults to the largest (stacked) value.</ApiRow>
+  <ApiRow name="innerRadius" type="number | string" default='"30%"'>Hole size, in pixels or a percentage of the outer radius.</ApiRow>
+  <ApiRow name="outerRadius" type="number | string" default='"100%"'>Outer size, in pixels or a percentage of the fitted radius.</ApiRow>
+  <ApiRow name="startAngle" type="number" default="90">Where rings start, in degrees.</ApiRow>
+  <ApiRow name="endAngle" type="number" default="-270">Where a full ring ends, in degrees.</ApiRow>
+  <ApiRow name="selectedKey" type="string | null">Controlled selection: a row name with one series, a series key with several.</ApiRow>
+  <ApiRow name="defaultSelectedKey" type="string | null" default="null">Selection on first render.</ApiRow>
+  <ApiRow name="onSelectionChange" type="(key: string | null) => void">Fires when a ring or legend entry is selected or cleared.</ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">Shows the loading skeleton.</ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">Plays the entrance. Reduced motion turns it off.</ApiRow>
+  <ApiRow name="ariaLabel" type="string">Accessible name for the plot.</ApiRow>
+  <ApiRow name="chartOptions" type="Record<string, unknown>">Escape hatch merged over the ECharts option.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Bar</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string">The value field. Defaults to the root `dataKey`.</ApiRow>
+  <ApiRow name="track" type="boolean" default="true">Draws a muted ring behind the value.</ApiRow>
+  <ApiRow name="cornerRadius" type="number" default="999">End rounding in pixels; large values give round caps.</ApiRow>
+  <ApiRow name="stackId" type="string">Stacks bars that share it into one ring.</ApiRow>
+  <ApiRow name="barSize" type="number">Ring thickness in pixels. Defaults to the space available.</ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">Lets rings be selected.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Center</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="value" type="ReactNode">The resting value. Defaults to the total, or the only value.</ApiRow>
+  <ApiRow name="label" type="ReactNode">The resting caption. Defaults to the row or series label, or "Total".</ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">Formats computed and hovered values.</ApiRow>
+  <ApiRow name="followHover" type="boolean" default="true">Shows the hovered or selected ring's value.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the readout.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Label</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="dataKey" type="string">Field for the label text. Defaults to the row's `config` label.</ApiRow>
+  <ApiRow name="formatter" type="(value: string, index: number) => string">Formats the label text.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Tooltip</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type='"default" | "frosted-glass"' default='"default"'>Tooltip surface.</ApiRow>
+  <ApiRow name="roundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>Tooltip corner radius.</ApiRow>
+  <ApiRow name="position" type='"fixed" | "variable"' default='"variable"'>Follow the pointer, or pin near the top.</ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">Formats values in the tooltip.</ApiRow>
+</ApiTable>
+
+<ApiHeading>Legend</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="variant" type="LegendVariant" default='"rounded-square"'>Indicator style.</ApiRow>
+  <ApiRow name="align" type='"left" | "center" | "right"' default='"center"'>Horizontal placement.</ApiRow>
+  <ApiRow name="verticalAlign" type='"top" | "bottom"' default='"bottom"'>Vertical placement.</ApiRow>
+  <ApiRow name="isClickable" type="boolean" default="false">Lets entries select a ring or series.</ApiRow>
+</ApiTable>

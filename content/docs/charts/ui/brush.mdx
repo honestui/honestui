@@ -1,6 +1,6 @@
 ---
-title: Brush
-description: Filter a Cartesian chart to a selected data range.
+title: Brush and Zoom
+description: Filter a Cartesian chart to a selected data range, or zoom and pan inside the plot.
 image: /og/og-image.png
 ---
 
@@ -37,12 +37,16 @@ import { AreaChart } from "honestui/charts";
 
 ## Supported Charts
 
-The brush is available on the cartesian charts, `AreaChart`, `LineChart`, and `BarChart`. Attach it exactly the same way on each:
+The brush is available on the cartesian charts, `AreaChart`, `LineChart`, `BarChart`, `ComboChart`, and `CandlestickChart`. Attach it exactly the same way on each:
 
 ```tsx
 <LineChart.Brush />
 <BarChart.Brush />
+<ComboChart.Brush />
+<CandlestickChart.Brush />
 ```
+
+The combo chart's miniature shows its first bar series, and the candlestick chart's shows the closing price. `Zoom` is available on the same charts.
 
 The miniature mirrors the chart it belongs to. Area charts draw filled areas, line charts draw strokes only, and bar charts draw rounded bars. It inherits the parent chart's stacking and series colors, dimming alongside the main plot when a series is selected.
 
@@ -65,6 +69,31 @@ const [range, setRange] = useState({ startIndex: 0, endIndex: data.length - 1 })
 
 `onChange` fires with data **indices**, not values, so look the labels up on your own rows.
 
+## Zoom
+
+`<Zoom />` zooms inside the plot itself, with no footer. Pinch on a trackpad or touch screen, or scroll with Ctrl held, to zoom around the pointer; drag to pan once zoomed. A plain scroll keeps scrolling the page, so a chart in a long document never traps the wheel. A Reset zoom button appears at the top left while zoomed, and double-clicking the plot does the same.
+
+```tsx
+<LineChart data={data} config={chartConfig} xDataKey="day">
+  <LineChart.Zoom />
+  <LineChart.Line dataKey="users" />
+</LineChart>
+```
+
+<ComponentPreview className="mb-0" title="<LineChart.Zoom />" name="ex-zoom-echarts-line-chart" />
+
+On a scatter chart, Zoom works on both axes at once, which helps in dense clusters. Points outside the window are clipped rather than dropped.
+
+<ComponentPreview className="mb-0" title="<ScatterChart.Zoom />" name="ex-zoom-echarts-scatter-chart" />
+
+On a candlestick chart the price axis refits to the candles in the window as you zoom.
+
+<ComponentPreview className="mb-0" title="<CandlestickChart.Zoom />" name="ex-zoom-echarts-candlestick-chart" />
+
+Brush and Zoom can be combined. They share one window: zooming in the plot moves the brush selection, and dragging the brush changes the zoom. Without `<Zoom />` the brush's plot zoom keeps its original behavior, where every scroll over the plot zooms.
+
+Zoom is pointer and touch operated. As with the brush, offer an equivalent range control outside the chart when narrowing the range is part of the task.
+
 ## Rendering
 
 The brush uses a second ECharts grid with mirrored copies of the visible series. A transparent native `dataZoom` slider supplies dragging and panning, while the selection frame, dimmed regions, handles, and range labels are drawn as synchronized canvas elements.
@@ -84,6 +113,30 @@ Composed as a child of the chart root. It renders nothing itself, its presence t
   </ApiRow>
   <ApiRow name="onChange" type="(range: { startIndex: number; endIndex: number }) => void">
     Fires as the selection moves, with the inclusive data indices of the visible range.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Zoom</ApiHeading>
+
+Available on `AreaChart`, `BarChart`, `LineChart`, and `ScatterChart`.
+
+<ApiTable>
+  <ApiRow name="wheel" type='"modifier" | "always" | false' default='"modifier"'>
+    What a scroll wheel does. `modifier` zooms on pinch and on scroll with Ctrl held, `always`
+    zooms on every scroll, and `false` turns wheel zoom off.
+  </ApiRow>
+  <ApiRow name="pan" type="boolean" default="true">
+    Drag to pan while zoomed.
+  </ApiRow>
+  <ApiRow name="minSpan" type="number" default="5">
+    The narrowest window, as a percentage of the full range.
+  </ApiRow>
+  <ApiRow name="showReset" type="boolean" default="true">
+    Show the Reset zoom button while zoomed. Double-click resets either way.
+  </ApiRow>
+  <ApiRow name="onChange" type="(range: { startIndex: number; endIndex: number }) => void">
+    Fires as the window changes, with the inclusive data indices in view. Not called on the
+    scatter chart, whose axes are continuous.
   </ApiRow>
 </ApiTable>
 

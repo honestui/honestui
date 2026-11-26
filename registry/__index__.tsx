@@ -431,6 +431,42 @@ import toolbar_media_controls from "./default/examples/toolbar-media-controls";
 import toolbar_density_controls from "./default/examples/toolbar-density-controls";
 import tooltip_icon_row from "./default/examples/tooltip-icon-row";
 import tooltip_keyboard_hints from "./default/examples/tooltip-keyboard-hints";
+import menubar_demo from "./default/examples/menubar-demo";
+import menubar_vertical from "./default/examples/menubar-vertical";
+import navigation_menu_active_link from "./default/examples/navigation-menu-active-link";
+import navigation_menu_demo from "./default/examples/navigation-menu-demo";
+import navigation_menu_featured from "./default/examples/navigation-menu-featured";
+import aspect_ratio_demo from "./default/examples/aspect-ratio-demo";
+import aspect_ratio_gallery from "./default/examples/aspect-ratio-gallery";
+import aspect_ratio_ratios from "./default/examples/aspect-ratio-ratios";
+import calendar_demo from "./default/examples/calendar-demo";
+import calendar_disabled_dates from "./default/examples/calendar-disabled-dates";
+import calendar_dropdown from "./default/examples/calendar-dropdown";
+import calendar_range from "./default/examples/calendar-range";
+import native_select_demo from "./default/examples/native-select-demo";
+import native_select_field from "./default/examples/native-select-field";
+import native_select_groups from "./default/examples/native-select-groups";
+import native_select_sizes from "./default/examples/native-select-sizes";
+import drawer_action_sheet from "./default/examples/drawer-action-sheet";
+import drawer_demo from "./default/examples/drawer-demo";
+import drawer_side from "./default/examples/drawer-side";
+import drawer_snap_points from "./default/examples/drawer-snap-points";
+import otp_field_alphanumeric from "./default/examples/otp-field-alphanumeric";
+import otp_field_demo from "./default/examples/otp-field-demo";
+import otp_field_grouped from "./default/examples/otp-field-grouped";
+import otp_field_invalid from "./default/examples/otp-field-invalid";
+import spinner_button from "./default/examples/spinner-button";
+import spinner_card from "./default/examples/spinner-card";
+import spinner_demo from "./default/examples/spinner-demo";
+import spinner_sizes from "./default/examples/spinner-sizes";
+import carousel_demo from "./default/examples/carousel-demo";
+import carousel_dots from "./default/examples/carousel-dots";
+import carousel_multiple from "./default/examples/carousel-multiple";
+import carousel_vertical from "./default/examples/carousel-vertical";
+import resizable_collapsible from "./default/examples/resizable-collapsible";
+import resizable_demo from "./default/examples/resizable-demo";
+import resizable_vertical from "./default/examples/resizable-vertical";
+import resizable_with_handle from "./default/examples/resizable-with-handle";
 
 export const Index: Record<string, { component: ComponentType }> = {
   ...AnimatedIndex,
@@ -876,4 +912,40 @@ export const Index: Record<string, { component: ComponentType }> = {
   "toolbar-demo": { component: toolbar_demo },
   "tooltip-demo": { component: tooltip_demo },
   "tooltip-grouped": { component: tooltip_grouped },
+  "menubar-demo": { component: menubar_demo },
+  "menubar-vertical": { component: menubar_vertical },
+  "navigation-menu-active-link": { component: navigation_menu_active_link },
+  "navigation-menu-demo": { component: navigation_menu_demo },
+  "navigation-menu-featured": { component: navigation_menu_featured },
+  "aspect-ratio-demo": { component: aspect_ratio_demo },
+  "aspect-ratio-gallery": { component: aspect_ratio_gallery },
+  "aspect-ratio-ratios": { component: aspect_ratio_ratios },
+  "calendar-demo": { component: calendar_demo },
+  "calendar-disabled-dates": { component: calendar_disabled_dates },
+  "calendar-dropdown": { component: calendar_dropdown },
+  "calendar-range": { component: calendar_range },
+  "native-select-demo": { component: native_select_demo },
+  "native-select-field": { component: native_select_field },
+  "native-select-groups": { component: native_select_groups },
+  "native-select-sizes": { component: native_select_sizes },
+  "drawer-action-sheet": { component: drawer_action_sheet },
+  "drawer-demo": { component: drawer_demo },
+  "drawer-side": { component: drawer_side },
+  "drawer-snap-points": { component: drawer_snap_points },
+  "otp-field-alphanumeric": { component: otp_field_alphanumeric },
+  "otp-field-demo": { component: otp_field_demo },
+  "otp-field-grouped": { component: otp_field_grouped },
+  "otp-field-invalid": { component: otp_field_invalid },
+  "spinner-button": { component: spinner_button },
+  "spinner-card": { component: spinner_card },
+  "spinner-demo": { component: spinner_demo },
+  "spinner-sizes": { component: spinner_sizes },
+  "carousel-demo": { component: carousel_demo },
+  "carousel-dots": { component: carousel_dots },
+  "carousel-multiple": { component: carousel_multiple },
+  "carousel-vertical": { component: carousel_vertical },
+  "resizable-collapsible": { component: resizable_collapsible },
+  "resizable-demo": { component: resizable_demo },
+  "resizable-vertical": { component: resizable_vertical },
+  "resizable-with-handle": { component: resizable_with_handle },
 };

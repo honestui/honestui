@@ -224,7 +224,7 @@ export function ProviderSwitcher() {
                           if (isMobile) setOpenMobile(false);
                         }}
                         render={<Link href={area.href} />}
-                        className="flex cursor-default items-center gap-2.5 rounded-[calc(var(--hui-radius-3)-var(--hui-space-2))] px-2 py-1.5 outline-hidden select-none data-highlighted:bg-[var(--hui-color-background-overlay-hover)]"
+                        className="flex cursor-pointer items-center gap-2.5 rounded-[calc(var(--hui-radius-3)-var(--hui-space-2))] px-2 py-1.5 outline-hidden select-none data-highlighted:bg-[var(--hui-color-background-overlay-hover)]"
                       >
                         <area.icon />
                         <div className="grid min-w-0 flex-1">

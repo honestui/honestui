@@ -1,0 +1,74 @@
+---
+title: Synced Crosshair
+description: Move the crosshair and tooltip across several charts at once.
+image: /og/og-image.png
+---
+
+## Usage
+
+Dashboards often stack charts that share a time axis: requests above errors, orders above basket size. Give each chart the same `syncId` and hovering any one of them moves the crosshair and tooltip on all of them to the same category, so a spike in one can be read against the others without lining them up by eye.
+
+```tsx
+import { BarChart, LineChart } from "honestui/charts";
+
+<BarChart data={data} config={ordersConfig} xDataKey="day" syncId="store-week">
+  <BarChart.Tooltip />
+  <BarChart.Bar dataKey="orders" />
+</BarChart>
+
+<LineChart data={data} config={basketConfig} xDataKey="day" syncId="store-week">
+  <LineChart.Tooltip />
+  <LineChart.Line dataKey="basket" />
+</LineChart>
+```
+
+Any string works as an id; charts with different ids, or none, stay independent. Each chart needs its own `<Tooltip />` to show anything when another chart is hovered.
+
+## Examples
+
+### Two line charts
+
+Traffic and error rate over the same minutes. Hover either chart.
+
+<ComponentPreview className="mb-0" title='syncId="service-health"' name="ex-synced-crosshair-echarts-line-chart" />
+
+### Bar and line chart
+
+Charts of different kinds sync the same way.
+
+<ComponentPreview className="mb-0" title='syncId="store-week"' name="ex-synced-crosshair-echarts-bar-chart" />
+
+### Candlestick and combo chart
+
+A price above its trading activity. `ComboChart`, `WaterfallChart`, and `CandlestickChart` take a `syncId` too.
+
+<ComponentPreview className="mb-0" title='syncId="share-day"' name="ex-synced-crosshair-echarts-combo-chart" />
+
+## How charts are matched
+
+Charts are matched on the category value under the pointer, not its position. A chart covering only part of the range, or one in a different order, still shows the right row; a chart that lacks the hovered category hides its tooltip until the pointer reaches one it has. Category values must therefore be written the same way in every chart, so use one key format for dates across the group.
+
+A horizontal bar chart syncs on its vertical category axis. The scatter chart has no category axis and does not take a `syncId`.
+
+## What is not synced
+
+Only the crosshair and tooltip follow the pointer. Each chart keeps its own series selection, hover highlight, legend, and brush or zoom window. To zoom a group together, hold the range in state and pass it on from one chart's Brush or Zoom `onChange`. The charts deliberately do not use `echarts.connect`, which would also replay highlight and zoom actions between any charts whose series ids happen to match.
+
+## Accessibility
+
+Syncing is a pointer convenience and adds nothing for keyboard or screen reader users. When readers need to relate the charts, provide a table with one row per category and a column per measure.
+
+## Supported Charts
+
+`AreaChart`, `BarChart`, and `LineChart` accept `syncId`, and charts of different kinds can share one.
+
+## API Reference
+
+<ApiHeading>Root</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="syncId" type="string">
+    Charts with the same id show their crosshair and tooltip at the same category while any one of
+    them is hovered.
+  </ApiRow>
+</ApiTable>

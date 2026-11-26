@@ -1,8 +1,8 @@
 ---
 title: React Charts
 metaTitle: React Chart Components with Apache ECharts
-metaDescription: Browse composable React chart components built on Apache ECharts, including line, bar, area, pie, scatter, and heatmap charts.
-description: Browse composable React chart components built on Apache ECharts, including line, bar, area, pie, scatter, and heatmap charts.
+metaDescription: Browse composable React chart components built on Apache ECharts, including line, bar, area, pie, scatter, heatmap, combo, funnel, sankey, and treemap charts.
+description: Browse composable React chart components built on Apache ECharts, including line, bar, area, pie, scatter, heatmap, combo, funnel, sankey, and treemap charts.
 image: /og/og-image.png
 ---
 
@@ -20,6 +20,21 @@ Charts are package imports rather than CLI-copied UI components. You can inspect
 | [Pie or donut chart](/docs/charts/pie-chart/static) | Show a simple part-to-whole relationship with a few categories | Values are close, there are many categories, or precision matters |
 | [Scatter chart](/docs/charts/scatter-chart/static) | Find relationships, clusters, and outliers across numeric measures | One axis is categorical |
 | [Heatmap](/docs/charts/heatmap/static) | Find patterns across two categorical dimensions | Readers need frequent point-by-point comparison |
+| [Combo chart](/docs/charts/combo-chart/static) | Plot an amount as bars and a related rate or trend as a line on one category axis | Both measures share a unit, so a grouped bar or multi-line chart is simpler |
+| [Waterfall chart](/docs/charts/waterfall-chart/static) | Explain how increases and decreases move a starting value to an ending value | The steps have no order or do not add up to a total |
+| [Candlestick chart](/docs/charts/candlestick-chart/static) | Show open, high, low, and close values for each period | Only the closing value matters, so a line is clearer |
+| [Radar chart](/docs/charts/radar-chart/static) | Compare the overall profile of a few series across measures on one scale | Readers need exact values or measures use different units |
+| [Radial chart](/docs/charts/radial-chart/static) | Show progress toward a goal for a few categories as rings | Categories need precise comparison, which bars do better |
+| [Gauge chart](/docs/charts/gauge-chart/static) | Show one value against a min, max, and qualitative ranges | Several values need comparing, or the trend matters more than the latest value |
+| [Bullet chart](/docs/charts/bullet-chart/static) | Compare a measure to a target and performance ranges in little space | There is no target or range to compare against |
+| [Funnel chart](/docs/charts/funnel-chart/static) | Find where people or items drop out of an ordered sequence of stages | Stages are not subsets of the previous stage |
+| [Sankey chart](/docs/charts/sankey-chart/static) | Show how quantities flow and split between stages or categories | There are many small flows or cycles |
+| [Treemap](/docs/charts/treemap/static) | Show part-to-whole relationships across a hierarchy | Values are close in size or exact comparison matters |
+| [Contribution graph](/docs/charts/contribution-graph/static) | Show daily activity over months as a calendar heatmap | The data is not daily or the exact trend matters more than the pattern |
+| [Sparkline](/docs/charts/sparkline/static) | Show a trend inline beside a number, in a table or a stat card | Readers need axes, labels, or exact values |
+| [Bar list](/docs/charts/bar-list/static) | Rank labeled items by value, such as top pages or referrers | Values change over time and the trend matters |
+| [Tracker](/docs/charts/tracker/static) | Show a history of discrete states, such as uptime per day | The measure is continuous, such as latency |
+| [Category bar](/docs/charts/category-bar/static) | Show where a value falls within ranges, or a split of one total | There are many segments or the segments do not add up to one whole |
 
 ## How composition works
 

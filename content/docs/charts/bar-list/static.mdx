@@ -1,0 +1,128 @@
+---
+title: Bar List
+description: A ranked list of labeled values with proportional bars, for top pages, referrers, and breakdowns.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/bar-list.tsx
+---
+
+<ComponentPreview title="Basic Bar List" name="ex-echarts-bar-list" />
+
+## Overview
+
+A bar list ranks categories by value and draws a bar behind each label, so long names stay readable where a horizontal bar chart would truncate them. Use it for "top N" panels: pages, referrers, countries, devices, or error types. Prefer a [Bar Chart](/docs/charts/bar-chart/static) when categories need to be compared across several series or over time.
+
+## Anatomy
+
+`BarList` reads `nameKey` and `valueKey` from each row, sorts the rows, and scales every bar to the largest value or to `max`. Each row is a label, an optional icon, a bar, and a value. Two variants are available: `tinted` puts the label on a light wash of the bar color, and `track` puts a thin bar on a muted track under the label. The list is drawn with DOM elements rather than a canvas, so labels and values are real text.
+
+## Accessibility
+
+The rows render as a list with real text, so screen readers read each name and value in order. Bars are decorative and hidden from assistive technology. Pass `ariaLabel` to name the list. With `onValueChange`, rows become buttons that report `aria-pressed` while a `selectedName` is set, and rows with an `hrefKey` value become links. Selection dims the other rows, so keep the selected value written out nearby as well.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { BarList, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+<BarList
+  data={data}
+  config={chartConfig}
+  nameKey="page"
+  valueKey="visitors"
+  nameLabel="Page"
+  valueLabel="Visitors"
+/>
+```
+
+The `config` entry for `valueKey` sets the bar color. A row whose name is also a `config` key takes that entry's label, icon, and colors instead, which gives each category its own color.
+
+## Examples
+
+### Track variant
+
+<ComponentPreview title="variant='track'" name="ex-track-variant-echarts-bar-list" />
+
+Track rows suit shares of a whole: set `max={1}` so every bar is measured against the full width rather than the largest row. Each device here has its own `config` entry with an icon and color.
+
+### Selectable rows
+
+<ComponentPreview title="onValueChange" name="ex-selectable-echarts-bar-list" />
+
+Use `onValueChange` with `selectedName` to filter the rest of a dashboard by a row. Choosing the selected row again clears the filter in this example.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-bar-list" />
+
+Pass `isLoading` to draw neutral placeholder rows with the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>BarList</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per bar.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    Colors for `valueKey`, plus optional per-row entries keyed by name.
+  </ApiRow>
+  <ApiRow name="nameKey" type="keyof TData & string" required>
+    The row label.
+  </ApiRow>
+  <ApiRow name="valueKey" type="keyof TData & string" required>
+    The numeric value that sizes the bar.
+  </ApiRow>
+  <ApiRow name="hrefKey" type="keyof TData & string">
+    A link for each row. Rows with a value render as anchors.
+  </ApiRow>
+  <ApiRow name="variant" type='"tinted" | "track"' default='"tinted"'>
+    A label on a tinted bar, or a thin bar under the label.
+  </ApiRow>
+  <ApiRow name="sortOrder" type='"descending" | "ascending" | "none"' default='"descending"'>
+    Row order. `none` keeps the data order.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    The value of a full-width bar. Defaults to the largest value.
+  </ApiRow>
+  <ApiRow name="limit" type="number">
+    Show at most this many rows after sorting.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats each value.
+  </ApiRow>
+  <ApiRow name="nameLabel" type="ReactNode">
+    Heading above the names.
+  </ApiRow>
+  <ApiRow name="valueLabel" type="ReactNode">
+    Heading above the values.
+  </ApiRow>
+  <ApiRow name="selectedName" type="string | null" default="null">
+    The selected row. Other rows are dimmed.
+  </ApiRow>
+  <ApiRow name="onValueChange" type="(item: BarListItem<TData>) => void">
+    Makes rows buttons and reports the chosen row's name, value, datum, and index.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Grows the bars in on mount. Reduced-motion preferences disable it.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Draws placeholder rows and a loading label.
+  </ApiRow>
+  <ApiRow name="loadingRows" type="number" default="5">
+    Number of placeholder rows.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the list. Defaults to the value label and `nameKey`.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Classes for the container.
+  </ApiRow>
+</ApiTable>

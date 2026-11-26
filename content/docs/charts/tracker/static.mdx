@@ -1,0 +1,138 @@
+---
+title: Tracker
+description: A row of status blocks for uptime, job runs, and any history of discrete states.
+image: /og/og-image.png
+links:
+  github: https://github.com/honestui/honestui/blob/main/registry/default/charts/tracker.tsx
+---
+
+<ComponentPreview title="Basic Tracker" name="ex-echarts-tracker" />
+
+## Overview
+
+A tracker draws one block per period and colors it by status, the pattern behind status pages and uptime monitors. Use it when each period has one categorical state, such as operational, degraded, or down, and readers need to spot when problems happened. When the measure is continuous, such as latency or error rate, use a [Line Chart](/docs/charts/line-chart/static) or a [Sparkline](/docs/charts/sparkline/static) instead.
+
+## Anatomy
+
+`Tracker` reads a status and a label from each row. The status names a `config` entry, which supplies that status's color and label; a missing or unknown status renders as a neutral "no data" block. Blocks share the width evenly, separated by `gap`. The optional tooltip shows the label, the status, an optional `valueKey` value, and a `detailFormatter` note. `showLegend` lists the statuses from `config` under the blocks.
+
+## Accessibility
+
+Color is not the only signal. Every block is a list item with an accessible name such as "Oct 8: Outage, 97.1%", and the list's generated name counts each status, for example "90 periods: 85 Operational, 3 Degraded, 1 Outage, 1 Maintenance". The blocks form one tab stop: arrow keys, Home, and End move between them, and focus shows the same tooltip as hover. With `onBlockClick`, Enter and Space activate the focused block. Write the headline figure, such as the uptime percentage, in real text near the tracker.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Tracker, type ChartConfig } from "honestui/charts";
+```
+
+```tsx
+const chartConfig = {
+  operational: { label: "Operational", colors: { light: ["#10b981"] } },
+  degraded: { label: "Degraded", colors: { light: ["#f59e0b"] } },
+  outage: { label: "Outage", colors: { light: ["#ef4444"] } },
+} satisfies ChartConfig;
+
+<Tracker
+  data={days}
+  config={chartConfig}
+  statusKey="status"
+  labelKey="date"
+  valueKey="uptime"
+  valueFormatter={(value) => `${value}%`}
+  showLegend
+/>
+```
+
+Unlike the canvas charts, the tracker is drawn with DOM elements, so each block can take focus and hundreds of periods stay crisp at any width.
+
+## Examples
+
+### One row per service
+
+<ComponentPreview title="Status page" name="ex-services-echarts-tracker" />
+
+Several trackers share one `config`, so a status page reads as a single grid. Periods before a service launched have a `null` status and show the `emptyLabel`.
+
+### Loading State
+
+<ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-tracker" />
+
+Pass `isLoading` to draw neutral blocks with the same loading treatment as the other Honest UI charts.
+
+## API Reference
+
+<ApiHeading>Tracker</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="data" type="TData[]" required>
+    One row per block, oldest first.
+  </ApiRow>
+  <ApiRow name="config" type="ChartConfig" required>
+    One entry per status, with its label and colors.
+  </ApiRow>
+  <ApiRow name="statusKey" type="keyof TData & string" required>
+    The status of each block, matching a `config` key.
+  </ApiRow>
+  <ApiRow name="labelKey" type="keyof TData & string" required>
+    The tooltip heading and accessible name of each block, such as a date.
+  </ApiRow>
+  <ApiRow name="valueKey" type="keyof TData & string">
+    An optional value shown beside the status, such as uptime.
+  </ApiRow>
+  <ApiRow name="valueFormatter" type="(value: number) => string">
+    Formats the `valueKey` value.
+  </ApiRow>
+  <ApiRow name="detailFormatter" type="(datum: TData) => ReactNode">
+    Extra tooltip text for a block, such as an incident summary.
+  </ApiRow>
+  <ApiRow name="height" type="number" default="32">
+    Block height in pixels.
+  </ApiRow>
+  <ApiRow name="gap" type="number" default="2">
+    Gap between blocks in pixels.
+  </ApiRow>
+  <ApiRow name="radius" type="number" default="2">
+    Block corner radius in pixels.
+  </ApiRow>
+  <ApiRow name="emptyLabel" type="string" default='"No data"'>
+    The label for a block without a known status.
+  </ApiRow>
+  <ApiRow name="tooltip" type="boolean" default="true">
+    Shows a tooltip on hover and focus.
+  </ApiRow>
+  <ApiRow name="tooltipVariant" type='"default" | "frosted-glass"' default='"default"'>
+    The tooltip surface.
+  </ApiRow>
+  <ApiRow name="tooltipRoundness" type='"sm" | "md" | "lg" | "xl"' default='"lg"'>
+    The tooltip corner radius.
+  </ApiRow>
+  <ApiRow name="showLegend" type="boolean" default="false">
+    Lists the statuses under the blocks.
+  </ApiRow>
+  <ApiRow name="legendVariant" type="LegendVariant" default='"rounded-square"'>
+    The legend indicator shape, shared with the other charts.
+  </ApiRow>
+  <ApiRow name="onBlockClick" type="(block: TrackerBlock<TData>) => void">
+    Called when a block is clicked or activated from the keyboard.
+  </ApiRow>
+  <ApiRow name="animation" type="boolean" default="true">
+    Fades the blocks in on mount. Reduced-motion preferences disable it.
+  </ApiRow>
+  <ApiRow name="isLoading" type="boolean" default="false">
+    Draws placeholder blocks and a loading label.
+  </ApiRow>
+  <ApiRow name="loadingBlocks" type="number" default="45">
+    Number of placeholder blocks.
+  </ApiRow>
+  <ApiRow name="ariaLabel" type="string">
+    Accessible name for the list. A status count is generated when omitted.
+  </ApiRow>
+  <ApiRow name="className" type="string">
+    Classes for the container.
+  </ApiRow>
+</ApiTable>

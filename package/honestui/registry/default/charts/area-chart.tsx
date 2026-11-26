@@ -77,6 +77,32 @@ import {
   type PointQuality,
   type ResolvedDataStatusText,
 } from "@/registry/default/ui/charts/data-quality";
+import {
+  buildReferenceSeries,
+  collectReferences,
+  ReferenceArea,
+  ReferenceDot,
+  ReferenceLine,
+  referenceColorKeys,
+} from "@/registry/default/ui/charts/reference";
+import {
+  COMPARE_DASH,
+  COMPARE_OPACITY,
+  compareLabel,
+  compareSeriesId,
+  compareValues,
+  comparisonDetailHtml,
+  readCompareValue,
+} from "@/registry/default/ui/charts/comparison";
+import { joinChartSync } from "@/registry/default/ui/charts/sync";
+import {
+  buildInsideZoom,
+  collectZoom,
+  isZoomed,
+  Zoom,
+  useZoomWheelGuard,
+  ZOOM_RESET_CLASS,
+} from "@/registry/default/ui/charts/zoom";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
 import type { ComposeOption, ImagePatternObject } from "echarts/core";
 import { CustomChart, LineChart, type CustomSeriesOption, type LineSeriesOption } from "echarts/charts";
@@ -168,6 +194,8 @@ export interface AreaChartProps<TData extends Record<string, unknown>> {
   loadingPoints?: number; 
   ariaLabel?: string;
   dataStatusText?: DataStatusText; 
+  /** Charts with the same id show their crosshair and tooltip together. */
+  syncId?: string;
   chartOptions?: Record<string, unknown>; 
   children?: ReactNode; 
 }
@@ -185,6 +213,11 @@ export interface AreaProps {
   statusKey?: string; 
   lowerKey?: string; 
   upperKey?: string; 
+  /**
+   * A data key holding the same measure for an earlier period, drawn as a
+   * ghost line. On stacked and expanded charts only the tooltip compares.
+   */
+  compareDataKey?: string;
   children?: ReactNode; 
 }
 
@@ -250,6 +283,7 @@ type AreaSeriesConfig = {
   quality: DataQualityKeys | null;
   dotVariant: DotVariant; 
   activeDotVariant: DotVariant; 
+  compareDataKey?: string;
 };
 
 type XAxisSlot = {
@@ -347,6 +381,7 @@ function collectConfig(children: ReactNode): CollectedConfig {
         quality: dataQualityKeys(props),
         dotVariant,
         activeDotVariant,
+        compareDataKey: props.compareDataKey,
       });
     } else if (type === XAxis) {
       const props = child.props as XAxisProps;
@@ -778,6 +813,9 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
   const { config, selectedDataKey, tooltipSlot, getHoveredKey, quality, statusText } = ctx;
+  const compareKeys = new Map(
+    ctx.areas.flatMap((area) => (area.compareDataKey ? [[area.dataKey, area.compareDataKey]] : [])),
+  );
 
   return (params: unknown): string => {
     const rows = Array.isArray(params) ? params : [params];
@@ -829,15 +867,30 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
             ? p.value.toLocaleString()
             : String(p.value);
 
-        return tooltipRow({
-          indicatorHtml: tooltipIndicatorHtml(key, colorsCount),
-          labelText,
-          valueText: value,
-          dimmed,
-          detailText: point
-            ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
-            : undefined,
-        });
+        // Compared on the series' own values, so a stacked or expanded
+        // chart still compares like with like.
+        const compareKey = compareKeys.get(key);
+        const row = typeof p.dataIndex === "number" ? ctx.data[p.dataIndex] : undefined;
+        const comparison = compareKey
+          ? comparisonDetailHtml({
+              current: readCompareValue(row, key),
+              previous: readCompareValue(row, compareKey),
+              label: compareLabel(config, compareKey),
+              dimmed,
+            })
+          : "";
+
+        return (
+          tooltipRow({
+            indicatorHtml: tooltipIndicatorHtml(key, colorsCount),
+            labelText,
+            valueText: value,
+            dimmed,
+            detailText: point
+              ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
+              : undefined,
+          }) + comparison
+        );
       })
       .join("");
 
@@ -1144,6 +1197,33 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
     };
 
     const qualitySeries: (LineSeriesOption | CustomSeriesOption)[] = [];
+    // The earlier period as a line only, faded and finely dashed, so it never
+    // adds to a filled total. A stack has no single baseline for it, so
+    // stacked and expanded charts compare in the tooltip alone.
+    if (area.compareDataKey && !isStacked) {
+      qualitySeries.push({
+        id: compareSeriesId(key),
+        type: "line",
+        data: compareValues(data, area.compareDataKey),
+        smooth: curve.smooth,
+        step: curve.step,
+        connectNulls: area.connectNulls,
+        silent: true,
+        showSymbol: false,
+        symbol: "none",
+        z: z + 1,
+        tooltip: { show: false },
+        lineStyle: {
+          color: slots[0],
+          width: Math.max(area.strokeWidth, 1),
+          opacity: COMPARE_OPACITY * opacity.stroke,
+          type: COMPARE_DASH,
+          cap: "round",
+        },
+        emphasis: { disabled: true },
+        blur: { lineStyle: { opacity: COMPARE_OPACITY * 0.3 } },
+      });
+    }
     if (points) {
       const tops = plottedTops?.[key];
       const plotted = tops ? values.map((value, i) => (value === null ? null : tops[i])) : values;
@@ -1308,7 +1388,7 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
       tooltip: { show: false },
     };
 
-    return [mainSeries, bufferSeries, bufferFillSeries];
+    return [mainSeries, bufferSeries, bufferFillSeries, ...qualitySeries];
   });
 }
 
@@ -1398,6 +1478,7 @@ type LiveState = {
     seriesKeys: string[];
     enableHoverHighlight: boolean;
     enableHoverReveal: boolean;
+    onZoomChange?: (range: { startIndex: number; endIndex: number }) => void;
   };
   repush: () => void;
 };
@@ -1420,6 +1501,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
   loadingPoints = LOADING_DEFAULT_POINTS,
   ariaLabel,
   dataStatusText,
+  syncId,
   chartOptions,
   children,
 }: AreaChartProps<TData>) {
@@ -1487,6 +1569,15 @@ export function AreaChart<TData extends Record<string, unknown>>({
   const brushHeight = brushSlot.height ?? 56;
 
   const seriesKeys = useMemo(() => areas.map((area) => area.dataKey), [areas]);
+
+  const references = useMemo(() => collectReferences(children), [children]);
+  const zoomSlot = useMemo(() => collectZoom(children), [children]);
+  useZoomWheelGuard(containerRef, zoomSlot);
+  const [zoomed, setZoomed] = useState(false);
+  const colorKeys = useMemo(
+    () => [...seriesKeys, ...referenceColorKeys(references, config)],
+    [seriesKeys, references, config],
+  );
   const defaultAriaLabel = `Area chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.`;
 
   const xCategoryKey = useMemo(() => {
@@ -1536,6 +1627,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
       seriesKeys,
       enableHoverHighlight,
       enableHoverReveal,
+      onZoomChange: zoomSlot.onChange,
     };
     liveRef.current.dataLength = data.length;
   });
@@ -1649,8 +1741,30 @@ export function AreaChart<TData extends Record<string, unknown>>({
     if (isLoading) return buildLoadingOption(ctx, { grid, xAxis, yAxis });
 
     const brush = showBrush ? buildBrushOption(ctx, brushBottom) : null;
+    const reference = buildReferenceSeries({
+      refs: references,
+      resolved,
+      valueAxes: { x: false, y: true },
+    });
 
-    const series = [...buildAreaSeries(ctx), ...(brush?.miniSeries ?? [])];
+    const series = [
+      ...buildAreaSeries(ctx),
+      ...(reference ? [reference] : []),
+      ...(brush?.miniSeries ?? []),
+    ];
+
+    // Zoom shares the brush's window: it replaces the brush's own inside
+    // zoom, or stands alone without a brush.
+    const insideZoom = zoomSlot.present
+      ? buildInsideZoom({ zoom: zoomSlot, range: liveRef.current.brushRange })
+      : null;
+    const dataZoom = brush
+      ? insideZoom
+        ? [brush.dataZoom[0], insideZoom]
+        : brush.dataZoom
+      : insideZoom
+        ? [insideZoom]
+        : undefined;
 
     if (enableHoverReveal) liveRef.current.revealValues = revealSink;
 
@@ -1680,10 +1794,12 @@ export function AreaChart<TData extends Record<string, unknown>>({
       xAxis: brush ? [xAxis, brush.miniXAxis] : xAxis,
       yAxis: brush ? [yAxis, brush.miniYAxis] : yAxis,
       tooltip: buildTooltipOption(ctx),
-      dataZoom: brush?.dataZoom,
+      dataZoom,
       series,
     };
   }, [
+    references,
+    zoomSlot,
     data,
     config,
     areas,
@@ -1901,15 +2017,32 @@ export function AreaChart<TData extends Record<string, unknown>>({
       if (!zoom) return;
 
       liveRef.current.brushRange = { start: zoom.start ?? 0, end: zoom.end ?? 100 };
+      setZoomed(isZoomed(liveRef.current.brushRange));
       syncBrushOverlayNow();
 
-      const { onBrushChange: onChange } = liveRef.current.handlers;
-      if (!onChange) return;
+      const { onBrushChange: onChange, onZoomChange } = liveRef.current.handlers;
+      if (!onChange && !onZoomChange) return;
       const len = liveRef.current.dataLength;
       const startIndex = Math.round(((zoom.start ?? 0) / 100) * (len - 1));
       const endIndex = Math.round(((zoom.end ?? 100) / 100) * (len - 1));
-      onChange({ startIndex, endIndex });
+      onChange?.({ startIndex, endIndex });
+      onZoomChange?.({ startIndex, endIndex });
     });
+
+    const onDoubleClick = () => {
+      if (!isZoomed(liveRef.current.brushRange)) return;
+      chart.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    };
+    chart.getZr().on("dblclick", onDoubleClick);
+
+    const leaveSync = syncId
+      ? joinChartSync({
+          syncId,
+          chart,
+          categories: () => liveRef.current.categories,
+          categoryAxis: () => "x",
+        })
+      : null;
 
     const zr = chart.getZr();
     const applyHover = (next: { inside: boolean; left: boolean; right: boolean }) => {
@@ -1943,6 +2076,8 @@ export function AreaChart<TData extends Record<string, unknown>>({
     zr.on("globalout", onZrOut);
 
     return () => {
+      leaveSync?.();
+      zr.off("dblclick", onDoubleClick);
       zrHover.off("mousemove", onZrHoverMove);
       zrHover.off("globalout", onZrHoverOut);
       zr.off("mousemove", onZrMove);
@@ -1957,14 +2092,14 @@ export function AreaChart<TData extends Record<string, unknown>>({
       live.hasRevealed = false;
     };
 
-  }, [syncBrushOverlayNow, toggleSelection]);
+  }, [syncBrushOverlayNow, toggleSelection, syncId]);
 
   useEffect(() => {
     const chart = echartsRef.current;
     const container = containerRef.current;
     if (!chart || !container) return;
 
-    liveRef.current.resolved = resolveColors(container, config, seriesKeys);
+    liveRef.current.resolved = resolveColors(container, config, colorKeys);
 
     const push = (withEntrance: boolean) => {
       const option = buildOption();
@@ -1989,7 +2124,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
     push(revealEnabled);
 
     liveRef.current.repush = () => {
-      liveRef.current.resolved = resolveColors(container, config, seriesKeys);
+      liveRef.current.resolved = resolveColors(container, config, colorKeys);
       push(false);
     };
   }, [
@@ -2000,7 +2135,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
     effectiveAnimation,
     shouldReduceMotion,
     config,
-    seriesKeys,
+    colorKeys,
     syncBrushOverlayNow,
   ]);
 
@@ -2133,6 +2268,17 @@ export function AreaChart<TData extends Record<string, unknown>>({
 
       {!statusKeyOnTop && statusKey}
 
+      {zoomSlot.present && zoomSlot.showReset && zoomed && !isLoading && (
+        <button
+          type="button"
+          className={ZOOM_RESET_CLASS}
+          style={{ left: 16, ...(legendSlot.present && legendSlot.verticalAlign === "top" && legendSlot.align !== "right" ? { bottom: 12 } : { top: 12 }) }}
+          onClick={() => echartsRef.current?.dispatchAction({ type: "dataZoom", start: 0, end: 100 })}
+        >
+          Reset zoom
+        </button>
+      )}
+
       {legendSlot.present && !isLoading && (
         <LegendOverlay
           seriesKeys={seriesKeys}
@@ -2179,3 +2325,7 @@ AreaChart.Grid = Grid;
 AreaChart.Tooltip = Tooltip;
 AreaChart.Legend = Legend;
 AreaChart.Brush = Brush;
+AreaChart.Zoom = Zoom;
+AreaChart.ReferenceLine = ReferenceLine;
+AreaChart.ReferenceArea = ReferenceArea;
+AreaChart.ReferenceDot = ReferenceDot;

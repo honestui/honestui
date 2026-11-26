@@ -196,6 +196,16 @@ export interface BackgroundProps {
 
 const Background: FC<BackgroundProps> = () => null;
 
+export interface CenterProps {
+  label?: ReactNode; 
+  value?: ReactNode; 
+  valueFormatter?: (value: number) => string; 
+  followHover?: boolean; 
+  className?: string; 
+}
+
+const Center: FC<CenterProps> = () => null;
+
 type PieSlot = {
   variant: PieVariant;
   innerRadius: number | string;
@@ -224,12 +234,14 @@ type LegendSlot = {
   isClickable: boolean;
 };
 type BackgroundSlot = { present: boolean; variant: BackgroundVariant };
+type CenterSlot = { present: boolean } & CenterProps;
 
 type CollectedConfig = {
   pie: PieSlot | null;
   tooltip: TooltipSlot;
   legend: LegendSlot;
   background: BackgroundSlot;
+  center: CenterSlot;
 };
 
 function collectConfig(children: ReactNode): CollectedConfig {
@@ -249,6 +261,7 @@ function collectConfig(children: ReactNode): CollectedConfig {
     isClickable: false,
   };
   let background: BackgroundSlot = { present: false, variant: "dots" };
+  let center: CenterSlot = { present: false };
 
   Children.forEach(children, (child) => {
     if (!isValidElement(child)) return;
@@ -298,10 +311,12 @@ function collectConfig(children: ReactNode): CollectedConfig {
     } else if (type === Background) {
       const props = child.props as BackgroundProps;
       background = { present: true, variant: props.variant ?? "dots" };
+    } else if (type === Center) {
+      center = { present: true, ...(child.props as CenterProps) };
     }
   });
 
-  return { pie, tooltip, legend, background };
+  return { pie, tooltip, legend, background, center };
 }
 
 function sectorLabel(config: ChartConfig, name: string): string {
@@ -800,7 +815,14 @@ export function PieChart<TData extends Record<string, unknown>>({
     selectedSectorProp !== undefined ? selectedSectorProp : internalSelectedSector;
 
   const collected = useMemo(() => collectConfig(children), [children]);
-  const { pie, tooltip: tooltipSlot, legend: legendSlot, background: backgroundSlot } = collected;
+  const {
+    pie,
+    tooltip: tooltipSlot,
+    legend: legendSlot,
+    background: backgroundSlot,
+    center: centerSlot,
+  } = collected;
+  const [hoveredSector, setHoveredSector] = useState<string | null>(null);
 
   const sectorKeys = useMemo(
     () => data.map((row) => String(row[nameKey as string])),
@@ -932,6 +954,15 @@ export function PieChart<TData extends Record<string, unknown>>({
       select(selected === name ? null : name);
     });
 
+    // The center label follows the hovered sector, so it tracks mouseover on real sectors only.
+    chart.on("mouseover", (params) => {
+      const p = params as { name?: string; seriesId?: string };
+      if (String(p.seriesId ?? "").startsWith("__") || typeof p.name !== "string") return;
+      setHoveredSector(p.name);
+    });
+    chart.on("mouseout", () => setHoveredSector(null));
+    chart.getZr().on("globalout", () => setHoveredSector(null));
+
     return () => {
       resizeObserver.disconnect();
       themeObserver.disconnect();
@@ -1048,6 +1079,43 @@ export function PieChart<TData extends Record<string, unknown>>({
         : { top: "50%", transform: "translateY(-50%)" }),
   };
 
+  // The center shows the total at rest, then the hovered (or selected) sector.
+  const centerFocus =
+    centerSlot.followHover === false ? null : (hoveredSector ?? selectedSector);
+  const centerNode = (() => {
+    if (!centerSlot.present || isLoading) return null;
+    const format = (value: number) =>
+      centerSlot.valueFormatter?.(value) ?? value.toLocaleString();
+    const focusIndex = centerFocus == null ? -1 : sectorKeys.indexOf(centerFocus);
+    let valueText: ReactNode;
+    let labelText: ReactNode;
+    if (focusIndex >= 0) {
+      const point = quality?.points[focusIndex];
+      const raw = point ? point.value : Number(data[focusIndex]?.[dataKey as string]);
+      valueText = raw == null || !Number.isFinite(raw) ? "—" : format(raw);
+      labelText = config[sectorKeys[focusIndex]]?.label ?? sectorKeys[focusIndex];
+    } else {
+      const total = data.reduce((sum, row) => {
+        const value = Number(row[dataKey as string]);
+        return Number.isFinite(value) ? sum + value : sum;
+      }, 0);
+      valueText = centerSlot.value ?? format(total);
+      labelText = centerSlot.label ?? "Total";
+    }
+    return (
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 text-center ${centerSlot.className ?? ""}`}
+        style={{ left: "50%", top: pieCenterY(legendSlot) }}
+      >
+        <span className="text-foreground text-2xl leading-none font-semibold tracking-tight tabular-nums">
+          {valueText}
+        </span>
+        <span className="text-muted-foreground max-w-28 truncate text-xs">{labelText}</span>
+      </div>
+    );
+  })();
+
   // The status key takes the edge the sector legend is not on, so the two never overlap.
   const statusKeyOnTop = legendSlot.present && legendSlot.verticalAlign === "bottom";
   const statusKeyNode = quality && !isLoading && (
@@ -1079,6 +1147,7 @@ export function PieChart<TData extends Record<string, unknown>>({
           <BackgroundLayer variant={backgroundSlot.variant} />
         )}
         <div ref={mountRef} className="relative h-full min-h-0 w-full" />
+        {centerNode}
       </div>
 
       {!statusKeyOnTop && statusKeyNode}
@@ -1125,3 +1194,4 @@ PieChart.Label = Label;
 PieChart.Tooltip = Tooltip;
 PieChart.Legend = Legend;
 PieChart.Background = Background;
+PieChart.Center = Center;

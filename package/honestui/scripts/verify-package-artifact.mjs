@@ -11,13 +11,16 @@ const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const packageJson = JSON.parse(
   await readFile(path.join(packageRoot, "package.json"), "utf8")
 )
+// `npm publish --dry-run` exports npm_config_dry_run to lifecycle scripts; the
+// nested pack and install must still really run, or the tarball never exists.
+const npmEnv = { ...process.env, npm_config_dry_run: "false" }
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "honestui-artifact-"))
 
 try {
   const { stdout } = await execFileAsync(
     "npm",
     ["pack", "--ignore-scripts", "--json", "--pack-destination", tempRoot],
-    { cwd: packageRoot, encoding: "utf8", maxBuffer: 10 * 1024 * 1024 }
+    { cwd: packageRoot, encoding: "utf8", maxBuffer: 10 * 1024 * 1024, env: npmEnv }
   )
   // npm 11 prints an array of results; npm 12 prints an object keyed by package name.
   const packOutput = JSON.parse(stdout)
@@ -75,7 +78,7 @@ try {
   await execFileAsync(
     "npm",
     ["install", "--ignore-scripts", "--no-audit", "--no-fund", tarballPath, `typescript@${packageJson.devDependencies.typescript}`, `@types/react@${packageJson.devDependencies["@types/react"]}`, `@types/react-dom@${packageJson.devDependencies["@types/react-dom"]}`],
-    { cwd: tempRoot, encoding: "utf8", maxBuffer: 10 * 1024 * 1024 }
+    { cwd: tempRoot, encoding: "utf8", maxBuffer: 10 * 1024 * 1024, env: npmEnv }
   )
   await writeFile(
     path.join(tempRoot, "smoke.mjs"),
