@@ -5,6 +5,7 @@ import {
   handleError,
 } from "@/src/utils/handle-error"
 import { logger } from "@/src/utils/logger"
+import packageJson from "../../package.json"
 import {
   afterAll,
   afterEach,
@@ -95,7 +96,10 @@ describe("handleError", () => {
     expect(logger.error).toHaveBeenCalledWith(
       "You can also try a previous version to see if that works:"
     )
-    expect(logger.error).toHaveBeenCalledWith("npx honestui@0.3.0 add foo")
+    // Derived from the package version so the test survives version bumps.
+    expect(logger.error).toHaveBeenCalledWith(
+      `npx honestui@${getPreviousMinorVersion(packageJson.version)} add foo`
+    )
     expect(exit).toHaveBeenCalledWith(1)
   })
 })

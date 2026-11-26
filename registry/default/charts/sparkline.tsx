@@ -305,7 +305,8 @@ export function Sparkline<TData extends Record<string, unknown>>({
   const mountRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<EChartsInstance | null>(null);
   const shouldReduceMotion = useReducedMotion();
-  const { tooltip, dot, references } = collectConfig(children);
+  const collected = collectConfig(children);
+  const { dot } = collected;
   const css = useMemo(() => buildChartCss(chartId, config), [chartId, config]);
   const values = useMemo(() => data.map((row) => toNumber(row[dataKey])), [data, dataKey]);
   const labels = useMemo(
@@ -313,7 +314,37 @@ export function Sparkline<TData extends Record<string, unknown>>({
     [data, xDataKey],
   );
   const seriesLabel = String(config[dataKey]?.label ?? dataKey);
-  const referenceKey = references.map(String).join("|");
+  // Slots are re-read from children on every render, so the references and
+  // tooltip settings are rebuilt from their primitive parts. That keeps them
+  // stable between renders and lets them be hook dependencies directly.
+  const referenceKey = collected.references.map(String).join("|");
+  const references = useMemo(
+    (): SparklineReference[] =>
+      referenceKey
+        ? referenceKey.split("|").map((part) => {
+            const numeric = Number(part);
+            return Number.isNaN(numeric) ? (part as SparklineReference) : numeric;
+          })
+        : [],
+    [referenceKey],
+  );
+  const {
+    present: tooltipPresent,
+    variant: tooltipVariant,
+    roundness: tooltipRoundness,
+    valueFormatter: tooltipValueFormatter,
+    labelFormatter: tooltipLabelFormatter,
+  } = collected.tooltip;
+  const tooltip = useMemo(
+    (): TooltipSlot => ({
+      present: tooltipPresent,
+      variant: tooltipVariant,
+      roundness: tooltipRoundness,
+      valueFormatter: tooltipValueFormatter,
+      labelFormatter: tooltipLabelFormatter,
+    }),
+    [tooltipPresent, tooltipVariant, tooltipRoundness, tooltipValueFormatter, tooltipLabelFormatter],
+  );
 
   const defaultAriaLabel = useMemo(() => {
     const present = values.filter((value): value is number => value !== null);
@@ -472,8 +503,6 @@ export function Sparkline<TData extends Record<string, unknown>>({
       },
       series: [series],
     };
-    // referenceKey stands in for the references array, which is rebuilt every render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isLoading,
     variant,
@@ -486,18 +515,14 @@ export function Sparkline<TData extends Record<string, unknown>>({
     dot.present,
     dot.points,
     dot.variant,
-    referenceKey,
+    references,
     connectNulls,
     curve,
     animation,
     shouldReduceMotion,
     min,
     max,
-    tooltip.present,
-    tooltip.variant,
-    tooltip.roundness,
-    tooltip.valueFormatter,
-    tooltip.labelFormatter,
+    tooltip,
   ]);
 
   useEffect(() => {
