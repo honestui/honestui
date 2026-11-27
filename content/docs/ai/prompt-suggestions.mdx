@@ -1,0 +1,126 @@
+---
+title: Prompt Suggestions
+metaTitle: React Prompt Suggestion Chips for Chat
+description: Offer prompt starters a person can send with one click, as chips, a scrolling row, or a list.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="prompt-suggestions-demo" previewClassName="h-auto min-h-[200px]" />
+
+## Overview
+
+Prompt Suggestions shows a few things a person could ask next. Choosing one calls `onSelect` with its prompt. Sending it, or putting it in the composer first, is your application's work.
+
+It renders the suggestions you pass. Use it under a reply, above a composer, or inside [Chat Welcome](/docs/ai/chat-welcome) on a new conversation.
+
+Use [Streaming Text](/docs/ai/streaming-text)'s follow-ups for prompts that continue one reply, and Prompt Suggestions for starters that stand on their own.
+
+## Anatomy
+
+<Anatomy title="PromptSuggestions">
+  <AnatomyItem name="Suggestion" description="A button with an optional icon and a short label" />
+</Anatomy>
+
+## Behavior
+
+### Prompt and label
+
+The chip shows `label`. When the prompt to send is longer, pass it as `prompt`; `onSelect` receives the suggestion with `prompt` filled in from the label when you leave it out.
+
+### Layouts
+
+`wrap` flows the chips onto more lines. `scroll` keeps them on one line that scrolls sideways, for a narrow composer. `list` stacks them as full-width rows in one block, for longer prompts.
+
+### Disabled
+
+`disabled` turns every suggestion off, such as while a reply is streaming.
+
+## Accessibility
+
+The suggestions are a list of buttons named by their labels, and the list is named "Suggested prompts". They take one stop in the Tab order; the arrow keys move between them. Icons are decorative.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move into or out of the suggestions |
+| <kbd>→</kbd> <kbd>←</kbd> | Move to the next or previous suggestion (<kbd>↓</kbd> <kbd>↑</kbd> in the list layout) |
+| <kbd>Home</kbd> <kbd>End</kbd> | Move to the first or last suggestion |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Choose the focused suggestion |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/prompt-suggestions"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="prompt-suggestions" title="components/ai/prompt-suggestions.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { PromptSuggestions } from "@/components/ai/prompt-suggestions"
+
+<PromptSuggestions
+  suggestions={[
+    { id: "late", label: "Find late invoices", prompt: "Which invoices are more than 30 days late?" },
+    { id: "trend", label: "Chart this month's revenue" },
+  ]}
+  onSelect={(suggestion) => chat.send(suggestion.prompt)}
+  disabled={chat.status === "streaming"}
+/>
+```
+
+## Examples
+
+### Scrolling row
+
+One line that scrolls sideways.
+
+<ComponentPreview name="prompt-suggestions-scroll" previewClassName="h-auto min-h-[140px]" />
+
+### List
+
+Full-width rows in one block.
+
+<ComponentPreview name="prompt-suggestions-list" previewClassName="h-auto min-h-[220px]" />
+
+## API reference
+
+### PromptSuggestions
+
+Accepts native ul props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `suggestions` | `PromptSuggestion[]` | Required | The suggestions, in order. |
+| `onSelect` | `(suggestion: PromptSuggestion & { prompt: string }) => void` | Required | Called with the chosen suggestion. |
+| `layout` | `"wrap" \| "scroll" \| "list"` | `"wrap"` | Wrapping chips, one scrolling row, or stacked rows. |
+| `disabled` | `boolean` | `false` | Turns every suggestion off. |
+| `labels` | `Partial<PromptSuggestionsLabels>` | English | The list's accessible name. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `PromptSuggestion` | `id`, `label`, and optional `prompt`, `icon` |

@@ -1,5 +1,6 @@
 import { CodeCollapsibleWrapper } from "@/components/docs/component/code-collapsible-wrapper";
 import { CodeBlock } from "@/components/docs/mdx/components/code";
+import { getRegistryItem as getAiRegistryItem } from "@/lib/ai/registry";
 import { getRegistryItem } from "@/lib/registry";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,8 @@ export async function ComponentSource({
   file?: string;
   collapsible?: boolean;
 }) {
-  const item = await getRegistryItem(name);
+  // Honest AI names never collide with Honest UI ones, so look there first.
+  const item = (await getAiRegistryItem(name)) ?? (await getRegistryItem(name));
   const selectedFile = file
     ? item?.files?.find((candidate) =>
         candidate.path.replace(/\\/g, "/").endsWith(file),

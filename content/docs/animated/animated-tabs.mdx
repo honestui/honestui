@@ -1,0 +1,53 @@
+---
+title: Animated Tabs
+description: Tabs whose active indicator springs between triggers as a raised pill or an underline.
+---
+
+<ComponentPreview name="animated-tabs-demo" />
+
+## Overview
+
+Animated Tabs pairs Base UI Tabs with a shared-layout indicator. The indicator lives inside the active tab and carries one layout id per list, so it springs to the next tab whether the change comes from a click, a tap, or the keyboard. Panel content fades in when its tab becomes active. Use the `pill` variant for compact segmented controls and `underline` for section navigation.
+
+## Installation
+
+<CliBlock commands={["animated-tabs"]} />
+
+## Usage
+
+```tsx
+import {
+  AnimatedTabs,
+  AnimatedTabsList,
+  AnimatedTabsPanel,
+  AnimatedTabsTab,
+} from "@/components/animated/animated-tabs"
+
+<AnimatedTabs defaultValue="overview">
+  <AnimatedTabsList aria-label="Dashboard sections">
+    <AnimatedTabsTab value="overview">Overview</AnimatedTabsTab>
+    <AnimatedTabsTab value="analytics">Analytics</AnimatedTabsTab>
+  </AnimatedTabsList>
+  <AnimatedTabsPanel value="overview">…</AnimatedTabsPanel>
+  <AnimatedTabsPanel value="analytics">…</AnimatedTabsPanel>
+</AnimatedTabs>
+```
+
+Give `AnimatedTabs` a `defaultValue` or `value` that matches one of the tab values.
+
+## Accessibility
+
+Roles, selection state, and keyboard support come from Base UI Tabs: the list is a `tablist`, arrow keys move between tabs, and each panel is labelled by its tab. Name the list with `aria-label` when there is no visible heading. The indicator is decorative and hidden from assistive technology. With reduced motion enabled, the indicator fades to the new tab instead of sliding.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="value / defaultValue" type="string | number">Selected tab on `AnimatedTabs`, controlled or initial.</ApiRow>
+  <ApiRow name="onValueChange" type="(value) => void">Called when the selected tab changes.</ApiRow>
+  <ApiRow name="variant" type='"pill" | "underline"' default='"pill"'>Indicator style, on `AnimatedTabsList`.</ApiRow>
+  <ApiRow name="indicatorClassName" type="string">Classes for the moving indicator.</ApiRow>
+  <ApiRow name="transition" type="Transition" default="SPRING_LAYOUT">Spring or tween for the indicator.</ApiRow>
+  <ApiRow name="value" type="string | number" required>Value of an `AnimatedTabsTab` and its `AnimatedTabsPanel`.</ApiRow>
+</ApiTable>
+
+`AnimatedTabs`, `AnimatedTabsList`, `AnimatedTabsTab`, and `AnimatedTabsPanel` also accept the props of Base UI's `Tabs.Root`, `Tabs.List`, `Tabs.Tab`, and `Tabs.Panel`.

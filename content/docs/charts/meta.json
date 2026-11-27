@@ -32,6 +32,12 @@
     "ui/comparison",
     "ui/sync",
     "data-status",
+    "honesty/index",
+    "honesty/partial-period",
+    "honesty/confidence-bands",
+    "honesty/data-gaps",
+    "honesty/truncated-axis",
+    "honesty/sample-size",
     "chart-config"
   ]
 }

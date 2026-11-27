@@ -1,0 +1,45 @@
+---
+title: Animated List
+description: Reveal items one at a time with the newest on top, as a column or a stack of notifications.
+---
+
+<ComponentPreview name="animated-list-demo" />
+
+## Overview
+
+Animated List shows a feed arriving. Items appear one at a time at a steady pace, the newest springs in at the top, and older items move down or leave once the list reaches its maximum. The `stack` layout piles items like notifications, with older ones tucked behind the newest. Items added to the list later join the queue, so it also works for live feeds.
+
+## Installation
+
+<CliBlock commands={["animated-list"]} />
+
+## Usage
+
+```tsx
+import { AnimatedList } from "@/components/animated/animated-list"
+
+<AnimatedList delay={1000} maxVisible={4} layout="stack" live>
+  {notifications.map((item) => (
+    <NotificationCard key={item.id} {...item} />
+  ))}
+</AnimatedList>
+```
+
+Pass items oldest first, each with a stable `key`. Set `delay` to `0` to show every item at once and animate only new arrivals.
+
+## Accessibility
+
+Set `live` when new items matter to the reader, such as notifications: the list becomes a polite live region that announces additions without interrupting. In the stack layout, items tucked behind the newest one are hidden from assistive technology because they are not readable on screen. With reduced motion enabled, items fade in without scaling or sliding.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode" required>Items in arrival order, oldest first, each with a stable key.</ApiRow>
+  <ApiRow name="delay" type="number" default="1000">Milliseconds between reveals. `0` shows every item at once.</ApiRow>
+  <ApiRow name="maxVisible" type="number" default="4">Maximum items shown. Older items leave as new ones arrive.</ApiRow>
+  <ApiRow name="layout" type='"list" | "stack"' default='"list"'>A column, or a pile of notifications.</ApiRow>
+  <ApiRow name="stackOffset" type="number" default="10">Vertical offset between stacked items, in px.</ApiRow>
+  <ApiRow name="live" type="boolean" default="false">Announces new items politely to screen readers.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the list.</ApiRow>
+  <ApiRow name="itemClassName" type="string">Classes for the wrapper around each item.</ApiRow>
+</ApiTable>

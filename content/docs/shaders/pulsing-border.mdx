@@ -1,0 +1,66 @@
+---
+title: Pulsing Border
+description: Wrap an element in an animated glow ring that signals activity, such as an AI model generating a reply.
+---
+
+<ComponentPreview name="pulsing-border-demo" playground />
+
+## Overview
+
+Pulsing Border draws a soft ring of light around any rounded element. Colored spots drift around the outline at their own pace, the glow breathes, and optional smoke breaks the bloom into wisps. Use it to show that something is working on the user's behalf: a prompt field while a model generates a reply, a card while an agent runs, or a call to action that needs attention.
+
+The ring is drawn on a canvas that sits over the element and extends past its edges by the bloom distance. That canvas ignores pointer events and is positioned absolutely, so the wrapped element keeps its own layout, focus ring, and click targets. Toggle `active` to fade the glow in and out; the render loop stops while the glow is hidden.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { PulsingBorder } from "honestui/shaders"
+
+<PulsingBorder active={isGenerating} radius={14}>
+  <form className="rounded-[14px] border bg-background p-2">
+    <textarea aria-label="Prompt" />
+  </form>
+</PulsingBorder>
+```
+
+Set `radius` to the wrapped element's border radius so the ring hugs its corners. Ancestors with `overflow: hidden` clip the bloom, so leave room around the element or reduce `bloom`.
+
+## Examples
+
+### AI prompt field
+
+The glow stays off while the field waits for input and fades in only while a reply is being generated, so it carries state. The status text below the field announces the same state to screen readers.
+
+<ComponentPreview name="pulsing-border-ai-input" />
+
+## Accessibility
+
+The glow is decorative and hidden from assistive technology. When it signals a state such as "generating", announce that state in text as well, for example with a live region or the button's accessible name, and never rely on the glow alone.
+
+When the user prefers reduced motion, the ring renders one still frame and fades instead of animating. Browsers without WebGL2 get a still CSS ring in the same colors. Keep `intensity` moderate so the ring never reduces the contrast of the element's own border or focus indicator.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="active" type="boolean" default="true">Shows the glow. Changing it fades the ring in or out.</ApiRow>
+  <ApiRow name="colors" type="string[]" default='["#4f8bff", "#a35bff", "#ff5fb4", "#ffa53d"]'>Hex colors carried around the ring, up to 8.</ApiRow>
+  <ApiRow name="radius" type="number" default="16">Corner radius in pixels. Match the wrapped element.</ApiRow>
+  <ApiRow name="thickness" type="number" default="1.5">Width of the bright core line in pixels.</ApiRow>
+  <ApiRow name="softness" type="number" default="0.35">Blur of the core line, from 0 to 1.</ApiRow>
+  <ApiRow name="intensity" type="number" default="1">Overall brightness, from 0 to 2.</ApiRow>
+  <ApiRow name="bloom" type="number" default="22">Reach of the outer glow in pixels.</ApiRow>
+  <ApiRow name="innerGlow" type="number" default="8">Reach of the glow into the element in pixels.</ApiRow>
+  <ApiRow name="spots" type="number" default="4">Number of light spots travelling around the ring, from 1 to 8.</ApiRow>
+  <ApiRow name="spotSize" type="number" default="0.7">Length of each spot relative to the space between spots.</ApiRow>
+  <ApiRow name="pulse" type="number" default="0.35">Breathing strength, from 0 to 1.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed multiplier.</ApiRow>
+  <ApiRow name="smoke" type="number" default="0.25">Wispy noise in the glow, from 0 to 1.</ApiRow>
+  <ApiRow name="smokeScale" type="number" default="1">Size of the smoke wisps.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Freezes the animation on its current frame.</ApiRow>
+  <ApiRow name="glowClassName" type="string">Classes for the glow layer, for example to change its stacking order.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the wrapper. Other div props and a ref are passed through.</ApiRow>
+</ApiTable>

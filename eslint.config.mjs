@@ -39,6 +39,38 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  {
+    files: ["registry/honest-ai/examples/**/*.{ts,tsx}"],
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
+  {
+    // Honest AI's generative runtime keeps its upstream types and hook
+    // mechanics; behavior is covered by its unit suite. Adapters keep the
+    // site rules.
+    files: ["registry/honest-ai/generative/runtime/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
+  {
+    files: ["registry/honest-ai/generative/catalog/**/schema.ts"],
+    rules: { "@typescript-eslint/no-explicit-any": "off" },
+  },
+  {
+    // Copied components also ship to non-Next applications.
+    files: ["registry/honest-ai/generative/renderers/generated-component.tsx"],
+    rules: { "@next/next/no-img-element": "off" },
+  },
+  {
+    // These upstream tests register render callbacks through defineComponent.
+    files: ["registry/honest-ai/generative/runtime/**/*.test.{ts,tsx}"],
+    rules: { "react-hooks/rules-of-hooks": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -55,6 +87,8 @@ const eslintConfig = defineConfig([
     // package/honestui/scripts/copy-registry.mjs. Lint the source copy once.
     "package/honestui/registry/**",
     "next-env.d.ts",
+    "public/vendor/**",
+    "package/prose-syntax/dist/**",
   ]),
 ]);
 

@@ -1,0 +1,103 @@
+---
+title: Partial Period
+description: Draw the current day, week, or month as in progress, so an open period does not look like a drop.
+image: /og/og-image.png
+---
+
+<ComponentPreview title="<LineChart.PartialPeriod />" name="ex-partial-period-echarts-line-chart" />
+
+## Overview
+
+The last point on most time series is a period that has not ended. Twenty-six days into November, November's revenue is lower than October's, and a plain line chart shows a fall that will not happen. Readers act on that fall.
+
+`PartialPeriod` marks the open period. Its values are drawn as provisional, the region is shaded and labelled, the key names it, and the tooltip says how much of the period has passed. The value itself is unchanged: the chart does not project a full-period figure.
+
+## Usage
+
+Name the first open category with `x`. It and every later category are drawn as in progress.
+
+```tsx
+import { LineChart } from "honestui/charts";
+
+<LineChart data={data} config={chartConfig} xDataKey="month">
+  <LineChart.XAxis dataKey="month" />
+  <LineChart.YAxis />
+  <LineChart.Tooltip />
+  <LineChart.PartialPeriod x="Nov" label="Month to date" progress={26 / 30} />
+  <LineChart.Line dataKey="revenue" />
+</LineChart>
+```
+
+When the x values are dates, let the chart find the open period instead. Pass `period` and, optionally, `now`. The chart picks the row whose period contains `now` and works out `progress` for you.
+
+```tsx
+<LineChart data={data} config={chartConfig} xDataKey="date">
+  <LineChart.PartialPeriod period="month" label="Month to date" />
+  <LineChart.Line dataKey="revenue" />
+</LineChart>
+```
+
+`period` reads ISO date strings such as `"2026-11"` or `"2026-11-26"`, timestamps, and `Date` objects. Category labels such as `"Nov"` cannot be dated, so name those with `x`.
+
+## Behavior to know about
+
+- **Statuses you set win.** The period only changes values that have no status or are `measured`. A value you marked `estimated`, `forecast`, or `missing` with [Data Status](/docs/charts/data-status) keeps its own style.
+- **One entry in the key.** The period has its own key entry, so the key does not also list "Provisional" for the values inside it. In the tooltip, the period's label replaces "Provisional" on those rows.
+- **No projection.** The chart never extends an open period to a full-period estimate. If you have a pace projection, add it as rows with a `forecast` status, and it is drawn with long dashes after the period.
+- **Bars.** On a bar chart, the open bars take the hatched provisional fill, and the shaded region starts half a category before the first open bar.
+- **Areas.** On an area chart, only the stroke is dashed. The fill inside the period is lighter.
+
+## Accessibility
+
+The default `ariaLabel` ends with the period label and its first category, for example "Month to date from Nov." The key entry carries the period's explanation for screen readers, and the tooltip note gives the progress as text.
+
+## Changing the text
+
+Pass these fields in `honestyText` on the chart root. See [Honest Charts](/docs/charts/honesty) for the full object.
+
+| Field | Default |
+| --- | --- |
+| `partialPeriodLabel` | "In progress", used when the part has no `label` |
+| `partialPeriodDescription` | "This period is not over. Its value is still coming in and will change." |
+| `partialProgress` | `(progress) => "87% of this period has passed."` |
+
+Use `note` on the part to replace the tooltip note for one chart.
+
+## Examples
+
+### Area chart
+
+<ComponentPreview title="<AreaChart.PartialPeriod />" name="ex-partial-period-echarts-area-chart" />
+
+### Bar chart
+
+<ComponentPreview title="<BarChart.PartialPeriod />" name="ex-partial-period-echarts-bar-chart" />
+
+### Combo chart
+
+<ComponentPreview title="<ComboChart.PartialPeriod />" name="ex-partial-period-echarts-combo-chart" />
+
+## API Reference
+
+<ApiHeading>PartialPeriod</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="x" type="string | number">
+    The first category that is still open, exactly as it appears in the data. It and every later category are drawn as in progress.
+  </ApiRow>
+  <ApiRow name="period" type='"hour" | "day" | "week" | "month" | "quarter" | "year"'>
+    Find the open period instead of naming it: the row whose period contains `now`. Needs dates, timestamps, or ISO date strings on the x axis.
+  </ApiRow>
+  <ApiRow name="now" type="Date | number" default="The time of render">
+    The current time used with `period`.
+  </ApiRow>
+  <ApiRow name="progress" type="number">
+    How much of the period has passed, from 0 to 1. Computed when `period` is set.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Shown over the shaded region and in the key, such as "Month to date".
+  </ApiRow>
+  <ApiRow name="note" type="string">
+    Replaces the tooltip note.
+  </ApiRow>
+</ApiTable>

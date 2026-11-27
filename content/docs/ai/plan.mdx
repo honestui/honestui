@@ -1,0 +1,146 @@
+---
+title: Plan
+metaTitle: React Agent Plan with Approve and Revise
+description: Show the plan an agent proposes before it acts, stream its steps in, and let the person approve or revise it.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="plan-demo" previewClassName="h-auto min-h-[380px]" />
+
+## Overview
+
+Plan shows what an agent intends to do before it does it: a title, a short summary, and the steps in order. The person approves it or asks for a revision.
+
+It shows the plan and status you pass. Once the plan runs, track the work with [Task Rows](/docs/ai/task-rows).
+
+## Anatomy
+
+<Anatomy title="Plan">
+  <AnatomyItem name="Header" description="The title, the step count or status, and the disclosure" />
+  <AnatomyItem name="Summary" description="What the plan sets out to do" />
+  <AnatomyItem name="Steps" description="Numbered steps, each with an optional detail" />
+  <AnatomyItem name="Actions" description="Revise and Approve, while the plan is proposed" />
+</Anatomy>
+
+Installing `plan` brings [Button](/docs/components/button), [Collapsible](/docs/components/collapsible), and [Text Shimmer](/docs/animated/text-shimmer) along as registry dependencies.
+
+## Behavior
+
+### Status
+
+| Status | Header | Actions |
+| --- | --- | --- |
+| `streaming` | "Planning", with a placeholder under the last step | Hidden |
+| `proposed` | The step count | Revise and Approve |
+| `approved` | "Approved" | Hidden |
+| `revising` | "Revising" | Hidden |
+
+### Streaming
+
+Append steps to the array as they arrive and keep `status` at `streaming`. Steps present on the first render appear at once; later ones fade in. Set `status` to `proposed` when the plan is complete.
+
+### Collapsing
+
+The header opens and closes the steps. It starts open; pass `defaultOpen={false}`, or control it with `open` and `onOpenChange`, to collapse a decided plan.
+
+### Approve and Revise
+
+Each button appears only when you pass its handler. Changing `status` after the person answers is your application's work.
+
+## Accessibility
+
+The plan is a region named by its title. The header is a button that reports whether the steps are expanded. The steps are an ordered list, and each one is read with its number, such as "Step 2: Find the rows that broke the schema". While streaming the region is marked busy, and a status message announces when the plan is ready and when it is decided. With reduced motion, new steps appear without fading.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to the header and the actions |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the steps, or press the focused action |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/plan"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "collapsible", "text-shimmer"]} />
+
+<Step>Install the animation library.</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="plan" title="components/ai/plan.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Plan } from "@/components/ai/plan"
+
+<Plan
+  title={plan.title}
+  summary={plan.summary}
+  steps={plan.steps}
+  status={plan.isStreaming ? "streaming" : plan.decision ?? "proposed"}
+  onApprove={() => agent.approvePlan(plan.id)}
+  onRevise={() => composer.focus()}
+/>
+```
+
+## Examples
+
+### Streaming
+
+Steps arrive one by one, then the actions appear.
+
+<ComponentPreview name="plan-streaming" previewClassName="h-auto min-h-[340px]" />
+
+## API reference
+
+### Plan
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | Required | What the plan is for. |
+| `summary` | `ReactNode` | None | A sentence or two on the approach. |
+| `steps` | `PlanStep[]` | Required | The steps, in order. |
+| `status` | `PlanStatus` | `"proposed"` | Where the plan stands. |
+| `onApprove` | `() => void` | None | Passing it shows Approve while proposed. |
+| `onRevise` | `() => void` | None | Passing it shows Revise while proposed. |
+| `defaultOpen` | `boolean` | `true` | Whether the steps start open. |
+| `open` | `boolean` | None | Controls whether the steps are open. |
+| `onOpenChange` | `(open: boolean) => void` | None | Called when the header is pressed. |
+| `labels` | `Partial<PlanLabels>` | English | The action names, status words, step count, and step prefix. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `PlanStep` | `id`, `title`, and an optional `detail` |
+| `PlanStatus` | `"streaming"`, `"proposed"`, `"approved"`, or `"revising"` |

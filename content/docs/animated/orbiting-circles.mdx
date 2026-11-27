@@ -1,0 +1,51 @@
+---
+title: Orbiting Circles
+description: Turn a set of items around a shared center, with optional orbit rings.
+---
+
+<ComponentPreview name="orbiting-circles-demo" />
+
+## Overview
+
+Orbiting Circles spaces its children evenly around a circle and turns them slowly around the center. Use it to show integrations, team members, or supported platforms around a central product. Render several with different radii, durations, and directions inside one box to build concentric rings. Items stay upright as they travel.
+
+## Installation
+
+<CliBlock commands={["orbiting-circles"]} />
+
+## Usage
+
+```tsx
+import { OrbitingCircles } from "@/components/animated/orbiting-circles"
+
+<div className="relative flex h-80 items-center justify-center">
+  <span>Integrations</span>
+  <OrbitingCircles radius={64} iconSize={30}>
+    <GithubIcon />
+    <SlackIcon />
+  </OrbitingCircles>
+  <OrbitingCircles radius={128} reverse duration={30}>
+    …
+  </OrbitingCircles>
+</div>
+```
+
+The orbit is centered in its nearest positioned ancestor. Keep that box at least `2 × radius + iconSize` wide and tall, or clip it with `overflow-hidden`.
+
+## Accessibility
+
+The ring is decorative. Items remain in the document and keep their own accessible names, but moving targets are hard to click, so avoid putting the only path to an action on an orbit. When reduced motion is requested, items stop in their evenly spaced positions.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode" required>Items placed on the orbit.</ApiRow>
+  <ApiRow name="radius" type="number" default="120">Orbit radius in px.</ApiRow>
+  <ApiRow name="duration" type="number" default="24">Seconds per revolution.</ApiRow>
+  <ApiRow name="reverse" type="boolean" default="false">Orbits counterclockwise.</ApiRow>
+  <ApiRow name="path" type="boolean" default="true">Draws the orbit as a faint ring.</ApiRow>
+  <ApiRow name="iconSize" type="number" default="32">Width and height of each item slot in px.</ApiRow>
+  <ApiRow name="startAngle" type="number" default="-90">Angle of the first item at rest, in degrees.</ApiRow>
+  <ApiRow name="pathClassName" type="string">Classes for the orbit ring.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the orbit layer.</ApiRow>
+</ApiTable>

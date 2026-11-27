@@ -1,0 +1,65 @@
+---
+title: Dot Grid
+description: A transparent grid of dots for section backgrounds, with an optional slow wave, twinkle, edge fade, and pointer highlight.
+---
+
+<ComponentPreview name="dot-grid-demo" playground />
+
+## Overview
+
+Dot Grid draws an evenly spaced lattice of dots on a transparent canvas, so it sits on any surface. It is the quiet background behind a hero, an empty state, or a feature section. The dots default to `currentColor` at low opacity, so they follow your text color and switch with the theme.
+
+Optional layers add life without noise:
+
+- **Wave** swells and shrinks the dots in a slow diagonal pattern.
+- **Twinkle** fades individual dots in and out.
+- **Pointer highlight** grows and recolors the dots near the cursor.
+- **Fade** dissolves the grid toward the edges, the top, or the bottom so it never ends in a hard line.
+
+The grid is centered, so the outer dots sit the same distance from each edge, and it stays crisp at any device pixel ratio.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { DotGrid } from "honestui/shaders"
+
+<section className="relative overflow-hidden rounded-xl border">
+  <DotGrid className="absolute inset-0" fade="radial" wave={0.3} />
+  <div className="relative p-12">
+    <h2>Ship it calmly.</h2>
+  </div>
+</section>
+```
+
+Pass content as children or layer it above the grid as in the example. Any CSS color works for `color` and `highlightColor`, including custom properties such as `var(--primary)`.
+
+A static grid with no wave, twinkle, or pointer highlight renders once and only redraws on resize, so it costs almost nothing.
+
+## Accessibility
+
+The canvas is hidden from assistive technology and the grid is decoration only. Keep dot opacity low behind text and check contrast where the highlight passes under content. The wave and twinkle stop when the user prefers reduced motion, while the element is offscreen, and while the page is hidden. The pointer highlight follows the cursor only and carries no information.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="gap" type="number" default="20">Distance between dot centers in CSS pixels.</ApiRow>
+  <ApiRow name="dotSize" type="number" default="2">Dot diameter in CSS pixels.</ApiRow>
+  <ApiRow name="shape" type='"circle" | "square" | "diamond" | "cross"' default='"circle"'>Dot shape.</ApiRow>
+  <ApiRow name="color" type="string" default='"currentColor"'>Dot color. Any CSS color.</ApiRow>
+  <ApiRow name="opacity" type="number" default="0.35">Dot opacity from 0 to 1.</ApiRow>
+  <ApiRow name="wave" type="number" default="0">Strength of the slow wave from 0 to 1.</ApiRow>
+  <ApiRow name="twinkle" type="number" default="0">Strength of the per-dot twinkle from 0 to 1.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed.</ApiRow>
+  <ApiRow name="interactive" type="boolean" default="true">Grows and brightens dots near the pointer.</ApiRow>
+  <ApiRow name="highlightColor" type="string">Color of dots near the pointer. Defaults to `color`.</ApiRow>
+  <ApiRow name="highlightRadius" type="number" default="140">Radius of the pointer highlight in CSS pixels.</ApiRow>
+  <ApiRow name="highlightScale" type="number" default="2.2">Dot scale at the center of the highlight.</ApiRow>
+  <ApiRow name="fade" type='"none" | "radial" | "edges" | "top" | "bottom"' default='"none"'>Fades the grid out toward the edges.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders one still frame.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content layered above the grid.</ApiRow>
+</ApiTable>

@@ -1,0 +1,181 @@
+---
+title: Honest Prose Syntax
+description: Restrained syntax colors for Markdown, HTML, React, and server-rendered code.
+---
+
+Honest Prose Syntax uses Shiki to recognize code and Honest token roles to style it. Keywords, strings, and functions carry restrained color; comments stay readable. Switching themes changes CSS without tokenizing again.
+
+<ComponentPreview name="prose-syntax-demo" previewClassName="h-auto" />
+
+## Honest Markdown
+
+Highlighting is automatic for fenced code. Import `styles/prose-syntax-theme.css` alongside your existing Prose stylesheet. Set `syntaxHighlighting={false}` to disable it. A custom `renderCodeLine` takes precedence.
+
+## Registry installation
+
+<CliBlock commands={["@honestai/prose-syntax-react"]} />
+
+```tsx
+import { SyntaxCode } from "@/lib/prose-syntax-react"
+import "@/styles/prose-syntax-theme.css"
+
+<SyntaxCode code={'const name = "Ada"'} language="js" />
+```
+
+For server-only use, install `@honestai/prose-syntax` and `@honestai/prose-syntax-theme`. For DOM enhancement, install `@honestai/prose-syntax-browser` and the theme. The browser and React integrations include a worker file; keep it beside the installed library files so your bundler can resolve it.
+
+## npm package
+
+The package is prepared locally as `@honestui/prose-syntax`; it has not been published. Build it with `npm run syntax:build`, then run `npm pack ./packages/prose-syntax`. Install the resulting tarball in a consuming project. After publication, the same exports will be available under the package name.
+
+```tsx
+import { SyntaxCode } from "@honestui/prose-syntax/react"
+import "@honestui/prose-syntax/style.css"
+
+<SyntaxCode code={source} language="tsx" />
+```
+
+The core and browser entries do not import React. React is an optional peer dependency for the React entry.
+
+## Server rendering and Markdown pipelines
+
+```ts
+import { createHighlighter } from "@honestui/prose-syntax"
+
+const highlighter = createHighlighter()
+const html = await highlighter.toHtml(source, { language: "typescript" })
+// Insert this escaped, generated HTML in the server-rendered document.
+// Dispose when the owning build or server lifecycle ends.
+highlighter.dispose()
+```
+
+In a Next.js server component, render the generated HTML with `dangerouslySetInnerHTML` and import the stylesheet in the layout. Only pass HTML produced by `toHtml`; never interpolate source into markup yourself. The resulting code needs no client highlighting JavaScript.
+
+For a Markdown build pipeline, await `toHtml` in the renderer's fenced-code handler. For AST-based pipelines, use `highlight` and create text/span nodes from its token lines instead of reparsing HTML. Preserve the source fence's language label; missing and unknown labels remain plain text.
+
+## Plain HTML
+
+Copy the package's entire `dist` folder to your site's assets. Keep its worker and grammar chunks together. Serve it over HTTP with JavaScript MIME types.
+
+```html
+<link rel="stylesheet" href="/assets/prose-syntax/style.css">
+<pre data-honest-syntax><code class="language-js">const name = "Ada"</code></pre>
+<script type="module">
+  import { highlightAll } from '/assets/prose-syntax/prose-syntax-browser.js'
+  await highlightAll(document)
+</script>
+```
+
+Encode `<` and `&` when writing source directly into HTML. The DOM integration reads `textContent`, never executes source, and can be called again after content changes. It skips applying colors during an active selection; call it again after selection ends if needed. It does not observe or rewrite the entire document automatically.
+
+## Languages and extensions
+
+The default loaders include JavaScript, TypeScript, JSX, TSX, HTML, CSS, JSON, Markdown, Bash, Python, SQL, YAML, Java, C, C++, C#, Go, Rust, PHP, Ruby, Kotlin, Swift, Diff, TOML, and Dockerfile. Each grammar loads only when a block uses it. Aliases include `js`, `ts`, `sh`, `shell`, `zsh`, `py`, `yml`, `md`, `c++`, `cs`, `c#`, `golang`, `rs`, `rb`, `kt`, `patch`, and `docker`. There is no automatic language detection.
+
+Add trusted grammars to a core instance:
+
+```ts
+const highlighter = createHighlighter({
+  languages: { ruby: () => import('shiki/langs/ruby.mjs') },
+})
+```
+
+Custom browser grammar sets use a custom worker supplied through `createSyntaxClient({ workerFactory })` or `createBrowserHighlighter({ workerFactory })`. Never construct grammar imports from code-block text or user-provided URLs.
+
+## Themes and Tailwind
+
+The default theme follows `.light`, `.dark`, or the system color scheme. Set `data-syntax-theme="light"` or `"dark"` on a code surface to override it. Use `.honest-syntax` on custom token renderers.
+
+Choose a token palette with `data-syntax-palette="violet"` or `"graphite"` on the code surface. Violet is the default. Graphite stays close to monochrome, with keywords in muted slate. For brand colors, override the `--prose-syntax-*` variables below instead. Each adapts to light and dark mode without changing the frame or retokenizing code.
+
+```tsx
+<SyntaxCode code={source} language="tsx" data-syntax-palette="graphite" />
+```
+
+In Honest Markdown, use `<Markdown syntaxPalette="graphite">{source}</Markdown>`.
+
+For plain HTML or server-generated markup, set the same attribute on `<pre class="honest-syntax">`. The palettes also work with the generated `syntaxTailwind` utilities. Explicit `--prose-syntax-*` overrides still take precedence.
+
+Override `--prose-syntax-plain`, `comment`, `keyword`, `string`, `constant`, `function`, `type`, `property`, `tag`, and `punctuation` with the same prefix, plus `variable`, `parameter`, `operator`, and `invalid` in editors. Surface variables are `--prose-syntax-background`, `--prose-syntax-highlight`, `--prose-syntax-frame` (the outer shell), `--prose-syntax-rule` (the hairline around the panel), `--prose-syntax-padding`, `--prose-syntax-size`, and `--prose-syntax-leading`. The code font follows `--prose-font-mono`.
+
+```css
+article {
+  --prose-syntax-keyword: #6941a5;
+  --prose-syntax-string: #166553;
+}
+```
+
+These example overrides are for light surfaces. Check every foreground against the actual background in each theme after customizing.
+
+For Tailwind v4 without a stylesheet, install `@honestai/prose-syntax-tailwind`, keep it in Tailwind's source scan, and apply `syntaxTailwind` to each code surface. It is generated from the same CSS, including theme and forced-color rules. This is separate from `proseTailwind` because Code View opts out of ordinary prose styles. The npm equivalent is `import { syntaxTailwind } from "@honestui/prose-syntax/tailwind"`; add the installed package's `dist/prose-syntax-tailwind.js` to Tailwind's `@source` paths because dependencies are normally excluded from scanning.
+
+## Editors
+
+Prose Syntax highlights code people read: replies, docs, previews, and diffs. It retokenizes from the top when text changes anywhere but the end, and it has no cursor, folding, or diagnostics. For code people edit, use CodeMirror 6 or Monaco and keep the same colors.
+
+<ComponentPreview name="prose-syntax-editor-demo" previewClassName="h-auto" />
+
+In the demo, parameters come from a small scope pass that stands in for a language server, and the only lint rule flags `==`. Each language loads its CodeMirror package when its tab opens.
+
+### CodeMirror
+
+<CliBlock commands={["@honestai/prose-syntax-codemirror"]} />
+
+```ts
+import { EditorView, basicSetup } from "codemirror"
+import { javascript } from "@codemirror/lang-javascript"
+import { honestCodeMirror } from "@/lib/prose-syntax-codemirror"
+import "@/styles/prose-syntax-theme.css"
+
+new EditorView({
+  parent: element,
+  extensions: [basicSetup, javascript({ typescript: true }), honestCodeMirror({ palette: "graphite" })],
+})
+```
+
+The extension maps CodeMirror's highlight tags onto the `prose-syntax-*` classes, so palettes, light and dark themes, and `--prose-syntax-*` overrides work as they do in Prose. It styles the gutter, cursor, selection, active line, matching brackets, search matches, panels, and lint underlines from the same variables. Pass `theme: "light"` or `"dark"` to pin a theme. Load another language by adding its `@codemirror/lang-*` package.
+
+Code the grammar cannot parse is marked invalid: red, with a wavy underline. Pass `parseErrors: false` to leave that to a linter. Diagnostics from `@codemirror/lint` use the invalid color for errors, the constant color for warnings, and the function color for information.
+
+### Parameters and language servers
+
+Grammars cannot tell a parameter from another variable, so parameters, and any type a language server knows better, come from semantic tokens. Decode a `textDocument/semanticTokens` result and send it to the editor:
+
+```ts
+import { decodeSemanticTokens, setSemanticTokens } from "@/lib/prose-syntax-codemirror"
+
+const tokens = decodeSemanticTokens(result.data, serverCapabilities.semanticTokensProvider.legend, view.state.doc)
+view.dispatch({ effects: setSemanticTokens.of(tokens) })
+```
+
+Tokens move with edits until the next result arrives. Parameters are italic as well as colored. The `deprecated` modifier strikes text through. Types without a role, such as `label`, keep the grammar's color.
+
+### Monaco and VS Code
+
+The same palettes ship as literal colors for editors that cannot read CSS variables.
+
+```ts
+import * as monaco from "monaco-editor"
+import { monacoTheme } from "@honestui/prose-syntax/themes"
+
+monaco.editor.defineTheme("honest-dark", monacoTheme("violet", "dark"))
+monaco.editor.create(element, { language: "typescript", theme: "honest-dark", "semanticHighlighting.enabled": true })
+```
+
+For a VS Code extension, point `contributes.themes` at a file in the package's `dist/themes` folder, such as `honest-violet-dark.json`, or generate one with `vscodeTheme(palette, mode)`. Both themes color parameters when the language service sends semantic tokens. With the registry, install `@honestai/prose-syntax-themes`.
+
+Editors add four roles: `--prose-syntax-variable` (matches plain text by default), `--prose-syntax-parameter`, `--prose-syntax-operator` (matches keywords), and `--prose-syntax-invalid`. With npm, CodeMirror is an optional peer dependency of `@honestui/prose-syntax/codemirror`.
+
+## Streaming and failure behavior
+
+Browser integrations load grammars in a worker, keep completed lines colored, and process only the changed suffix when possible. Pending updates coalesce per session; obsolete results never replace newer text. Source remains visible during loading or failure.
+
+The default input limit is 200,000 UTF-8 bytes. Worker jobs time out after one second, including cold startup, and the worker is terminated. `createSyntaxClient` and `createBrowserHighlighter` accept `maxBytes`, `timeoutMs`, `workerFactory`, and `onDiagnostic`. Core instances accept `maxBytes`, `languages`, and `onDiagnostic`. Diagnostics contain a reason and language, never the code.
+
+Use `dispose()` when an instance is no longer needed. Core streaming callers can pass a stable `session` to `highlight` and call `release(session)` when the block is removed. At most 32 completed-prefix sessions are retained per core instance.
+
+## Visual review
+
+The [syntax comparison](/syntax-review) renders the same JavaScript sample with Honest, Prism, highlight.js, and Shiki in light and dark themes. It is a review aid, not a claim that one library is universally more readable.
+
+The default palette pairs are tested for 4.5:1 text contrast. Keyboard, browser, and assistive-technology checks are separate from palette tests; custom colors and arbitrary host surfaces are not covered by those results.

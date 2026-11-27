@@ -1,0 +1,166 @@
+---
+title: Guardrail Notice
+metaTitle: React Redaction and Guardrail Display
+description: Show what a guardrail masked, blocked, or flagged in a conversation, the rule that fired, and why.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="guardrail-notice-demo" previewClassName="h-auto max-h-none min-h-[340px]" />
+
+## Overview
+
+When a guardrail changes a conversation, the person should be able to see that it did, and why. Guardrail Notice has two parts for that. `RedactedText` shows masked spans inside a message as chips; each chip opens what was found, the rule that fired, and the reason. `GuardrailNotice` is a line under the message that sums it up, such as "1 request blocked · 3 items masked", and opens every event with its severity.
+
+Take a billing assistant whose reply contained a customer's email, a phone number, card digits, and a live API key. The email and phone are masked but can be revealed by staff. The card digits are masked for everyone. The key was blocked from the reply. The notice says all of that in one line.
+
+The originals never need to reach the browser. The text you pass holds placeholders where the masked spans are. When a person with access presses Reveal, `onReveal` asks your server for the original, so your server decides who may see it and records that they did.
+
+Guardrail Notice detects nothing. It shows the events your guardrail reported.
+
+## Anatomy
+
+<Anatomy title="RedactedText">
+  <AnatomyItem name="Text" description="The message, with each masked span replaced by a chip" />
+  <AnatomyItem name="Chip" description="A hatched label, such as email, that opens the event's details" />
+  <AnatomyItem name="Details" description="The category, the action, the rule, the reason, and Reveal when allowed" />
+</Anatomy>
+
+<Anatomy title="GuardrailNotice">
+  <AnatomyItem name="Summary" description="A count for each action, most serious first" />
+  <AnatomyItem name="Events" description="Each event with its category, severity, action, rule, reason, and source" />
+</Anatomy>
+
+Installing `guardrail-notice` brings [Button](/docs/components/button) and [Popover](/docs/components/popover) along as registry dependencies.
+
+## Behavior
+
+### Actions
+
+An event has one of four actions. `masked` hid part of the text, `blocked` stopped a request or reply, `flagged` let it through and marked it for review, and `allowed` let it through with a warning. A block is shown in the danger color and a flag or warning in the attention color; a mask stays neutral. Each action also has its own icon and word, so none depends on color.
+
+### Masked spans
+
+`ranges` places each chip by `start` and `end` in the text you pass. `toGuardrailSegments` turns the text and ranges into plain runs and masked spans; ranges are sorted and clamped, and a range that overlaps an earlier one is dropped. The chip shows the event's `placeholder`, then its `categoryLabel`, then its `category`.
+
+### Reveal
+
+Reveal appears only when the event is `revealable` and you handle `onReveal`. While the promise is pending the button reads "Revealing…". When it resolves, the chip shows the original with a dashed outline and the details say the reveal is recorded. Hide puts the chip back. When it rejects, the details say the original could not be shown.
+
+### The notice
+
+The notice starts open when anything was blocked, so a block's reason is never hidden behind a click. Otherwise it starts closed. Pass `open` and `onOpenChange` to control it. With no events it renders nothing.
+
+## Accessibility
+
+Each chip is a button. Its name starts with what was masked, such as "Masked: Email address", so a screen reader never reads the placeholder characters. Its details open in a popover named by the category, which takes focus and closes on <kbd>Escape</kbd>.
+
+The notice's summary is a button with `aria-expanded` that controls the list. Severity is three bars and a word. When an original is revealed, a polite live region says the reveal is recorded.
+
+Every string comes from `labels`.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> on a chip | Open its details |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> on the summary | Show or hide the events |
+| <kbd>Escape</kbd> | Close a chip's details |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/guardrail-notice"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the items it is built from.</Step>
+
+<CliBlock commands={["button", "popover"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="guardrail-notice" title="components/ai/guardrail-notice.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { GuardrailNotice, RedactedText } from "@/components/ai/guardrail-notice"
+
+<p>
+  <RedactedText
+    text={message.text}
+    ranges={message.redactions}
+    events={message.guardrailEvents}
+    onReveal={(event) => revealOriginal(message.id, event.id)}
+  />
+</p>
+<GuardrailNotice events={message.guardrailEvents} />
+```
+
+## Examples
+
+### A blocked request
+
+The notice opens on its own when a request was blocked.
+
+<ComponentPreview name="guardrail-notice-blocked" previewClassName="h-auto min-h-[280px]" />
+
+## API reference
+
+### RedactedText
+
+Accepts native span props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `text` | string | Required | The text as the person may see it, with placeholders where spans are masked. |
+| `ranges` | `GuardrailRange[]` | Required | Where each masked span is, and which event it belongs to. |
+| `events` | `GuardrailEvent[]` | Required | The events the ranges point to. |
+| `onReveal` | `(event, range) => string \| Promise<string>` | None | Fetches the original of a revealable span. |
+| `labels` | `Partial<GuardrailNoticeLabels>` | English | Every string. |
+
+### GuardrailNotice
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `events` | `GuardrailEvent[]` | Required | What the guardrails did. |
+| `defaultOpen` | boolean | Open when anything was blocked | Whether the events start shown. |
+| `open` | boolean | None | Controls whether the events are shown. |
+| `onOpenChange` | `(open: boolean) => void` | None | Called when the summary is pressed. |
+| `labels` | `Partial<GuardrailNoticeLabels>` | English | Every string. |
+
+### Helpers
+
+| Export | Description |
+| --- | --- |
+| `toGuardrailSegments(text, ranges)` | Splits text into plain runs and masked spans. |
+| `summarizeGuardrailEvents(events)` | Counts the events for each action. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `GuardrailEvent` | `id`, `action`, `category`, `rule`, and optional `categoryLabel`, `reason`, `severity`, `source`, `placeholder`, `revealable` |
+| `GuardrailAction` | `"masked"`, `"blocked"`, `"flagged"`, or `"allowed"` |
+| `GuardrailSeverity` | `"low"`, `"medium"`, or `"high"` |
+| `GuardrailRange` | `start`, `end`, and `eventId` |
+| `GuardrailSegment` | A `"text"` run or a `"redaction"` span |

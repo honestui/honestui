@@ -1,0 +1,136 @@
+---
+title: Fine-tune Card
+metaTitle: React Controls for Adjusting Agent Output
+description: Adjust something an agent produced with a compact panel of number, choice, and menu controls.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="fine-tune-card-demo" previewClassName="h-auto min-h-[360px]" />
+
+## Overview
+
+Fine-tune Card is a small panel of controls for adjusting a result without writing another prompt: a chart's size, a reply's length, a tone. You describe the controls as data, and the card reports every value when one changes.
+
+The card holds the values and nothing else. Regenerating or restyling the result is your application's work, in `onValuesChange`.
+
+## Anatomy
+
+<Anatomy title="FineTuneCard">
+  <AnatomyItem name="Header" description="The title, an Edited note, and Reset" />
+  <AnatomyItem name="Number" description="A field that can be typed into, stepped, or scrubbed by its label" />
+  <AnatomyItem name="Segment" description="A small set of choices, one always chosen" />
+  <AnatomyItem name="Select" description="A menu, for longer lists" />
+</Anatomy>
+
+Installing `fine-tune-card` brings [Button](/docs/components/button), [Number Field](/docs/components/number-field), [Select](/docs/components/select), and [Toggle](/docs/components/toggle) along as registry dependencies.
+
+## Behavior
+
+### Numbers
+
+A number field accepts typing, steps with the arrow keys, and scrubs when its label is dragged sideways. `min`, `max`, and `step` are enforced by the field.
+
+### Edited and Reset
+
+When any value differs from `defaultValues`, the header says Edited and Reset becomes available. Reset returns every control to its default and reports the defaults through `onValuesChange`. Reset stays in the header when nothing is edited, marked unavailable with `aria-disabled`, so pressing it never moves focus or changes the header's shape.
+
+## Accessibility
+
+The card is a group named by its title. Its controls are the Honest UI [Number Field](/docs/components/number-field), [Toggle](/docs/components/toggle) group, and [Select](/docs/components/select), each named by its label, and they keep their own keyboard behavior. Scrubbing is an extra for pointer users. Every value can also be typed.
+
+Edited is a polite status, so it is announced when the first change is made.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the controls |
+| <kbd>↑</kbd> and <kbd>↓</kbd> | Step a number field |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Choose a segment, or open the menu |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/fine-tune-card"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "number-field", "select", "toggle"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="fine-tune-card" title="components/ai/fine-tune-card.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { FineTuneCard } from "@/components/ai/fine-tune-card"
+
+<FineTuneCard
+  title="Reply style"
+  defaultValues={{ length: 300, tone: "neutral" }}
+  controls={[
+    { type: "number", id: "length", label: "Max words", min: 50, max: 1000, step: 50 },
+    {
+      type: "select",
+      id: "tone",
+      label: "Tone",
+      options: [
+        { value: "neutral", label: "Neutral" },
+        { value: "formal", label: "Formal" },
+      ],
+    },
+  ]}
+  onValuesChange={(values) => reply.regenerate(values)}
+/>
+```
+
+`onValuesChange` runs on every change, including each step of a scrub. Debounce it if your handler starts a request.
+
+## Examples
+
+### Numbers only
+
+Two number fields. Drag a label to scrub.
+
+<ComponentPreview name="fine-tune-card-numbers" previewClassName="h-auto min-h-[220px]" />
+
+## API reference
+
+### FineTuneCard
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | What is being adjusted. |
+| `controls` | `FineTuneControl[]` | Required | The controls, in order. |
+| `defaultValues` | `FineTuneValues` | Required | The starting value for every control `id`. |
+| `onValuesChange` | `(values: FineTuneValues) => void` | None | Runs with every value when one changes. |
+| `labels` | `Partial<FineTuneCardLabels>` | English | The Edited note and the Reset name. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `FineTuneControl` | `type` of `"number"` (with optional `min`, `max`, `step`), `"segment"`, or `"select"` (each with `options`), plus `id` and `label` |
+| `FineTuneValues` | A number or string for each control `id` |

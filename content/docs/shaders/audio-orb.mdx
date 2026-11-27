@@ -1,0 +1,82 @@
+---
+title: Audio Orb
+description: A glassy orb for voice agents that breathes at rest, follows the person's voice, swirls while thinking, and pulses with the reply.
+---
+
+<ComponentPreview name="audio-orb-demo" playground />
+
+## Overview
+
+Audio Orb gives a voice conversation something to look at while nobody is reading. It is a shaded sphere drawn with WebGL, with a slow flow inside it and a soft halo around it. Each state moves it differently:
+
+| State | What the orb does |
+| --- | --- |
+| `idle` | Breathes slowly. |
+| `listening` | Its surface swells and ripples with `inputLevel`, the person's loudness. |
+| `thinking` | The flow inside it curls and turns, and a glint travels around the rim. |
+| `speaking` | Its core brightens and its outline pulses with `outputLevel`, the agent's loudness. |
+
+The orb shows state; it does not decide it. `state` comes from your voice pipeline, and the levels come from audio you already have. It never asks for the microphone itself.
+
+Audio Orb takes the same `state`, `inputLevel`, and `outputLevel` as the [Voice Orb](/docs/ai/voice-orb) component in Honest AI, so you can swap one for the other. Voice Orb is a monochrome canvas mark that fits small spaces; Audio Orb is the richer, colored version for a voice agent's main screen.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { AudioOrb } from "honestui/shaders"
+
+<div className="size-64">
+  <AudioOrb state={state} inputLevel={micLevel} outputLevel={() => player.level()} />
+</div>
+```
+
+A level is a number from 0 to 1, or a function the orb calls once per frame. A function avoids a React render per audio frame, so prefer it for live audio.
+
+### Analysing a stream
+
+Pass a `MediaStream` and the orb opens its own analyser, reads the loudness and three frequency bands, and closes the analyser when the stream changes or the orb unmounts. Low frequencies swell the orb in broad lobes, the middle adds folds, and highs add a fine ripple. Pass an `AnalyserNode` you own instead, for example one connected to the agent's audio output, and the orb reads it without closing it.
+
+The stream or analyser drives whichever level you leave out. Set `inputLevel` or `outputLevel` yourself to override it.
+
+## Examples
+
+### Microphone
+
+The microphone opens only when the button is pressed, and the orb follows it while listening.
+
+<ComponentPreview name="audio-orb-microphone" />
+
+## Sizing and color
+
+Leave `size` unset and the orb fills its container, centered, with room around the body for the halo. Set `size` for a fixed square in pixels. The background is transparent, so the orb sits on your own surface in light and dark themes.
+
+`colors` takes three hex colors: the highlight, the body, and the deep shade. Keep enough difference between the body and the deep shade for the sphere to read as round.
+
+## Accessibility
+
+The canvas is hidden from assistive technology. By default the orb also renders its state, such as "Listening", in a polite status region, so a screen reader hears the change. Set `announce={false}` when your own text already says it, and change the words with `labels`.
+
+When the user prefers reduced motion, the orb renders one still frame and adds a small mark for each state: a dot at rest, a microphone while listening, three dots while thinking, and bars while speaking, so the state is not shown by motion alone. The orb also stops drawing while it is offscreen or the tab is hidden. Without WebGL2 the container shows only its background, and the status text still updates.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="state" type='"idle" | "listening" | "thinking" | "speaking"' default='"idle"'>What the voice agent is doing.</ApiRow>
+  <ApiRow name="inputLevel" type="number | () => number">The person's loudness, from 0 to 1. Moves the surface while listening.</ApiRow>
+  <ApiRow name="outputLevel" type="number | () => number">The agent's loudness, from 0 to 1. Pulses the orb while speaking.</ApiRow>
+  <ApiRow name="stream" type="MediaStream | null">A stream the orb analyses for any level you leave out. Its analyser closes with the stream.</ApiRow>
+  <ApiRow name="analyser" type="AnalyserNode | null">An analyser you own. It takes precedence over `stream` and is never closed by the orb.</ApiRow>
+  <ApiRow name="colors" type="string[]" default='["#f3f1ff", "#8a94ff", "#272a63"]'>Three hex colors: highlight, body, and deep shade.</ApiRow>
+  <ApiRow name="size" type="number">Diameter in CSS pixels. Unset fills the container.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed multiplier.</ApiRow>
+  <ApiRow name="grain" type="number" default="0.5">Film grain on the surface, from 0 to 1.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="announce" type="boolean" default="true">Renders the state in a status region. Set false when your own text says it.</ApiRow>
+  <ApiRow name="labels" type="Partial<Record<AudioOrbState, string>>">Words for each state in the status region.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="style" type="CSSProperties">Inline styles for the container.</ApiRow>
+</ApiTable>

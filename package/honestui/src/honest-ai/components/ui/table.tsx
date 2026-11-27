@@ -3,25 +3,11 @@ import type { ComponentPropsWithoutRef } from "react"
 
 import { cn } from "../../lib/utils.js"
 
-// Surface encloses the table in a bordered plate with a tinted header band, so
-// it reads as a table on its own. Plain leaves framing to a parent that already
-// draws one, such as Data Grid or Diff Table.
-const surfaceContainer =
-  "rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)] [&_thead]:bg-[var(--hui-color-background-base-secondary)] [&_th]:bg-[var(--hui-color-background-base-secondary)] [&_td]:text-[var(--hui-color-foreground-base-primary)] [&_tbody>tr:last-child>td]:border-b-0"
-
-function Table({
-  className,
-  variant = "plain",
-  ...props
-}: ComponentPropsWithoutRef<"table"> & { variant?: "plain" | "surface" }) {
+function Table({ className, ...props }: ComponentPropsWithoutRef<"table">) {
   return (
     <div
       data-slot="table-container"
-      data-variant={variant}
-      className={cn(
-        "relative w-full overflow-x-auto",
-        variant === "surface" && surfaceContainer
-      )}
+      className="relative w-full overflow-x-auto"
     >
       {/* No table-wide tabular-nums: in some fonts it also widens spaces and
           punctuation to figure width. Apply it to numeric cells only. */}
@@ -54,7 +40,7 @@ function TableBody({ className, ...props }: ComponentPropsWithoutRef<"tbody">) {
   return (
     <tbody
       data-slot="table-body"
-      className={className}
+      className={cn("[&>tr:last-child>*]:border-b-0", className)}
       {...props}
     />
   )
@@ -64,7 +50,10 @@ function TableFooter({ className, ...props }: ComponentPropsWithoutRef<"tfoot">)
   return (
     <tfoot
       data-slot="table-footer"
-      className={className}
+      className={cn(
+        "[&>tr:last-child>*]:border-b-0 [&>tr:first-child>*]:border-t-[0.5px] [&>tr:first-child>*]:border-[var(--hui-color-border-base-primary)] [&>tr>*]:text-[var(--hui-color-foreground-base-primary)] [&>tr>*]:[font-weight:var(--hui-font-weight-medium)]",
+        className
+      )}
       {...props}
     />
   )
@@ -78,7 +67,7 @@ function TableRow({
     <tr
       data-slot="table-row"
       className={cn(
-        "h-[var(--hui-density-row-min-height,auto)] bg-[var(--hui-color-background-base-primary)] [&>[data-slot=table-cell]]:bg-inherit data-[state=selected]:bg-[var(--hui-color-background-accent-primary)] data-[state=selected]:hover:bg-[var(--hui-color-background-accent-primary)] data-[state=selected]:active:bg-[var(--hui-color-background-accent-primary)]",
+        "h-[var(--hui-density-row-min-height,auto)] bg-[var(--hui-color-background-base-primary)] motion-safe:[transition:background-color_var(--hui-duration-fast)_var(--hui-ease-out)] in-data-[slot=table-body]:hover:bg-[var(--hui-color-background-base-secondary)] data-[state=selected]:bg-[var(--hui-color-background-accent-primary)] data-[state=selected]:hover:bg-[var(--hui-color-background-accent-primary)] data-[state=selected]:active:bg-[var(--hui-color-background-accent-primary)]",
         className
       )}
       {...props}
@@ -91,7 +80,7 @@ function TableHead({ className, ...props }: ComponentPropsWithoutRef<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-header-padding-block,var(--hui-space-3))] text-left align-middle text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-style:normal] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [&[scope=row]]:[font-size:var(--hui-font-size-table-row-head,var(--hui-font-size-small))] [&[scope=row]]:[line-height:var(--hui-line-height-table-row-head,var(--hui-line-height-small))]",
+        "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] bg-inherit px-[var(--hui-density-cell-padding-inline,var(--hui-space-3))] py-[var(--hui-density-header-padding-block,var(--hui-space-3))] text-start align-middle text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [font-style:normal] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)] [&[scope=row]]:[font-size:var(--hui-font-size-table-row-head,var(--hui-font-size-small))] [&[scope=row]]:[line-height:var(--hui-line-height-table-row-head,var(--hui-line-height-small))]",
         className
       )}
       {...props}
@@ -124,7 +113,7 @@ function TableSectionHeader({
     <tr
       data-slot="table-section-header"
       className={cn(
-        "bg-[var(--hui-color-background-neutral-primary)] text-left [&>th]:bg-inherit [&>th]:p-[var(--hui-space-3)] [&>th]:text-[var(--hui-color-foreground-base-primary)] [&>th]:[font-size:var(--hui-font-size-small)] [&>th]:[font-style:normal] [&>th]:[font-weight:var(--hui-font-weight-medium)] [&>th]:[letter-spacing:var(--hui-letter-spacing-small)] [&>th]:[line-height:var(--hui-line-height-small)]",
+        "bg-[var(--hui-color-background-neutral-primary)] text-start [&>th]:bg-inherit [&>th]:p-[var(--hui-space-3)] [&>th]:text-[var(--hui-color-foreground-base-primary)] [&>th]:[font-size:var(--hui-font-size-small)] [&>th]:[font-style:normal] [&>th]:[font-weight:var(--hui-font-weight-medium)] [&>th]:[letter-spacing:var(--hui-letter-spacing-small)] [&>th]:[line-height:var(--hui-line-height-small)]",
         className
       )}
       {...props}

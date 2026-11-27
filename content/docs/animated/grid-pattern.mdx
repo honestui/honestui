@@ -1,0 +1,49 @@
+---
+title: Grid Pattern
+description: Fill a background with a grid of lines or dots, with optional cells that glow on and off.
+---
+
+<ComponentPreview name="grid-pattern-demo" />
+
+## Overview
+
+Grid Pattern draws an SVG grid of lines or dots that fills its parent. Set `numSquares` to make that many random cells glow on and fade out in turn, or pass `squares` for cells that stay filled. A `fade` mask softens the grid toward its edges so it sits behind content without a hard frame. The pattern uses `currentColor`, so a text color class such as `text-foreground/15` sets its tint in both themes.
+
+## Installation
+
+<CliBlock commands={["grid-pattern"]} />
+
+## Usage
+
+```tsx
+import { GridPattern } from "@/components/animated/grid-pattern"
+
+<div className="relative overflow-hidden rounded-xl border">
+  <GridPattern numSquares={18} fade="radial" />
+  <div className="relative p-8">Content</div>
+</div>
+```
+
+Use `variant="dots"` with a smaller `width` and `height` for a quieter dot field, and `strokeDasharray` for dashed lines.
+
+## Accessibility
+
+The grid is decorative and hidden from assistive technology. Glowing cells are chosen on the client after mount, so server and client markup match. When reduced motion is requested, cells do not animate and only the static grid and any fixed `squares` are drawn.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="width" type="number" default="40">Cell width in px.</ApiRow>
+  <ApiRow name="height" type="number" default="40">Cell height in px.</ApiRow>
+  <ApiRow name="x" type="number" default="-1">Horizontal offset of the pattern in px.</ApiRow>
+  <ApiRow name="y" type="number" default="-1">Vertical offset of the pattern in px.</ApiRow>
+  <ApiRow name="variant" type='"lines" | "dots"' default='"lines"'>Draws cell outlines or intersection dots.</ApiRow>
+  <ApiRow name="strokeDasharray" type="string">Dash pattern for lines, such as "4 2".</ApiRow>
+  <ApiRow name="dotRadius" type="number" default="1">Dot radius in px.</ApiRow>
+  <ApiRow name="squares" type="Array<[number, number]>">Cells that stay filled, as column and row pairs.</ApiRow>
+  <ApiRow name="numSquares" type="number" default="0">Number of cells that glow on and off at random.</ApiRow>
+  <ApiRow name="maxOpacity" type="number" default="0.35">Peak opacity of a lit cell.</ApiRow>
+  <ApiRow name="duration" type="number" default="4">Seconds for a cell to fade in and out.</ApiRow>
+  <ApiRow name="fade" type='"none" | "radial" | "edges" | "top" | "bottom"' default='"none"'>Masks the grid toward its edges.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the SVG, including its text color.</ApiRow>
+</ApiTable>

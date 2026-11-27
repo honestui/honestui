@@ -26,6 +26,7 @@
         "./registry/default/blocks/analytics-dashboard/lib/dashboard/*"
       ],
       "@/*": ["./*"],
+      "honestui/charts": ["./lib/honestui-charts.ts"],
       "honestui/icons": ["./package/honestui/src/icons.ts"],
       "honestui/logos": ["./package/honestui/src/logos.ts"],
       "honestui/vectors": ["./package/honestui/src/vectors.ts"],

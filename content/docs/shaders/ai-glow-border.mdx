@@ -1,0 +1,62 @@
+---
+title: AI Glow Border
+description: Light the edge of a prompt bar while an assistant thinks and streams, and fade it out when the reply is done.
+---
+
+<ComponentPreview name="ai-glow-border-demo" playground />
+
+## Overview
+
+AI Glow Border draws light along the edge of a rounded element to show what an assistant is doing. It has one prop that matters most, `state`, and each state looks different:
+
+| State | What it shows |
+| --- | --- |
+| `idle` | Nothing. The light fades out and the render loop stops. |
+| `thinking` | A slow comet circles the edge while the model works toward its first token. |
+| `streaming` | The palette flows around the whole edge while text arrives. `intensity` sets how lively it is. |
+| `error` | One flash in the danger color, which fades on its own. |
+
+Moving between states cross-fades, so a reply that goes from thinking to streaming to idle reads as one continuous motion. The light is drawn on a canvas that sits over the element and reaches past its edges by the bloom distance. That canvas ignores pointer events and is positioned absolutely, so the wrapped element keeps its own layout, focus ring, and click targets.
+
+It is made for [Prompt Bar](/docs/ai/prompt-bar), and the [Prompt Bar docs](/docs/ai/prompt-bar#glow-while-a-reply-streams) show it driven by a reply. Use [Pulsing Border](/docs/shaders/pulsing-border) instead when you need one ambient glow without states.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { AiGlowBorder } from "honestui/shaders"
+import { PromptBar } from "@/components/ai/prompt-bar"
+
+<AiGlowBorder state={status} intensity={tokenRate}>
+  <PromptBar onSubmit={send} onStop={isBusy ? stop : undefined} />
+</AiGlowBorder>
+```
+
+Map your chat status onto `state`: `thinking` from the moment a prompt is sent until the first token, `streaming` while tokens arrive, and `idle` when the reply finishes. Set `state="error"` when a request fails or is stopped; the flash plays once, and you can return to `idle` whenever you like.
+
+`radius` defaults to `"auto"`, which reads the border radius of the first rounded element that fills the child. That covers Prompt Bar, whose form wraps a rounded field. Pass a number when the child is not rounded in CSS, for example when it is clipped by a parent.
+
+To make streaming feel connected to the reply, pass a token rate scaled to 0–1 as `intensity`. Ancestors with `overflow: hidden` clip the bloom, so leave room around the element or reduce `bloom`.
+
+## Accessibility
+
+The light is decorative and hidden from assistive technology. It shows the same status your interface already has, so announce that status in text as well, for example in a live region or in the name of the Stop button. Never rely on the light alone, and never show it for work that is not happening.
+
+When the user prefers reduced motion, each state is drawn as one still frame: an even ring for thinking and streaming, and a brief red ring for an error. Browsers without WebGL2 get a still CSS ring that fades between states. The light sits outside the element and inside it only by a few pixels, so it does not reduce the contrast of the element's text, border, or focus ring.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="state" type={'"idle" | "thinking" | "streaming" | "error"'} default='"idle"'>What the assistant is doing. Changing it cross-fades the light.</ApiRow>
+  <ApiRow name="radius" type={'number | "auto"'} default='"auto"'>Corner radius in pixels. `"auto"` reads it from the child.</ApiRow>
+  <ApiRow name="palette" type={'"spectrum" | "mono" | string[]'} default='"spectrum"'>Colors of the light. `"mono"` uses the wrapper's text color, so it follows the theme. An array takes up to 6 colors.</ApiRow>
+  <ApiRow name="intensity" type="number" default="0.6">How lively the streaming light is, from 0 to 1.</ApiRow>
+  <ApiRow name="bloom" type="number" default="18">Reach of the outer glow in pixels.</ApiRow>
+  <ApiRow name="thickness" type="number" default="1.25">Width of the edge line in pixels.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed multiplier.</ApiRow>
+  <ApiRow name="glowClassName" type="string">Classes for the light layer, for example to change its stacking order.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the wrapper. Other div props and a ref are passed through.</ApiRow>
+</ApiTable>

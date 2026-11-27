@@ -398,7 +398,8 @@ function FilterBarDefaultSurface({
     Math.max(controller.orderedDefinitions.length, 1),
     2
   )
-  const defaultPanelMaxWidth = `${4 + panelColumnCount * 20}rem`
+  // Each column fits one 15rem group with a little room; the panel padding and gap make up the rest.
+  const defaultPanelMaxWidth = `${2.5 + panelColumnCount * 16}rem`
   // Clear all trails the last chip instead of floating at the far edge.
   const chipsRow = <FilterBarChipsRow trailing={<FilterBarClearAction />} />
 

@@ -1,0 +1,58 @@
+---
+title: Word Rotate
+description: Cycle words or short phrases in place with a slide, blur, or fade, and glide the width between them.
+---
+
+<ComponentPreview name="word-rotate-demo" />
+
+## Overview
+
+Word Rotate swaps one word or short phrase for the next on a timer. The outgoing word leaves as the next one arrives, and the container glides to the new word's width so the surrounding sentence moves smoothly instead of jumping. Use it in headings to show several audiences, uses, or states without listing them all.
+
+Three transitions are available: `slide` moves words up through a clipped line, `blur` adds a soft focus pull, and `fade` crossfades in place.
+
+## Installation
+
+<CliBlock commands={["word-rotate"]} />
+
+## Usage
+
+```tsx
+import { WordRotate } from "@/components/animated/word-rotate"
+
+<h2>
+  Built for <WordRotate words={["designers", "engineers", "everyone"]} />
+</h2>
+```
+
+Children work as well, which lets each item carry its own styling:
+
+```tsx
+<WordRotate variant="blur" pauseOnHover>
+  <span>Syncing</span>
+  <span>Indexing</span>
+  <span className="text-emerald-600">Ready</span>
+</WordRotate>
+```
+
+## Accessibility
+
+By default, screen readers receive the full list once from a visually hidden copy, and the rotating words are hidden from them, so decorative rotation stays silent. Set `announce` when each change is meaningful, such as a status, to announce the current item through a polite live region instead.
+
+With reduced motion enabled, items crossfade quickly in place without movement or blur, and the width changes instantly. Rotation continues so the content stays available; pass `paused` to stop it.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="words" type="ReactNode[]">Items to cycle through. Children are used when omitted.</ApiRow>
+  <ApiRow name="as" type="ElementType" default='"span"'>Element to render.</ApiRow>
+  <ApiRow name="interval" type="number" default="2400">Milliseconds each item stays.</ApiRow>
+  <ApiRow name="variant" type='"slide" | "blur" | "fade"' default='"slide"'>Transition between items.</ApiRow>
+  <ApiRow name="pauseOnHover" type="boolean" default="false">Holds the current item while the pointer is over it.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Stops cycling.</ApiRow>
+  <ApiRow name="animateWidth" type="boolean" default="true">Glides the width between items of different lengths.</ApiRow>
+  <ApiRow name="announce" type="boolean" default="false">Announces each new item through a polite live region.</ApiRow>
+  <ApiRow name="onIndexChange" type="(index: number) => void">Called when the visible item changes.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element.</ApiRow>
+  <ApiRow name="itemClassName" type="string">Class for each item.</ApiRow>
+</ApiTable>

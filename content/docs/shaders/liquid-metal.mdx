@@ -1,0 +1,48 @@
+---
+title: Liquid Metal
+description: Pour a flowing chrome surface into the container or into a circle or rounded rectangle.
+---
+
+<ComponentPreview name="liquid-metal-demo" playground />
+
+## Overview
+
+Liquid Metal renders a mirror-like surface that slowly flows, reflecting a simple studio of bright and dim light bands. Near the band edges a little color separates, the way light does through polished glass or mercury. Fill a whole container for a hero background, or set `shape` to pour the metal into a circle or rounded rectangle with a transparent outside: the reflections bend along the outline, so the shape reads as a solid, beveled object, which suits a product mark, an avatar ring, or an empty state.
+
+Keep the default near-white `colorTint` for chrome, or tint it warm for gold and copper finishes. Fewer bands with more `softness` read as brushed metal; more bands with low softness read as polished chrome.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { LiquidMetal } from "honestui/shaders"
+
+<div className="h-80 bg-neutral-950">
+  <LiquidMetal className="size-full" shape="circle" shapeScale={0.7} />
+</div>
+```
+
+With `shape="circle"` or `shape="rounded-rect"`, everything outside the shape is transparent, so the container's own background shows through.
+
+## Accessibility
+
+Liquid Metal is decorative: the canvas is hidden from assistive technology, and any text or action belongs in normal HTML beside or above it. The bright bands move across the whole surface, so test the contrast of overlaid text across the full animation, not one frame. The effect pauses while it is offscreen, while the document is hidden, and when the user prefers reduced motion; a still frame is rendered instead. Use `paused` for your own control, and give the container a background that stands in when WebGL is unavailable.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colorTint" type="string" default='"#f4f5f7"'>Color multiplied into the reflections. Near white reads as chrome; warm tints read as gold or copper.</ApiRow>
+  <ApiRow name="repetition" type="number" default="4">Number of reflected light bands across the surface.</ApiRow>
+  <ApiRow name="softness" type="number" default="0.25">Softness of the band edges, from 0 (mirror sharp) to 1 (brushed).</ApiRow>
+  <ApiRow name="distortion" type="number" default="1">How strongly the surface ripples and flows. 0 gives flat, straight bands.</ApiRow>
+  <ApiRow name="dispersion" type="number" default="0.35">Color separation along the band edges.</ApiRow>
+  <ApiRow name="angle" type="number" default="70">Direction of the reflected bands, in degrees.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.6">Animation speed. Changing it never makes the surface jump.</ApiRow>
+  <ApiRow name="shape" type='"none" | "circle" | "rounded-rect"' default='"none"'>Fill the container, or pour the metal into a shape with a transparent outside.</ApiRow>
+  <ApiRow name="shapeScale" type="number" default="0.72">Size of the shape relative to the container, from 0 to 1.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a static frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

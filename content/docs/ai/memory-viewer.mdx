@@ -1,0 +1,149 @@
+---
+title: Memory Viewer
+metaTitle: React Agent Memory Viewer
+description: List what an agent remembers about a person and their work, and let them search, edit, pin, or forget it.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="memory-viewer-demo" previewClassName="h-auto min-h-[620px]" />
+
+## Overview
+
+Memory Viewer shows what an agent has learned and keeps: facts about the person, their preferences, and the projects they work on. Each memory shows where it came from, when it was learned, when it was last used, and how sure the agent is. People can search, correct a memory, pin the ones that matter, and forget the rest.
+
+It shows the memories you pass and calls back on every change. Storing them, and giving them to the agent, is your application's work.
+
+## Anatomy
+
+<Anatomy title="Memory Viewer">
+  <AnatomyItem name="Header" description="The title, the count, search, and a filter for each group" />
+  <AnatomyItem name="Selection bar" description="Select all shown, the selected count, and Forget, when you handle forgetting" />
+  <AnatomyItem name="Group" description="A label and the memories of one kind" />
+  <AnatomyItem name="Memory" description="Its text, source, dates, confidence, and actions" />
+  <AnatomyItem name="Undo bar" description="What was just forgotten, with Undo" />
+</Anatomy>
+
+Installing `memory-viewer` brings [Button](/docs/components/button), [Checkbox](/docs/components/checkbox), [Input](/docs/components/input), and [Textarea](/docs/components/textarea) along as registry dependencies.
+
+## Behavior
+
+### Groups
+
+Memories are grouped by `kind`. The default groups are About you, Preferences, Facts, and Projects. Pass `groups` to rename or reorder them; memories of other kinds are listed after them. Pinned memories lead their group.
+
+### Search and filter
+
+Search matches the memory and its source, and marks the match. The filter shows one group at a time, with a count for each. Both can be controlled with `query` and `filter`.
+
+### Editing
+
+Edit turns the memory into a field. <kbd>Enter</kbd> or Save keeps the change, <kbd>Shift</kbd>+<kbd>Enter</kbd> adds a line, and <kbd>Escape</kbd> or Cancel leaves it as it was. Saving unchanged or empty text calls nothing.
+
+### Forgetting
+
+Forget appears when you pass `onForget`, along with a checkbox on each memory for forgetting several at once. What happens next depends on `onRestore`:
+
+- **With `onRestore`**, forgetting happens at once and an Undo bar stays for eight seconds. Undo calls `onRestore` with the forgotten memories.
+- **Without it**, Forget asks to confirm first, inline, because it cannot be taken back.
+
+### Dates and confidence
+
+Learned dates are absolute and last-used dates are relative, measured from `now` or the reader's clock after the page loads. Confidence below `lowConfidence` (0.5 by default) is marked Unsure.
+
+## Accessibility
+
+The viewer is a region named by its title, and each group is a list named by its label. Every action is named with its memory, such as "Forget: Works from Lisbon". The filter buttons report whether they are pressed. Focus returns to Edit after editing and moves to Undo after forgetting, and the Undo bar is announced.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across search, the filters, the checkboxes, and the actions |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Press the focused control |
+| <kbd>Escape</kbd> | Cancel an edit or a confirmation |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/memory-viewer"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "checkbox", "input", "textarea"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="memory-viewer" title="components/ai/memory-viewer.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { MemoryViewer } from "@/components/ai/memory-viewer"
+
+<MemoryViewer
+  memories={memories}
+  onEdit={(id, content) => memory.update(id, { content })}
+  onForget={(ids) => memory.forget(ids)}
+  onRestore={(items) => memory.restore(items)}
+  onPinnedChange={(id, pinned) => memory.update(id, { pinned })}
+/>
+```
+
+## Examples
+
+### Confirm before forgetting
+
+Without `onRestore`, forgetting asks first. One group is renamed for a team's shared memory, and an unsure memory is marked.
+
+<ComponentPreview name="memory-viewer-confirm" previewClassName="h-auto min-h-[360px]" />
+
+## API reference
+
+### MemoryViewer
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `memories` | `MemoryItem[]` | Required | What the agent remembers. |
+| `groups` | `MemoryGroup[]` | About you, Preferences, Facts, Projects | Group order and names. |
+| `onEdit` | `(id: string, content: string) => void` | None | Passing it shows Edit. |
+| `onForget` | `(ids: string[]) => void` | None | Passing it shows Forget and selection. |
+| `onRestore` | `(memories: MemoryItem[]) => void` | None | Passing it makes forgetting immediate, with Undo. |
+| `onPinnedChange` | `(id: string, pinned: boolean) => void` | None | Passing it shows Pin. |
+| `query` | `string` | None | Controls the search text. |
+| `defaultQuery` | `string` | `""` | The starting search text. |
+| `onQueryChange` | `(query: string) => void` | None | Called as the search changes. |
+| `filter` | `string \| null` | None | Controls the group shown; `null` shows all. |
+| `defaultFilter` | `string \| null` | `null` | The starting group. |
+| `onFilterChange` | `(kind: string \| null) => void` | None | Called when a filter is pressed. |
+| `lowConfidence` | `number` | `0.5` | Confidence below this is marked Unsure. |
+| `now` | `Date` | The reader's clock | The time relative dates are measured from. |
+| `locale` | `string` | The reader's | Formats dates. |
+| `labels` | `Partial<MemoryViewerLabels>` | English | Every visible and announced string. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `MemoryItem` | `id`, `content`, `kind`, `createdAt`, and optional `source`, `lastUsedAt`, `confidence`, and `pinned` |
+| `MemoryGroup` | `kind` and `label` |

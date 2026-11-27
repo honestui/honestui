@@ -2,6 +2,20 @@
 
 Changes to the `honestui` npm package. Entries marked unreleased describe work prepared for the next publication.
 
+## 0.6.0 - 2026-11-26
+
+- Honest AI, conversation: Prompt Suggestions, Chat Welcome, Message Usage (tokens and cost for each message), Guardrail Notice (redacted or blocked content), and Input Request (a form the agent asks a person to fill in before it continues).
+- Honest AI, agent activity: Plan, Queue, Checkpoint, Trace Waterfall (timed spans for model calls, tools, and retrieval), Agent Handoff, and Memory Viewer.
+- Honest AI, developer views: Web Preview, Terminal Output, File Tree, Stack Trace, Test Results, and Eval Compare (side-by-side model or prompt runs with scores).
+- Honest AI, voice: Voice Input, Voice Orb, Live Waveform, Audio Player, and Transcript Viewer.
+- Honest AI: Context Meter exports `formatTokenCount` and `TabularDigits`, and Approval Card exports its frame parts for reuse. File Tree's change type is named `FileTreeChange`, so it no longer clashes with another export in `honestui/ai`. Chat Thread limits `emptyMessage` to 32 characters per line only when it is a string.
+- Charts: honesty marks for line, area, bar, combo, and scatter charts. `<Chart.PartialPeriod />` draws an open day, week, or month as in progress. `<Chart.Band />` draws a confidence band. `gaps` on the chart root breaks the line where nothing was recorded, and `fillMissingRows` inserts an empty row for each missing time step. A value axis whose `min` skips zero is flagged, and `sampleSizeKey` labels small samples. Absent values are never drawn as zero. Each mark adds a key entry, a tooltip note, and a sentence to the default `ariaLabel`. Reword or translate them with `honestyText` (`ChartHonestyText`).
+- Charts: `variant="grainient"` on area charts fills the area with a grain gradient (`GrainientFillOptions`).
+- Shaders: `LiquidGlass` (with `createLiquidGlassMap`), `AiGlowBorder` for a prompt or panel that is working, and `AudioOrb`, which reacts to a live audio level.
+- Product components, from the registry: CSV Column Mapper, Query Builder, Saved Views, Conflict Resolver, Permission Matrix, Schedule Builder, Secret Row, Hotkey Recorder, Undoable Action, Audit Log, and Onboarding Checklist. Paste Table accepts `defaultRows`.
+- Filter Bar: the filter panel is narrower, so its columns no longer leave wide gaps.
+- Animated: the Spotlight glow fades out toward its edges, so no hard-edged glow shows behind the cards.
+
 ## 0.4.0 - 2026-11-12
 
 - Breaking: the default sans family is Geist. `--font-love-sans` is renamed to `--font-geist-sans` and `--hui-font-love-sans` to `--hui-font-sans`. If you set either variable, rename it; the old names are no longer read. The package still ships no font files: load Geist yourself or point `--font-geist-sans` at your own typeface.

@@ -1,0 +1,65 @@
+---
+title: Confetti
+description: Fire a burst of confetti from a button, an element, or any point, drawn on a temporary canvas overlay.
+---
+
+<ComponentPreview name="confetti-demo" />
+
+## Overview
+
+Confetti marks a real accomplishment: a project shipped, a first payment received, a long task finished. Call `confetti()` from any event handler, use the `useConfetti` hook to burst from an element you hold a ref to, or drop in `ConfettiButton`, which bursts from its own center when clicked.
+
+Pieces are drawn on one shared canvas that covers the viewport. The canvas is created on the first burst and removed as soon as the last piece has fallen, so nothing stays on the page between celebrations. The motion is measured in 60fps frames, so it looks the same on high refresh rate screens. `confetti()` returns a promise that resolves when the pieces are gone.
+
+## Installation
+
+<CliBlock commands={["confetti"]} />
+
+## Usage
+
+```tsx
+import { confetti, ConfettiButton, useConfetti } from "@/components/animated/confetti"
+
+// A button that bursts from itself
+<ConfettiButton>Celebrate</ConfettiButton>
+
+// Any element
+const [ref, fire] = useConfetti<HTMLDivElement>({ particleCount: 60 })
+<div ref={ref} onClick={() => fire()}>Done</div>
+
+// Any point, for example both sides of the screen
+confetti({ origin: { x: 0, y: window.innerHeight * 0.7 }, angle: 60 })
+confetti({ origin: { x: window.innerWidth, y: window.innerHeight * 0.7 }, angle: 120 })
+```
+
+Colors accept any canvas color string. A CSS variable such as `var(--primary)` is resolved against the document when the burst fires.
+
+## Accessibility
+
+The canvas is hidden from assistive technology and never receives pointer events, so it cannot block the interface. Pair a burst with a visible message, because the confetti itself says nothing. When the user prefers reduced motion, bursts are skipped by default; set `disableForReducedMotion` to `false` only when the celebration carries meaning that is not shown elsewhere.
+
+Use confetti rarely. A burst on every save turns into noise and slows the page.
+
+## API Reference
+
+`confetti(options)` and the function returned by `useConfetti` accept:
+
+<ApiTable>
+  <ApiRow name="element" type="Element | null">Element to burst from, using its center. Takes precedence over `origin`.</ApiRow>
+  <ApiRow name="origin" type="{ x: number; y: number }">Viewport point in CSS px. Defaults to the center of the viewport.</ApiRow>
+  <ApiRow name="particleCount" type="number" default="80">Number of pieces.</ApiRow>
+  <ApiRow name="angle" type="number" default="90">Launch direction in degrees: 90 is straight up.</ApiRow>
+  <ApiRow name="spread" type="number" default="70">Width of the launch cone in degrees.</ApiRow>
+  <ApiRow name="startVelocity" type="number" default="11">Launch speed.</ApiRow>
+  <ApiRow name="gravity" type="number" default="0.32">Downward pull.</ApiRow>
+  <ApiRow name="decay" type="number" default="0.93">Share of velocity kept each frame. Lower values stop pieces sooner.</ApiRow>
+  <ApiRow name="drift" type="number" default="0">Sideways wind.</ApiRow>
+  <ApiRow name="ticks" type="number" default="170">Lifetime of each piece in 60fps frames.</ApiRow>
+  <ApiRow name="colors" type="string[]">Piece colors.</ApiRow>
+  <ApiRow name="shapes" type='("square" | "circle" | "strip")[]'>Piece shapes, picked at random.</ApiRow>
+  <ApiRow name="scalar" type="number" default="1">Size multiplier.</ApiRow>
+  <ApiRow name="disableForReducedMotion" type="boolean" default="true">Skip the burst under reduced motion.</ApiRow>
+  <ApiRow name="zIndex" type="number" default="100">z-index of the overlay canvas.</ApiRow>
+</ApiTable>
+
+`useConfetti(defaults)` returns `[ref, fire]`. `ConfettiButton` accepts every `button` prop plus `options`.

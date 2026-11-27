@@ -1,0 +1,125 @@
+---
+title: Loading State
+metaTitle: React Loading State with Elapsed Time
+description: Show that long-running work is in progress, with a label and the time elapsed.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="loading-state-demo" previewClassName="h-auto min-h-[140px]" />
+
+## Overview
+
+Loading State is one line: a small animated mark, a label that says what is in progress, and how long it has been running. Use it when work takes long enough that a person may wonder whether anything is happening.
+
+Render it while the work runs and remove it when the work ends. Loading State does not know when your work finishes and reports no progress of its own. The elapsed time is real: it counts from `startedAt`, or from when the component mounted.
+
+Use [Thinking State](/docs/ai/thinking-state) instead when you have steps to show.
+
+## Anatomy
+
+<Anatomy title="LoadingState">
+  <AnatomyItem name="Mark" description="A compact decorative pattern of pulsing cells" />
+  <AnatomyItem name="Label" description="What is in progress" />
+  <AnatomyItem name="Elapsed" description="Seconds, then minutes and seconds, since the work began" />
+</Anatomy>
+
+Installing `loading-state` brings [Text Shimmer](/docs/animated/text-shimmer) along as a registry dependency.
+
+## Behavior
+
+### Patterns
+
+All patterns occupy the same space and use the same foreground color. The pattern is decorative and reports no progress.
+
+Pick one or two patterns for a product and use them consistently, so the same kind of work always looks the same:
+
+- `drive` for general work, such as building, writing, or running a tool. It is the default.
+- `orbit` for waiting on something outside the product, such as a connection, a queue, or another service.
+- `pulse` where space is tight, such as inline in a row or a button.
+
+The other patterns are alternatives to these for interfaces that need a different form.
+
+| Pattern | Form and motion |
+| --- | --- |
+| `drive` | Nine rounded squares with a wave across the grid. |
+| `dots` | The same wave, with round cells. |
+| `orbit` | A pulse around the grid's edge, with a dim center. |
+| `diagonal` | Nine rounded squares with a diagonal brightness sweep. |
+| `diamond` | Five rounded squares: a pulse around four points and through the center. |
+| `square` | Eight rounded squares around an empty center, with a traveling pulse. |
+| `pulse` | Three rounded squares that brighten and gently scale in sequence. |
+
+### Elapsed time
+
+The time updates once a second and reads as `42s`, then `1m 12s`. Pass `startedAt` when the work began before the component mounted, for example after a page reload. Set `showElapsed` to `false` to leave it out.
+
+## Accessibility
+
+The label is a polite status, so it is announced when the component appears and when the label changes. The elapsed time is hidden from screen readers, because a status that changes every second would be read every second. The mark is decorative.
+
+With reduced motion, the cells stay dim and the label stops shimmering. The elapsed time still updates.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/loading-state"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["text-shimmer"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="loading-state" title="components/ai/loading-state.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { LoadingState } from "@/components/ai/loading-state"
+
+{run.isPending && <LoadingState label="Building the export" startedAt={run.startedAt} />}
+```
+
+Write the label as the work, not as "Loading". "Building the export" tells the person what they are waiting for.
+
+## Examples
+
+### Patterns
+
+The seven patterns, without the elapsed time.
+
+<ComponentPreview name="loading-state-patterns" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### LoadingState
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | What is in progress. |
+| `pattern` | `"drive" \| "dots" \| "orbit" \| "diagonal" \| "diamond" \| "square" \| "pulse"` | `"drive"` | The mark's form and animation. |
+| `showElapsed` | boolean | `true` | Shows the time since `startedAt`. |
+| `startedAt` | `number \| Date` | Mount time | When the work began. |

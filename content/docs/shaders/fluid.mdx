@@ -1,0 +1,58 @@
+---
+title: Fluid
+description: Stir colored dye through a real-time fluid simulation with the pointer, or let it drift on its own.
+---
+
+<ComponentPreview name="fluid-demo" playground />
+
+## Overview
+
+Fluid runs a stable-fluids simulation on the GPU. Each frame it adds splats of dye and force where the pointer moved, keeps small eddies alive with vorticity, solves for pressure so the flow stays incompressible, and carries both the velocity and the dye along the flow. The result reacts to every pointer movement and settles back to calm when left alone.
+
+Use it for an expressive hero, an empty state, or a playful moment where interaction is the point. Its cost is higher than a static gradient, so measure on representative devices and lower `simResolution`, `dyeResolution`, or `pressureIterations` if frames drop.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Fluid } from "honestui/shaders"
+
+<div className="relative h-96 overflow-hidden rounded-xl bg-neutral-950">
+  <Fluid className="absolute inset-0" colors={["#4f8bff", "#ff5fb4"]} />
+  <div className="relative">{/* content */}</div>
+</div>
+```
+
+By default the simulation listens to pointer movement over its own container. When content is layered above the simulation, set `listenOnWindow` so pointer movement over that content still stirs the fluid beneath it. Only movement within the container's bounds splats. Leave `colors` empty for a slowly turning rainbow, and set `transparent` to draw dye over whatever is behind the canvas.
+
+## Accessibility
+
+Fluid is decorative and hidden from assistive technology. Nothing it shows should carry meaning, and content placed over it needs its own background or enough contrast against every color the dye can reach.
+
+The simulation pauses while it is offscreen or the tab is hidden. When the user prefers reduced motion, or `paused` is set, it renders a still image and ignores the pointer. Without WebGL2 or float render targets it shows a static gradient in the first two colors.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colors" type="string[]" default="[]">Hex dye colors used in turn. Empty gives a turning rainbow.</ApiRow>
+  <ApiRow name="colorIntensity" type="number" default="0.15">Brightness of each splat's dye.</ApiRow>
+  <ApiRow name="densityDissipation" type="number" default="1">How quickly the dye fades. 0 keeps it forever.</ApiRow>
+  <ApiRow name="velocityDissipation" type="number" default="0.2">How quickly motion settles.</ApiRow>
+  <ApiRow name="pressure" type="number" default="0.8">How much pressure carries over between frames, from 0 to 1.</ApiRow>
+  <ApiRow name="pressureIterations" type="number" default="20">Pressure solver passes per frame.</ApiRow>
+  <ApiRow name="curl" type="number" default="28">Strength of the swirl that keeps small eddies alive.</ApiRow>
+  <ApiRow name="splatRadius" type="number" default="0.22">Splat radius, from 0.01 to 1.</ApiRow>
+  <ApiRow name="splatForce" type="number" default="6000">How hard pointer movement pushes the fluid.</ApiRow>
+  <ApiRow name="simResolution" type="number" default="128">Velocity grid size along the shorter side.</ApiRow>
+  <ApiRow name="dyeResolution" type="number" default="1024">Dye grid size along the shorter side.</ApiRow>
+  <ApiRow name="shading" type="boolean" default="true">Lights the dye from its gradient so it reads as a surface.</ApiRow>
+  <ApiRow name="transparent" type="boolean" default="false">Draws dye over a transparent canvas.</ApiRow>
+  <ApiRow name="backgroundColor" type="string" default='"#0b0d12"'>Canvas color when not transparent.</ApiRow>
+  <ApiRow name="autoSplats" type="boolean" default="true">Stirs the fluid on its own while nobody is interacting.</ApiRow>
+  <ApiRow name="listenOnWindow" type="boolean" default="false">Listens for pointer movement on the whole window.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Freezes the simulation on its current frame.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

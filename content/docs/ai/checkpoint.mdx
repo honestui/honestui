@@ -1,0 +1,145 @@
+---
+title: Checkpoint
+metaTitle: React Checkpoint Divider with Restore and Confirm
+description: Mark a point in a conversation the work can return to, and restore it after a confirm step.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="checkpoint-demo" previewClassName="h-auto min-h-[300px]" />
+
+## Overview
+
+Checkpoint marks a point in an agent's work that can be put back: the files, the plan, or whatever your app saves. It sits between messages as a hairline with a label and a time. Restore asks first, then shows Restoring and Restored.
+
+`CheckpointList` shows several checkpoints in one panel, with the one the work is at now marked Current.
+
+Saving and restoring are your app's work. The component shows the state and calls your handler.
+
+## Anatomy
+
+<Anatomy title="Checkpoint">
+  <AnatomyItem name="Label" description="What the checkpoint marks, and when it was made" />
+  <AnatomyItem name="Divider" description="A hairline that sets it apart from the messages around it" />
+  <AnatomyItem name="Restore" description="A quiet button, when you handle restoring" />
+  <AnatomyItem name="Confirm" description="The question, Cancel, and Restore, shown in place of the button" />
+</Anatomy>
+
+<Anatomy title="CheckpointList">
+  <AnatomyItem name="Title" description="A heading for the panel" />
+  <AnatomyItem name="Item" description="A dot on a rail, the label, the time and a note, and Restore or Current" />
+</Anatomy>
+
+Installing `checkpoint` brings [Button](/docs/components/button) along as a registry dependency.
+
+## Behavior
+
+### Confirm step
+
+Restore replaces itself with "Discard the changes made after this?", Cancel, and Restore. Focus moves to the confirming Restore, and back to the first one on Cancel or <kbd>Escape</kbd>. Nothing is called until the person confirms.
+
+### Restoring and restored
+
+If `onRestore` returns a promise, the checkpoint shows Restoring until it settles. To control the state yourself, pass `status`: `"available"`, `"restoring"`, or `"restored"`. A status you pass wins over the promise.
+
+### List
+
+`CheckpointList` calls `onRestore` with the checkpoint's `id`. The checkpoint matching `currentId` shows Current instead of Restore.
+
+## Accessibility
+
+Each checkpoint is a group named by its label. Restore is named with its checkpoint, such as "Restore: Before the rounding refactor", and the confirm step is a group with the same name. Times use the time element; pass `dateTime` for a machine-readable value. The icon and divider are decorative.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to Restore, or across Cancel and Restore while confirming |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Start or confirm a restore |
+| <kbd>Escape</kbd> | Cancel the confirm step |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/checkpoint"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="checkpoint" title="components/ai/checkpoint.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Checkpoint } from "@/components/ai/checkpoint"
+
+<Checkpoint
+  label={checkpoint.title}
+  time={formatTime(checkpoint.createdAt)}
+  dateTime={checkpoint.createdAt}
+  onRestore={() => workspace.restore(checkpoint.id)}
+/>
+```
+
+## Examples
+
+### List
+
+Several checkpoints in a panel. Restoring one makes it Current.
+
+<ComponentPreview name="checkpoint-list" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### Checkpoint
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | Required | What the checkpoint marks. |
+| `time` | `string` | None | When it was made, already formatted. |
+| `dateTime` | `string` | None | A machine-readable time for the time element. |
+| `onRestore` | `() => void \| Promise<unknown>` | None | Passing it shows Restore. A promise shows Restoring until it settles. |
+| `status` | `"available" \| "restoring" \| "restored"` | From the promise | The state to show. |
+| `labels` | `Partial<CheckpointLabels>` | English | Button text, the confirm question, and state words. |
+
+### CheckpointList
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checkpoints` | `CheckpointItem[]` | Required | The checkpoints, in the order to show them. |
+| `currentId` | `string` | None | The checkpoint the work is at now. |
+| `onRestore` | `(id: string) => void \| Promise<unknown>` | None | Passing it shows Restore on every other checkpoint. |
+| `title` | `ReactNode` | `"Checkpoints"` | The panel's heading. |
+| `labels` | `Partial<CheckpointLabels>` | English | As for Checkpoint. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `CheckpointItem` | `id`, `label`, and optional `time`, `dateTime`, `description`, `status` |
+| `CheckpointStatus` | `"available"`, `"restoring"`, or `"restored"` |

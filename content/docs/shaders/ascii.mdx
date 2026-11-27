@@ -1,0 +1,72 @@
+---
+title: ASCII
+description: Render an image or a procedural field as a grid of text glyphs drawn from a configurable character ramp.
+---
+
+<ComponentPreview name="ascii-demo" playground />
+
+## Overview
+
+ASCII redraws its source as characters. The canvas is divided into monospace cells; each cell samples the source once and picks a glyph from the `characters` ramp by brightness, so dense glyphs carry the ink and sparse ones let the background through. The glyphs come from a small atlas drawn at runtime with your font, so any characters work: classic ramps, block elements, Braille, or a word repeated.
+
+Glyphs ink the bright areas when the text is lighter than the background (the terminal look) and the shadows when the text is darker (the printed look). `colorMode="source"` tints each glyph with the color it replaces.
+
+Without `src`, ASCII renders a slow procedural field, useful as a terminal-style background.
+
+The playground uses free Unsplash photographs by [Marc Wieland](https://unsplash.com/photos/sunset-over-a-serene-mountain-lake-1Kcgpq1ap9E) and [Martin Péchy](https://unsplash.com/photos/blue-and-orange-building-faPvxns9O70).
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+### Procedural background
+
+```tsx
+import { Ascii } from "honestui/shaders"
+
+<Ascii className="h-80 rounded-xl" cellSize={14} color="#9ae6b4" backgroundColor="#06120b" />
+```
+
+### Image
+
+```tsx
+<Ascii
+  alt="An alpine lake reflecting an orange sunset between dark mountain ridges."
+  className="h-80 rounded-xl"
+  colorMode="source"
+  characters=" .,:;i1tfLCG08@"
+  src="https://images.unsplash.com/photo-1776348568867-24146d18b736?auto=format&fit=crop&w=1600&q=85"
+/>
+```
+
+Order `characters` from the lightest to the densest glyph; the first is usually a space. Remote image hosts must allow cross-origin use so WebGL can read the pixels. Smaller cells show more of the picture but read less as text; around 10 to 16 pixels keeps both.
+
+## Accessibility
+
+The glyphs are pixels on a canvas, not text: screen readers, search, and copy and paste do not see them. Never use ASCII to show words a reader needs; put real text in a separate layer. In image mode, write `alt` text for the image's purpose, or an empty string when it is decorative. The original image shows until the canvas is ready and remains in the accessibility tree afterwards.
+
+The procedural field moves slowly and stops when the user prefers reduced motion, while the element is offscreen, and while the page is hidden.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="src" type="string">Image to render as text. Omit it to render the procedural field.</ApiRow>
+  <ApiRow name="alt" type="string">Alternative text for the image. Required with `src`; use an empty string for decorative images.</ApiRow>
+  <ApiRow name="characters" type="string" default='" .:-=+*#%@"'>Glyph ramp from lightest to densest.</ApiRow>
+  <ApiRow name="cellSize" type="number" default="12">Height of one character cell in CSS pixels. Width follows the font.</ApiRow>
+  <ApiRow name="fontFamily" type="string" default="ui-monospace stack">Font used to draw the glyphs.</ApiRow>
+  <ApiRow name="fontWeight" type="number | string" default="500">Font weight used to draw the glyphs.</ApiRow>
+  <ApiRow name="colorMode" type='"mono" | "source"' default='"mono"'>One glyph color, or each glyph in the source color.</ApiRow>
+  <ApiRow name="color" type="string" default='"#e8ecf4"'>Glyph color in mono mode. Any CSS color.</ApiRow>
+  <ApiRow name="backgroundColor" type="string" default='"#0b0d12"'>Background color. Any CSS color.</ApiRow>
+  <ApiRow name="contrast" type="number" default="1.35">Tone contrast applied before choosing glyphs.</ApiRow>
+  <ApiRow name="brightness" type="number" default="0">Brightness offset from -1 to 1 applied before choosing glyphs.</ApiRow>
+  <ApiRow name="animated" type="boolean" default="true">Animates the procedural field. Images are always still.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.6">Speed of the procedural field.</ApiRow>
+  <ApiRow name="sourceColors" type="[string, string, string]">Three colors of the procedural field.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders one still frame.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content layered above the effect.</ApiRow>
+</ApiTable>

@@ -1,13 +1,15 @@
 ---
 title: Number Ticker
-description: Roll changing digits independently while preserving place value.
+description: Roll changing digits independently while preserving place value, with decimals, signs, and Intl formatting.
 ---
 
 <ComponentPreview name="number-ticker-demo" />
 
 ## Overview
 
-Number Ticker animates each numeric place without re-keying the rest of the value. Use it for metrics whose changes matter, such as balances, counts, scores, or progress totals.
+Number Ticker animates each numeric place without re-keying the rest of the value, like an odometer. Use it for metrics whose changes matter, such as balances, counts, scores, prices, or progress totals.
+
+Decimal places roll independently like whole ones. Negative values show a minus sign that slides open and closed as the value crosses zero, so the digits never shift one place sideways.
 
 ## Installation
 
@@ -21,9 +23,29 @@ import { NumberTicker } from "@/components/animated/number-ticker"
 <NumberTicker value={8360} prefix="$" locale />
 ```
 
+Decimals, negative values, and Intl formats:
+
+```tsx
+<NumberTicker value={-3.15} decimals={2} suffix="%" />
+
+<NumberTicker
+  value={1284000}
+  locales="en-US"
+  formatOptions={{ notation: "compact", maximumFractionDigits: 1 }}
+/>
+```
+
+## Examples
+
+### Decimals, signs, and compact notation
+
+Step a percentage across zero and grow a compact count. The sign fades in and out, and the fractional places roll with the whole ones.
+
+<ComponentPreview name="number-ticker-sliding-demo" />
+
 ## Accessibility
 
-Assistive technology receives the complete formatted value instead of individual visual digits. Keep updates at a readable pace and avoid using rapid rolls for critical live data.
+Assistive technology receives the complete formatted value, including the sign, instead of individual visual digits. Keep updates at a readable pace and avoid using rapid rolls for critical live data.
 
 ## API Reference
 
@@ -35,5 +57,10 @@ Assistive technology receives the complete formatted value instead of individual
   <ApiRow name="prefix" type="string">Text before the value.</ApiRow>
   <ApiRow name="suffix" type="string">Text after the value.</ApiRow>
   <ApiRow name="locale" type="boolean">Adds locale group separators.</ApiRow>
+  <ApiRow name="decimals" type="number" default="0">Fixed decimal places. The value is rounded to this many places, and each place rolls independently.</ApiRow>
+  <ApiRow name="formatOptions" type="Intl.NumberFormatOptions">Intl options such as `{ notation: "compact" }`. Applied to the absolute value; the sign is drawn separately.</ApiRow>
+  <ApiRow name="locales" type="string | string[]">Locale for `locale` and `formatOptions`. Set it to keep server and client output identical.</ApiRow>
+  <ApiRow name="format" type="(value: number) => string">Custom formatter for the absolute value. Client-only.</ApiRow>
+  <ApiRow name="startOnView" type="boolean" default="true">Rolls in once the element scrolls into view.</ApiRow>
   <ApiRow name="blur" type="boolean" default="false">Adds a small blur during rolls.</ApiRow>
 </ApiTable>

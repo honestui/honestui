@@ -1,0 +1,179 @@
+---
+title: Thinking State
+metaTitle: React Agent Thinking State with Reasoning and Sources
+description: Show that an agent is working, and keep its steps, reasoning, searches, and sources one press away.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="thinking-state-demo" previewClassName="h-auto min-h-[260px]" />
+
+## Overview
+
+Thinking State is a one-line header that says what the agent is doing, with a trace behind it. While the agent works, the header shimmers and the trace is open so new rows are visible as they arrive. When the work settles, the trace closes and the header becomes a quiet summary that still opens on request.
+
+Take a question that needs a web search. The header reads "Searching the web" while the query and the sources appear under it. When the search ends, you change the label to "Read 2 sources" and set the status to done. The trace closes, and the person can reopen it to see what was read.
+
+Thinking State does not run anything and does not keep time. You pass the status, the label, and the rows. Use [Tool Chips](/docs/ai/tool-chips) instead when the run is mostly tool calls with output and file changes.
+
+## Anatomy
+
+<Anatomy title="ThinkingState">
+  <AnatomyItem name="ThinkingState" description="The header and the disclosure that holds the trace">
+    <AnatomyItem name="ThinkingStep" description="One step of work, with a running, done, or failed mark" />
+    <AnatomyItem name="ThinkingText" description="A paragraph of reasoning" />
+    <AnatomyItem name="ThinkingQuery" description="A search the agent ran" />
+    <AnatomyItem name="ThinkingSource" description="A page the agent read, as a link" />
+  </AnatomyItem>
+</Anatomy>
+
+The four row types can be mixed in any order. Installing `thinking-state` brings [Collapsible](/docs/components/collapsible) and [Text Shimmer](/docs/animated/text-shimmer) along as registry dependencies.
+
+## Behavior
+
+### Status
+
+`status` is `running`, `done`, or `error`. Running shimmers the label. Done sets it in the secondary text color. Error shows an alert icon in the danger color and sets the label in the primary text color, so it stays readable.
+
+### Open and closed
+
+Without `open` or `defaultOpen`, the trace is open while the status is running and closed otherwise. Once the person opens or closes it, their choice stays, whatever the status does next. Pass `defaultOpen` to choose the starting state yourself, or `open` and `onOpenChange` to control it.
+
+With no children, the header is plain text with no disclosure.
+
+### New rows
+
+A row that is added while the trace is open fades in. Rows keep their position, so nothing above the new row moves.
+
+## Accessibility
+
+The header is a button that reports whether the trace is expanded. The trace is a list, and each row is a list item.
+
+When `label` changes, the new label is announced through a polite status region. The first label is not announced, because it is already in the reading order.
+
+Each step ends with words for its status, read only by screen readers: "In progress", "Done", or "Failed". Pass `statusLabel` to change them. The query row is read with "Searched for" before it. Icons are decorative.
+
+With reduced motion, the shimmer stops, the spinner does not rotate, and rows appear without fading.
+
+`ThinkingSource` renders a link and passes other anchor props through. If you open sources in a new tab, say so in the link's name.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to the header, then to each source link in an open trace |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the trace |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/thinking-state"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["collapsible", "text-shimmer"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="thinking-state" title="components/ai/thinking-state.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Set the status and the label from your agent's state, and render one row for each event you have received:
+
+```tsx
+import { ThinkingState, ThinkingStep } from "@/components/ai/thinking-state"
+
+<ThinkingState
+  status={run.isFinished ? "done" : "running"}
+  label={run.isFinished ? `Finished ${run.steps.length} steps` : "Thinking"}
+>
+  {run.steps.map((step) => (
+    <ThinkingStep key={step.id} status={step.status} detail={step.detail}>
+      {step.title}
+    </ThinkingStep>
+  ))}
+</ThinkingState>
+```
+
+Write the settled label as a result. "Read 2 sources" tells the person more than "Done".
+
+## Examples
+
+### Search and sources
+
+A settled search, open from the start. The sources are real links.
+
+<ComponentPreview name="thinking-state-search" previewClassName="h-auto min-h-[240px]" />
+
+### A failed run
+
+Set the status to `error` on the header and on the step that failed, and say what happened in the label.
+
+<ComponentPreview name="thinking-state-error" previewClassName="h-auto min-h-[180px]" />
+
+## API reference
+
+### ThinkingState
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `status` | `"running" \| "done" \| "error"` | Required | What the agent is doing now. |
+| `label` | string | Required | The header text. Announced when it changes. |
+| `icon` | ReactNode | None | An icon before the label. The error status always shows the alert icon. |
+| `open` | boolean | None | Controls whether the trace is shown. |
+| `defaultOpen` | boolean | Follows `status` | The initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | None | Runs when the person opens or closes the trace. |
+
+### ThinkingStep
+
+Accepts native li props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `status` | `"running" \| "done" \| "error"` | `"done"` | The mark shown before the step. |
+| `detail` | ReactNode | None | Secondary text after the step. |
+| `detailIsCode` | boolean | `false` | Sets `detail` in the monospace face. |
+| `statusLabel` | string | English | The words read for the status. |
+
+### ThinkingText
+
+Accepts native li props. Its children are the paragraph.
+
+### ThinkingQuery
+
+Accepts native li props beyond those listed. Its children are the query.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `prefix` | string | `"Searched for"` | Read before the query by screen readers. |
+
+### ThinkingSource
+
+Accepts native anchor props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `href` | string | Required | The page that was read. |
+| `title` | ReactNode | Required | The page or site name. |
+| `domain` | string | None | The host, shown after the title. |

@@ -1,0 +1,134 @@
+---
+title: Records Table
+metaTitle: React Records Table for Agent Results
+description: Show records in a table where some columns are filled in by an agent, one cell at a time.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="records-table-demo" previewClassName="h-auto min-h-[360px]" />
+
+## Overview
+
+Records Table is a table in which some columns are generated: an agent reads each record and fills in a summary, a category, a score. Each generated cell shows where it stands, and a line above the table counts how many are done.
+
+It shows the state you pass for every cell. Running the agent, and deciding the order, are your application's work.
+
+Use [Data Grid](/docs/product/data-grid) when people need to sort, resize, or edit columns. The Beautiful UI original also had column settings and resizing, which Data Grid already covers.
+
+## Anatomy
+
+<Anatomy title="RecordsTable">
+  <AnatomyItem name="Columns" description="Ordinary columns, and generated columns marked Generated in the header" />
+  <AnatomyItem name="Generated cell" description="Queued, working, a value, or an error with Try again" />
+  <AnatomyItem name="Progress" description="A count of generated cells that are done" />
+</Anatomy>
+
+Installing `records-table` brings [Button](/docs/components/button) and [Table](/docs/components/table) along as registry dependencies.
+
+## Behavior
+
+### Generated cells
+
+A generated cell is `queued`, `running`, `done` with a value, or `error` with an optional message. A cell with no state reads as queued.
+
+### Trying again
+
+Pass `onRetry` to show Try again in every failed cell. It calls your handler with the row and column ids. The button sits inside the line, so a failed cell does not make its row taller.
+
+### Progress
+
+The line above the table counts done cells across every generated column. It is left out when the table has no generated columns.
+
+## Accessibility
+
+The table uses native markup with column headers and is named by `label`. A generated column's header reads its name, then "Generated", set apart by a dot and a lighter weight. Queued, working, and failed are words in the cell, so no state depends on an icon or a color.
+
+Try again is named with its column and row, such as "Try again: Payment summary for Harbor Paper Co.". The progress line is a polite status, so each completed cell is announced as a count, not as a re-reading of the table. With reduced motion, the working icon does not rotate.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the Try again buttons |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Try the focused cell again |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/records-table"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "table"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="records-table" title="components/ai/records-table.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { RecordsTable } from "@/components/ai/records-table"
+
+<RecordsTable
+  label="Suppliers"
+  columns={[
+    { id: "name", header: "Supplier" },
+    { id: "summary", header: "Payment summary", isGenerated: true },
+  ]}
+  rows={suppliers.map((supplier) => ({
+    id: supplier.id,
+    name: supplier.name,
+    cells: { name: supplier.name },
+    generated: { summary: enrichment.cellFor(supplier.id) },
+  }))}
+  onRetry={(rowId, columnId) => enrichment.retry(rowId, columnId)}
+/>
+```
+
+## Examples
+
+### All cells done
+
+A settled table. The progress line reads 2 of 2.
+
+<ComponentPreview name="records-table-static" previewClassName="h-auto min-h-[220px]" />
+
+## API reference
+
+### RecordsTable
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | Names the table. |
+| `columns` | `RecordsTableColumn[]` | Required | Each has `id`, `header`, and an optional `isGenerated`. |
+| `rows` | `RecordsTableRow[]` | Required | The records. |
+| `onRetry` | `(rowId: string, columnId: string) => void` | None | Passing it shows Try again in failed cells. |
+| `labels` | `Partial<RecordsTableLabels>` | English | State words, button names, and the progress text. |
+| `className` | string | None | Added to the root. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `RecordsTableRow` | `id`, `name`, `cells` keyed by column `id`, and optional `generated` keyed by column `id` |
+| `GeneratedCell` | `status` of `"queued"`, `"running"`, `"done"` (with `value`), or `"error"` (with optional `message`) |

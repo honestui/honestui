@@ -1,0 +1,52 @@
+---
+title: Voronoi
+description: Animate a field of organic cells with crisp edges, an optional edge glow, and gentle shading.
+---
+
+<ComponentPreview name="voronoi-demo" playground />
+
+## Overview
+
+Voronoi divides the surface into cells, one around each of many slowly wandering points, so the pattern reads like cracked glaze, cell tissue, or a stained-glass network. Edges keep an even width at any scale, can glow softly into the cells, and cells can darken toward their borders so they look slightly raised. With `jitter` at 0 the cells form a square grid; at 1 they are fully organic.
+
+Close, low-contrast cell colors with a single bright edge color work well as a quiet technical background. A palette of distinct colors with thin dark edges reads as stained glass. Raise `scale` for a fine mesh behind dense content, or lower it for a few large cells in a hero.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Voronoi } from "honestui/shaders"
+
+<div className="h-80">
+  <Voronoi
+    className="size-full"
+    colors={["#16181d", "#21252e"]}
+    edgeColor="#5eead4"
+    scale={6}
+  />
+</div>
+```
+
+## Accessibility
+
+Voronoi is decorative: the canvas is hidden from assistive technology, and text or actions belong in normal HTML above it. Bright, glowing edges compete with overlaid text, so test contrast across the moving pattern, or lower `glow` and `edgeWidth` behind content. Animation pauses while the effect is offscreen, while the document is hidden, and when the user prefers reduced motion; a still frame is rendered instead. Use `paused` for your own control, and give the container a background for when WebGL is unavailable.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colors" type="string[]" default='["#16181d", "#1c1f26", "#21252e", "#262a35"]'>Cell colors, up to 8. Each cell picks one at random.</ApiRow>
+  <ApiRow name="edgeColor" type="string" default='"#5eead4"'>Color of the edges between cells and of the glow.</ApiRow>
+  <ApiRow name="edgeWidth" type="number" default="1.5">Edge width in CSS pixels. 0 hides the edges.</ApiRow>
+  <ApiRow name="glow" type="number" default="0.35">Glow that spreads from the edges into the cells, from 0 to 1.</ApiRow>
+  <ApiRow name="shading" type="number" default="0.5">Darkens cells toward their edges for a raised look, from 0 to 1.</ApiRow>
+  <ApiRow name="scale" type="number" default="6">Number of cells across the shorter side of the container.</ApiRow>
+  <ApiRow name="jitter" type="number" default="0.85">How far each cell's center wanders, from 0 (a square grid) to 1 (fully organic).</ApiRow>
+  <ApiRow name="distortion" type="number" default="0.25">Bends the whole pattern with a slow wave.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.5">Animation speed. Changing it never makes the cells jump.</ApiRow>
+  <ApiRow name="seed" type="number" default="1">Changes the cell layout and color picks while keeping the same look.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a static frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

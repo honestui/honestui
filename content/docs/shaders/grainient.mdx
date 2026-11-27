@@ -29,6 +29,14 @@ import { Grainient } from "honestui/shaders"
 </div>
 ```
 
+## Under an area chart
+
+Area charts can use the same field as a fill. Set `variant="grainient"` on an `<AreaChart.Area />` and the chart draws the texture from the series color, faded toward the baseline, with no extra canvas on the page. See <Link href="/docs/charts/area-chart/static#grainient-fill">Grainient Fill</Link> on the Area Chart page.
+
+```tsx
+<AreaChart.Area dataKey="revenue" variant="grainient" grainient={{ animate: true }} />
+```
+
 ## Accessibility
 
 Use Grainient as decoration and keep readable content in a separate foreground layer. The component pauses while it is offscreen, while the document is hidden, and when the user enables reduced motion. Use `paused` for application-specific control, and provide a static background when WebGL is unavailable.

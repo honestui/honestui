@@ -75,6 +75,7 @@ export type {
   QuadrantLabels as ScatterQuadrantLabels,
   QuadrantsProps as ScatterQuadrantsProps,
   ScatterChartProps,
+  ScatterHonestyText,
   ScatterPoint,
   ScatterProps,
   ScatterSymbol,
@@ -95,6 +96,24 @@ export type {
   DataStatusText,
   ResolvedDataStatusText,
 } from "../registry/default/ui/charts/data-quality"
+export {
+  Band,
+  fillMissingRows,
+  PartialPeriod,
+  resolveHonestyText,
+} from "../registry/default/ui/charts/honesty"
+export type {
+  BandProps,
+  ChartHonestyText,
+  GapInterval,
+  GapsOption,
+  PartialPeriodProps,
+  PartialPeriodUnit,
+  ResolvedChartHonestyText,
+  SampleSizeDisplay,
+} from "../registry/default/ui/charts/honesty"
+
+export type { GrainientFillOptions } from "../registry/default/ui/charts/grainient-fill"
 export * from "../registry/default/ui/charts/dot"
 export * from "../registry/default/ui/charts/legend"
 export * from "../registry/default/ui/charts/tooltip"
@@ -172,6 +191,7 @@ export type {
   ComboChartProps,
   ComboCurveType,
   ComboDotProps,
+  ComboHonestyText,
   ComboLegendProps,
   ComboLineProps,
   ComboStackType,

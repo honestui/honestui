@@ -17,6 +17,7 @@ import { ComponentSource } from "../component/component-source";
 import { stripCodeAnnotations } from "@/lib/highlight-code";
 import { Description, P, Strong } from "./components/text";
 import { ShowcaseGrid } from "./components/showcase-grid";
+import { GenerativeSample } from "../ai/generative-gallery/generative-sample";
 import { ExamplesGrid } from "../examples/examples-grid";
 import { CommandBlock } from "./components/command-block";
 import { Alert, AlertContent } from "./components/alert";
@@ -168,6 +169,7 @@ export const mdxComponents: MDXComponents = {
   Anatomy,
   AnatomyItem,
   ShowcaseGrid,
+  GenerativeSample,
   ExamplesGrid,
   TokenTable,
 };

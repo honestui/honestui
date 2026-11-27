@@ -1,0 +1,127 @@
+---
+title: Diff Table
+metaTitle: React Diff Table for Reviewing Agent Changes
+description: Review the rows an agent proposes to add or remove, clear the ones you do not want, and apply the rest.
+lastModified: "2026-11-04"
+---
+
+<ComponentPreview name="diff-table-demo" previewClassName="h-auto min-h-[380px]" />
+
+## Overview
+
+Diff Table shows edits an agent proposes to a table, one row for each addition and removal, with unchanged rows for context. Every change starts selected. The person clears the ones they do not want and applies the rest.
+
+`onApply` receives the ids of the changes that stayed selected. Making the edits is your application's work.
+
+Use [Change Review](/docs/product/change-review) for field-by-field changes to one object.
+
+## Anatomy
+
+<Anatomy title="DiffTable">
+  <AnatomyItem name="Title" description="What the edit is" />
+  <AnatomyItem name="Change column" description="A checkbox and the word Add or Remove on each changed row" />
+  <AnatomyItem name="Rows" description="Changed rows, tinted while selected, and unchanged rows" />
+  <AnatomyItem name="Footer" description="A count of what is selected, and Apply" />
+</Anatomy>
+
+Installing `diff-table` brings [Button](/docs/components/button), [Checkbox](/docs/components/checkbox), and [Table](/docs/components/table) along as registry dependencies.
+
+## Behavior
+
+### Selecting changes
+
+A selected addition has a light green tint and a selected removal a light red one, with the row's name in the first column struck through. The other values stay readable, so you can review what is being removed. Clearing a change removes the tint, and the row is left as it is today. The footer counts what is selected, and Apply is disabled when nothing is.
+
+### Applying
+
+If `onApply` returns a promise, Apply shows progress and the checkboxes lock until it settles. When it resolves, the footer confirms how many changes were applied and Apply goes away; if Apply had focus, the confirmation takes it. Apply stays focusable while it works. When it rejects, the footer shows an error and keeps the selection.
+
+## Accessibility
+
+The table uses native markup with column headers and is named by its title. Each changed row has a real checkbox, named for what it does, such as "Include removing fax_number". The word Add or Remove is in the row, so the tint is never the only cue.
+
+The footer's count is a polite status, so it is announced as the selection changes. The error is an alert.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the checkboxes and Apply |
+| <kbd>Space</kbd> | Select or clear the focused change |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Apply |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/diff-table"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "checkbox", "table"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="diff-table" title="components/ai/diff-table.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { DiffTable } from "@/components/ai/diff-table"
+
+<DiffTable
+  title="Proposed changes to the customers table"
+  columns={[
+    { id: "column", header: "Column" },
+    { id: "type", header: "Type" },
+  ]}
+  rows={proposal.rows}
+  onApply={(rowIds) => agent.applyEdits(proposal.id, rowIds)}
+/>
+```
+
+## Examples
+
+### An apply that fails
+
+This preview rejects the first apply. The selection stays, and the second apply succeeds.
+
+<ComponentPreview name="diff-table-failure" previewClassName="h-auto min-h-[280px]" />
+
+## API reference
+
+### DiffTable
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | What the edit is. |
+| `columns` | `DiffTableColumn[]` | Required | Each has `id` and `header`. |
+| `rows` | `DiffTableRow[]` | Required | Changed and unchanged rows, in order. |
+| `onApply` | `(includedRowIds: string[]) => void \| Promise<void>` | Required | Receives the selected changes. |
+| `labels` | `Partial<DiffTableLabels>` | English | Column name, change words, checkbox names, and footer messages. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `DiffTableRow` | `id`, `change` of `"unchanged"`, `"added"`, or `"removed"`, `name`, and `cells` keyed by column `id` |

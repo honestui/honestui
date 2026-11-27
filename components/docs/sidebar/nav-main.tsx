@@ -27,6 +27,8 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState, type ComponentProps } from "react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { isRecentlyReleased } from "./new-pages";
 
 function NavFolderCollapsible({
   defaultOpen,
@@ -269,6 +271,11 @@ export function NavMain({
                 >
                   {getNavItemIcon(item.$id)}
                   <span className="capitalize">{item.name}</span>
+                  {visibleChildren[0].type === "page" && isRecentlyReleased(visibleChildren[0].url) && (
+                  <Badge className="ms-auto" size="sm" variant="secondary">
+                    New
+                  </Badge>
+                )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
@@ -295,10 +302,15 @@ export function NavMain({
               >
                 {getNavItemIcon(item.$id)}
                 <span className="capitalize">{item.name}</span>
+                {visibleChildren[0].type === "page" && isRecentlyReleased(visibleChildren[0].url) && (
+                <Badge className="ms-auto" size="sm" variant="secondary">
+                  New
+                </Badge>
+              )}
                 <Add
                   aria-hidden="true"
                   className={cn(
-                    "ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-45",
+                    "ms-auto transition-transform duration-200 group-data-open/collapsible:rotate-45",
                     !hasActiveChild ? "opacity-60" : "opacity-100",
                   )}
                 />

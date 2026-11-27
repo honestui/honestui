@@ -1,0 +1,241 @@
+---
+title: Permission Matrix
+description: A grid of roles and resources where each cell is allowed, denied, or inherited. Inherited cells say which role or parent resource decides them, and changes are counted until they are saved.
+---
+
+<ComponentPreview name="permission-matrix-demo" previewClassName="h-auto min-h-[540px]" />
+
+## Overview
+
+Permission Matrix edits who can do what. Roles run across the top and resources run down the side. Resources can be nested, so "Delete projects" sits under "Projects". Each cell holds one of three values:
+
+- **Allowed**, set on the cell.
+- **Denied**, set on the cell.
+- **Inherited**, meaning the cell has no decision of its own.
+
+An inherited cell still has an answer, and the matrix shows it. The mark is outlined instead of filled, and the cell names where the decision comes from, such as "inherited from Viewer on Projects". People can see what a role can really do before they change anything, and they can tell a decision they set from one they would change by editing somewhere else.
+
+The value is only the decisions that were set. Your application stores that object and resolves permissions on the server with the same rules. `resolvePermission` is exported for that.
+
+## Anatomy
+
+<Anatomy title="PermissionMatrix">
+  <AnatomyItem name="PermissionMatrix" description="Holds the decisions, the saved decisions they are compared with, and the roles and resources">
+    <AnatomyItem name="PermissionMatrixGrid" description="The scrolling grid: role headers with bulk menus, resource names, and one cell per role and resource" />
+    <AnatomyItem name="PermissionMatrixFooter" description="A legend, the count of unsaved changes, and Discard and Save" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing `permission-matrix` brings `Button` and `Menu` along as registry dependencies.
+
+## Behavior
+
+### Inheritance
+
+A cell without its own decision is resolved in this order:
+
+1. **The role's decision on the nearest parent resource.** An Admin allowed on "Projects" is allowed on "Create projects".
+2. **The base role, asked the same way.** A role with `inheritsFrom` takes the base role's answer, from the resource up to its root. Base roles can chain, and a loop is stopped.
+3. **`defaultPermission`.** This is `deny` unless you pass `allow`.
+
+A role's own decisions always come before its base role's. An Editor allowed on "Projects" is allowed on "Delete projects", even when the Viewer it inherits from is denied there. Decide whether this order matches your server before you use the component. If it does not, resolve permissions yourself and keep the matrix for editing.
+
+### Editing
+
+Clicking a cell, or pressing Space or Enter on it, moves it from inherited to allowed, then denied, then back to inherited. The keys <kbd>A</kbd>, <kbd>D</kbd>, and <kbd>I</kbd> set a value directly, and <kbd>Backspace</kbd> or <kbd>Delete</kbd> returns a cell to inherited.
+
+Each role header and resource name opens a menu with "Allow all", "Deny all", and "Reset to inherited". A role's menu sets every resource for that role. A resource's menu sets that resource for every editable role.
+
+Roles with `readOnly` show a lock. Their cells cannot be changed, and their headers have no menu. `disabled` makes the whole matrix read-only.
+
+### Unsaved changes
+
+Changes are counted against `savedValue`, or against the value the matrix mounted with. A changed cell has a dot, and the footer counts the changes. Discard returns every cell to the saved value.
+
+With `onSave`, the footer also shows Save. If `onSave` returns a promise, Save stays busy until the promise settles. On success, the saved value becomes the current one; on failure, the changes stay. `onValueChange` receives the list of changed cells with every edit, ready to send.
+
+### Size
+
+The grid scrolls past `maxHeight`, which is 28rem by default, and on narrow screens. Role headers stay at the top and resource names stay at the start while it scrolls.
+
+## Accessibility
+
+The matrix is an ARIA grid named by `label`. Role headers are column headers and resource names are row headers, so a screen reader reads a cell with its role and resource, as in "Admin, Delete projects, Denied, inherited from Viewer on Delete projects".
+
+The grid is one tab stop. Arrow keys move between cells, role headers, and resource names. In right-to-left layouts, Left and Right swap.
+
+| Key | Action |
+| --- | --- |
+| <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> | Move between cells and headers |
+| <kbd>Home</kbd> / <kbd>End</kbd> | Move to the start or end of the row |
+| <kbd>Ctrl</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> | Move to the first or last cell |
+| <kbd>Page Up</kbd> / <kbd>Page Down</kbd> | Move ten rows |
+| <kbd>Space</kbd> or <kbd>Enter</kbd> on a cell | Cycle inherited, allowed, denied |
+| <kbd>A</kbd> / <kbd>D</kbd> / <kbd>I</kbd> | Allow, deny, or inherit |
+| <kbd>Enter</kbd> on a header | Open the bulk menu |
+
+Read-only cells set `aria-readonly`. Allowed and denied cells differ in shape, a check or a dash, as well as color. Inherited cells are outlined, so the matrix does not depend on color. The footer count is a polite status region.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["permission-matrix"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the `button` and `menu` components.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="permission-matrix" title="components/ui/permission-matrix/permission-matrix-types.ts" file="permission-matrix-types.ts" />
+
+<ComponentSource name="permission-matrix" title="components/ui/permission-matrix/permission-matrix-utils.ts" file="permission-matrix-utils.ts" />
+
+<ComponentSource name="permission-matrix" title="components/ui/permission-matrix/permission-matrix.tsx" file="permission-matrix.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  PermissionMatrix,
+  type PermissionGrants,
+} from "@/components/ui/permission-matrix/permission-matrix"
+
+const roles = [
+  { id: "owner", name: "Owner", readOnly: true },
+  { id: "editor", name: "Editor", inheritsFrom: "viewer" },
+  { id: "viewer", name: "Viewer" },
+]
+
+const resources = [
+  { id: "projects", name: "Projects", children: [{ id: "projects.delete", name: "Delete projects" }] },
+  { id: "billing", name: "Billing" },
+]
+
+const [grants, setGrants] = React.useState<PermissionGrants>(saved)
+
+<PermissionMatrix
+  label="Workspace permissions"
+  roles={roles}
+  resources={resources}
+  value={grants}
+  onValueChange={setGrants}
+  onSave={(next, changes) => api.updatePermissions(changes)}
+/>
+```
+
+### The same rules on the server
+
+```tsx
+import { getParentIndex, resolvePermission } from "@/components/ui/permission-matrix/permission-matrix-utils"
+
+const parents = getParentIndex(resources)
+const { value } = resolvePermission(grants, "editor", "projects.delete", { roles, parents })
+```
+
+### Allowing by default
+
+```tsx
+<PermissionMatrix defaultPermission="allow" labels={{ byDefault: "not set, so allowed" }} />
+```
+
+### Your own layout
+
+```tsx
+<PermissionMatrix roles={roles} resources={resources}>
+  <PermissionMatrixGrid maxHeight="40rem" />
+  <PermissionMatrixFooter />
+</PermissionMatrix>
+```
+
+## Don't do this
+
+### Storing resolved permissions
+
+```tsx
+// Bad. Every inherited cell becomes a decision, so changing a parent or a base role no longer reaches it.
+save(allCells.map((cell) => resolvePermission(grants, cell.role, cell.resource, options)))
+```
+
+Store `value` as it is. It holds only the decisions people set.
+
+### Hiding inherited cells
+
+An empty cell looks like "no access" even when the role is allowed through its base role. Keep the effective mark visible, as the matrix does.
+
+### Using color alone in custom marks
+
+When you restyle the cells, keep a different shape for allowed and denied, and a different border for inherited.
+
+## Examples
+
+### Flat scopes
+
+API tokens with no nesting and no base roles, so an unset scope is not granted. The text below the matrix is the change list `onValueChange` provides.
+
+<ComponentPreview name="permission-matrix-scopes" previewClassName="h-auto min-h-[460px]" />
+
+## API reference
+
+### PermissionMatrix
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `roles` | `PermissionRole[]` | Required | Columns, in order. |
+| `resources` | `PermissionResource[]` | Required | Rows, in order. `children` nest. |
+| `value` | `PermissionGrants` | None | The decisions that are set, by role id and resource id. |
+| `defaultValue` | `PermissionGrants` | `{}` | The initial decisions when uncontrolled. |
+| `onValueChange` | `(value, changes) => void` | None | Runs on every edit with the cells that differ from the saved value. |
+| `savedValue` | `PermissionGrants` | The value at mount, then each saved value | What changes are counted against. |
+| `onSave` | `(value, changes) => void \| Promise<void>` | None | Shows Save while there are changes. |
+| `defaultPermission` | `"allow" \| "deny"` | `"deny"` | The decision when nothing up the chain is set. |
+| `label` | string | `"Permissions"` | The grid's accessible name. |
+| `disabled` | boolean | `false` | Makes every cell read-only. |
+| `labels` | `Partial<PermissionMatrixLabels>` | English | Every word the matrix writes. |
+
+### PermissionMatrixGrid
+
+Accepts native div props.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `maxHeight` | string | `"28rem"` | The height the grid scrolls past. |
+
+Cells have `data-value` (`allow`, `deny`, or `inherit`), `data-effective` (`allow` or `deny`), and `data-dirty` when changed.
+
+### PermissionMatrixFooter
+
+Accepts native div props.
+
+### Types and helpers
+
+| Export | Shape |
+| --- | --- |
+| `PermissionRole` | `{ id, name, description?, inheritsFrom?, readOnly? }` |
+| `PermissionResource` | `{ id, name, description?, children? }` |
+| `PermissionGrants` | `{ [roleId]: { [resourceId]: "allow" \| "deny" } }` |
+| `PermissionChange` | `{ roleId, resourceId, from, to }`, where each value is `allow`, `deny`, or `inherit` |
+| `resolvePermission` | `(grants, roleId, resourceId, { roles, parents, defaultValue? }) => { value, source }` |
+| `setCell` / `setCells` | Return new grants with cells set. `inherit` removes a decision. |
+| `diffGrants` | `(before, after) => PermissionChange[]` |

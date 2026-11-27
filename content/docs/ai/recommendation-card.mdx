@@ -1,0 +1,126 @@
+---
+title: Recommendation Card
+metaTitle: React Recommendation Card with Alternatives
+description: Present one recommended action with its confidence stated, and keep the alternatives a press away.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="recommendation-card-demo" previewClassName="h-auto min-h-[340px]" />
+
+## Overview
+
+Recommendation Card shows what an agent proposes to do, how sure it is, and what else it considered. The person accepts the recommendation or opens the alternatives and picks one of those.
+
+Nothing happens until the person accepts. The card calls `onAccept` with the chosen option, and your application does the work.
+
+Use [Approval Card](/docs/ai/approval-card) when the agent has questions to ask. Use this card when it has an answer to propose.
+
+## Anatomy
+
+<Anatomy title="RecommendationCard">
+  <AnatomyItem name="Title" description="The question the agent is asking" />
+  <AnatomyItem name="Body" description="The selected option in full" />
+  <AnatomyItem name="Confidence" description="A three-bar meter with the confidence in words" />
+  <AnatomyItem name="Alternatives" description="The other options, behind a disclosure" />
+  <AnatomyItem name="Accept" description="A button named for the selected option" />
+</Anatomy>
+
+Installing `recommendation-card` brings [Button](/docs/components/button) and [Collapsible](/docs/components/collapsible) along as registry dependencies.
+
+## Behavior
+
+### Options
+
+The first option is the recommendation. Choosing an alternative makes it the selected option: the body, the confidence, and the accept button's text all change to match, and focus moves to the accept button. Once another option has been viewed, the first one is marked Recommended in the list and, when it is selected again, beside its confidence.
+
+### Confidence
+
+`confidence` runs from 0 to 3 and fills the meter. `confidenceLabel` is always shown beside it. Take both from your agent. Do not present a guess as high confidence.
+
+### Accepting
+
+If `onAccept` returns a promise, the button shows progress and the card locks until it settles. The button stays focusable while locked (it is `aria-disabled`, not `disabled`), so focus does not jump away. When it resolves, the card confirms and stays locked. When it rejects, the card shows an error and the person can accept again or pick another option.
+
+## Accessibility
+
+The Alternatives button reports whether the list is expanded. Each alternative is a button. The body is a polite live region, so choosing an alternative announces the new recommendation.
+
+The confirmation is a status and the error is an alert. The meter is decorative; the confidence is carried by its label.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the alternatives, Alternatives, and the accept button |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Activate the focused button |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/recommendation-card"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "collapsible"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="recommendation-card" title="components/ai/recommendation-card.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { RecommendationCard } from "@/components/ai/recommendation-card"
+
+<RecommendationCard
+  title="How should I fix the rounding drift?"
+  options={proposal.options}
+  onAccept={(option) => agent.accept(proposal.id, option.id)}
+/>
+```
+
+## Examples
+
+### An accept that fails
+
+This preview rejects the first accept and resolves the second.
+
+<ComponentPreview name="recommendation-card-failure" previewClassName="h-auto min-h-[240px]" />
+
+## API reference
+
+### RecommendationCard
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | The question the agent is asking. |
+| `options` | `RecommendationOption[]` | Required | The recommendation first, then the alternatives. |
+| `onAccept` | `(option) => void \| Promise<void>` | Required | Receives the chosen option. |
+| `labels` | `Partial<RecommendationCardLabels>` | English | Button names, the Recommended mark, and outcome messages. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `RecommendationOption` | `id`, `body`, `summary`, `confidence` (0 to 3), `confidenceLabel`, `actionLabel` |

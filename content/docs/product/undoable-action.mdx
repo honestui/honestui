@@ -1,0 +1,224 @@
+---
+title: Undoable Action
+description: Apply a change on screen at once, hold the request behind a visible countdown with Undo, and send it only when the time runs out.
+---
+
+<ComponentPreview name="undoable-action-demo" previewClassName="h-auto min-h-[460px]" />
+
+## Overview
+
+Undoable Action is the "Archived 3 conversations · Undo" bar. The change happens on screen the moment someone asks for it, but the request waits behind a short countdown. Undo during the countdown takes the change back and nothing is ever sent. When the countdown ends, the request goes out.
+
+This suits actions that are easy to trigger and annoying to reverse on the server: archiving, deleting, moving, or bulk edits. Nobody is asked "Are you sure?", and a slip costs one click.
+
+It differs from [Async Action](/docs/product/async-action), which sends the request at once and offers Undo afterwards only when the server can reverse the action. Use Async Action when the server has a real reversal. Use Undoable Action when it does not, or when you would rather not call it.
+
+Undoable Action does not send requests or store anything. You pass the change to make on screen and the request to send. It decides when to send it and when to take the change back.
+
+## Anatomy
+
+<Anatomy title="UndoableAction">
+  <AnatomyItem name="useUndoableAction" description="The queue: applies changes, runs countdowns, and sends requests" />
+  <AnatomyItem name="UndoBar" description="One region listing what is waiting or failed">
+    <AnatomyItem name="Entry" description="One action">
+      <AnatomyItem name="Countdown" description="A ring that empties, and the seconds left" />
+      <AnatomyItem name="Message" description="What happened, in the past tense" />
+      <AnatomyItem name="Undo" description="While the countdown runs" />
+      <AnatomyItem name="Retry and Dismiss" description="After the request fails" />
+    </AnatomyItem>
+    <AnatomyItem name="Announcement" description="A polite status region, one sentence per event" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing `undoable-action` brings `Button` along as a registry dependency.
+
+## Behavior
+
+### The countdown
+
+`run` calls your `apply` at once, adds an entry to the bar, and starts its countdown, six seconds unless you pass `duration`. While it runs, the entry offers Undo. When it ends, `commit` is called and the entry shows a spinner until the request settles.
+
+The countdown holds while a mouse pointer is over the bar, while focus is inside it, and while the browser tab is hidden. Reading the message, reaching for Undo with the keyboard, or switching tabs never lets an action slip through.
+
+### Undo
+
+Undo runs the rollback that `apply` returned and removes the entry. `commit` is never called, so the server never hears of the action. `onUndo` runs afterwards.
+
+### Failure
+
+When `commit` rejects, the rollback runs, so the change is taken back on screen, and the entry stays with the error, Retry, and Dismiss. Retry applies the change again and sends it straight away, without another countdown: the person has already decided. `onError` runs with the error.
+
+### Several actions
+
+Each action has its own entry and countdown, listed oldest first. At most three wait at once unless you pass `max`; a fourth sends the oldest straight away.
+
+### Leaving the page
+
+When the component that called the hook unmounts, every waiting action is sent: nobody undid it, so it stands. A browser tab that closes during the countdown cannot run JavaScript reliably, so keep countdowns short and call `flush` from your own navigation if it matters.
+
+## Accessibility
+
+`UndoBar` is a labelled region with a polite status inside it. Each new action is announced once with how long Undo stays available, such as "Archived 3 conversations. Undo is available for 6 seconds." Undo and failure are announced too. The ticking seconds are hidden from screen readers, so nothing chatters.
+
+Because focus inside the bar holds every countdown, a keyboard or screen reader user has as long as they need to reach Undo. Each Undo button is named after its action, such as "Undo: Archived 3 conversations".
+
+Undo removes the button that was pressed. Focus then moves to the next button in the bar, or to the bar itself when it is empty, so the next <kbd>Tab</kbd> continues from there.
+
+The countdown ring follows reduced motion by stepping in tenths instead of sweeping. Failures carry an icon and a sentence, not color alone.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move into the bar, which holds every countdown, then across Undo, Retry, and Dismiss |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Activate the focused button |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["undoable-action"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="undoable-action" title="components/ui/undoable-action/undoable-action-types.ts" file="undoable-action-types.ts" />
+
+<ComponentSource name="undoable-action" title="components/ui/undoable-action/undoable-action-utils.ts" file="undoable-action-utils.ts" />
+
+<ComponentSource name="undoable-action" title="components/ui/undoable-action/use-undoable-action.ts" file="use-undoable-action.ts" />
+
+<ComponentSource name="undoable-action" title="components/ui/undoable-action/undoable-action.tsx" file="undoable-action.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Call the hook where the list's state lives, run an action from any control, and render one bar:
+
+```tsx
+import { UndoBar, useUndoableAction } from "@/components/ui/undoable-action/undoable-action"
+
+const undoable = useUndoableAction()
+
+const archive = (ids: string[]) =>
+  undoable.run({
+    message: `Archived ${ids.length} conversations`,
+    apply: () => {
+      setInbox((current) => current.filter((item) => !ids.includes(item.id)))
+      return () => setInbox((current) => restoreOrder(current, ids))
+    },
+    commit: ({ signal }) => api.archive(ids, { signal }),
+  })
+
+<UndoBar action={undoable} className="fixed inset-x-4 bottom-4 mx-auto max-w-md" />
+```
+
+Place the bar where it belongs in your layout: under a list, or fixed to the bottom of the screen. It takes no space while the queue is empty.
+
+### Wording
+
+Write `message` in the past tense, because on screen the action has already happened. The other sentences come from `labels`, which also translates the bar:
+
+```tsx
+<UndoBar
+  action={undoable}
+  labels={{
+    failed: (message, error) => `${message} did not go through: ${describe(error)}`,
+  }}
+/>
+```
+
+## Don't do this
+
+### Sending the request first
+
+```tsx
+// Bad. The archive is already on the server, so Undo here only hides the truth.
+commit: () => Promise.resolve(),
+apply: () => { api.archive(ids); removeRows(ids) },
+```
+
+Send the request from `commit`. If it must go out at once, use [Async Action](/docs/product/async-action) with a real `undo`.
+
+### Calling the hook inside the row
+
+The row disappears when `apply` runs, and a hook inside it would unmount with it, sending the request at once. Call the hook in the list, as in Usage.
+
+## Examples
+
+### Failure and retry
+
+The first delete to reach the server is rejected. The file comes back, and the bar offers Retry, which sends the delete again without another countdown.
+
+<ComponentPreview name="undoable-action-failure" previewClassName="h-auto min-h-[300px]" />
+
+## API reference
+
+### useUndoableAction
+
+`useUndoableAction(options?)` returns the queue.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `duration` | number | `6000` | The countdown, in milliseconds. |
+| `max` | number | `3` | How many actions may wait at once before the oldest is sent. |
+
+### The queue
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `entries` | `UndoableEntry[]` | Waiting, committing, and failed actions, oldest first. |
+| `paused` | boolean | Something is holding the countdowns. |
+| `run` | `(options) => string` | Applies a change, starts its countdown, and returns its id. |
+| `undo` | `(id) => void` | Takes back a waiting action. |
+| `retry` | `(id) => void` | Re-applies a failed action and sends it now. |
+| `dismiss` | `(id) => void` | Removes a failed entry, or sends a waiting one now. |
+| `setPaused` | `(reason, paused) => void` | Holds or releases the countdowns, for your own reasons such as an open dialog. |
+| `flush` | `() => void` | Sends every waiting action now. |
+
+### run options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `message` | string | Required | What happened, in the past tense. |
+| `commit` | `({ signal }) => Promise<TResult>` | Required | The request, sent when the countdown ends. |
+| `apply` | `() => (() => void) \| void` | None | Makes the change on screen and returns its rollback. |
+| `duration` | number | The queue's | This action's countdown. |
+| `onCommit` | `(result) => void` | None | Runs after the request resolves. |
+| `onUndo` | `() => void` | None | Runs after Undo. |
+| `onError` | `(error) => void` | None | Runs after the request rejects and the rollback has run. |
+
+### UndoBar
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `action` | The value from `useUndoableAction` | Required | The queue to show. |
+| `labels` | `Partial<UndoBarLabels>` | English | The region name, button names, and every sentence the bar writes. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `UndoableEntry` | `id`, `message`, `phase` (`waiting`, `committing`, or `failed`), `duration`, `remaining`, `deadline`, and `error` after a failure |
+| `UndoBarLabels` | `region`, `undo`, `undoAction`, `retry`, `dismiss`, `committing`, `failed`, `added`, `undone`, `secondsLeft` |
+| `createUndoableQueue` | The store behind the hook, for use outside React |

@@ -1,0 +1,48 @@
+---
+title: Scroll Progress
+description: A thin bar that fills as the page or a scroll container is read, smoothed with a spring.
+---
+
+<ComponentPreview name="scroll-progress-demo" />
+
+## Overview
+
+Scroll Progress shows how far through a long page or panel the reader is. It tracks the page by default and sits fixed at the top of the viewport. Pass a `container` ref to track a scrolling element instead; the bar then sticks to the top or bottom of that element.
+
+The bar scales from the left edge, which animates on the compositor and stays smooth during fast scrolling. A spring adds a little weight to the motion; it is turned off under reduced motion so the bar tracks scrolling exactly.
+
+## Installation
+
+<CliBlock commands={["scroll-progress"]} />
+
+## Usage
+
+```tsx
+import { ScrollProgress } from "@/components/animated/scroll-progress"
+
+// Track the page
+<ScrollProgress />
+
+// Track a scroll container: render the bar as its first child
+const ref = useRef<HTMLDivElement>(null)
+
+<div ref={ref} className="h-96 overflow-y-auto">
+  <ScrollProgress container={ref} />
+  {/* content */}
+</div>
+```
+
+Set the color and thickness with `className`, for example `h-1 bg-primary`. Inside a container, the bar cancels its own default height with a negative margin so content does not shift; if you change the height, adjust the margin to match.
+
+## Accessibility
+
+The bar is decorative and hidden from assistive technology, because the scroll position is already available to people using a screen reader or keyboard. If reading progress matters to the task, such as a required agreement, state it in text as well.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="container" type="RefObject<HTMLElement | null>">Scroll container to track. Omit to track the page.</ApiRow>
+  <ApiRow name="position" type='"top" | "bottom"' default='"top"'>Edge the bar sits on.</ApiRow>
+  <ApiRow name="smooth" type="boolean" default="true">Smooth the bar with a spring. Ignored under reduced motion.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the bar, such as its height and color.</ApiRow>
+</ApiTable>

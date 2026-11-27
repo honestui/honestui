@@ -214,6 +214,12 @@ The root container. It owns the data, shared selection state, loading skeleton, 
   <ApiRow name="dataStatusText" type="DataStatusText">
     Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
   </ApiRow>
+  <ApiRow name="honestyText" type="ChartHonestyText">
+    Replacement text for the honesty marks: the partial period, bands, gaps, axis notice, and sample sizes. See <Link href="/docs/charts/honesty">Honest Charts</Link>.
+  </ApiRow>
+  <ApiRow name="gaps" type='boolean | { interval?: "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year"; label?: string }'>
+    Shades stretches where every series is empty. With `interval`, also inserts rows that are absent from a time series. See <Link href="/docs/charts/honesty/data-gaps">Data Gaps</Link>.
+  </ApiRow>
   <ApiRow name="syncId" type="string">
     Charts with the same id show their crosshair and tooltip at the same category together. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link>.
   </ApiRow>
@@ -243,7 +249,7 @@ A single line series. Each `<Line />` is self-contained, its own stroke, glow, a
     The intro draw-in for this line (the first `<Line />`'s value drives the chart). Falls back to the chart's `animationType` when omitted.
   </ApiRow>
   <ApiRow name="connectNulls" type="boolean" default="false">
-    Whether to connect line segments across null or missing values.
+    Draws the line across empty values. Without it, an empty value is a gap, never a zero. Ignored when the series reads a status, or when the chart sets `gaps` or a partial period.
   </ApiRow>
   <ApiRow name="isClickable" type="boolean" default="false">
     Lets this line be selected by clicking it. When any line is selected, the rest become semi-transparent.
@@ -262,6 +268,15 @@ A single line series. Each `<Line />` is self-contained, its own stroke, glow, a
   </ApiRow>
   <ApiRow name="upperKey" type="string">
     The row field that holds the upper bound of each value. Set it together with `lowerKey`.
+  </ApiRow>
+  <ApiRow name="sampleSizeKey" type="string">
+    The row field with the number of observations behind each value. Shows "n=…" beside the points. See <Link href="/docs/charts/honesty/sample-size">Sample Size</Link>.
+  </ApiRow>
+  <ApiRow name="minSampleSize" type="number">
+    Values with fewer observations get a dashed ring and a low-sample entry in the key and tooltip.
+  </ApiRow>
+  <ApiRow name="sampleSizeDisplay" type='"label" | "tooltip"' default='"label"'>
+    Shows the count on the plot or only in the tooltip.
   </ApiRow>
   <ApiRow name="compareDataKey" type="string">
     A data key holding the same measure for an earlier period. Draws it as a faded, finely dashed ghost line and adds the earlier value and the change to the tooltip. See <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
@@ -297,6 +312,15 @@ The category and value axes. Include `<XAxis />` for x-axis labels and `<YAxis /
   </ApiRow>
   <ApiRow name="hideDots" type="boolean" default="false">
     Hides the small tick dots that sit beside this axis's labels.
+  </ApiRow>
+  <ApiRow name="min" type='number | "auto"'>
+    YAxis only. Starts the value axis here instead of zero; `"auto"` fits it to the data. The chart then flags the truncated axis. See <Link href="/docs/charts/honesty/truncated-axis">Truncated Axis</Link>.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    YAxis only. Ends the value axis here.
+  </ApiRow>
+  <ApiRow name="truncationNotice" type='"auto" | "off"' default='"auto"'>
+    YAxis only. Shows a break mark and a key notice when the axis does not reach zero.
   </ApiRow>
 </ApiTable>
 
@@ -345,6 +369,10 @@ The series legend, rendered as HTML above the canvas. Include it to show the leg
 <ApiHeading>ReferenceLine, ReferenceArea, and ReferenceDot</ApiHeading>
 
 Targets, bands, and annotated points drawn on the plot, such as `<LineChart.ReferenceLine y={200} label="Goal" />`. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link> for every prop.
+
+<ApiHeading>PartialPeriod and Band</ApiHeading>
+
+An open period drawn as in progress, such as `<LineChart.PartialPeriod x="Nov" label="Month to date" />`, and a shaded interval around a series, such as `<LineChart.Band dataKey="tickets" lowerKey="low" upperKey="high" />`. See <Link href="/docs/charts/honesty/partial-period">Partial Period</Link> and <Link href="/docs/charts/honesty/confidence-bands">Confidence Bands</Link>.
 
 <ApiHeading>Zoom</ApiHeading>
 

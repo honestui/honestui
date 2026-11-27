@@ -1,0 +1,136 @@
+---
+title: Insight Cards
+metaTitle: React Insight Cards for Agent Findings
+description: Show a set of findings one at a time, with buttons to move between them.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="insight-cards-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+Insight Cards shows several findings in the space of one. Each card states a finding as a sentence and then shows the evidence for it: a chart, a figure, a short explanation. Two buttons move between the cards.
+
+It never advances by itself. The Beautiful UI original rotated on a timer, which moves content a person may be reading.
+
+Insight Cards draws no charts itself. Put an Honest UI [chart](/docs/charts) in each card, as the preview above does with a bar, a pie, and a line chart.
+
+## Anatomy
+
+<Anatomy title="InsightCards">
+  <AnatomyItem name="Heading" description="The title, the position, and the Previous and Next buttons" />
+  <AnatomyItem name="InsightCard" description="One finding and its evidence" />
+</Anatomy>
+
+Installing `insight-cards` brings [Button](/docs/components/button) along as a registry dependency.
+
+## Behavior
+
+### Moving between cards
+
+One card is shown at a time, and only that card is mounted, so a chart in another card does not render until a person moves to it. Previous and Next are inactive at the ends. With a single card, the position and the buttons are left out.
+
+### Height
+
+The position and the buttons sit above the card, so they stay put when cards differ in height. The content below the component moves when they do. Giving every chart the same height, as the preview does, keeps the cards close to one size.
+
+## Accessibility
+
+The component is a section named by its heading. The position, such as "2 of 3", is a polite live region, so moving to another card announces it. Previous and Next have names, and at either end they are marked inactive without losing focus.
+
+Each card is an article. State the finding in `title`, and give the plotted values as text under the chart. A chart is a canvas: its tooltip needs a pointer, and its values are not exposed to screen readers.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to Previous and Next |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Show the previous or next card |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/insight-cards"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="insight-cards" title="components/ai/insight-cards.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { BarChart, type ChartConfig } from "honestui/charts"
+import "honestui/charts.css"
+
+import { InsightCard, InsightCards } from "@/components/ai/insight-cards"
+
+const config = {
+  failed: { label: "Failed runs", colors: { light: ["#be123c"], dark: ["#fb7185"] } },
+} satisfies ChartConfig
+
+<InsightCards title="Insights">
+  <InsightCard title={insight.finding}>
+    <div className="h-44 w-full">
+      <BarChart data={insight.rows} config={config} className="h-full w-full">
+        <BarChart.Grid />
+        <BarChart.XAxis dataKey="week" />
+        <BarChart.Tooltip />
+        <BarChart.Bar dataKey="failed" />
+      </BarChart>
+    </div>
+    <p>{insight.summary}</p>
+  </InsightCard>
+</InsightCards>
+```
+
+Give the chart a container with a height, or it has no room to draw. Charts come from the `honestui` package; see [chart installation](/docs/charts/installation).
+
+## Examples
+
+### A single insight
+
+With one card, there is nothing to move between.
+
+<ComponentPreview name="insight-cards-single" previewClassName="h-auto min-h-[200px]" />
+
+## API reference
+
+### InsightCards
+
+Accepts native section props beyond those listed. Its children are the cards.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | The heading. |
+| `labels` | `Partial<InsightCardsLabels>` | English | Button names and the position text. |
+
+### InsightCard
+
+Accepts native article props beyond those listed. Its children are the evidence.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | ReactNode | Required | The finding, stated as a sentence. |

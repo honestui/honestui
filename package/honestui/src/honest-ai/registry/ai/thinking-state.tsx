@@ -40,10 +40,17 @@ const statusTone: Record<ThinkingStatus, string> = {
   error: "text-[var(--hui-color-foreground-danger-primary)]",
 }
 
-/** A finished step uses the same check, in the same color, as a finished task in Task Rows. */
+/** A finished step uses the same quiet check as a finished task in Task Rows and a finished call in Tool Chips. */
 const stepTone: Record<ThinkingStatus, string> = {
   ...statusTone,
-  done: "text-[var(--hui-color-foreground-success-primary)]",
+  done: "text-[var(--hui-color-foreground-base-secondary)]",
+}
+
+/** The running step leads; finished steps step back so the trace reads at a glance. */
+const stepLabelTone: Record<ThinkingStatus, string> = {
+  running: "text-[var(--hui-color-foreground-base-primary)]",
+  done: "text-[var(--hui-color-foreground-base-secondary)]",
+  error: "text-[var(--hui-color-foreground-base-primary)]",
 }
 
 export type ThinkingStateProps = Omit<React.ComponentProps<"div">, "children"> & {
@@ -152,7 +159,7 @@ function ThinkingState({
             <ul
               role="list"
               data-slot="thinking-state-trace"
-              className="m-0 ms-[var(--hui-space-2)] mt-[var(--hui-space-1)] flex list-none flex-col gap-[var(--hui-space-3)] border-s-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-secondary)] py-[var(--hui-space-2)] ps-[var(--hui-space-4)]"
+              className="m-0 ms-[7px] mt-[var(--hui-space-2)] flex list-none flex-col gap-[var(--hui-space-3)] border-s-[0.5px] border-[var(--hui-color-border-base-secondary)] py-[var(--hui-space-1)] ps-[var(--hui-space-5)]"
             >
               {children}
             </ul>
@@ -218,7 +225,7 @@ function ThinkingStep({
         )}
       />
       {/* Regular weight, so the trace stays under its medium header. */}
-      <span className="min-w-0 break-words text-[var(--hui-color-foreground-base-primary)]">
+      <span className={cn("min-w-0 break-words", stepLabelTone[status])}>
         {children}
         <span className="sr-only"> ({statusLabel ?? defaultStepStatusLabel[status]})</span>
       </span>
@@ -226,7 +233,7 @@ function ThinkingStep({
         <span
           className={cn(
             // 2px down so the 16px detail sits on the first 20px label line.
-            "mt-[2px] min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]",
+            "mt-[2px] min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)] tabular-nums",
             !detailIsCode && rowText,
             detailIsCode &&
               "font-mono [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-small)]"

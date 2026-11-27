@@ -1,0 +1,179 @@
+---
+title: Honest Prose
+metaTitle: Honest Prose, CSS and Tailwind styles for rendered Markdown
+description: Style rendered Markdown and plain HTML with one class, in any project, including text that is still streaming.
+lastModified: "2026-11-04"
+---
+
+<ComponentPreview name="prose-demo" playground previewClassName="h-auto min-h-[440px]" />
+
+Use the panel below the preview to adjust typography or start from the Chat, Document, and Compact presets. Advanced options override theme colors and code styling. Reset restores the Chat preset and theme defaults. Choose CSS or Tailwind under Export, then copy the current settings. Text width is measured in `ch`, approximately the width of the font's zero character.
+
+## Overview
+
+Prose styles rendered Markdown and plain HTML. Use the `honest-prose` class with its stylesheet, or install the Tailwind utilities to get the styles without another CSS file.
+
+It is plain CSS, so it works with any Markdown renderer and in a project without React or Tailwind. In an Honest UI project it reads the theme's tokens. Anywhere else it falls back to values based on the text color around it, so it follows your light and dark themes.
+
+[Markdown](/docs/ai/markdown) and [Streaming Text](/docs/ai/streaming-text) use it for their text.
+
+## Installation
+
+### Tailwind v4, without a separate stylesheet
+
+<CliBlock commands={["@honestai/prose-tailwind"]} />
+
+This copies `lib/prose-tailwind.ts`, with no package or stylesheet dependencies. Your project needs Tailwind v4 already configured.
+
+```tsx
+import { proseTailwind } from "@/lib/prose-tailwind"
+
+<article className={proseTailwind}>
+  <h2>Release checklist</h2>
+  <p>The export fix is ready.</p>
+</article>
+```
+
+The utilities use the same `--prose-*` variables and `not-prose` opt-out as the stylesheet. Set customized variables with an inline style, or choose Tailwind in the playground and paste the copied classes directly into your template.
+
+Keep the installed file and any pasted classes inside Tailwind's source scan. If your `lib` folder is excluded, add `@source "../lib/prose-tailwind.ts";` to your existing Tailwind stylesheet, adjusting the path. Tailwind cannot discover class names assembled from values at runtime; copy the generated classes into source or use `proseTailwind` with inline variables.
+
+The generated utilities use Tailwind's important modifier so theme element rules cannot override them. Customize with the variables. Tailwind v3 is not supported by this install option.
+
+<ComponentSource name="prose-tailwind" title="lib/prose-tailwind.ts" />
+
+### Standalone CSS
+
+<Steps>
+
+<Step>Add the file.</Step>
+
+<CliBlock commands={["@honestai/prose"]} />
+
+Or copy it into `styles/prose.css` yourself:
+
+<ComponentSource name="prose" title="styles/prose.css" />
+
+<Step>Import it in your global stylesheet. With Tailwind, put it after the Tailwind import.</Step>
+
+```css
+@import "tailwindcss";
+@import "../styles/prose.css";
+```
+
+</Steps>
+
+## Usage
+
+```html
+<article class="honest-prose">
+  <h2>Release checklist</h2>
+  <p>The export fix is ready.</p>
+</article>
+```
+
+With a Markdown renderer, wrap its output:
+
+```tsx
+<div className="honest-prose">
+  <ReactMarkdown>{text}</ReactMarkdown>
+</div>
+```
+
+## Syntax highlighting
+
+[Honest Prose Syntax](/docs/ai/prose-syntax) adds restrained syntax colors, streaming support, and standalone HTML, React, and server integrations. Honest Markdown enables it automatically. Prose CSS itself remains JavaScript-free.
+
+## Variables
+
+Three variables do most of the work. Set them on the `.honest-prose` element or on anything around it.
+
+| Variable | Sets | Default |
+| --- | --- | --- |
+| `--prose-size` | Body text size | `--hui-font-size-regular`, or `1em` |
+| `--prose-leading` | Body line height, as a number | `1.6` |
+| `--prose-flow` | Space between blocks | `--hui-space-4`, or `0.85em` |
+| `--prose-width` | Maximum text width | None; the surrounding layout sets the width |
+
+The rest are for matching a theme:
+
+| Variable | Sets | Default |
+| --- | --- | --- |
+| `--prose-heading` | Size of first- and second-level headings | `1.143em` |
+| `--prose-tracking` | Body letter spacing | `--hui-letter-spacing-regular`, or `normal` |
+| `--prose-color` | Text | `--hui-color-foreground-base-primary`, or the current color |
+| `--prose-muted` | Quotes, captions, list markers, and table headers | `--hui-color-foreground-base-secondary`, or 72% of the current color |
+| `--prose-surface` | Plain code blocks and the table header band | `--hui-color-background-base-secondary`, or 5% of the current color |
+| `--prose-rule` | Table, code, and inline code borders, and horizontal rules | `--hui-color-border-base-primary`, or 18% of the current color |
+| `--prose-rule-strong` | The rule beside a quote, and the lower edge of a key | `--hui-color-border-base-secondary`, or 34% of the current color |
+| `--prose-code-color` | Inline code text | The body text color |
+| `--prose-font-mono` | Code | `--hui-font-mono`, or the system monospace font |
+| `--prose-radius` | Corners of inline code and keys. Without tokens, code blocks and tables add `0.25rem` to it | `--hui-radius-1`, or `0.25em` |
+
+Prose reads these variables and never sets them. A value from a class, an inline style, or an ancestor always applies:
+
+```tsx
+<div className="honest-prose [--prose-size:16px] [--prose-leading:1.7] [--prose-flow:18px]">…</div>
+```
+
+You can have several prose styles in one app: a tight one for chat replies and a roomier one for documents, each a different set of values on the same class.
+
+The fallback colors use `color-mix()`. If you set your own contrast-sensitive colors, check them: the muted color carries text.
+
+## Behavior
+
+### Sizes
+
+Headings are small on purpose. A reply sits inside a page that already has a title, so first- and second-level headings are a little larger than body text, and the rest match it in a heavier weight. For a document with a real title, raise `--prose-heading` or style `h1` yourself.
+
+### Streaming
+
+Blocks are spaced with a margin above them, never below. No rule depends on what comes after an element. A paragraph, list item, or table row that arrives later does not restyle what is already on screen.
+
+### Opting out
+
+Add `class="not-prose"` to an element that brings its own styles, such as a component placed between paragraphs. It keeps its space in the flow, and no other rule reaches it or anything inside it. [Code View](/docs/ai/code-view) carries this class itself.
+
+### Wide tables
+
+Wrap a table in an element with `class="prose-scroll"`, so a wide table scrolls sideways instead of widening the page. Make that wrapper focusable and give it a name, so a keyboard user can scroll it. Markdown does both.
+
+### Long code
+
+A code block scrolls sideways when a line is too long. Not every browser lets the keyboard reach a scrolling block, so give one in your own HTML a name and make it focusable, and keep its focus outline:
+
+```html
+<pre tabindex="0" role="region" aria-label="Code example"><code>…</code></pre>
+```
+
+Markdown's code blocks already do this.
+
+### Utility classes
+
+Prose's rules sit outside Tailwind's layers, so a utility for a property Prose sets has no effect on the same element. `text-sm` on the `.honest-prose` element does not change its size. Use the variables, or your own CSS written after the import. Utilities for anything Prose does not set, such as width or padding on the wrapper, work as usual.
+
+It is written this way because a theme's own heading rules also sit outside the layers, and would otherwise win. Heading type uses `:is()` for the same reason, so it outranks an element rule such as `h2:not([data-slot])`.
+
+## Accessibility
+
+Prose changes how elements look and leaves what they are alone. Headings, lists, tables, and links keep their roles.
+
+Links are underlined, so they do not depend on color. Line height is a number without a unit, and spacing uses margins, so text a reader has enlarged or respaced is not clipped.
+
+The preview has been checked with axe and keyboard controls in Chromium. Standalone HTML has also been checked without theme tokens in light and dark colors, at a 320px viewport, with text-spacing overrides, and with forced-colors emulation. Screen-reader use and actual 400% browser zoom have not been checked yet.
+
+## What it styles
+
+| Element | Result |
+| --- | --- |
+| `h1` to `h6` | Semibold, balanced wrapping, closer to the block below |
+| `p`, `ul`, `ol`, `dl`, `blockquote`, `pre`, `table`, `figure`, `details`, `hr` | Spaced by `--prose-flow` |
+| `ul`, `ol` | Muted disc and decimal markers, a circle for a nested list. Items in a list of paragraphs sit further apart than the paragraphs inside them |
+| A task list from GitHub Flavored Markdown | The checkbox in place of the bullet, so wrapped lines and nested tasks indent as usual |
+| `a` | In the text color, with a soft underline that turns solid on hover |
+| `strong`, `b` | Semibold |
+| `code`, `kbd`, `samp` | Monospace at 0.857em, so they scale with the text around them. Inline code and keys are page-colored chips with a hairline |
+| `pre` | One tinted panel with a hairline, scrolling sideways, with the same corners as Code View |
+| `table` | Body-size text, a tinted header band, a line above each body row |
+| `img`, `video` | No wider than the container |
+| Footnotes from GitHub Flavored Markdown | Below a rule, in smaller muted text. References do not make their line taller |

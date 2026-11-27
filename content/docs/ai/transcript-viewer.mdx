@@ -1,0 +1,145 @@
+---
+title: Transcript Viewer
+metaTitle: React Synced Transcript Viewer
+description: Follow a recording's transcript as it plays, and jump to any line by choosing it.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="transcript-viewer-demo" previewClassName="h-auto min-h-[460px]" />
+
+## Overview
+
+A transcript is the fastest way through a recording: people skim to the part they need and listen from there. Transcript Viewer groups the lines by speaker, highlights the line and the word being spoken, and asks your player to seek when a line is chosen.
+
+It has no audio of its own. Pass the player's position as `currentTime`, and seek the player in `onSeek`. It pairs with [Audio Player](/docs/ai/audio-player), or any `<audio>` element.
+
+## Anatomy
+
+<Anatomy title="TranscriptViewer">
+  <AnatomyItem name="Header" description="The title, and the search field when it is on" />
+  <AnatomyItem name="Turns" description="Consecutive lines from one speaker">
+    <AnatomyItem name="Speaker" description="The name and the turn's start time" />
+    <AnatomyItem name="Segments" description="One button per line, which seeks to its start" />
+  </AnatomyItem>
+  <AnatomyItem name="Jump to current" description="Shown after the person scrolls away while following" />
+</Anatomy>
+
+`TranscriptViewer` is one component. Installing `transcript-viewer` brings [Button](/docs/components/button) along as a registry dependency, and installs `motion`.
+
+## Behavior
+
+### Highlighting
+
+The segment whose `start` and `end` contain `currentTime` is the current one. Lines already spoken are in the text color, and lines still to come are a step lighter. When a segment has `words`, the current segment lights up word by word; otherwise the whole line is marked.
+
+### Following
+
+With `follow` on, the default, the current segment is scrolled to about a third of the way down as playback moves. Scrolling with the wheel, touch, or keys stops following, and a "Jump to current" button appears to bring it back. Set `follow` to `false` for a transcript the person reads at their own pace.
+
+### Seeking
+
+Choosing a segment calls `onSeek` with its start. The viewer does not change `currentTime` itself; the highlight moves when your player reports the new position.
+
+### Search
+
+Set `searchable` to show a search field in the header. Matches are marked, the count is shown, and <kbd>Enter</kbd> and <kbd>Shift</kbd>+<kbd>Enter</kbd> move between them. Word-by-word highlighting pauses while there is a query, so every match can be marked.
+
+### Height
+
+The viewer fills its box and scrolls inside it. Give it a height with `className`, such as `h-80`.
+
+## Accessibility
+
+The scrolling area is a group named by the title, and it is not a landmark, so several transcripts can share a page. Each segment is a button whose name says where it plays from and what it says, such as "Play from 0:04: Sure. Totals are rounded…", and the current one has `aria-current`. Timestamps are `<time>` elements.
+
+The scrolling area can take focus, so the transcript can be scrolled from the keyboard. Highlight changes are not announced, so playback is not read aloud over itself. The match count is a status, read when it changes.
+
+With reduced motion, following and jumping scroll without animation.
+
+Every string comes from `labels`, and `labels.time` formats every timestamp.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/transcript-viewer"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add what it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Install Motion.</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="transcript-viewer" title="components/ai/transcript-viewer.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { TranscriptViewer } from "@/components/ai/transcript-viewer"
+
+<TranscriptViewer
+  segments={transcript.segments}
+  currentTime={time}
+  onSeek={(seconds) => {
+    audio.currentTime = seconds
+  }}
+  className="h-80"
+/>
+```
+
+## Examples
+
+### Search
+
+A finished transcript with search and without following.
+
+<ComponentPreview name="transcript-viewer-search" previewClassName="h-auto min-h-[340px]" />
+
+## API reference
+
+### TranscriptViewer
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `segments` | `TranscriptSegment[]` | Required | The lines, in order. |
+| `currentTime` | number | `0` | The playback position in seconds. |
+| `onSeek` | `(seconds: number) => void` | None | Called with a segment's start when it is chosen. |
+| `follow` | boolean | `true` | Keeps the current segment in view. |
+| `searchable` | boolean | `false` | Shows the search field. |
+| `labels` | `Partial<TranscriptViewerLabels>` | English | The title, buttons, search, counts, and the time format. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `TranscriptSegment` | `id`, `speaker`, `start`, `end`, `text`, and optional `words` |
+| `TranscriptWord` | `text`, `start`, `end` |
+| `TranscriptViewerLabels` | `title`, `jump`, `seek`, `search`, `matches`, `noMatches`, `time` |

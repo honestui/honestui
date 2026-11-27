@@ -1,0 +1,80 @@
+---
+title: State and forms
+metaTitle: Generative UI State, Forms, and Restoration
+description: Update reactive values, validate generated forms, inspect action payloads, and save and restore renderer state.
+lastModified: "2026-10-12"
+---
+
+Generated interfaces can stay interactive after generation finishes. The runtime owns their reactive values and form fields; your application owns persistence and any action that changes external data.
+
+## Save and restore a value
+
+Add to the count, save a snapshot, change the count again, then restore the snapshot. The example remounts the renderer with the saved state to demonstrate reopening a response.
+
+<ComponentPreview name="generative-state-demo" playground />
+
+Everything here is local. The snapshot lasts only while this preview is mounted. The state shown below the controls is the map emitted by `onStateUpdate`.
+
+## Declare defaults and updates
+
+This is the program used by the example:
+
+```text
+$quantity = 1
+root = Stack([TextContent("Example packing count: " + $quantity), buttons])
+buttons = Buttons([Button("Add one", @Set($quantity, $quantity + 1), "primary"), Button("Reset count", @Reset($quantity), "secondary")])
+```
+
+The declaration establishes the initial value. `@Set` updates it and `@Reset` returns it to that default. These updates happen in the renderer; they do not generate a new answer or call a model.
+
+## Capture the state map
+
+Pass `onStateUpdate` to receive state changes. Store that emitted map with the response, then pass it back as `initialState` when mounting a restored renderer.
+
+```tsx
+"use client"
+
+import { Renderer, honestLibrary } from "@/lib/generative"
+
+export function RestoredResponse({ response, state, saveState }: {
+  response: string
+  state: Record<string, unknown>
+  saveState: (state: Record<string, unknown>) => void
+}) {
+  return (
+    <Renderer
+      response={response}
+      library={honestLibrary}
+      initialState={state}
+      onStateUpdate={saveState}
+    />
+  )
+}
+```
+
+`saveState` is supplied by your application. The example does not choose a database or make a save request for you. When switching to another saved response, mount a renderer for that response so its initialization uses the correct snapshot.
+
+Reactive entries use `$`-prefixed keys. Form entries are grouped by form name and field name, with a `value` and `componentType`. Preserve the emitted structure instead of flattening it into a list of visible input values.
+
+## Build a validated form
+
+Use `Form` to group fields, `FormControl` to associate each field with a label and hint, and `Buttons` for its actions. This example requires a valid email:
+
+```text
+root = Stack([form])
+form = Form("contact", buttons, [emailField])
+emailField = FormControl("Email", Input("email", "you@example.com", "email", { required: true, email: true }), "Use a valid email address.")
+buttons = Buttons([Button("Send", @ToAssistant("Send contact form"), "primary")])
+```
+
+Select **Form** in the [renderer playground](/docs/ai/generative#try-it-locally). Submit an empty value, then a valid email. Invalid input stays in place with a field error; valid input emits an action that the playground displays locally.
+
+The form name is `contact` and its field name is `email`. Those names identify entries in the state map. The action carries form context; inspect the event before connecting it to your server's input format.
+
+## Submit through your application
+
+`onAction` receives the generated action. A continuation action asks for another assistant turn; it is not a database write. To save the submitted values, implement that operation in your handler and show its pending, success, and failure states.
+
+Client validation helps the user correct input. Validate it again and check authorization on the server. Keep the form state when a save fails so a retry does not require re-entering every field.
+
+During generation, set `isStreaming` so fields and generated actions remain disabled. Enable them when generation settles. If the stream failed, show that failure even if a partial form is visible.

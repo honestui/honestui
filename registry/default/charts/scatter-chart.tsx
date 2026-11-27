@@ -68,10 +68,28 @@ import {
   statusPointStyles,
   summarizeDataQuality,
   type DataStatus,
+  type DataQualitySummary,
   type DataStatusText,
   type PointQuality,
   type ResolvedDataStatusText,
 } from "@/registry/default/ui/charts/data-quality";
+import {
+  axisTruncation,
+  fitDomain,
+  formatCount,
+  HONESTY_PREFIX,
+  HonestyKeyItems,
+  honestyNotesHtml,
+  isLowSample,
+  readSampleSizes,
+  readValue,
+  resolveHonestyText,
+  type ChartHonestyText,
+  type HonestyKeyEntry,
+  type HonestyNote,
+  type ResolvedChartHonestyText,
+  type SampleSizeDisplay,
+} from "@/registry/default/ui/charts/honesty";
 import {
   CustomChart,
   ScatterChart as ScatterChartModule,
@@ -158,8 +176,52 @@ export interface ScatterChartProps<TData extends Record<string, unknown>> {
   yLowerKey?: keyof TData & string;
   yUpperKey?: keyof TData & string;
   dataStatusText?: DataStatusText;
+  /**
+   * The row field with the number of observations behind each point. Shown in
+   * the tooltip, or beside each point with `sampleSizeDisplay="label"`.
+   */
+  sampleSizeKey?: keyof TData & string;
+  /** Points with fewer observations get a dashed ring and a key entry. */
+  minSampleSize?: number;
+  /** Where the sample size shows. Defaults to the tooltip, because scatter plots are dense. */
+  sampleSizeDisplay?: SampleSizeDisplay;
+  /** Rewords the axis and sample-size text. */
+  honestyText?: ScatterHonestyText;
   chartOptions?: Record<string, unknown>;
   children?: ReactNode;
+}
+
+/** The shared honesty text, plus a notice for each axis, since both are value axes. */
+export type ScatterHonestyText = ChartHonestyText & {
+  xAxisStartsAt?: (value: string) => string;
+  xAxisEndsAt?: (value: string) => string;
+  xAxisDescription?: (value: string) => string;
+  yAxisStartsAt?: (value: string) => string;
+  yAxisEndsAt?: (value: string) => string;
+  yAxisDescription?: (value: string) => string;
+};
+
+type ResolvedScatterHonestyText = ResolvedChartHonestyText &
+  Required<Omit<ScatterHonestyText, keyof ChartHonestyText>>;
+
+const SCATTER_AXIS_TEXT: Required<Omit<ScatterHonestyText, keyof ChartHonestyText>> = {
+  xAxisStartsAt: (value) => `X axis starts at ${value}`,
+  xAxisEndsAt: (value) => `X axis ends at ${value}`,
+  xAxisDescription: (value) =>
+    `The x axis stops at ${value} instead of zero, so distances along it look larger than they are.`,
+  yAxisStartsAt: (value) => `Y axis starts at ${value}`,
+  yAxisEndsAt: (value) => `Y axis ends at ${value}`,
+  yAxisDescription: (value) =>
+    `The y axis stops at ${value} instead of zero, so distances along it look larger than they are.`,
+};
+
+function resolveScatterHonestyText(text?: ScatterHonestyText): ResolvedScatterHonestyText {
+  const axisText = { ...SCATTER_AXIS_TEXT };
+  for (const key of Object.keys(SCATTER_AXIS_TEXT) as (keyof typeof SCATTER_AXIS_TEXT)[]) {
+    const value = text?.[key];
+    if (value) axisText[key] = value;
+  }
+  return { ...resolveHonestyText(text), ...axisText };
 }
 
 export interface ScatterProps {
@@ -183,8 +245,14 @@ export interface AxisProps {
   tickFormatter?: (value: number, index: number) => string;
   label?: string;
   hideDots?: boolean;
-  min?: number;
+  /**
+   * The axis start. `"auto"` fits it to the data on round numbers. When the
+   * axis you set does not reach zero, the chart says so in its key.
+   */
+  min?: number | "auto";
   max?: number;
+  /** `"off"` hides the notice and break mark for an axis that does not reach zero. */
+  truncationNotice?: "auto" | "off";
 }
 
 const XAxis: FC<AxisProps> = () => null;
@@ -350,13 +418,15 @@ function finiteNumber(value: unknown) {
   return Number.isFinite(number) ? number : 0;
 }
 
+// The padded extent, snapped outward to round numbers so the edge ticks read
+// cleanly (3.0, not 3.0980000000000003).
 function extent(values: number[]) {
   if (!values.length) return { min: 0, max: 1 };
   const min = Math.min(...values);
   const max = Math.max(...values);
   if (min === max) return { min: min - 1, max: max + 1 };
   const pad = (max - min) * 0.06;
-  return { min: min - pad, max: max + pad };
+  return fitDomain([min - pad, max + pad]) ?? { min: min - pad, max: max + pad };
 }
 
 function scaleBubble(value: number, values: number[], minSize: number, maxSize: number) {
@@ -421,6 +491,125 @@ function buildMarkArea(params: {
   } as ScatterSeriesOption["markArea"];
 }
 
+// A break mark on the edge of the axis that does not reach zero: on the bottom
+// edge for x, on the left edge for y. Each sits a little away from the corner,
+// so the two never touch when both axes are cut.
+function axisBreakMark(params: {
+  axis: "x" | "y";
+  stroke: string;
+  background: string;
+  z: number;
+}): CustomSeriesOption {
+  const { axis, stroke, background, z } = params;
+  return {
+    id: `${HONESTY_PREFIX}axis-break-${axis}`,
+    type: "custom",
+    data: [[0]],
+    encode: { x: 0 },
+    silent: true,
+    clip: false,
+    z,
+    tooltip: { show: false },
+    renderItem: (itemParams) => {
+      const grid = itemParams.coordSys as unknown as { x: number; y: number; height: number };
+      const bottom = grid.y + grid.height;
+      if (axis === "x") {
+        const x = grid.x + 16;
+        const slash = (dx: number) => ({
+          type: "line" as const,
+          shape: { x1: x + dx - 2.5, y1: bottom + 3.5, x2: x + dx + 2.5, y2: bottom - 3.5 },
+          style: { stroke, lineWidth: 1, lineCap: "round" as const },
+        });
+        return {
+          type: "group",
+          children: [
+            { type: "rect", shape: { x: x - 1, y: bottom - 1.5, width: 6, height: 3 }, style: { fill: background } },
+            slash(0),
+            slash(4),
+          ],
+        };
+      }
+      const x = grid.x;
+      const y = bottom - 16;
+      const slash = (dy: number) => ({
+        type: "line" as const,
+        shape: { x1: x - 3.5, y1: y + dy + 2.5, x2: x + 3.5, y2: y + dy - 2.5 },
+        style: { stroke, lineWidth: 1, lineCap: "round" as const },
+      });
+      return {
+        type: "group",
+        children: [
+          { type: "rect", shape: { x: x - 1.5, y: y - 5, width: 3, height: 6 }, style: { fill: background } },
+          slash(0),
+          slash(-4),
+        ],
+      };
+    },
+  };
+}
+
+const NO_STATUS: DataQualitySummary = { statuses: [], hasRanges: false };
+
+type SamplePoint = { x: number; y: number; n: number; low: boolean; size: number };
+
+// `n` beside each point when labels are on, and a dashed ring around points
+// below the minimum. Low samples are ringed even when labels are off.
+function scatterSampleSeries(params: {
+  dataKey: string;
+  points: SamplePoint[];
+  showLabels: boolean;
+  format: (n: number) => string;
+  labelColor: string;
+  ringColor: string;
+  opacity: number;
+  z: number;
+}): CustomSeriesOption | null {
+  const { dataKey, points, showLabels, format, labelColor, ringColor, opacity, z } = params;
+  const items = points.filter((point) => showLabels || point.low);
+  if (!items.length) return null;
+  return {
+    id: `${HONESTY_PREFIX}n-${dataKey}`,
+    type: "custom",
+    data: items.map((point) => [point.x, point.y, point.n, point.low ? 1 : 0, point.size]),
+    encode: { x: 0, y: 1 },
+    silent: true,
+    clip: true,
+    z,
+    tooltip: { show: false },
+    renderItem: (_params, api) => {
+      const [cx, cy] = api.coord([api.value(0) as number, api.value(1) as number]);
+      const n = api.value(2) as number;
+      const low = api.value(3) === 1;
+      const radius = (api.value(4) as number) / 2;
+      const children: unknown[] = [];
+      if (low) {
+        children.push({
+          type: "circle",
+          shape: { cx, cy, r: radius + 3 },
+          style: { fill: "none", stroke: ringColor, lineWidth: 1.25, lineDash: [2, 1.5] },
+        });
+      }
+      if (showLabels) {
+        children.push({
+          type: "text",
+          style: {
+            text: format(n),
+            x: cx,
+            y: cy - radius - (low ? 5 : 3),
+            fill: labelColor,
+            fontSize: 9,
+            align: "center",
+            verticalAlign: "bottom",
+          },
+        });
+      }
+      return { type: "group", children, style: { opacity } } as unknown as ReturnType<
+        NonNullable<CustomSeriesOption["renderItem"]>
+      >;
+    },
+  };
+}
+
 // What a chart that reads data status knows about each row's point.
 type ScatterQuality = {
   x: PointQuality[];
@@ -447,6 +636,9 @@ function createTooltipFormatter(params: {
   scatters: ScatterSlot[];
   slot: TooltipSlot;
   selectedDataKey: string | null;
+  sampleSizes: (number | null)[] | null;
+  minSampleSize?: number;
+  honestyText: ResolvedScatterHonestyText;
 }) {
   const {
     quality,
@@ -458,6 +650,9 @@ function createTooltipFormatter(params: {
     scatters,
     slot,
     selectedDataKey,
+    sampleSizes,
+    minSampleSize,
+    honestyText,
   } = params;
   return (raw: unknown) => {
     const p = raw as {
@@ -510,12 +705,31 @@ function createTooltipFormatter(params: {
         }),
       );
     }
+    const n = sampleSizes?.[index] ?? null;
+    const honestyNotes: HonestyNote[] = [];
+    if (n !== null) {
+      rows.push(
+        tooltipRow({
+          indicatorHtml: '<div class="h-2.5 w-2.5 shrink-0"></div>',
+          labelText: honestyText.sampleSizeLabel,
+          valueText: formatCount(n),
+          dimmed,
+        }),
+      );
+      if (isLowSample(n, minSampleSize)) {
+        honestyNotes.push({
+          label: honestyText.lowSampleLabel(formatCount(minSampleSize as number)),
+          description: honestyText.lowSampleDescription,
+        });
+      }
+    }
     const seriesLabel = typeof item?.label === "string" ? item.label : p.seriesName;
     const pointLabel = pointNameDataKey ? String(datum?.[pointNameDataKey] ?? "") : "";
     const statusLabel = quality ? statusLabelHtml(status, quality.statusText) : "";
-    const notes = quality
-      ? statusNotesHtml(new Set<DataStatus>(status ? [status] : []), quality.statusText)
-      : "";
+    const notes =
+      (quality
+        ? statusNotesHtml(new Set<DataStatus>(status ? [status] : []), quality.statusText)
+        : "") + honestyNotesHtml(honestyNotes);
 
     return tooltipShell({
       label: [pointLabel, seriesLabel, statusLabel].filter(Boolean).join(" · "),
@@ -589,6 +803,10 @@ export function ScatterChart<TData extends Record<string, unknown>>({
   yLowerKey,
   yUpperKey,
   dataStatusText,
+  sampleSizeKey,
+  minSampleSize,
+  sampleSizeDisplay = "tooltip",
+  honestyText,
   chartOptions,
   children,
 }: ScatterChartProps<TData>) {
@@ -649,39 +867,103 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     if (qualityIssues) reportDataQualityIssues("ScatterChart", qualityIssues.split("\n"));
   }, [qualityIssues]);
 
-  // The axes make room for the bounds as well as the points.
-  const xRange = useMemo(
+  // The axes make room for the bounds as well as the points. An absent value
+  // is left out, never read as zero.
+  const xValues = useMemo(
     () =>
-      extent(
-        data
-          .flatMap((row, index) => {
-            const range = quality?.x[index].range;
-            return [Number(row[xDataKey]), ...(range ? [range.lower, range.upper] : [])];
-          })
-          .concat(referenceValues(references, "x"))
-          .filter(Number.isFinite),
-      ),
+      data
+        .flatMap((row, index) => {
+          const range = quality?.x[index].range;
+          const value = readValue(row[xDataKey]);
+          return [...(value === null ? [] : [value]), ...(range ? [range.lower, range.upper] : [])];
+        })
+        .concat(referenceValues(references, "x"))
+        .filter(Number.isFinite),
     [data, xDataKey, quality, references],
   );
-  const yRange = useMemo(
+  const yValues = useMemo(
     () =>
-      extent(
-        data
-          .flatMap((row, index) => {
-            const range = quality?.y[index].range;
-            return [Number(row[yDataKey]), ...(range ? [range.lower, range.upper] : [])];
-          })
-          .concat(referenceValues(references, "y"))
-          .filter(Number.isFinite),
-      ),
+      data
+        .flatMap((row, index) => {
+          const range = quality?.y[index].range;
+          const value = readValue(row[yDataKey]);
+          return [...(value === null ? [] : [value]), ...(range ? [range.lower, range.upper] : [])];
+        })
+        .concat(referenceValues(references, "y"))
+        .filter(Number.isFinite),
     [data, yDataKey, quality, references],
   );
+  const xRange = useMemo(() => extent(xValues), [xValues]);
+  const yRange = useMemo(() => extent(yValues), [yValues]);
+
+  const honestyTextResolved = useMemo(() => resolveScatterHonestyText(honestyText), [honestyText]);
+  const sampleSizes = useMemo(
+    () => (sampleSizeKey ? readSampleSizes(data, sampleSizeKey) : null),
+    [data, sampleSizeKey],
+  );
+
+  // Each axis is planned on its own: the bounds the app set (or fitted with
+  // "auto"), and whether they stop short of zero. A default axis fits the
+  // points and is not reported: a scatter plot compares positions, not lengths.
+  const axisPlan = useMemo(() => {
+    const text = honestyTextResolved;
+    const plan = (slot: AxisSlot, values: number[], which: "x" | "y") => {
+      let min = typeof slot.min === "number" ? slot.min : undefined;
+      let max = slot.max;
+      if (slot.min === "auto") {
+        const domain = fitDomain(values);
+        if (domain) {
+          min = domain.min;
+          max = max ?? domain.max;
+        }
+      }
+      const truncatedAt = axisTruncation(min ?? null, max ?? null);
+      const formatted =
+        truncatedAt === null ? "" : (slot.tickFormatter?.(truncatedAt, 0) ?? truncatedAt.toLocaleString());
+      const atTop = truncatedAt !== null && truncatedAt < 0;
+      const startsAt = which === "x" ? text.xAxisStartsAt : text.yAxisStartsAt;
+      const endsAt = which === "x" ? text.xAxisEndsAt : text.yAxisEndsAt;
+      const describe = which === "x" ? text.xAxisDescription : text.yAxisDescription;
+      return {
+        min,
+        max,
+        truncatedAt,
+        show: truncatedAt !== null && slot.truncationNotice !== "off",
+        label: atTop ? endsAt(formatted) : startsAt(formatted),
+        description: describe(formatted),
+      };
+    };
+    return { x: plan(xAxis, xValues, "x"), y: plan(yAxis, yValues, "y") };
+  }, [honestyTextResolved, xAxis, yAxis, xValues, yValues]);
+
+  const honestyEntries = useMemo((): HonestyKeyEntry[] => {
+    const text = honestyTextResolved;
+    const entries: HonestyKeyEntry[] = [];
+    for (const axis of [axisPlan.x, axisPlan.y]) {
+      if (axis.show) entries.push({ kind: "axis", label: axis.label, description: axis.description });
+    }
+    if (sampleSizes && sampleSizeDisplay === "label") {
+      entries.push({ kind: "sample", label: text.sampleSizeLabel, description: text.sampleSizeDescription });
+    }
+    if (sampleSizes?.some((n) => isLowSample(n, minSampleSize))) {
+      entries.push({
+        kind: "low-sample",
+        label: text.lowSampleLabel(formatCount(minSampleSize as number)),
+        description: text.lowSampleDescription,
+      });
+    }
+    return entries;
+  }, [honestyTextResolved, axisPlan, sampleSizes, sampleSizeDisplay, minSampleSize]);
+  const honestyAria = honestyEntries
+    .filter((entry) => entry.kind !== "sample")
+    .map((entry) => (entry.kind === "axis" ? ` ${entry.description}` : ` ${entry.label}.`))
+    .join("");
   const css = useMemo(() => buildChartCss(chartId, config), [chartId, config]);
   const defaultAriaLabel = `Scatter chart comparing ${String(
     config[yDataKey]?.label ?? yDataKey,
   )} and ${String(config[xDataKey]?.label ?? xDataKey)}${
     quality ? `.${dataQualityAriaSummary(quality.summary, statusText)}` : ""
-  }`;
+  }${honestyAria ? `${quality ? "" : "."}${honestyAria}` : ""}`;
 
   const liveRef = useRef<LiveState>({
     resolved: null,
@@ -729,8 +1011,8 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     const legendTop = legend.present && legend.verticalAlign === "top";
     const legendBottom = legend.present && legend.verticalAlign === "bottom";
     const splitColor = withAlpha(resolved.tokens.border, 0.8);
-    const xBounds = { min: xAxis.min ?? xRange.min, max: xAxis.max ?? xRange.max };
-    const yBounds = { min: yAxis.min ?? yRange.min, max: yAxis.max ?? yRange.max };
+    const xBounds = { min: axisPlan.x.min ?? xRange.min, max: axisPlan.x.max ?? xRange.max };
+    const yBounds = { min: axisPlan.y.min ?? yRange.min, max: axisPlan.y.max ?? yRange.max };
     const chartGrid: GridComponentOption = {
       left: 8,
       right: 8,
@@ -819,6 +1101,9 @@ export function ScatterChart<TData extends Record<string, unknown>>({
           scatters,
           slot: tooltip,
           selectedDataKey,
+          sampleSizes,
+          minSampleSize,
+          honestyText: honestyTextResolved,
         }),
       },
       series: [
@@ -853,6 +1138,41 @@ export function ScatterChart<TData extends Record<string, unknown>>({
 
         const opacity = selected ? 1 : SELECTION_DIM;
         const whiskers: CustomSeriesOption[] = [];
+        if (sampleSizes) {
+          const samplePoints = filtered.flatMap(({ datum, index }): SamplePoint[] => {
+            const n = sampleSizes[index];
+            if (n === null) return [];
+            const size =
+              scatter.variant === "bubble"
+                ? scaleBubble(
+                    finiteNumber(datum[scatter.sizeDataKey as string]),
+                    sizeValues,
+                    scatter.minSize,
+                    scatter.maxSize,
+                  )
+                : scatter.symbolSize;
+            return [
+              {
+                x: finiteNumber(datum[xDataKey]),
+                y: finiteNumber(datum[yDataKey]),
+                n,
+                low: isLowSample(n, minSampleSize),
+                size,
+              },
+            ];
+          });
+          const sampleMarks = scatterSampleSeries({
+            dataKey: scatter.dataKey,
+            points: samplePoints,
+            showLabels: sampleSizeDisplay === "label",
+            format: (count) => honestyTextResolved.sampleSize(formatCount(count)),
+            labelColor: resolved.tokens.mutedForeground,
+            ringColor: base,
+            opacity,
+            z: 3,
+          });
+          if (sampleMarks) whiskers.push(sampleMarks);
+        }
         if (quality) {
           const yRanges = filtered.flatMap(({ datum, index }) => {
             const range = quality.y[index].range;
@@ -939,6 +1259,18 @@ export function ScatterChart<TData extends Record<string, unknown>>({
         return [points, ...whiskers];
         }),
         ...(reference ? [reference] : []),
+        ...(["x", "y"] as const).flatMap((axis) =>
+          axisPlan[axis].show
+            ? [
+                axisBreakMark({
+                  axis,
+                  stroke: resolved.tokens.mutedForeground,
+                  background: resolved.tokens.background,
+                  z: 6,
+                }),
+              ]
+            : [],
+        ),
       ],
     };
   }, [
@@ -965,6 +1297,11 @@ export function ScatterChart<TData extends Record<string, unknown>>({
     yDataKey,
     yRange,
     quality,
+    axisPlan,
+    sampleSizes,
+    minSampleSize,
+    sampleSizeDisplay,
+    honestyTextResolved,
   ]);
 
   useEffect(() => {
@@ -1091,12 +1428,13 @@ export function ScatterChart<TData extends Record<string, unknown>>({
 
   // The status key takes the edge the series legend is not on, so the two never overlap.
   const statusKeyOnTop = legend.present && legend.verticalAlign === "bottom";
-  const statusKeyNode = quality && !isLoading && (
+  const statusKeyNode = (quality || honestyEntries.length > 0) && !isLoading && (
     <DataStatusKey
-      summary={quality.summary}
+      summary={quality?.summary ?? NO_STATUS}
       mark="point"
       text={statusText}
-      missingNote={quality.missingCount ? statusText.notShownLabel(quality.missingCount) : undefined}
+      missingNote={quality?.missingCount ? statusText.notShownLabel(quality.missingCount) : undefined}
+      extra={honestyEntries.length ? <HonestyKeyItems entries={honestyEntries} /> : undefined}
     />
   );
 

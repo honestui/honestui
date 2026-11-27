@@ -3,10 +3,28 @@
   "pages": [
     "index",
     "installation",
+    "ai-glow-border",
+    "ascii",
+    "audio-orb",
+    "aurora",
+    "blinds",
     "chromatic-image",
     "dither",
-    "blinds",
+    "dot-grid",
+    "fluid",
+    "fluted-glass",
     "grainient",
-    "light-rays"
+    "halftone",
+    "light-rays",
+    "liquid-glass",
+    "liquid-metal",
+    "mesh-gradient",
+    "metaballs",
+    "pixelate",
+    "pulsing-border",
+    "smoke-ring",
+    "voronoi",
+    "warp",
+    "water"
   ]
 }

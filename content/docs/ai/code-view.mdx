@@ -1,0 +1,148 @@
+---
+title: Code View
+metaTitle: React Code Viewer with Diffs and Line Numbers
+description: Show a file's code or a diff of it, with line numbers and a copy button.
+lastModified: "2026-11-04"
+---
+
+<ComponentPreview name="code-view-demo" previewClassName="h-auto min-h-[220px]" />
+
+## Overview
+
+Code View shows code an agent wrote or changed, in a compact panel. Pass `code` for a numbered listing, or `diff` for a unified diff where each changed line carries a sign and a tint.
+
+Lines are colored with [Honest Prose Syntax](/docs/ai/prose-syntax), in the language of the file name's extension. Pass `language` when the name has no extension, or `"plaintext"` for no colors. If your product already has a highlighter, pass `renderLine` to color each line with yours instead; a second highlighter would disagree with it.
+
+Code View shares its frame with [Prose Code Block](/docs/ai/prose-code-block): a shell with the header, around a panel with the code.
+
+## Anatomy
+
+<Anatomy title="CodeView">
+  <AnatomyItem name="Shell" description="The frame, with the file name, the diff counts, your actions, and Copy" />
+  <AnatomyItem name="Panel" description="Numbered lines in a scrolling block with a hairline edge" />
+  <AnatomyItem name="Sign" description="A plus or minus before each line of a diff" />
+</Anatomy>
+
+Installing `code-view` brings [Button](/docs/components/button) and [Honest Prose Syntax](/docs/ai/prose-syntax)'s React hook and theme along as registry dependencies. Import the installed `styles/prose-syntax-theme.css` once in your application root so the colors apply.
+
+## Behavior
+
+### Listing and diff
+
+A listing numbers every line. In a diff, removed lines take no number, so the numbers match the new file. A changed line has a light tint, and its sign sits in a stronger column at the start of the line.
+
+### Copy
+
+Copy puts the code on the clipboard. For a diff, it copies the new file's lines and leaves removed lines out. Its label reads "Copied", with a check, for a moment. If the browser refuses clipboard access, the block says "Copy failed" instead of pretending it worked.
+
+### Actions
+
+`actions` puts your own controls in the header, before Copy. Pass a button for each action your application handles, such as downloading the file. An embedded Code View has no header, so it shows none.
+
+### Long lines
+
+Lines do not wrap. The block scrolls sideways. A thin scrollbar and a fade at the end edge show there is more to see, and the fade clears when you reach the end.
+
+### Highlighting
+
+The source stays visible while it is highlighted, so nothing shifts or flashes. In a diff, the removed and added lines are highlighted together, so each keeps its colors.
+
+### Embedded
+
+`embedded` drops the frame and the header, leaving the numbered lines. Use it inside a surface that already names the file, such as an [Artifact Panel](/docs/ai/artifact-panel). The header's Copy button and a diff's counts go with it, so supply Copy from the surrounding surface. The code region is still named by `filename`.
+
+## Accessibility
+
+The block is a figure with the file name as its caption. When its lines are wider than the block, the code region can take focus, so a keyboard user can scroll them, and it is named by the file. A listing that fits adds no tab stop.
+
+Copy announces "Copied" or "Copy failed" through a polite status. Diff counts are read as "2 added" and "1 removed". A changed line is marked by its sign as well as its tint, and keeps the primary text color.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to your actions, then Copy, then the code when it scrolls |
+| Arrow keys | Scroll the focused code |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Copy |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/code-view"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Add the highlighter it uses.</Step>
+
+<CliBlock commands={["@honestai/prose-syntax-react"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="code-view" title="components/ai/code-view.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { CodeView } from "@/components/ai/code-view"
+
+<CodeView filename={file.path} code={file.contents} />
+
+<CodeView filename={edit.path} diff={edit.lines} />
+
+<CodeView filename="Terminal" language="bash" code={commands} />
+
+<CodeView filename={file.path} code={file.contents} renderLine={(text) => highlight(text, "ts")} />
+```
+
+## Examples
+
+### Diff
+
+Two lines added and one removed. The numbers follow the new file.
+
+<ComponentPreview name="code-view-diff" previewClassName="h-auto min-h-[240px]" />
+
+## API reference
+
+### CodeView
+
+Accepts native figure props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `filename` | string | Required | The file name or a short title. |
+| `code` | string | `""` | The source to list. Ignored when `diff` is passed. |
+| `diff` | `CodeDiffLine[]` | None | A unified diff. |
+| `language` | string | The file name's extension | The language to highlight, such as `"ts"`. `"plaintext"` turns colors off. |
+| `renderLine` | `(text: string, index: number) => ReactNode` | None | Colors one line with your own highlighter, in place of the built-in one. `index` counts the listed lines from zero. |
+| `actions` | ReactNode | None | Controls for the header, placed before Copy. |
+| `onCopy` | `(text: string) => void` | None | Runs after the text reaches the clipboard. |
+| `embedded` | boolean | `false` | Drops the frame and the header, including Copy. |
+| `labels` | `Partial<CodeViewLabels>` | English | Copy states and the names read for counts. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `CodeDiffLine` | `text`, and optional `kind` of `"context"`, `"added"`, or `"removed"` |

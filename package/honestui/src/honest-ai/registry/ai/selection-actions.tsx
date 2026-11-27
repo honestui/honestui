@@ -44,7 +44,7 @@ const controlText =
   "[font-size:var(--hui-font-size-control)] [letter-spacing:var(--hui-letter-spacing-control)] [line-height:var(--hui-line-height-control)]"
 
 // Controls sit inside the frame padding, so their corners follow the frame's.
-const insetControl = "rounded-[var(--hui-radius-frame-panel)]"
+const insetControl = "rounded-[var(--hui-radius-4)]"
 
 // Both layers occupy the bar's single grid cell.
 const layer =
@@ -144,7 +144,7 @@ function SelectionActions({
       data-slot="selection-actions"
       data-status={status}
       className={cn(
-        "inline-grid w-fit max-w-full min-w-0 outline-none focus-visible:[outline:var(--hui-focus-ring)] rounded-[var(--hui-radius-frame)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] p-[var(--hui-frame-padding)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay)]",
+        "inline-grid w-fit max-w-full min-w-0 outline-none focus-visible:[outline:var(--hui-focus-ring)] rounded-[var(--hui-radius-5)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-overlay)] p-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)]",
         controlText,
         className
       )}
@@ -193,7 +193,7 @@ function SelectionActions({
                   insetControl
                 )}
               />
-              <Button type="submit" size="icon-sm" className={insetControl} disabled={trimmed === ""} aria-label={labels.send}>
+              <Button type="submit" size="icon-sm" className="rounded-full" disabled={trimmed === ""} aria-label={labels.send}>
                 <ArrowUpIcon aria-hidden="true" strokeWidth={2} />
               </Button>
             </form>

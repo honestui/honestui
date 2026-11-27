@@ -100,6 +100,17 @@ type PasteSession = {
   mapping: PasteTableMapping
 }
 
+/** Reads a parsed table: a first row that names any field is taken as the header row. */
+function createSession(table: string[][], columns: PasteTableColumn[]): PasteSession {
+  const headerMapping = matchColumns(table[0] ?? [], columns)
+  const hasHeaderRow = headerMapping.some((key) => key !== null)
+  return {
+    rows: table.map((cells, id) => ({ id, cells })),
+    hasHeaderRow,
+    mapping: hasHeaderRow ? headerMapping : mapColumnsByPosition(table[0]?.length ?? 0, columns),
+  }
+}
+
 type CellAddress = { rowId: number; column: number }
 
 function cellKey({ rowId, column }: CellAddress) {
@@ -126,6 +137,12 @@ export type PasteTableProps = Omit<React.ComponentProps<"section">, "onPaste"> &
   delimiter?: string
   /** A paste with more data rows than this is refused with a message. */
   maxRows?: number
+  /**
+   * Rows to open the review step with, as if they had been pasted. Read once on
+   * mount: change the component's `key` to load different rows. Useful after a
+   * step such as CSV Column Mapper, whose `table` puts field labels in the first row.
+   */
+  defaultRows?: string[][] | undefined
   disabled?: boolean
   labels?: Partial<PasteTableLabels> | undefined
 }
@@ -135,6 +152,7 @@ function PasteTable({
   onImport,
   delimiter = "\t",
   maxRows = 1000,
+  defaultRows,
   disabled = false,
   labels: labelsProp,
   className,
@@ -142,7 +160,9 @@ function PasteTable({
 }: PasteTableProps) {
   const labels = React.useMemo(() => ({ ...defaultPasteTableLabels, ...labelsProp }), [labelsProp])
 
-  const [session, setSession] = React.useState<PasteSession | null>(null)
+  const [session, setSession] = React.useState<PasteSession | null>(() =>
+    defaultRows && defaultRows.length > 0 ? createSession(defaultRows, columns) : null
+  )
   const [draft, setDraft] = React.useState("")
   const [pasteError, setPasteError] = React.useState<string | null>(null)
   const [importedCount, setImportedCount] = React.useState<number | null>(null)
@@ -196,19 +216,14 @@ function PasteTable({
       return
     }
 
-    const headerMapping = matchColumns(table[0], columns)
-    const hasHeaderRow = headerMapping.some((key) => key !== null)
-    const rowCount = table.length - (hasHeaderRow ? 1 : 0)
+    const next = createSession(table, columns)
+    const rowCount = next.rows.length - (next.hasHeaderRow ? 1 : 0)
     if (rowCount > maxRows) {
       setPasteError(labels.tooManyRows({ rows: rowCount, maxRows }))
       return
     }
 
-    setSession({
-      rows: table.map((cells, id) => ({ id, cells })),
-      hasHeaderRow,
-      mapping: hasHeaderRow ? headerMapping : mapColumnsByPosition(table[0].length, columns),
-    })
+    setSession(next)
     setDraft("")
     setPasteError(null)
     setImportedCount(null)

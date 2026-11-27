@@ -215,13 +215,13 @@ function CodeView({
     <figure
       data-slot="code-view"
       className={cn(
-        // A shell with the header, around a panel with the code, shared with Prose Code Block.
-        "not-prose m-0 w-full min-w-0 rounded-[var(--hui-radius-code-block)] bg-[var(--hui-color-background-neutral-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]",
+        // One plate: a slim header over the code, split by a hairline.
+        "not-prose m-0 w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
         className
       )}
       {...props}
     >
-      <figcaption className="flex min-h-[var(--hui-control-height-sm)] min-w-0 items-center gap-[var(--hui-space-3)] ps-[var(--hui-space-4)]">
+      <figcaption className="flex min-h-[var(--hui-space-10)] min-w-0 items-center gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]">
         <span className="min-w-0 truncate font-mono text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-small)]">
           {filename}
         </span>
@@ -261,11 +261,9 @@ function CodeView({
           {copyState === "copied" ? labels.copied : copyState === "failed" ? labels.copyFailed : ""}
         </span>
       </figcaption>
-      <div className="mt-[var(--hui-space-2)] overflow-hidden rounded-[var(--hui-radius-code-block-inner)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)]">
-        {listing}
-      </div>
+      <div className="min-w-0">{listing}</div>
       {copyState === "failed" && (
-        <p className="m-0 px-[var(--hui-space-4)] pt-[var(--hui-space-3)] pb-[var(--hui-space-2)] text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+        <p className="m-0 border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)] text-[var(--hui-color-foreground-danger-primary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
           {labels.copyFailed}
         </p>
       )}

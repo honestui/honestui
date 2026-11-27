@@ -1,0 +1,68 @@
+---
+title: Installation
+metaTitle: Install Honest AI Generative UI
+description: Install the React renderer, add its styles, and choose the chat and server bundles you need.
+lastModified: "2026-10-12"
+---
+
+The Honest UI CLI copies Generative UI into your project under `lib/generative`. You can edit that source alongside your application.
+
+## Prepare your project
+
+Use React 19, Tailwind CSS v4, and a project initialized with Honest UI. If you do not have `components.json`, run:
+
+```bash
+npx honestui@latest init
+```
+
+See the [Honest AI installation guide](/docs/ai/installation) for the shared project requirements.
+
+## Add the renderer
+
+<CliBlock commands={["@honestai/generative-ui"]} />
+
+This installs the parser, React renderer, default component libraries, form and chart adapters, and the JSON specs used on the server. Imported Honest AI and Honest UI components are declared as dependencies of the bundle.
+
+For a conversation with a composer and thread history, add:
+
+<CliBlock commands={["@honestai/generative-chat"]} />
+
+For provider stream validation, optional repair, and server tool helpers, add:
+
+<CliBlock commands={["@honestai/generative-server"]} />
+
+The chat and server bundles both depend on `generative-ui`. Review the CLI's files and dependency changes before committing, especially if you have customized an existing component.
+
+## Add the styles
+
+Generative UI uses the existing Honest UI theme tokens. Markdown also needs [Honest Prose](/docs/ai/prose), which is declared through the Markdown dependency. Keep the Prose imports added during installation.
+
+Add the chart stylesheet to your global CSS, with the layer order declared before either import:
+
+```css
+@layer properties, theme, base, components, utilities;
+
+@import "tailwindcss";
+@import "honestui/charts.css";
+```
+
+The layer declaration keeps Tailwind's reset below component styles and utilities. Without that order, importing compiled chart CSS can change spacing and table styles elsewhere in the application.
+
+## Check the installation
+
+Copy the [fixed-program example](/docs/ai/generative/renderer#render-a-fixed-program) into a client component. You should see a heading and a card before configuring any model endpoint.
+
+If the components appear without their usual spacing, check the global CSS imports and theme tokens first. If Markdown appears as plain unformatted text, check the Prose setup. If the parser rejects a component name, check that the program and selected library match.
+
+## Files you will use
+
+| File or directory | Purpose |
+| --- | --- |
+| `lib/generative/index.ts` | Renderer, library definitions, and component-authoring exports |
+| `lib/generative/chat.tsx` | Chat shell and headless chat exports, when installed |
+| `lib/generative/runtime/core` | Server-safe parser, prompt generation, and validation |
+| `lib/generative/runtime/server` | Provider stream and server tool helpers, when installed |
+| `lib/generative/spec.json` | Application library spec, with a `Stack` root |
+| `lib/generative/chat-spec.json` | Chat library spec and prompt options, with a `Stack` root |
+
+After changing a component contract, [update the matching server spec](/docs/ai/generative/library#keep-the-server-spec-in-sync). A stale spec can cause the model to generate props or components your renderer no longer accepts.

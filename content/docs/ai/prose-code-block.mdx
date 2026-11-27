@@ -1,0 +1,114 @@
+---
+title: Prose Code Block
+metaTitle: React Code Block for Markdown and Chat Replies
+description: Code in a document, framed like the docs' code blocks, with its language and a copy button.
+lastModified: "2026-11-04"
+---
+
+<ComponentPreview name="prose-code-block-demo" previewClassName="h-auto min-h-[200px]" />
+
+## Overview
+
+Prose Code Block shows code that belongs in a document: a fenced block in [Markdown](/docs/ai/markdown), or a code block a model generated in a chat reply. A shell holds the language and Copy; the code sits in a panel inside it.
+
+It does not highlight syntax itself. Pass `renderLine` and `codeClassName="honest-syntax"` to color it with [Honest Prose Syntax](/docs/ai/prose-syntax), as Markdown does. For a file an agent wrote or changed, with line numbers or a diff, use [Code View](/docs/ai/code-view).
+
+## Anatomy
+
+<Anatomy title="ProseCodeBlock">
+  <AnatomyItem name="Shell" description="The frame, with the language or file name, your actions, and Copy" />
+  <AnatomyItem name="Panel" description="The code, in a scrolling block with a hairline edge" />
+</Anatomy>
+
+Installing `prose-code-block` brings [Button](/docs/components/button) along as a registry dependency.
+
+## Behavior
+
+### Copy
+
+Copy puts the code on the clipboard, and its label reads "Copied" with a check for a moment. If the browser refuses clipboard access, the block says "Copy failed" instead of pretending it worked. Copy is always visible, so it works with touch and keyboard as well as a pointer.
+
+### Actions
+
+`actions` puts your own controls in the shell, before Copy. Pass a button for each action your application handles, such as downloading the file.
+
+### Long lines
+
+Lines do not wrap. The panel scrolls sideways, with a thin scrollbar and a fade at the end edge while more is out of view.
+
+## Accessibility
+
+The block is a figure with the language or file name as its caption. When its lines are wider than the panel, the panel can take focus, so a keyboard user can scroll them, and it is named by the same label. A block that fits adds no tab stop. Copy is a button with a visible "Copy" label, and it announces "Copied" or "Copy failed" through a polite status.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to your actions, then Copy, then the code when it scrolls |
+| Arrow keys | Scroll the focused code |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Copy |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/prose-code-block"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="prose-code-block" title="components/ai/prose-code-block.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { ProseCodeBlock } from "@/components/ai/prose-code-block"
+import { SyntaxLine, useSyntax } from "@/lib/prose-syntax-react"
+
+const syntax = useSyntax(code, "ts")
+
+<ProseCodeBlock
+  label="export.ts"
+  code={code}
+  codeClassName="honest-syntax"
+  renderLine={(line, index) => (syntax?.lines[index] ? <SyntaxLine tokens={syntax.lines[index]} /> : line)}
+/>
+```
+
+## API reference
+
+### ProseCodeBlock
+
+Accepts native figure props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | The language or file name, shown in the shell and naming the code. |
+| `code` | string | Required | The source to show and copy. |
+| `renderLine` | `(text: string, index: number) => ReactNode` | None | Colors one line. `index` counts lines from zero. |
+| `codeClassName` | string | None | Classes for the code panel, such as `honest-syntax`. |
+| `codeProps` | `ComponentProps<"pre">` | None | Attributes for the code panel, such as `data-syntax-palette`. |
+| `actions` | ReactNode | None | Controls for the shell, placed before Copy. |
+| `onCopy` | `(text: string) => void` | None | Runs after the text reaches the clipboard. |
+| `labels` | `Partial<ProseCodeBlockLabels>` | English | The Copy button's name and its status messages. |

@@ -1,0 +1,92 @@
+---
+title: Confidence Bands
+description: Shade the range a forecast or estimate could fall in, so a single line does not claim more precision than it has.
+image: /og/og-image.png
+---
+
+<ComponentPreview title="<LineChart.Band />" name="ex-confidence-band-echarts-line-chart" />
+
+## Overview
+
+A forecast drawn as one line reads as a promise. The model behind it almost always gives a range, and the range is the honest part: next month could be 380 or 470. `Band` shades that range around the series, so readers see how far the line could move.
+
+Bands are drawn only from bounds you supply. The chart never widens, smooths, or extends a range on its own.
+
+## Usage
+
+Put the lower and upper bound of each row in the data, then add a `Band` for each interval. Tie it to a series with `dataKey` so it takes that series' color and appears on its tooltip row.
+
+```tsx
+import { LineChart } from "honestui/charts";
+
+const data = [
+  { week: "W1", tickets: 412, status: "measured", low80: 412, high80: 412, low50: 412, high50: 412 },
+  { week: "W2", tickets: 430, status: "forecast", low80: 398, high80: 463, low50: 414, high50: 447 },
+  // ...
+];
+
+<LineChart data={data} config={chartConfig} xDataKey="week">
+  <LineChart.XAxis dataKey="week" />
+  <LineChart.YAxis />
+  <LineChart.Tooltip />
+  <LineChart.Band dataKey="tickets" lowerKey="low80" upperKey="high80" label="80% interval" />
+  <LineChart.Band dataKey="tickets" lowerKey="low50" upperKey="high50" label="50% interval" />
+  <LineChart.Line dataKey="tickets" statusKey="status" />
+</LineChart>
+```
+
+Add one `Band` per interval. Each band is a light fill, so nested intervals darken where they overlap and the order of the parts does not matter. Pair the band with a `forecast` status on the projected rows to dash the line where it stops being a measurement.
+
+## Behavior to know about
+
+- **Only where you have bounds.** A band is drawn across consecutive rows that both have a lower and an upper bound. It stops at a row without bounds and starts again after it. A single row with bounds becomes a short pill.
+- **Bands and ranges are different.** `lowerKey` and `upperKey` on a series, from [Data Status](/docs/charts/data-status), draw a whisker at each point and never join them. Use those for measurements with separate error bounds. Use `Band` when the bounds describe a continuous range, such as a forecast interval.
+- **The axis fits the bounds.** The value axis grows to include every bound, so a band is never clipped.
+- **Area charts.** The band is drawn above the area's fill, so it reads against it. Percent stacks skip bands, because bounds on a value are not bounds on its share.
+- **Combo charts.** Bands attach to line series. Bar charts have no band; use Data Status ranges for bars.
+- **Invalid bounds.** In development, the chart logs a warning and skips a row whose bounds are out of order.
+
+## Accessibility
+
+Each band has a key entry with its label and explanation, and the tooltip shows each band's range and label on the series' row. The default `ariaLabel` names the bands in the chart.
+
+## Changing the text
+
+| Field | Default |
+| --- | --- |
+| `intervalLabel` | "Interval", used for a band without a `label` |
+| `intervalDescription` | "The range supplied with the values. The true value may fall anywhere inside it." |
+
+See [Honest Charts](/docs/charts/honesty) for the full `honestyText` object.
+
+## Examples
+
+### Area chart
+
+<ComponentPreview title="<AreaChart.Band />" name="ex-confidence-band-echarts-area-chart" />
+
+### Combo chart
+
+<ComponentPreview title="<ComboChart.Band /> on a line series" name="ex-confidence-band-echarts-combo-chart" />
+
+## API Reference
+
+<ApiHeading>Band</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="lowerKey" type="string" required>
+    The row field that holds the lower bound.
+  </ApiRow>
+  <ApiRow name="upperKey" type="string" required>
+    The row field that holds the upper bound.
+  </ApiRow>
+  <ApiRow name="dataKey" type="string">
+    The series the band belongs to. The band takes its color, shows its range on that series' tooltip row, and dims with it when another series is selected.
+  </ApiRow>
+  <ApiRow name="label" type="string">
+    Names the band in the key and the tooltip, such as "80% interval".
+  </ApiRow>
+  <ApiRow name="color" type="string">
+    A chart config key or any CSS color. Defaults to the series color.
+  </ApiRow>
+</ApiTable>

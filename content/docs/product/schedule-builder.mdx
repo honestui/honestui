@@ -1,0 +1,261 @@
+---
+title: Schedule Builder
+description: Build a recurring schedule with friendly controls or a raw cron expression. The schedule is read back as a sentence, with the next five runs in the time zone the job runs in.
+---
+
+<ComponentPreview name="schedule-builder-demo" previewClassName="h-auto min-h-[460px]" />
+
+## Overview
+
+Schedule Builder edits one five-field cron expression, the string most job runners and schedulers store. Common shapes get controls that cannot produce a wrong expression: every few minutes, hourly, daily, weekly on chosen days, and monthly on a day. Anything else is typed as cron.
+
+Three things are shown under the controls, so the person can check the result before it runs:
+
+- **A sentence.** "Every weekday at 9:00 AM" says when the job runs. It is built from the expression itself, so it also describes hand-written cron.
+- **The expression.** `0 9 * * 1-5` is what your application stores.
+- **The next runs.** These are read in the zone the job runs in, with daylight saving changes applied.
+
+The component calculates times. It does not run jobs, store the schedule, or know when the job last ran. Your scheduler decides those, and it must use the same time zone as the preview.
+
+## Anatomy
+
+<Anatomy title="ScheduleBuilder">
+  <AnatomyItem name="ScheduleBuilder" description="Holds the expression, the time zone, and the friendly schedule being edited">
+    <AnatomyItem name="ScheduleBuilderControls" description="The frequency menu and the controls for that frequency, or the cron field" />
+    <AnatomyItem name="ScheduleBuilderSummary" description="The schedule as a sentence and as cron, or why the expression cannot be read" />
+    <AnatomyItem name="ScheduleBuilderPreview" description="The time zone menu and the next runs, read in that zone" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing `schedule-builder` brings `Select`, `Input`, and `Toggle` along as registry dependencies. The cron parser and the run calculator are in `schedule-builder-utils.ts` and need no package.
+
+## Behavior
+
+### Friendly shapes and cron
+
+An expression opens in the friendliest control that runs at exactly the same times. `*/15 * * * *` opens as "Every few minutes", and `0 9 * * 1-5` opens as "Weekly" with Monday to Friday pressed. An expression no control can state, such as `0 9-17 * * *` or `0 6 1 * 1`, opens in the cron field. Nothing is rewritten on the way in.
+
+Changing the frequency keeps the time of day where both shapes have one. Choosing "Custom (cron)" copies the current schedule into the cron field.
+
+Minute intervals are limited to those that divide an hour: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, and 30. `*/7` runs at :56 and then again at :00, four minutes later, so it is not offered as "every 7 minutes". Hour intervals divide a day in the same way.
+
+### What cron accepts
+
+Each of the five fields accepts these forms:
+
+- `*`
+- a number
+- a range, such as `1-5`
+- a step, such as `*/15`, `1-30/5`, or `5/15`
+- a list, such as `1,15`
+
+Month and weekday names such as `JAN` and `MON` are accepted. So are `7` for Sunday and the macros `@hourly`, `@daily`, `@weekly`, `@monthly`, and `@yearly`.
+
+A range that wraps around, such as `FRI-MON`, is refused rather than guessed at. Seconds, years, `L`, `W`, and `#` belong to other cron dialects and are not read.
+
+When both the day-of-month and day-of-week fields are restricted, a day that matches either one runs. `0 6 1 * 1` runs on the 1st and on every Monday. When either field starts with `*`, a day must match both. This follows Vixie cron and its descendants, and the sentence says which rule applies.
+
+### Time zones
+
+Cron times are wall-clock times in a zone. The preview reads them in `timeZone`. That defaults to the viewer's zone and can be changed from the menu.
+
+Daylight saving changes are handled as most schedulers handle them:
+
+- **A time that is skipped when clocks move forward** runs after the change. A 2:30 job on that day runs at 3:30, and the preview marks it "Clocks change".
+- **A time that happens twice when clocks move back** runs once, the first time.
+- **A run that a moved time would duplicate** happens only once.
+
+Your scheduler must make the same choices for the preview to be right.
+
+### Validity
+
+Every edit calls `onValueChange`, including edits that leave the cron field invalid. `details.valid` and `details.error` say whether it can be saved. The summary shows why an expression cannot be read, such as "The minute must be 0 to 59. This has 61."
+
+A monthly schedule on the 29th, 30th, or 31st skips months without that day, and the summary says so.
+
+## Accessibility
+
+The builder is a region named by its `aria-label`, or by its summary when no label is given. Every control is named by its row label. The weekday toggles are named with the full day, so a screen reader reads "Saturday" and not "Sat".
+
+The summary is a polite status region. Changes are announced as the schedule is edited, including the reason an expression is invalid. The cron field is described by the field order and by that status, and it sets `aria-invalid` while the expression cannot be read.
+
+The next runs are an ordered list named "Next 5 runs". A run moved by a clock change has a visible label and a full explanation in its tooltip. Placeholder rows are hidden from screen readers while the clock is read after hydration.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["schedule-builder"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the `select`, `input`, and `toggle` components.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="schedule-builder" title="components/ui/schedule-builder/schedule-builder-types.ts" file="schedule-builder-types.ts" />
+
+<ComponentSource name="schedule-builder" title="components/ui/schedule-builder/schedule-builder-utils.ts" file="schedule-builder-utils.ts" />
+
+<ComponentSource name="schedule-builder" title="components/ui/schedule-builder/schedule-builder.tsx" file="schedule-builder.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Store the expression and the zone together:
+
+```tsx
+import { ScheduleBuilder } from "@/components/ui/schedule-builder/schedule-builder"
+
+const [cron, setCron] = React.useState("0 9 * * 1-5")
+const [zone, setZone] = React.useState("Europe/Berlin")
+
+<ScheduleBuilder
+  aria-label="Report schedule"
+  value={cron}
+  onValueChange={setCron}
+  timeZone={zone}
+  onTimeZoneChange={setZone}
+/>
+```
+
+### Saving only valid schedules
+
+```tsx
+const [valid, setValid] = React.useState(true)
+
+<ScheduleBuilder
+  value={cron}
+  onValueChange={(next, details) => {
+    setCron(next)
+    setValid(details.valid)
+  }}
+/>
+<Button disabled={!valid}>Save</Button>
+```
+
+### Offering fewer zones
+
+```tsx
+<ScheduleBuilder timeZones={["UTC", "America/New_York", "Europe/London"]} />
+```
+
+### Without the builder
+
+The parser, the sentence, and the run calculator are exported for server code, emails, and job lists:
+
+```tsx
+import { describeCron, getNextRuns } from "@/components/ui/schedule-builder/schedule-builder-utils"
+
+describeCron("0 9 * * 1-5") // "Every weekday at 9:00 AM"
+getNextRuns("0 9 * * 1-5", { timeZone: "Europe/Berlin", count: 3 })
+```
+
+### Wording
+
+Every word and sentence comes from `labels`, and dates, times, and day and month names use `locale`:
+
+```tsx
+<ScheduleBuilder
+  locale="de-DE"
+  labels={{
+    everyMinutes: (n) => `alle ${n} Minuten`,
+    nextRuns: (n) => `Nächste ${n} Ausführungen`,
+  }}
+/>
+```
+
+## Don't do this
+
+### Storing the expression without its zone
+
+```tsx
+// Bad. "0 9 * * *" is 9:00 somewhere; the server will pick its own zone.
+save({ cron })
+```
+
+```tsx
+// Good.
+save({ cron, timeZone })
+```
+
+### Previewing in a zone the scheduler does not use
+
+If your runner schedules in UTC, pass `timeZones={["UTC"]}`, so the preview cannot show times the job will not keep.
+
+### Turning every-N-minutes into cron by hand
+
+```tsx
+// Bad. */45 runs at :00 and :45, so the gap is 45 minutes and then 15.
+`*/${minutes} * * * *`
+```
+
+Use the friendly controls, which only offer intervals that repeat evenly, or write the minutes out.
+
+## Examples
+
+### Custom cron
+
+A backup that runs on the 1st of the month or on any Monday. Type an invalid expression to see the error, and Save follows `details.valid`.
+
+<ComponentPreview name="schedule-builder-cron" previewClassName="h-auto min-h-[520px]" />
+
+### Daylight saving
+
+A 2:30 job in New York, counted from two days before clocks move forward. The run on 8 March happens at 3:30 and is marked. Switch the zone to UTC to compare.
+
+<ComponentPreview name="schedule-builder-daylight" previewClassName="h-auto min-h-[440px]" />
+
+## API reference
+
+### ScheduleBuilder
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | string | None | A five-field cron expression. |
+| `defaultValue` | string | `"0 9 * * 1-5"` | The initial expression when uncontrolled. |
+| `onValueChange` | `(expression, details) => void` | None | Runs on every edit. `details` has `schedule`, `valid`, `error`, and `description`. |
+| `timeZone` | string | None | The IANA zone the schedule runs in. |
+| `defaultTimeZone` | string | The viewer's zone | The initial zone when uncontrolled. |
+| `onTimeZoneChange` | `(timeZone) => void` | None | Runs when a zone is chosen. |
+| `timeZones` | `string[]` | The viewer's zone, UTC, and seven large cities | Zones offered in the menu. Invalid names are dropped. |
+| `runCount` | number | `5` | How many upcoming runs the preview lists. |
+| `now` | `Date` | The current time | The instant the preview counts from. Refreshes every minute when left out. |
+| `locale` | `Intl.LocalesArgument` | The browser's locale | Formats dates, times, and names. |
+| `disabled` | boolean | `false` | Disables every control. |
+| `labels` | `Partial<ScheduleBuilderLabels>` | English | Every word and sentence the builder writes. |
+
+### ScheduleBuilderControls, ScheduleBuilderSummary, ScheduleBuilderPreview
+
+Accept native div props. Render them as children of `ScheduleBuilder` to reorder or leave one out. The summary has `data-state` set to `valid` or `error`.
+
+### Helpers
+
+| Export | Shape |
+| --- | --- |
+| `parseCron` | `(expression) => { ok: true, schedule } \| { ok: false, error }` |
+| `describeCron` | `(expression, { locale?, labels? }) => string \| null` |
+| `getNextRuns` | `(expression, { from?, count?, timeZone?, searchYears? }) => { date, shifted }[]` |
+| `scheduleFromCron` | `(expression) => Schedule`, the friendliest shape with the same runs |
+| `scheduleToCron` | `(schedule) => string` |
+| `convertSchedule` | `(schedule, kind) => Schedule`, keeping the time of day |
+| `CronError` | `fieldCount`, `invalidValue`, `outOfRange`, or `invalidStep`, with the field and token |

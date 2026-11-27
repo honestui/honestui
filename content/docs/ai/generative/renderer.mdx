@@ -1,0 +1,137 @@
+---
+title: Renderer
+metaTitle: Render and Stream Honest AI Lang in React
+description: Render a fixed program, understand the language, stream accumulated output, and handle actions and diagnostics.
+lastModified: "2026-10-12"
+---
+
+`Renderer` takes a text program and the library allowed to render it. Start with fixed source to verify your components and styles, then replace that source with model output.
+
+## Render a fixed program
+
+After [installing `generative-ui`](/docs/ai/generative/installation), copy this into a client component:
+
+```tsx
+"use client"
+
+import { Renderer, honestLibrary } from "@/lib/generative"
+
+const response = `
+root = Stack([heading, card])
+heading = InlineHeader("Trip checklist", "Example content")
+card = Card([TextContent("Pack your charger and check your booking.")])
+`
+
+export function GeneratedChecklist() {
+  return <Renderer response={response} library={honestLibrary} />
+}
+```
+
+You should see a heading followed by a card. This example makes no model or network request.
+
+## Read the language
+
+Honest AI Lang describes a component tree with named statements. `root` is the entry point. Each component call uses the positional arguments in its library signature. Statements can refer to other statements, including ones declared later.
+
+In the example above, `Stack` contains `heading` and `card`. `Card` contains a `TextContent` component. Changing the text changes the content; changing the children array changes the layout.
+
+Use arrays for lists, double quotes for strings, and objects for options such as `{ required: true, email: true }`. Component names and argument order must match the [library contracts](/docs/ai/generative/library#read-a-component-signature). Both libraries expect `Stack` at the root. The chat library's `Stack` takes only children.
+
+A form can emit an action after validation:
+
+```text
+root = Stack([form])
+form = Form("contact", buttons, [emailField])
+emailField = FormControl("Email", Input("email", "you@example.com", "email", { required: true, email: true }), "Use a valid email address.")
+buttons = Buttons([Button("Send", @ToAssistant("Send contact form"), "primary")])
+```
+
+`@ToAssistant` requests a conversation continuation. In a standalone renderer, handle it through `onAction`. In the chat shell, the default handler continues the conversation. Neither path saves a contact record for you.
+
+## Stream a response
+
+Pass **all text received so far** as `response`. Do not pass only the latest token. The parser reads incomplete statements while the stream is arriving. Set `isStreaming` to disable generated form controls and actions until generation ends.
+
+```tsx
+"use client"
+
+import { Renderer, honestLibrary } from "@/lib/generative"
+
+export function GeneratedResponse({ response, isStreaming }: {
+  response: string
+  isStreaming: boolean
+}) {
+  return (
+    <Renderer
+      response={response}
+      library={honestLibrary}
+      isStreaming={isStreaming}
+    />
+  )
+}
+```
+
+Your transport owns accumulation, completion, and cancellation. If the request fails, show that failure beside the rendered content. A partial interface is not proof that generation finished successfully.
+
+## Handle actions and errors
+
+Use `onAction` to receive form, button, follow-up, and URL actions. The example below displays the event locally so you can inspect its shape before adding a server operation:
+
+```tsx
+"use client"
+
+import { useState } from "react"
+import { Renderer, honestLibrary, type HonestAIError } from "@/lib/generative"
+
+export function InspectGeneratedResponse({ response }: { response: string }) {
+  const [action, setAction] = useState("")
+  const [errors, setErrors] = useState<HonestAIError[]>([])
+
+  return (
+    <div>
+      <Renderer
+        response={response}
+        library={honestLibrary}
+        onAction={(event) => setAction(JSON.stringify(event, null, 2))}
+        onError={setErrors}
+      />
+      {errors.length > 0 && (
+        <ul aria-label="Generation diagnostics">
+          {errors.map((error, index) => <li key={index}>{error.message}</li>)}
+        </ul>
+      )}
+      {action && <pre aria-label="Last action">{action}</pre>}
+    </div>
+  )
+}
+```
+
+`onError` receives an empty array when errors clear. It can also include warnings for content that still renders. Distinguish a malformed program from a failed data query: one needs corrected output, while the other may need a retry of its data source.
+
+For a real action, validate its arguments and authorize the operation on your server before writing data. Keep submitted values out of production logs.
+
+## Restore state and connect data
+
+`onStateUpdate` receives the current state map when fields change. Save that map with the response and pass it back as `initialState` when restoring the interface. Form entries use `{ formName: { fieldName: { value, componentType } } }`; reactive entries use `$`-prefixed keys. Persist the emitted map rather than reconstructing it from visible controls.
+
+`toolProvider` supplies the functions allowed in `Query()` and `Mutation()` calls. It accepts async functions keyed by tool name, or an MCP client with `callTool`. Describe those same tools in the [model prompt](/docs/ai/generative/server#generate-the-model-prompt). Only expose data and operations the current user is allowed to access.
+
+## Inspect parser diagnostics
+
+Break the component name, then restore the valid source. This example validates locally and renders only when the program passes. Open the Code tab to see how it uses the parser result.
+
+<ComponentPreview name="generative-diagnostics-demo" playground />
+
+For the underlying syntax and common errors, see [Language](/docs/ai/generative/language).
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| The result disappears with each new token | Accumulate the stream before passing `response` |
+| A component is unknown or its props are rejected | Match its name and positional arguments to the active library spec |
+| Fields stay disabled after generation | Set `isStreaming` to `false` when the request settles |
+| Content renders but a button does nothing | Handle the action in `onAction`; rendering does not implement persistence |
+| Fields reset when reopening a response | Store `onStateUpdate` output and restore it through `initialState` |
+
+<ComponentSource name="generative-ui" file="runtime/react/Renderer.tsx" title="Renderer.tsx" />

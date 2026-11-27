@@ -10,9 +10,37 @@ Honest UI shaders render animated or pointer-responsive effects with WebGL. Impo
 
 ## Choose an effect
 
+**Backgrounds**
+
+- **Aurora** draws curtains of light on a transparent background.
+- **Dot Grid** lays a quiet grid of dots behind a section, with optional wave, twinkle, and pointer highlight.
 - **Gradient Blinds** divides a multicolor gradient into directional bands with optional pointer lighting and distortion.
-- **Grainient** blends three colors into an organic field with controllable warp, tone, and grain.
+- **Grainient** blends three colors into an organic field with controllable warp, tone, and grain. It can also fill the area under an [area chart](/docs/charts/area-chart/static#grainient-fill).
 - **Light Rays** creates a directional wash that can originate from an edge or corner.
+- **Mesh Gradient** blends two to six colors as soft drifting points.
+- **Metaballs** drifts soft blobs that merge and separate, optionally following the pointer.
+- **Smoke Ring** draws a glowing ring of noisy smoke.
+- **Voronoi** animates a field of organic cells with crisp or glowing edges.
+- **Warp** maps domain-warped noise to a palette as clouds, ridges, or marble.
+
+**Materials and interaction**
+
+- **AI Glow Border** lights the edge of a prompt bar while an assistant thinks and streams, and fades out when the reply is done.
+- **Audio Orb** draws a glassy orb for voice agents that breathes at rest, follows the person's voice, and pulses with the reply.
+- **Fluid** stirs colored dye through a real-time fluid simulation with the pointer.
+- **Liquid Glass** turns a panel into curved glass that bends the page behind it, with frost, prism fringes, and a rim that catches the light.
+- **Liquid Metal** pours a flowing chrome surface into the container or a shape.
+- **Pulsing Border** wraps an element in an animated glow ring that signals activity, such as an AI reply being generated.
+- **Water** ripples caustic light across a color or an image.
+
+**Image effects**
+
+- **ASCII** renders an image or a procedural field as text glyphs.
+- **Chromatic Image** warps an image toward the pointer with RGB separation.
+- **Dither** dithers an image or animated waves with configurable patterns.
+- **Fluted Glass** shows an image or gradient through ribbed glass.
+- **Halftone** screens an image into printed dots, lines, or CMYK separations.
+- **Pixelate** pixelates an image with optional glitch bursts and a sharp lens under the pointer.
 
 Use one effect to support a specific product or brand moment. A CSS color, gradient, image, or no effect at all should remain an acceptable fallback.
 

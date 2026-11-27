@@ -1,0 +1,116 @@
+---
+title: Server
+metaTitle: Generate Prompts and Validate Honest AI UI Output
+description: Use the local library spec to instruct a model, validate complete programs, and wrap provider streams with optional repair.
+lastModified: "2026-10-12"
+---
+
+Use the JSON spec on the server and the corresponding component library on the client. The spec contains signatures and schemas without importing React components. It gives the model and validator the same contract the renderer uses.
+
+## Generate the model prompt
+
+For an application layout, use `spec.json`:
+
+```ts
+import spec from "@/lib/generative/spec.json"
+import { generateSystemPrompt, createParser } from "@/lib/generative/runtime/core"
+
+export const systemPrompt = generateSystemPrompt({ library: spec })
+export const parser = createParser(spec.schema, spec.root)
+```
+
+Send `systemPrompt` as instructions to your model alongside the user's request. Your model client and endpoint remain part of your application. Return the generated Honest AI Lang to the [renderer](/docs/ai/generative/renderer#stream-a-response).
+
+For `GenerativeChat`, use `chat-spec.json` instead. It describes `honestChatLibrary` and carries that library's prompt options, so the generated prompt asks for a Markdown reply with fenced `honestai` blocks, the [reply format](/docs/ai/generative/chat#reply-format) the chat renders. The two libraries are not interchangeable: mixing a spec with the other library can produce validation errors.
+
+The locally generated prompt includes the library's component signatures. Add tool descriptions or application rules through `promptOptions` when your renderer supplies the corresponding tools. Do not describe operations your app cannot execute.
+
+## Validate a complete program
+
+Install `generative-server` to use the validation helper. The OpenAI entry point exposes it under `completions`:
+
+```ts
+import spec from "@/lib/generative/spec.json"
+import { createAutofix } from "@/lib/generative/runtime/server/openai"
+
+const validator = createAutofix({ library: spec }).completions
+
+export async function validateProgram(generation: string) {
+  const result = await validator.fix({ generation })
+  if (result.status === "fix_failed") {
+    return { accepted: false as const, diagnostics: result.unfixedErrors }
+  }
+  return { accepted: true as const, content: result.content }
+}
+```
+
+With no repair callback, this runs local validation only. It makes no network request.
+
+| Status | Meaning |
+| --- | --- |
+| `already_valid` | The original program passed validation |
+| `fixed` | A repair callback returned a program that passed local validation |
+| `fix_failed` | The program is still invalid; `content` is `null` and `unfixedErrors` contains diagnostics |
+
+## Supply your own repair
+
+To correct invalid output, supply a function that calls your chosen model and returns a program. This factory accepts that function explicitly:
+
+```ts
+import spec from "@/lib/generative/spec.json"
+import {
+  createAutofix,
+  type RepairRequest,
+} from "@/lib/generative/runtime/server/openai"
+
+export function createProgramValidator(
+  repairProgram: (request: RepairRequest) => Promise<string>,
+) {
+  return createAutofix({
+    library: spec,
+    maxAttempts: 2,
+    repair: repairProgram,
+  }).completions
+}
+```
+
+The callback receives the current `generation`, local `diagnostics`, `systemPrompt`, recent text `messages`, attempt number, and optional abort `signal`. Use those inputs to ask your model for corrected source. Each returned candidate is parsed again locally; a model's claim that it fixed the output is not accepted as validation.
+
+The default is two attempts, configurable from one to three. Input and returned candidates are limited to 100,000 characters. Cancellation, callback failures, and oversized output reject the request; handle them separately from a `fix_failed` result. There is no built-in repair service or API key requirement.
+
+## Validate a provider stream
+
+The stream wrapper delays a successful UI completion until validation finishes. This helper accepts native OpenAI Chat Completions chunks from your model client:
+
+```ts
+import type { ChatCompletionChunk } from "openai/resources/chat/completions"
+import spec from "@/lib/generative/chat-spec.json"
+import { createAutofix } from "@/lib/generative/runtime/server/openai"
+
+const validator = createAutofix({ library: spec }).completions
+
+export function validateChatStream(
+  source: AsyncIterable<ChatCompletionChunk>,
+  signal: AbortSignal,
+) {
+  return validator.stream({ stream: source, signal })
+}
+```
+
+Consume the returned `chunks`, or return its `toResponse()` from your route for Server-Sent Events. Choose one: the stream has a single consumer. `result` settles after consumption finishes and can be `null` if the stream contained no UI program to validate. Persist the validated result's `content` when present, rather than joining every emitted delta; repair can append corrected statements.
+
+If validation cannot repair a streamed UI program, the wrapper fails the stream. Connect that failure to the chat's error state instead of treating an interrupted stream as a successful answer.
+
+| Server import | Exports |
+| --- | --- |
+| `runtime/server/openai` | `createAutofix(...).completions`, message conversion, and history persistence helpers |
+| `runtime/server/vercel` | `createAutofix(...).ai` for Vercel AI SDK UI message streams |
+| `runtime/server/langgraph` | LangGraph history conversion and persistence helpers |
+
+Use these paths under `@/lib/generative/`. Match the emitted stream protocol to the [client adapter](/docs/ai/generative/chat#match-your-endpoint-to-the-adapter).
+
+## Tools and authorization
+
+Register server tools through `createToolExecutor` in `runtime/server/tools/execute`. Registered handlers run locally. Generated scripts require an explicit `executeScript` sandbox callback; the helper does not evaluate generated JavaScript in your application process.
+
+Validate tool arguments and authorize access using server-derived user context. A component schema establishes the input shape, not permission. Keep model credentials on the server and implement storage access, retention, and deletion in your application.

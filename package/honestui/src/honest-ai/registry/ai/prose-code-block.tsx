@@ -77,11 +77,11 @@ function ProseCodeBlock({
     <figure
       data-slot="prose-code-block"
       // `not-prose` keeps a prose around this figure from restyling its code.
-      // A shell with the header, around a panel with the code, shared with Code View.
-      className={cn("not-prose m-0 w-full min-w-0 rounded-[var(--hui-radius-code-block)] bg-[var(--hui-color-background-neutral-primary)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]", className)}
+      // One hairline plate: a header row, a rule, then the code.
+      className={cn("not-prose m-0 w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-0 text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]", className)}
       {...props}
     >
-      <figcaption className="flex min-h-[var(--hui-control-height-sm)] min-w-0 items-center gap-[var(--hui-space-3)] ps-[var(--hui-space-4)]">
+      <figcaption className="flex min-h-10 min-w-0 items-center gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] ps-[var(--hui-space-5)] pe-[var(--hui-space-2)]">
         <span className="min-w-0 truncate font-mono text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-small)]">{label}</span>
         <div className="ms-auto flex shrink-0 items-center gap-[var(--hui-space-2)]">
           {actions}
@@ -93,11 +93,11 @@ function ProseCodeBlock({
             size="icon-sm"
             aria-label={labels.copy}
             title={labels.copy}
-            className="text-[var(--hui-color-foreground-base-secondary)] hover:text-[var(--hui-color-foreground-base-primary)] [&_svg]:size-3.5"
+            className="rounded-full text-[var(--hui-color-foreground-base-tertiary)] hover:text-[var(--hui-color-foreground-base-primary)] [&_svg]:size-3.5"
             onClick={() => void copy()}
           >
             {copyState === "copied" ? (
-              <CheckIcon aria-hidden="true" className="text-[var(--hui-color-foreground-success-primary)]" />
+              <CheckIcon aria-hidden="true" className="text-[var(--hui-color-foreground-base-primary)]" />
             ) : (
               <CopyIcon aria-hidden="true" />
             )}
@@ -110,7 +110,7 @@ function ProseCodeBlock({
       {/* A thin scrollbar and a fade at the end edge show there is more to scroll. The fade follows the
           panel's scroll position and clears at the end; where scroll-driven
           animation is unsupported, or nothing overflows, it stays hidden. */}
-      <div className="relative mt-[var(--hui-space-2)] min-w-0 [timeline-scope:--prose-code-scroll]">
+      <div className="relative min-w-0 [timeline-scope:--prose-code-scroll]">
         {/* A tab stop only while it overflows, so a keyboard user can scroll long lines. The shell is the frame, so the panel keeps only its hairline. */}
         <pre
           tabIndex={overflowing ? 0 : undefined}
@@ -118,10 +118,10 @@ function ProseCodeBlock({
           {...codeProps}
           ref={preRef}
           className={cn(
-            "m-0 overflow-x-auto [scroll-timeline:--prose-code-scroll_inline] supports-[selector(::-webkit-scrollbar)]:[scrollbar-color:auto]! supports-[selector(::-webkit-scrollbar)]:[scrollbar-width:auto]! [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-[var(--hui-space-4)] [&::-webkit-scrollbar-track]:mb-[var(--hui-space-1)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--hui-color-overlay-base-a5)] rounded-[var(--hui-radius-code-block-inner)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)] font-mono shadow-[inset_0_0_0_var(--hui-border-width-surface)_var(--hui-color-border-base-primary)] outline-none [font-variant-ligatures:none] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-regular)] [--prose-syntax-leading:var(--hui-line-height-mono-regular)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
+            "m-0 overflow-x-auto [scroll-timeline:--prose-code-scroll_inline] supports-[selector(::-webkit-scrollbar)]:[scrollbar-color:auto]! supports-[selector(::-webkit-scrollbar)]:[scrollbar-width:auto]! [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-[var(--hui-space-4)] [&::-webkit-scrollbar-track]:mb-[var(--hui-space-1)] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[var(--hui-color-overlay-base-a5)] rounded-none bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)] font-mono shadow-none outline-none [font-variant-ligatures:none] [font-size:var(--hui-font-size-mono-small)] [letter-spacing:var(--hui-letter-spacing-mono-small)] [line-height:var(--hui-line-height-mono-regular)] [--prose-syntax-leading:var(--hui-line-height-mono-regular)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]",
             codeClassName,
             // A syntax theme brings its own frame and size; the shell already frames the panel.
-            "[&&]:border-0! [&&]:rounded-[var(--hui-radius-code-block-inner)]! [&&]:px-[var(--hui-space-5)]! [&&]:py-[var(--hui-space-4)]! [&&]:[font-size:var(--hui-font-size-mono-small)]!"
+            "[&&]:border-0! [&&]:rounded-none! [&&]:shadow-none! [&&]:px-[var(--hui-space-5)]! [&&]:py-[var(--hui-space-4)]! [&&]:[font-size:var(--hui-font-size-mono-small)]!"
           )}
         >
           <code className="block w-max min-w-full">
@@ -135,7 +135,7 @@ function ProseCodeBlock({
         </pre>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-[var(--hui-border-width-surface)] end-[var(--hui-border-width-surface)] w-[var(--hui-space-8)] rounded-e-[var(--hui-radius-code-block-inner)] bg-[linear-gradient(to_left,var(--hui-color-background-base-primary),transparent)] opacity-0 rtl:bg-[linear-gradient(to_right,var(--hui-color-background-base-primary),transparent)]"
+          className="pointer-events-none absolute inset-y-0 end-0 w-[var(--hui-space-8)] bg-[linear-gradient(to_left,var(--hui-color-background-base-primary),transparent)] opacity-0 rtl:bg-[linear-gradient(to_right,var(--hui-color-background-base-primary),transparent)]"
           style={{ animation: "hui-scroll-cue linear both", animationTimeline: "--prose-code-scroll" }}
         />
       </div>

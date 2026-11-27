@@ -1,0 +1,349 @@
+---
+title: Markdown
+metaTitle: React Markdown Renderer for Streaming Replies
+description: Render a reply's Markdown, including Markdown that is still arriving, without loading anything the text points at.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="markdown-demo" previewClassName="h-auto min-h-[520px]" />
+
+## Overview
+
+Models write Markdown, and they deliver it in pieces. Rendered as it arrives, half-written syntax flashes on screen as stray asterisks and backticks until its other half shows up. Markdown renders the text you have so far the way it will read once it is whole.
+
+Pass the Markdown source as a string. Set `isStreaming` while more text is on the way. A fenced code block becomes a [Prose Code Block](/docs/ai/prose-code-block): its language and a copy button in a frame, with the code highlighted.
+
+Markdown parses text and requests nothing. HTML in the source is shown as text, not run. An image is shown as a link, because loading an image sends a request to a URL the model chose.
+
+It is built on `react-markdown` with GitHub Flavored Markdown: tables, task lists, strikethrough, and bare links. Its text is styled by [Prose](/docs/ai/prose), a stylesheet you can also use without this component.
+
+A fence can also become one of your components. See [Blocks](#blocks).
+
+## Anatomy
+
+<Anatomy title="Markdown">
+  <AnatomyItem name="Text" description="Headings, paragraphs, lists, quotes, links, and inline code" />
+  <AnatomyItem name="Code block" description="A Prose Code Block, titled with the block's language" />
+  <AnatomyItem name="Table" description="A table inside a region that scrolls sideways" />
+  <AnatomyItem name="Block" description="A fenced block drawn by a component you map to its language" />
+  <AnatomyItem name="Caret" description="Marks the end of the text while it streams" />
+</Anatomy>
+
+Installing `markdown` brings these registry items with it: [Prose Code Block](/docs/ai/prose-code-block), [Prose](/docs/ai/prose), [Honest Prose Syntax](/docs/ai/prose-syntax), and `repair-markdown`, the function behind `isStreaming`. It also installs `react-markdown` and `remark-gfm`.
+
+## Behavior
+
+### Streaming
+
+With `isStreaming`, Markdown repairs the last block of the text before it parses it. A block ends at a blank line, so everything before the last blank line is left as written.
+
+| Arrived so far | Rendered as |
+| --- | --- |
+| `a **bold` | "bold" in bold |
+| `an *italic`, `an _italic`, `~~struck` | The style, closed at the end of the text |
+| `` use `npm ru `` | "npm ru" as inline code |
+| `see [the docs](https://exa` | "see the docs", as plain text until the address is complete |
+| `![chart](https://exa` | Nothing, until the address is complete |
+| A code fence with no closing fence | A code block that runs to the end of the text |
+
+A marker with nothing after it yet, such as a lone `**` at the end, is held back until text follows it.
+
+Some syntax cannot be recognized until more of it arrives, and Markdown does not guess at it. A table is a paragraph of pipes until its divider row is complete. A link's label shows its opening bracket until the closing bracket arrives. Both correct themselves on the next piece of text.
+
+When `isStreaming` is false, the text is parsed exactly as given.
+
+### Caret
+
+While streaming, a caret sits after the last words, inside the paragraph, heading, or list item they belong to. It is not drawn after a code block or a table.
+
+Inside a [Streaming Text](/docs/ai/streaming-text), Markdown's caret replaces Streaming Text's own, which would otherwise land on a line of its own under the last block. Set `isStreaming` on Markdown whenever the Streaming Text around it has `status="streaming"`.
+
+### Code blocks
+
+A fenced block renders as a Prose Code Block. Its title is the first of these the fence has:
+
+1. A title after the language, written `title="export.ts"` or `filename="export.ts"`, shown as written.
+2. The language, as people write it: `cpp` shows as "C++" and `ts` as "TypeScript". A language Markdown does not know shows as the fence wrote it.
+3. "Code".
+
+Markdown highlights fenced code automatically with Honest Prose Syntax. Set `syntaxHighlighting={false}` to disable it, or pass `renderCodeLine` to use your own highlighter. It receives the line, the language, and the line's index with the whole block, for a highlighter that reads across lines. See [Syntax highlighting](#syntax-highlighting) for setup and compatibility.
+
+`renderCodeActions` adds controls to a code block's frame, before Copy. It receives the block's code, language, and title. Return a button for each action, and only for an action your application handles.
+
+### Blocks
+
+`blocks` maps a fence's language to a function that draws the fence's text as a component. A reply can then carry a [Flowchart](/docs/ai/flowchart), a table of records, or a chart, written as data:
+
+````md
+```flowchart
+{ "label": "Invoice follow-up", "steps": [{ "kind": "Trigger", "title": "Invoice becomes overdue" }] }
+```
+````
+
+```tsx
+const blocks = {
+  flowchart(body: string) {
+    const { label, steps } = flowchartSchema.parse(JSON.parse(body))
+    return (
+      <Flowchart label={label}>
+        {steps.map((step) => (
+          <FlowStep key={step.title} kind={step.kind} title={step.title} />
+        ))}
+      </Flowchart>
+    )
+  },
+}
+
+<Markdown blocks={blocks}>{reply.text}</Markdown>
+```
+
+The model wrote the text, so check it before you draw it. Three rules keep a block truthful:
+
+- **While it arrives, it is held back.** With `isStreaming`, a block whose closing fence has not arrived shows "Waiting for the rest of this block…" instead. Your function is not called with half of its data.
+- **When it does not fit, it is shown as code.** If your function throws, as a schema's `parse` does, Markdown shows the fence's text as a code block. Nothing is lost, and nothing untrue is drawn. An error thrown later, while a component you returned renders, is not caught.
+- **It keeps its own styles.** A block is wrapped in `not-prose`, so the text styles do not reach into it.
+
+Markdown does not tell the model which blocks exist. Describe each block's language and data in your prompt.
+
+Define `blocks` outside your component, or memoize it. A new object on every render makes every block render again.
+
+### Styling
+
+The root element has the `honest-prose` class. Change the text size, line height, and spacing with [Prose's variables](/docs/ai/prose#variables), on Markdown or on anything around it:
+
+```tsx
+<Markdown className="[--prose-size:13px] [--prose-flow:8px]">{reply.text}</Markdown>
+```
+
+A utility class for a property Prose sets, such as `text-sm`, has no effect, because Prose's rules sit outside Tailwind's layers.
+
+### Links, images, and HTML
+
+Links render as links. `react-markdown` drops an address whose scheme is not `http`, `https`, `mailto`, or another safe one, so a `javascript:` link is not clickable.
+
+An image renders as a link to the image, with the image's description as the link text. To show images, map `img` in `components`, and load them only from hosts you trust.
+
+Raw HTML in the source appears as text.
+
+### Your own elements
+
+`components` replaces how any element is rendered. It is passed to `react-markdown` after Markdown's own mappings for `pre`, `img`, `table`, and `input`, so yours win. Mapping `pre` replaces code blocks and `blocks` together.
+
+`remarkPlugins` and `rehypePlugins` add plugins. Parser plugins run after GitHub Flavored Markdown. Tree plugins run before the caret is placed. A plugin that turns raw HTML into elements, such as `rehype-raw`, removes the protection described above.
+
+### Cost
+
+Each change to the text parses all of it again. That is fine for a reply. For a document of many thousands of lines that streams, render finished sections in their own `Markdown` and stream only the last one.
+
+## Add-ons
+
+Two optional files extend Markdown. Each installs on its own and brings its packages with it.
+
+### Math
+
+`markdown-math` renders math with KaTeX.
+
+<CliBlock commands={["@honestai/markdown-math"]} />
+
+```tsx
+import "katex/dist/katex.min.css"
+
+import { mathPlugins, normalizeMathDelimiters } from "@/lib/markdown-math"
+
+<Markdown {...mathPlugins}>{normalizeMathDelimiters(reply.text)}</Markdown>
+```
+
+Math is written between `$$`: inside a sentence for inline math, or with each `$$` on a line of its own for a displayed equation. Models more often write `\( … \)` and `\[ … \]`. `normalizeMathDelimiters` rewrites those as `$$` and leaves code alone.
+
+A single `$` is text by default, so "$5 and $10" stays a pair of prices. To read `$x$` as math as well, make your own plugins once, outside your components:
+
+```tsx
+const mathPlugins = createMathPlugins({ singleDollar: true })
+```
+
+Three limits to know:
+
+- While it streams, an equation shows as its source until its closing delimiter arrives.
+- KaTeX shows an expression it cannot parse as its source, in its error color.
+- `normalizeMathDelimiters` treats every `\[ … \]` pair outside code as math, including one that was meant as escaped brackets.
+
+### Syntax highlighting
+
+Honest Prose Syntax colors fenced code automatically, including code that is still arriving. It loads only the requested grammar and processes it in a worker. Until colors are ready, the original text stays visible.
+
+```tsx
+<Markdown>{reply.text}</Markdown>
+<Markdown syntaxHighlighting={false}>{reply.text}</Markdown>
+<Markdown syntaxPalette="graphite">{reply.text}</Markdown>
+```
+
+Import `styles/prose-syntax-theme.css` once alongside Prose. The registry installs both files. Custom `renderCodeLine` functions take precedence. Unknown languages, blocks above 200 KB, and failed or timed-out highlighting remain plain text.
+
+See [Honest Prose Syntax](/docs/ai/prose-syntax) for themes, supported languages, standalone HTML, and server rendering.
+
+The existing `markdown-shiki` adapter remains available for applications using explicit Shiki themes. `createShikiCodeLine({ light, dark })` keeps its existing defaults and behavior. It processes whole blocks on the main thread, so use the built-in worker integration for streamed code.
+
+## Accessibility
+
+Markdown renders native elements: headings, lists, tables, links, and block quotes keep their roles.
+
+A heading in the source keeps its level. A reply that starts at `#` puts a level-one heading in the middle of your page. If that breaks your page's outline, map `h1` to `h3` in `components`.
+
+A table sits in a group named "Table". When the table is wider than the reply, the group takes focus, so it can be scrolled from the keyboard; a table that fits adds no Tab stop. A task list item's checkbox is disabled and named "Done" or "Not done". The caret is hidden from assistive technology.
+
+A component drawn by `blocks` brings its own roles and names. Markdown adds none around it. Controls from `renderCodeActions` come before Copy in the tab order.
+
+Markdown is not a live region. To have a streamed reply announced, place it in a [Streaming Text](/docs/ai/streaming-text) or a [Chat Thread](/docs/ai/chat-thread).
+
+Every string comes from `labels`.
+
+The preview has been checked with a keyboard and with axe. It has not been checked with a screen reader yet.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across links, code blocks, and tables |
+| Arrow keys | Scroll a focused code block or table |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/markdown"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the items it is built from.</Step>
+
+<CliBlock commands={["@honestai/prose-code-block", "@honestai/prose", "@honestai/prose-syntax-react", "@honestai/repair-markdown"]} />
+
+<Step>Install the parser.</Step>
+
+```bash
+npm install react-markdown remark-gfm
+```
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="markdown" title="components/ai/markdown.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+Then import Prose in your global stylesheet, after Tailwind. Without it, the text is unstyled.
+
+```css
+@import "../styles/prose.css";
+```
+
+## Usage
+
+```tsx
+import { Markdown } from "@/components/ai/markdown"
+import { StreamingText } from "@/components/ai/streaming-text"
+
+<StreamingText status={reply.isDone ? "complete" : "streaming"} copyText={reply.text}>
+  <Markdown isStreaming={!reply.isDone}>{reply.text}</Markdown>
+</StreamingText>
+```
+
+On its own, for text that is already complete:
+
+```tsx
+<Markdown renderCodeLine={(text, language) => highlight(text, language)}>
+  {document.body}
+</Markdown>
+```
+
+### Repairing text yourself
+
+`repairMarkdown` is the function behind `isStreaming`. It is a file of its own with no React in it, so you can install it without Markdown and use it when another renderer draws the text:
+
+<CliBlock commands={["@honestai/repair-markdown"]} />
+
+```tsx
+import { repairMarkdown } from "@/lib/repair-markdown"
+
+const safeToParse = repairMarkdown(textSoFar)
+```
+
+## Examples
+
+### Complete text
+
+A finished document with a heading, struck text, a task list, a quote, and an image shown as a link.
+
+<ComponentPreview name="markdown-static" previewClassName="h-auto min-h-[360px]" />
+
+### A block drawn as a component
+
+A `flowchart` fence drawn as a [Flowchart](/docs/ai/flowchart). While the fence is open, the reply shows that it is waiting.
+
+<ComponentPreview name="markdown-blocks" previewClassName="h-auto min-h-[560px]" />
+
+### Math, highlighting, a title, and an action
+
+Both add-ons, a code block titled by its fence, and a Download action in its frame.
+
+<ComponentPreview name="markdown-add-ons" previewClassName="h-auto min-h-[420px]" />
+
+## API reference
+
+### Markdown
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | string | Required | The Markdown source, all of it or as much as has arrived. |
+| `isStreaming` | boolean | `false` | Closes unfinished syntax and shows a caret. |
+| `blocks` | `Record<string, MarkdownBlockRenderer>` | None | Draws a fenced block as a component, by the fence's language. |
+| `syntaxPalette` | `"violet" \| "graphite"` | `"violet"` | Token palette for built-in highlighting. |
+| `syntaxHighlighting` | boolean | `true` | Use built-in syntax highlighting. |
+| `renderCodeLine` | `(text: string, language: string \| undefined, line: MarkdownCodeLine) => ReactNode` | None | Colors one line of a code block. |
+| `renderCodeActions` | `(block: MarkdownCodeBlock) => ReactNode` | None | Controls for a code block's frame, before Copy. |
+| `components` | `Components` from `react-markdown` | None | Replaces how an element is rendered. |
+| `remarkPlugins` | Plugin list | None | Parser plugins, run after GitHub Flavored Markdown. |
+| `rehypePlugins` | Plugin list | None | Tree plugins, run before the caret is placed. |
+| `labels` | `Partial<MarkdownLabels>` | English | The code block title, the table name, the image link text, the task names, and the waiting block's text. |
+
+### repairMarkdown
+
+`repairMarkdown(source: string): string` returns the text with the last block's unfinished syntax closed. It returns complete text unchanged. It is exported from `lib/repair-markdown`, and again from the component's file.
+
+### markdown-math
+
+| Export | Description |
+| --- | --- |
+| `mathPlugins` | `remarkPlugins` and `rehypePlugins` to spread onto Markdown. A single `$` is text. |
+| `createMathPlugins({ singleDollar })` | Makes the plugins, with `$x$` read as math when `singleDollar` is true. |
+| `normalizeMathDelimiters(source: string): string` | Rewrites `\( … \)` and `\[ … \]` as `$$`. |
+
+### markdown-shiki
+
+| Export | Description |
+| --- | --- |
+| `createShikiCodeLine({ light, dark })` | Returns a `renderCodeLine`. Both themes are optional Shiki theme names. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `MarkdownLabels` | `code`, `table`, `image`, `taskDone`, `taskOpen`, `blockPending` |
+| `MarkdownBlockRenderer` | `(body: string) => ReactNode`. Throw when the text does not fit. |
+| `MarkdownCodeBlock` | `code`, `language`, `title` |
+| `MarkdownCodeLine` | `index`, from zero, and `code`, the whole block |

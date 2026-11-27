@@ -1,0 +1,45 @@
+---
+title: Border Beam
+description: Send a short segment of light around an element's border to mark it as active or in progress.
+---
+
+<ComponentPreview name="border-beam-demo" />
+
+## Overview
+
+Border Beam draws a small light segment that travels around its parent's border. Use it on one element at a time to mark something as live or in progress, such as a running build, a highlighted plan, or the card a tour is pointing at. The beam follows the parent's corner radius, paints only inside the border width, and leaves the content untouched.
+
+## Installation
+
+<CliBlock commands={["border-beam"]} />
+
+## Usage
+
+```tsx
+import { BorderBeam } from "@/components/animated/border-beam"
+
+<div className="relative overflow-hidden rounded-xl border p-5">
+  Deploying…
+  <BorderBeam duration={6} />
+</div>
+```
+
+Place it as the last child of a `relative` element. The radius is read from the parent; pass `radius` when the parent's radius changes after mount. Two beams with opposite `reverse` values and half-lap `delay` give a symmetrical effect.
+
+## Accessibility
+
+The beam is decorative and hidden from assistive technology. Pair it with a text status such as "Building" so the state is never conveyed by motion alone. When reduced motion is requested, the beam stops and rests as a short static highlight.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="size" type="number" default="72">Length of the light segment in px.</ApiRow>
+  <ApiRow name="duration" type="number" default="8">Seconds for one lap.</ApiRow>
+  <ApiRow name="delay" type="number" default="0">Seconds before the first lap. Negative values start mid-lap.</ApiRow>
+  <ApiRow name="colorFrom" type="string" default='"var(--foreground)"'>Color at the head of the beam.</ApiRow>
+  <ApiRow name="colorTo" type="string">Color the beam fades through toward its tail.</ApiRow>
+  <ApiRow name="borderWidth" type="number" default="1">Width of the border the beam travels on, in px.</ApiRow>
+  <ApiRow name="radius" type="number">Corner radius of the path. Defaults to the parent's border radius.</ApiRow>
+  <ApiRow name="reverse" type="boolean" default="false">Travels counterclockwise.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the border layer.</ApiRow>
+</ApiTable>

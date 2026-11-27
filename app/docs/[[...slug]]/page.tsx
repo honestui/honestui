@@ -86,6 +86,8 @@ function buildDocsJsonLd(page: DocsPage) {
     crumbs.push({ name: "Icons", url: absoluteUrl("/docs/icons") });
   } else if (section === "animated" && page.url !== "/docs/animated") {
     crumbs.push({ name: "Animated", url: absoluteUrl("/docs/animated") });
+  } else if (section === "ai" && page.url !== "/docs/ai") {
+    crumbs.push({ name: "AI Components", url: absoluteUrl("/docs/ai") });
   } else if (section === "shaders" && page.url !== "/docs/shaders") {
     crumbs.push({ name: "Shaders", url: absoluteUrl("/docs/shaders") });
   } else if (section === "examples" && page.url !== "/docs/examples") {

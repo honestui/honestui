@@ -1,0 +1,77 @@
+---
+title: Halftone
+description: Screen an image or a procedural field into printed dots, lines, or four-color CMYK separations.
+---
+
+<ComponentPreview name="halftone-demo" playground />
+
+## Overview
+
+Halftone turns continuous tone into a print screen. The canvas is divided into rotated cells; each cell samples the source once at its center and prints a dot sized by how much ink that tone needs. Three modes cover the common looks:
+
+- **Mono** prints one ink on paper, like newsprint or a risograph pass.
+- **Color** prints each dot in the source color, keeping the image's palette with a screened texture.
+- **CMYK** separates the source into cyan, magenta, yellow, and black screens at the classic offset angles, so the inks overlap into rosettes like a magazine page.
+
+Without `src`, Halftone screens a slow procedural field, which makes it a textured background that never needs an asset.
+
+The playground uses free Unsplash photographs by [Marc Wieland](https://unsplash.com/photos/sunset-over-a-serene-mountain-lake-1Kcgpq1ap9E) and [Martin Péchy](https://unsplash.com/photos/blue-and-orange-building-faPvxns9O70).
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+### Procedural background
+
+```tsx
+import { Halftone } from "honestui/shaders"
+
+<Halftone className="h-80 rounded-xl" cellSize={10} inkColor="#1d2433" paperColor="#f4f1ea" />
+```
+
+### Image
+
+```tsx
+<Halftone
+  alt="Blue and orange apartment buildings against a clear sky."
+  className="h-80 rounded-xl"
+  mode="cmyk"
+  cellSize={6}
+  src="https://images.unsplash.com/photo-1553933420-77617bac448e?auto=format&fit=crop&w=1600&q=85"
+/>
+```
+
+Remote image hosts must allow cross-origin use so WebGL can read the pixels. Ink and paper accept any CSS color, including custom properties and `currentColor`, and follow theme changes.
+
+Smaller cells show more detail and larger cells read as a graphic pattern. Below roughly 4 pixels the dots blur into flat tone.
+
+## Accessibility
+
+In image mode, write `alt` text for the image's purpose; use an empty string when the image is decorative. The original image renders underneath until the canvas has its pixels and remains in the accessibility tree afterwards, so the content survives a missing WebGL context or a blocked image. Procedural mode is decorative and hidden from assistive technology.
+
+The procedural field animates slowly. It stops when the user prefers reduced motion, while the element is offscreen, and while the page is hidden. Images are always still. Keep text on a separate layer and check its contrast against both the ink and the paper.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="src" type="string">Image to screen. Omit it to screen the procedural field.</ApiRow>
+  <ApiRow name="alt" type="string">Alternative text for the image. Required with `src`; use an empty string for decorative images.</ApiRow>
+  <ApiRow name="mode" type='"mono" | "color" | "cmyk"' default='"mono"'>One ink, dots in the source color, or four-color separation.</ApiRow>
+  <ApiRow name="shape" type='"circle" | "square" | "line"' default='"circle"'>Shape of each dot. `line` prints a line screen.</ApiRow>
+  <ApiRow name="cellSize" type="number" default="8">Dot pitch in CSS pixels.</ApiRow>
+  <ApiRow name="angle" type="number" default="45">Screen angle in degrees. CMYK screens are offset from it.</ApiRow>
+  <ApiRow name="inkColor" type="string" default='"#16181d"'>Ink color in mono mode. Any CSS color.</ApiRow>
+  <ApiRow name="paperColor" type="string" default='"#f4f1ea"'>Paper color behind the dots. Any CSS color.</ApiRow>
+  <ApiRow name="dotScale" type="number" default="1">Scales every dot. At 1 the darkest tones print solid.</ApiRow>
+  <ApiRow name="contrast" type="number" default="1.1">Tone contrast applied before screening.</ApiRow>
+  <ApiRow name="brightness" type="number" default="0">Brightness offset from -1 to 1 applied before screening.</ApiRow>
+  <ApiRow name="roughness" type="number" default="0.15">Random variation in dot size, like ink on uncoated paper.</ApiRow>
+  <ApiRow name="animated" type="boolean" default="true">Animates the procedural field. Images are always still.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.6">Speed of the procedural field.</ApiRow>
+  <ApiRow name="sourceColors" type="[string, string, string]">Three colors of the procedural field.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders one still frame.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content layered above the effect.</ApiRow>
+</ApiTable>

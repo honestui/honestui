@@ -79,11 +79,18 @@ export const defaultApprovalCardLabels: ApprovalCardLabels = {
   error: "The answers were not sent. Your choices are still here, so you can send again.",
 }
 
-const bodyText =
+/** The card's text styles and plate, shared with Input Request so the two read as one family. */
+export const approvalBodyText =
   "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
 
-const metaText =
+export const approvalMetaText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+
+export const approvalCardFrame =
+  "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] outline-none focus-visible:[outline:var(--hui-focus-ring)]"
+
+const bodyText = approvalBodyText
+const metaText = approvalMetaText
 
 const emptyAnswer: ApprovalAnswer = { selected: [], custom: "" }
 
@@ -188,8 +195,7 @@ function ApprovalCard({
     }
   }
 
-  const cardFrame =
-    "w-full min-w-0 rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-soft)] outline-none focus-visible:[outline:var(--hui-focus-ring)]"
+  const cardFrame = approvalCardFrame
 
   if (phase === "submitted") {
     return (
@@ -234,7 +240,7 @@ function ApprovalCard({
             )}
             <p
               id={promptId}
-              className="m-0 break-words text-[var(--hui-color-foreground-base-primary)] [font-size:var(--hui-font-size-large)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-large)] [line-height:var(--hui-line-height-large)]"
+              className="m-0 break-words text-[var(--hui-color-foreground-base-primary)] [font-size:15px] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:-0.01em] [line-height:22px]"
             >
               {question.prompt}
             </p>
@@ -333,7 +339,7 @@ function ApprovalCard({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-end gap-[var(--hui-space-3)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)]">
+      <div className="flex flex-wrap items-center justify-end gap-[var(--hui-space-3)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)]">
         {disabledReason && (
           <p
             className={cn(
@@ -400,7 +406,7 @@ function OptionRow({
   const labelId = React.useId()
 
   return (
-    <label className="-mx-[var(--hui-space-3)] flex min-h-[var(--hui-space-10)] min-w-0 cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[length:var(--hui-border-width-surface)] border-transparent px-[var(--hui-space-3)] py-[var(--hui-space-2)] motion-safe:[transition:var(--hui-transition-interactive)] not-has-data-checked:hover:bg-[color-mix(in_oklch,var(--hui-color-background-neutral-primary)_50%,transparent)] has-data-checked:border-[var(--hui-color-border-base-secondary)] has-data-checked:bg-[var(--hui-color-background-neutral-primary)] has-disabled:cursor-not-allowed has-data-disabled:cursor-not-allowed">
+    <label className="-mx-[var(--hui-space-3)] flex min-h-[var(--hui-space-10)] min-w-0 cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] border-transparent px-[var(--hui-space-3)] py-[var(--hui-space-2)] motion-safe:[transition:var(--hui-transition-interactive)] not-has-data-checked:hover:bg-[color-mix(in_oklch,var(--hui-color-background-neutral-primary)_50%,transparent)] has-data-checked:border-[var(--hui-color-border-base-secondary)] has-data-checked:bg-[var(--hui-color-background-neutral-primary)] has-disabled:cursor-not-allowed has-data-disabled:cursor-not-allowed">
       {children(labelId)}
       <span id={labelId} className="min-w-0 break-words">
         {label}
@@ -409,4 +415,4 @@ function OptionRow({
   )
 }
 
-export { ApprovalCard }
+export { ApprovalCard, OptionRow as ApprovalOptionRow }

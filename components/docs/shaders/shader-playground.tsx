@@ -111,7 +111,7 @@ export function ShaderPlayground({
     >
       <div className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-2.5">
         <div className="min-w-0">
-          <h3 data-slot="shader-playground-title" className="text-sm font-medium text-foreground">Customize</h3>
+          <p data-slot="shader-playground-title" className="text-sm font-medium text-foreground">Customize</p>
           <p className="text-muted-foreground text-xs">
             Changes update the preview and generated code.
           </p>
@@ -171,6 +171,7 @@ export function ShaderSliderControl({
       </div>
       <Slider
         aria-label={label}
+        getAriaLabel={() => label}
         className="h-6"
         max={max}
         min={min}

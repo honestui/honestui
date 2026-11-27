@@ -1,0 +1,51 @@
+---
+title: Aurora
+description: Layered curtains of light with a bright lower edge, drawn on a transparent background.
+---
+
+<ComponentPreview name="aurora-demo" playground />
+
+## Overview
+
+Aurora draws three overlapping curtains of light. Each one has a bright, slightly soft lower edge that sways with noise, fine vertical rays drifting along it, and a long fade upward. The colors spread left to right across `colorStops`.
+
+The background is transparent, so the light sits over whatever is behind the canvas: a dark page color, an image, or another surface. Use it at the top of a dark hero, a sign-in page, or an announcement banner.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Aurora } from "honestui/shaders"
+
+<div className="h-96 bg-[#0b0f1a]">
+  <Aurora
+    className="size-full"
+    colorStops={["#7ee0c3", "#6aa8f0", "#a58cf0"]}
+    intensity={0.85}
+  />
+</div>
+```
+
+Aurora reads best on a dark background. On a light page, lower `intensity` and use deeper color stops so the light stays visible.
+
+## Accessibility
+
+Aurora is decorative and its canvas is hidden from assistive technology. Place text and actions in normal HTML; if text overlaps the light, check its contrast at the brightest point of the curtains.
+
+The effect pauses while it is offscreen or the tab is hidden, and shows a still frame when the user prefers reduced motion. Without WebGL2 the container shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colorStops" type="string[]" default='["#7ee0c3", "#6aa8f0", "#a58cf0"]'>Two to five hex colors spread from left to right.</ApiRow>
+  <ApiRow name="amplitude" type="number" default="1">How far the curtains sway, from 0 (flat) to 2.</ApiRow>
+  <ApiRow name="blend" type="number" default="0.5">Softness of the lower edge, from 0 (crisp) to 1 (diffuse).</ApiRow>
+  <ApiRow name="intensity" type="number" default="0.85">Peak opacity of the light, from 0 to 1.</ApiRow>
+  <ApiRow name="height" type="number" default="0.55">Position of the lower edge, from 0 (bottom) to 1 (top).</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

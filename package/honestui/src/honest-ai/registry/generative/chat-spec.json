@@ -3369,13 +3369,9 @@
                 "values": {
                   "type": "array",
                   "items": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "number"
-                      }
+                    "type": [
+                      "string",
+                      "number"
                     ]
                   }
                 }
@@ -3421,13 +3417,9 @@
             "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
+            "type": [
+              "number",
+              "string"
             ]
           }
         },
@@ -3716,13 +3708,9 @@
             "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
+            "type": [
+              "number",
+              "string"
             ]
           }
         },
@@ -3825,13 +3813,9 @@
             "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
+            "type": [
+              "number",
+              "string"
             ]
           }
         },
@@ -3949,13 +3933,9 @@
             "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
+            "type": [
+              "number",
+              "string"
             ]
           }
         },
@@ -4220,13 +4200,9 @@
             "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
+            "type": [
+              "number",
+              "string"
             ]
           }
         },
@@ -5497,23 +5473,15 @@
           "type": "object",
           "properties": {
             "base": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             },
             "exponent": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             }
           },
@@ -5533,20 +5501,10 @@
           "type": "object",
           "properties": {
             "number": {
-              "anyOf": [
-                {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ]
-                },
-                {
-                  "type": "null"
-                }
+              "type": [
+                "number",
+                "string",
+                "null"
               ]
             },
             "format": {
@@ -5558,13 +5516,9 @@
               ]
             },
             "decimals": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             },
             "currency": {
@@ -5586,33 +5540,21 @@
           "type": "object",
           "properties": {
             "start": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             },
             "end": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             },
             "step": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             }
           },
@@ -5636,23 +5578,15 @@
           "properties": {
             "seed": {},
             "min": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             },
             "max": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
+              "type": [
+                "number",
+                "string"
               ]
             }
           },

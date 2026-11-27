@@ -1,0 +1,157 @@
+---
+title: Audio Player
+metaTitle: React Audio Player with Waveform
+description: Play a recording or a spoken reply in a compact row, with a scrub bar drawn from its loudness.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="audio-player-demo" previewClassName="h-auto min-h-[160px]" />
+
+## Overview
+
+Voice replies, call recordings, and memos all need the same small player: play, see where you are, jump, and speed it up. Audio Player is that row. With `peaks`, the scrub bar is the file's waveform, so loud and quiet parts can be found by eye.
+
+Give it a `src` and it plays the file in its own `<audio>` element. Leave `src` out and it is fully controlled: you pass the time, the length, and whether it plays, and it calls you back.
+
+## Anatomy
+
+<Anatomy title="AudioPlayer">
+  <AnatomyItem name="Toggle" description="Play or pause" />
+  <AnatomyItem name="Title" description="An optional line above the scrub bar" />
+  <AnatomyItem name="Scrub bar" description="A slider: the waveform from peaks, or a plain bar" />
+  <AnatomyItem name="Time" description="Elapsed and total, in tabular numbers" />
+  <AnatomyItem name="Speed" description="Steps through the playback rates" />
+</Anatomy>
+
+`AudioPlayer` is one component. Installing `audio-player` brings [Button](/docs/components/button) along as a registry dependency.
+
+## Behavior
+
+### Owned or controlled
+
+| Mode | Set | The player |
+| --- | --- | --- |
+| Owned | `src` | Loads the file, reads its length, plays, pauses, and seeks. `onTimeUpdate`, `onPlayingChange`, and `onSeek` report what happened |
+| Controlled | `currentTime`, `duration`, `playing` | Shows what you pass, and asks for changes through `onPlayingChange` and `onSeek` |
+
+A new `src` starts from the beginning. If the file cannot load, the scrub bar is replaced by an error and play is disabled.
+
+### Peaks
+
+`peaks` is loudness from 0 to 1 across the file, such as the maximum of each slice of samples, normalized. More than 96 values are reduced to 96 bars, each keeping its slice's loudest value. Bars that have played are drawn in the text color; the rest are muted. Without `peaks`, the scrub bar is a plain track with a handle.
+
+The player does not decode audio to find peaks. Compute them once, on your server or with `AudioContext.decodeAudioData`, and store them with the file.
+
+### Scrubbing
+
+Press or drag on the scrub bar to move. The time follows the pointer and is committed on release, so a drag seeks once.
+
+### Speed
+
+The speed button steps through `rates`, which defaults to 1×, 1.25×, 1.5×, 2×, and 0.75×. Control it with `playbackRate` and `onPlaybackRateChange`.
+
+## Accessibility
+
+The toggle is a button named "Play" or "Pause". The scrub bar has the `slider` role, a name, and a value read as the time, such as "0:12 of 1:04". The time beside it is read once in the same words.
+
+The error is an alert. Every string comes from `labels`, and `formatAudioTime` is exported for your own timestamps.
+
+| Key | Where | Action |
+| --- | --- | --- |
+| <kbd>Space</kbd> | Toggle or scrub bar | Play or pause |
+| <kbd>Right</kbd> or <kbd>Up</kbd> | Scrub bar | Forward by `step`, 5 seconds by default |
+| <kbd>Left</kbd> or <kbd>Down</kbd> | Scrub bar | Back by `step` |
+| <kbd>Page Up</kbd> or <kbd>Page Down</kbd> | Scrub bar | A tenth of the length forward or back |
+| <kbd>Home</kbd> or <kbd>End</kbd> | Scrub bar | The start or the end |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/audio-player"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add what it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="audio-player" title="components/ai/audio-player.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { AudioPlayer } from "@/components/ai/audio-player"
+
+<AudioPlayer src={memo.url} peaks={memo.peaks} title={memo.name} />
+```
+
+Controlled, with your own audio clock:
+
+```tsx
+<AudioPlayer
+  currentTime={time}
+  duration={length}
+  playing={playing}
+  onPlayingChange={setPlaying}
+  onSeek={seekTo}
+/>
+```
+
+## Examples
+
+### Plain scrub bar
+
+A controlled player without peaks. A timer stands in for the audio clock.
+
+<ComponentPreview name="audio-player-plain" previewClassName="h-auto min-h-[140px]" />
+
+## API reference
+
+### AudioPlayer
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `src` | string | None | A file to play in an owned `<audio>` element. |
+| `title` | ReactNode | None | A line above the scrub bar. |
+| `peaks` | `number[]` | None | Loudness from 0 to 1 across the file. |
+| `currentTime` | number | `0` | Seconds played, when there is no `src`. |
+| `duration` | number | `0` | Length in seconds, when there is no `src`. |
+| `playing` | boolean | `false` | Whether it plays, when there is no `src`. |
+| `onPlayingChange` | `(playing: boolean) => void` | None | Called on play, pause, and end. |
+| `onSeek` | `(seconds: number) => void` | None | Called with the new position. |
+| `onTimeUpdate` | `(seconds: number) => void` | None | Called as the owned element plays. |
+| `playbackRate` | number | `1` | The speed. |
+| `onPlaybackRateChange` | `(rate: number) => void` | None | Called when the speed button is pressed. |
+| `rates` | `number[]` | `[1, 1.25, 1.5, 2, 0.75]` | The speeds, in order. |
+| `step` | number | `5` | Seconds moved by the arrow keys. |
+| `labels` | `Partial<AudioPlayerLabels>` | English | Button names, the slider's name and value, the error, and the rate format. |
+
+### Other exports
+
+| Export | Shape |
+| --- | --- |
+| `formatAudioTime` | `(seconds: number) => string`, such as `"1:04"` or `"1:02:09"` |
+| `AudioPlayerLabels` | `play`, `pause`, `seek`, `position`, `speed`, `error`, `rate` |

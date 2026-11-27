@@ -1,0 +1,164 @@
+---
+title: Voice Input
+metaTitle: React Voice Input with Level Meter and Recorder Hook
+description: A microphone control with a live level meter and timer, plus a hook that records with getUserMedia and MediaRecorder.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="voice-input-demo" previewClassName="h-auto min-h-[320px]" />
+
+## Overview
+
+Voice Input is a microphone control. It moves through idle, waiting for microphone access, listening with a level meter and timer, transcribing, and done or failed. Stop sends the recording on; cancel throws it away.
+
+The component shows the state you pass. Recording and transcription are your app's work. For the first, `useVoiceRecorder` records from the microphone and hands you the audio as a Blob. Send it to your transcription service and put the text in your composer.
+
+The previews on this page don't use your microphone unless you press "Try with your microphone".
+
+## Anatomy
+
+<Anatomy title="VoiceInput">
+  <AnatomyItem name="Microphone" description="Starts recording, and shows a spinner while waiting or transcribing" />
+  <AnatomyItem name="Level meter" description="Bars that scroll with the loudness while listening" />
+  <AnatomyItem name="Timer" description="Time recorded, as m:ss" />
+  <AnatomyItem name="Cancel and Stop" description="Discard the recording, or finish it" />
+  <AnatomyItem name="Status" description="A line in words for each state" />
+</Anatomy>
+
+Installing `voice-input` brings [Button](/docs/components/button) along as a registry dependency.
+
+## Behavior
+
+### States
+
+| State | Shows |
+| --- | --- |
+| `idle` | The microphone button |
+| `requesting` | A spinner while the browser asks for access |
+| `recording` | Cancel, the level meter, the timer, and Stop |
+| `transcribing` | A spinner until your service replies |
+| `done` | A check and "Added to your message" |
+| `error` | The reason, and the microphone button to try again |
+
+Pass `message` to replace the status line, such as the reason access was refused.
+
+### Level
+
+Pass `level`, from 0 to 1, from wherever you measure it. Or pass a `stream` and the component measures it with Web Audio. The meter samples the level at a steady pace, so it scrolls at the same speed however often the level changes.
+
+When you leave `elapsed` out, the timer counts from the moment recording starts.
+
+### Sizes
+
+`default` stands on its own in a panel. `compact` fits a composer's toolbar: a small microphone that grows into a pill while listening.
+
+### useVoiceRecorder
+
+The hook does nothing until you call `start`, so the browser asks for the microphone only when the person presses it. `stop` finishes the recording and calls `onRecorded` with the Blob; `cancel` discards it. The microphone is released when recording ends or the component unmounts.
+
+## Accessibility
+
+Each button is named: "Start voice input", "Stop recording", and "Cancel recording". The status is a polite live region, so each change of state is announced. The timer has the timer role. The meter is decorative. Focus moves to the control that replaces the one pressed, and <kbd>Escape</kbd> cancels while focus is inside. With reduced motion, the spinner and the halo do not animate.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Start, stop, or cancel |
+| <kbd>Escape</kbd> | Cancel while recording |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/voice-input"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="voice-input" title="components/ai/voice-input.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { useVoiceRecorder, VoiceInput } from "@/components/ai/voice-input"
+
+const transcribe = useTranscription()
+const recorder = useVoiceRecorder({
+  onRecorded: (blob) => transcribe.mutate(blob, { onSuccess: (text) => appendToComposer(text) }),
+})
+
+<VoiceInput
+  size="compact"
+  state={transcribe.isPending ? "transcribing" : recorder.state}
+  level={recorder.level}
+  elapsed={recorder.elapsed}
+  message={recorder.error?.message}
+  onStart={recorder.start}
+  onStop={recorder.stop}
+  onCancel={recorder.cancel}
+/>
+```
+
+## Examples
+
+### In a composer
+
+The compact size beside a send button. It is simulated until you choose "Try with your microphone"; then it records for real and plays the recording back, since transcription is your app's step.
+
+<ComponentPreview name="voice-input-composer" previewClassName="h-auto min-h-[240px]" />
+
+## API reference
+
+### VoiceInput
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `state` | `VoiceInputState` | Required | The state to show. |
+| `level` | `number` | None | Loudness from 0 to 1 while recording. |
+| `stream` | `MediaStream \| null` | None | A stream to measure when you don't pass `level`. |
+| `elapsed` | `number` | Counted | Milliseconds recorded. |
+| `message` | `string` | The state's words | Replaces the status line. |
+| `size` | `"default" \| "compact"` | `"default"` | A standalone panel, or a toolbar control. |
+| `onStart` | `() => void` | None | Called by the microphone button. |
+| `onStop` | `() => void` | None | Called by Stop. |
+| `onCancel` | `() => void` | None | Called by Cancel and <kbd>Escape</kbd>. |
+| `disabled` | `boolean` | `false` | Disables the microphone button. |
+| `labels` | `Partial<VoiceInputLabels>` | English | Button names and status words. |
+
+### useVoiceRecorder
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `onRecorded` | `(blob: Blob) => void` | Called with the recording when it stops. |
+| `mimeType` | `string` | A preferred container, such as `"audio/webm"`, when the browser supports it. |
+| `constraints` | `MediaTrackConstraints` | Passed to getUserMedia. |
+
+It returns `state` (`"idle"`, `"requesting"`, `"recording"`, or `"error"`), `level`, `elapsed`, `blob`, `error`, `stream`, and `start`, `stop`, and `cancel`.
+
+### useStreamLevel
+
+`useStreamLevel(stream)` returns the stream's loudness from 0 to 1, read with Web Audio, or 0 without a stream.

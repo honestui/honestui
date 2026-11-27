@@ -13,6 +13,7 @@ export const docs = defineDocs({
       links: z.record(z.string(), z.string()).optional(),
       metaDescription: z.string().optional(),
       metaTitle: z.string().optional(),
+      lastModified: z.iso.date().optional(),
     }),
   },
 });

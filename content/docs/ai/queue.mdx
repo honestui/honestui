@@ -1,0 +1,131 @@
+---
+title: Queue
+metaTitle: React Message Queue for a Busy Agent
+description: Hold the messages a person sends while the agent is busy, and let them reorder, edit, remove, or send one now.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="queue-demo" previewClassName="h-auto min-h-[260px]" />
+
+## Overview
+
+Queue holds what a person sends while the agent is still working, in the order it will go. They can send the first item now, reorder the list, edit an item, or remove one.
+
+It shows the items you pass and calls back on every change. Sending the next item when the agent is free is your application's work. It renders nothing when the queue is empty.
+
+## Anatomy
+
+<Anatomy title="Queue">
+  <AnatomyItem name="Header" description="The count and the disclosure" />
+  <AnatomyItem name="Item" description="Its position, text, and an optional note" />
+  <AnatomyItem name="Actions" description="Move up, Move down, Edit, and Remove, when you handle them" />
+  <AnatomyItem name="Send now" description="On the first item, when you handle it" />
+</Anatomy>
+
+Installing `queue` brings [Button](/docs/components/button), [Collapsible](/docs/components/collapsible), and [Textarea](/docs/components/textarea) along as registry dependencies.
+
+## Behavior
+
+### Actions
+
+Each action appears only when you pass its handler. `onMove` receives the item's new index, `onEdit` the new text, and `onRemove` and `onSendNow` the item's `id`. Update `items` in response.
+
+With a fine pointer the row actions stay quiet until the row is hovered or one of them has focus. On touch they are always shown.
+
+### Editing
+
+Edit turns the item into a field. <kbd>Enter</kbd> or Save keeps the change, <kbd>Shift</kbd>+<kbd>Enter</kbd> adds a line, and <kbd>Escape</kbd> or Cancel leaves it as it was. Saving unchanged or empty text calls nothing.
+
+### Focus
+
+Focus stays on Move up or Move down as the item moves, falling to the other one at either end. After Remove it moves to the next item's Remove, and after editing it returns to Edit.
+
+## Accessibility
+
+The queue is a region named by its count, and the items are an ordered list. Every action is named with its item, such as "Remove: Skip anything under $50". Move up on the first item and Move down on the last are marked disabled but keep focus.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the header and the actions |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the queue, or press the focused action |
+| <kbd>Escape</kbd> | Cancel an edit |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/queue"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "collapsible", "textarea"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="queue" title="components/ai/queue.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Queue } from "@/components/ai/queue"
+
+<Queue
+  items={queue}
+  onSendNow={(id) => agent.interruptWith(take(id))}
+  onRemove={(id) => setQueue((items) => items.filter((item) => item.id !== id))}
+  onEdit={(id, text) => setQueue((items) => items.map((item) => (item.id === id ? { ...item, text } : item)))}
+  onMove={(id, toIndex) => setQueue((items) => move(items, id, toIndex))}
+/>
+```
+
+## Examples
+
+### Above a Prompt Bar
+
+What the person sends waits above the composer.
+
+<ComponentPreview name="queue-prompt-bar" previewClassName="h-auto min-h-[240px]" />
+
+## API reference
+
+### Queue
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `QueueItem[]` | Required | What waits, first to last. |
+| `onSendNow` | `(id: string) => void` | None | Passing it shows Send now on the first item. |
+| `onRemove` | `(id: string) => void` | None | Passing it shows Remove. |
+| `onEdit` | `(id: string, text: string) => void` | None | Passing it shows Edit. |
+| `onMove` | `(id: string, toIndex: number) => void` | None | Passing it shows Move up and Move down. |
+| `defaultOpen` | `boolean` | `true` | Whether the list starts open. |
+| `open` | `boolean` | None | Controls whether the list is open. |
+| `onOpenChange` | `(open: boolean) => void` | None | Called when the header is pressed. |
+| `labels` | `Partial<QueueLabels>` | English | The header, action names, and edit field name. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `QueueItem` | `id`, `text`, and an optional `meta` |

@@ -1,0 +1,50 @@
+---
+title: Metaballs
+description: Drift soft blobs that merge and separate like liquid, with an optional ball that follows the pointer.
+---
+
+<ComponentPreview name="metaballs-demo" playground />
+
+## Overview
+
+Metaballs draws a handful of round blobs that wander slowly and melt into one another when they meet, then pull apart again. Each ball takes a color from `colors` in turn, and where two merge their colors blend over a short distance instead of averaging into mud. With `followPointer`, one more ball tracks the pointer and merges with the rest, which makes an empty state, a sign-in panel, or a loading screen feel responsive without demanding attention.
+
+Use a small `count` and low `spread` for a compact cluster behind a logo, or more balls across the full container for a background. Set `softness` above 0 for a blurred glow instead of crisp edges, and `backgroundColor="transparent"` to place the blobs over your own surface.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Metaballs } from "honestui/shaders"
+
+<div className="h-80 bg-neutral-950">
+  <Metaballs
+    className="size-full"
+    colors={["#6366f1", "#ec4899"]}
+    count={8}
+  />
+</div>
+```
+
+## Accessibility
+
+Metaballs is decorative: the canvas is hidden from assistive technology, and text or actions belong in normal HTML above it. The pointer ball is an enhancement only, so nothing should depend on it, and it does nothing for keyboard or touch users. Animation pauses while the effect is offscreen, while the document is hidden, and when the user prefers reduced motion; a still frame is rendered, and the pointer ball still follows the pointer without easing. Use `paused` for your own control, and give the container a background for when WebGL is unavailable.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="count" type="number" default="9">Number of drifting balls, from 1 to 20.</ApiRow>
+  <ApiRow name="colors" type="string[]" default='["#6366f1", "#a855f7", "#ec4899", "#38bdf8"]'>Ball colors, up to 8. Balls take them in turn; the pointer ball uses the first.</ApiRow>
+  <ApiRow name="size" type="number" default="1">Overall ball size.</ApiRow>
+  <ApiRow name="spread" type="number" default="0.8">How far the balls wander, from 0 (clustered in the center) to 1 (the full container).</ApiRow>
+  <ApiRow name="softness" type="number" default="0">Softness of the edges, from 0 (crisp) to 1 (a soft glow).</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed. Changing it never makes the balls jump.</ApiRow>
+  <ApiRow name="followPointer" type="boolean" default="true">Adds a ball that follows the pointer and merges with the others.</ApiRow>
+  <ApiRow name="backgroundColor" type="string" default='"transparent"'>Background color, or `"transparent"` to let the container show through.</ApiRow>
+  <ApiRow name="seed" type="number" default="1">Changes the ball paths while keeping the same look.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a static frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

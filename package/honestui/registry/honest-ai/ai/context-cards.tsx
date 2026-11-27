@@ -1,0 +1,163 @@
+import * as React from "react"
+import { ArrowUpRight as ArrowUpRightIcon, FileText as FileTextIcon } from "honestui/icons"
+
+import { cn } from "@/lib/utils"
+
+export type ContextChunk = {
+  id: string
+  title: string
+  /** The retrieved passage. */
+  body: string
+  /** A rank, score, or size shown beside the title, such as "Rank 1" or "290 characters". */
+  meta?: string
+  /** Where the passage came from. With `href`, it is a link. */
+  source?: { label: string; href?: string }
+}
+
+const regularText =
+  "[font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]"
+
+const smallText =
+  "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+
+/** Tabular figures on the digits only, since the tabular feature can also widen letters. */
+function TabularDigits({ text }: { text: string }) {
+  return text.split(/(\d[\d.,]*)/).map((part, index) =>
+    index % 2 === 1 ? (
+      <span key={index} className="tabular-nums">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  )
+}
+
+/** The host name of an absolute address, without "www.", or nothing for a relative one. */
+function domainOf(href: string) {
+  try {
+    return new URL(href).hostname.replace(/^www\./, "")
+  } catch {
+    return undefined
+  }
+}
+
+export type ContextCardsProps = Omit<React.ComponentProps<"section">, "children" | "title"> & {
+  /** The heading, such as "Retrieved context". */
+  title: string
+  chunks: ContextChunk[]
+  /** Shown when `chunks` is empty. */
+  emptyMessage?: string
+}
+
+/** The passages an agent retrieved, each with its title, text, and source. */
+function ContextCards({
+  title,
+  chunks,
+  emptyMessage = "Nothing was retrieved.",
+  className,
+  ...props
+}: ContextCardsProps) {
+  const headingId = React.useId()
+
+  return (
+    <section
+      data-slot="context-cards"
+      aria-labelledby={headingId}
+      className={cn(
+        "flex w-full min-w-0 flex-col overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
+        regularText,
+        className
+      )}
+      {...props}
+    >
+      <p className="m-0 flex items-center justify-between gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)]">
+        <span id={headingId} className="[font-weight:var(--hui-font-weight-medium)]">
+          {title}
+        </span>
+        <span
+          className={cn(
+            "inline-flex min-w-5 items-center justify-center rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-2)] tabular-nums text-[var(--hui-color-foreground-base-secondary)]",
+            smallText
+          )}
+        >
+          {chunks.length}
+        </span>
+      </p>
+
+      {chunks.length === 0 ? (
+        <p className="m-0 px-[var(--hui-space-5)] py-[var(--hui-space-5)] text-[var(--hui-color-foreground-base-secondary)]">
+          {emptyMessage}
+        </p>
+      ) : (
+        <ul role="list" className="m-0 flex list-none flex-col p-0">
+          {chunks.map((chunk) => (
+            <li
+              key={chunk.id}
+              data-slot="context-card"
+              className="flex min-w-0 flex-col gap-[var(--hui-space-2)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-5)] last:border-b-0"
+            >
+              {/* Long metadata wraps under the title rather than truncating. */}
+              <div className="flex min-w-0 flex-wrap items-baseline gap-x-[var(--hui-space-3)] gap-y-[var(--hui-space-1)]">
+                {/* Wraps to a second line before truncating, so close titles stay distinguishable. */}
+                <span className="line-clamp-2 min-w-0 flex-1 basis-40 break-words [font-weight:var(--hui-font-weight-medium)]">
+                  {chunk.title}
+                </span>
+                {chunk.meta && (
+                  <span className={cn("min-w-0 break-words text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
+                    <TabularDigits text={chunk.meta} />
+                  </span>
+                )}
+              </div>
+              <p className="m-0 break-words text-[var(--hui-color-foreground-base-secondary)]">{chunk.body}</p>
+              {chunk.source && (
+                <div className="pt-[var(--hui-space-1)]">
+                  <ContextSource source={chunk.source} />
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
+function ContextSource({ source }: { source: NonNullable<ContextChunk["source"]> }) {
+  const domain = source.href ? domainOf(source.href) : undefined
+  // The label wraps rather than truncating, so a long document name stays readable.
+  const label = <span className="min-w-0 break-words">{source.label}</span>
+
+  // Without a link there is nothing to press, so it reads as a plain note.
+  if (!source.href) {
+    return (
+      <span
+        className={cn(
+          "inline-flex max-w-full items-center gap-x-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)]",
+          smallText
+        )}
+      >
+        <FileTextIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)]" />
+        {label}
+      </span>
+    )
+  }
+
+  return (
+    <a
+      href={source.href}
+      className={cn(
+        "group/source -mx-[var(--hui-space-2)] inline-flex min-h-6 max-w-full items-center gap-x-[var(--hui-space-2)] rounded-[var(--hui-radius-1)] px-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] no-underline outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-neutral-secondary)] focus-visible:[outline:var(--hui-focus-ring)]",
+        smallText
+      )}
+    >
+      <ArrowUpRightIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)] group-hover/source:text-[var(--hui-color-foreground-base-primary)]" />
+      {label}
+      {domain && domain !== source.label && (
+        <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)]">{domain}</span>
+      )}
+    </a>
+  )
+}
+
+export { ContextCards }

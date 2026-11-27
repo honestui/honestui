@@ -1,0 +1,36 @@
+---
+title: Examples
+metaTitle: Honest AI Generative UI Interactive Examples
+description: Try local examples for reactive state, data-query recovery, custom components, and parser diagnostics, with their source code.
+lastModified: "2026-10-12"
+---
+
+These examples run the local renderer and runtime. They use fixed programs and labeled sample data so you can inspect the behavior before connecting a model. Open each **Code** tab to see the React integration.
+
+For layout, form validation, charts, tabs, and token replay, use the [main playground](/docs/ai/generative#try-it-locally). For sending messages and switching conversations, use the [chat demo](/docs/ai/generative/chat#try-the-chat-shell).
+
+## Save and restore state
+
+Add to the count, save a snapshot, change it again, then restore. The emitted state map is visible below the controls. [State and forms](/docs/ai/generative/state) explains how to store it with a response.
+
+<ComponentPreview name="generative-state-demo" playground />
+
+## Recover a data query
+
+Load the fixture, simulate failure, then retry the query. The source program stays the same. [Data and tools](/docs/ai/generative/tools) explains the provider and recovery hooks.
+
+<ComponentPreview name="generative-query-demo" playground />
+
+## Register a product component
+
+`DeliveryStatus` is added to the library with a schema and a React implementation using Honest UI Card and Badge. Its values are illustrative; there is no tracking service. [Component library](/docs/ai/generative/library#extend-the-library) explains the extension contract.
+
+<ComponentPreview name="generative-custom-demo" playground />
+
+## Inspect and correct a program
+
+Break the component name to produce parser diagnostics, edit the source, or restore the valid program. Invalid output is kept out of the renderer in this example. This is local validation and manual correction, not model repair.
+
+<ComponentPreview name="generative-diagnostics-demo" playground />
+
+See [Language diagnostics](/docs/ai/generative/language#read-diagnostics-before-changing-the-model) for common causes and [Server repair](/docs/ai/generative/server#supply-your-own-repair) for connecting your own correction model.

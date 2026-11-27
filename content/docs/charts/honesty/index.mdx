@@ -1,0 +1,68 @@
+---
+title: Honest Charts
+description: Marks that keep a chart from overstating what the data shows, for open periods, uncertainty, gaps, truncated axes, and small samples.
+image: /og/og-image.png
+---
+
+<ComponentPreview title="An open month drawn as in progress" name="ex-partial-period-echarts-line-chart" />
+
+## Overview
+
+Most misleading charts are not drawn by people trying to mislead. A dashboard shows this month next to last month, and the open month looks like a collapse. A forecast is drawn as one confident line. A broken pipeline leaves three empty days, and the line slides smoothly across them. An axis starts at 98% to fit the data, and a 0.3 point dip fills the plot. Twelve survey responses get the same solid point as twelve hundred.
+
+Honest UI charts have a mark for each of these. You tell the chart what you know about the data, and it draws that knowledge on the plot, names it in the key, and explains it in the tooltip and the accessible label. The charts never guess: every mark comes from values or settings you supply.
+
+| Mark | What it prevents | How you turn it on |
+| --- | --- | --- |
+| [Partial period](/docs/charts/honesty/partial-period) | A fake drop from a day, week, or month that is not over | `<Chart.PartialPeriod />` |
+| [Confidence bands](/docs/charts/honesty/confidence-bands) | False precision in a forecast or an estimate | `<Chart.Band />` |
+| [Data gaps](/docs/charts/honesty/data-gaps) | A line drawn across time when nothing was recorded | `gaps` on the chart root |
+| [Truncated axis](/docs/charts/honesty/truncated-axis) | Small differences made to look large by an axis that skips zero | `min` on the value axis |
+| [Sample size](/docs/charts/honesty/sample-size) | A value from a handful of observations shown as firmly as one from thousands | `sampleSizeKey` |
+
+## Built on Data Status
+
+[Data Status](/docs/charts/data-status) is the foundation. It marks each value as measured, estimated, provisional, forecast, or missing, and draws each status with its own stroke or fill. The honesty marks reuse those styles: a partial period draws its values as provisional, and a band pairs naturally with forecast values.
+
+Use Data Status when you know the status of individual values. Use the marks on this page when the claim is about a stretch of the chart, the axis, or how much evidence stands behind each value.
+
+## Supported charts
+
+| Mark | Line | Area | Bar | Combo | Scatter |
+| --- | --- | --- | --- | --- | --- |
+| Partial period | Yes | Yes | Yes | Yes | No |
+| Confidence bands | Yes | Yes | No, use Data Status ranges | Line series | No |
+| Data gaps | Yes | Yes | Yes | Yes | No |
+| Truncated axis | Yes | Yes | Warns; bars keep zero | Bars keep zero | Both axes |
+| Sample size | Yes | Yes | Yes | Yes | Yes |
+
+A bar's length is its value, so a bar chart always includes zero on its value axis. Scatter points have no time order, so the period and gap marks do not apply there.
+
+## Absent values
+
+A value that is `null`, empty, or not a number is never drawn as zero. A line or area breaks at it and resumes at the next value. Set `connectNulls` on a series to bridge the break when the gap does not matter to your readers.
+
+## Accessibility
+
+Every mark adds an entry to the key under the plot, a note in the tooltip where it applies, and a sentence to the chart's default `ariaLabel`. The plot itself is a canvas, so give readers a text summary or a data table when the difference matters to a decision.
+
+## Changing the text
+
+Pass `honestyText` to the chart root to reword or translate the labels, notes, and descriptions. Anything you leave out keeps its default. Define the object outside the component so the chart does not rebuild on every render.
+
+```tsx
+import { LineChart, type ChartHonestyText } from "honestui/charts";
+
+const honestyText: ChartHonestyText = {
+  partialPeriodLabel: "Laufender Monat",
+  noDataLabel: "Keine Daten",
+  axisStartsAt: (value) => `Achse beginnt bei ${value}`,
+  sampleSize: (n) => `n = ${n}`,
+};
+
+<LineChart data={data} config={chartConfig} honestyText={honestyText}>
+  <LineChart.Line dataKey="revenue" />
+</LineChart>
+```
+
+Each feature page lists the strings it uses.

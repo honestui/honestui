@@ -1,0 +1,234 @@
+---
+title: Hotkey Recorder
+description: A field that records a keyboard shortcut when pressed. It stores one string that means ⌘ on a Mac and Ctrl elsewhere, draws the keys for the viewer's keyboard, and reports shortcuts that are already taken.
+---
+
+<ComponentPreview name="hotkey-recorder-demo" previewClassName="h-auto min-h-[380px]" />
+
+## Overview
+
+Hotkey Recorder lets people choose their own keyboard shortcuts. Activate the field, press a combination, and the field shows it as keycaps. The value is a string such as `Mod+Shift+K`.
+
+`Mod` is the platform's command key: ⌘ on a Mac, Ctrl on Windows and Linux. One stored shortcut works on both, and the field draws it as ⇧ ⌘ K or Ctrl Shift K for whoever is looking. Keys are read by their physical position, so Option+K on a Mac is recorded as `Alt+K` and not as the character Option makes.
+
+Pass the other shortcuts in your app as `bindings` and the field reports a combination that is already used. Pass `browserReservedHotkeys` to warn about, or refuse, shortcuts the browser keeps for itself.
+
+The field records shortcuts. It does not listen for them while your app runs. Match key events with `hotkeyFromEvent` and `hotkeysEqual`, which use the same rules.
+
+## Anatomy
+
+<Anatomy title="HotkeyRecorder">
+  <AnatomyItem name="HotkeyRecorder" description="Holds the shortcut, the recording state, and the bindings it is checked against">
+    <AnatomyItem name="HotkeyRecorderLabel" description="Names the field" />
+    <AnatomyItem name="HotkeyRecorderControl" description="The shortcut as keycaps, the keys being held while recording, and a clear button" />
+    <AnatomyItem name="HotkeyRecorderStatus" description="How to record, why a shortcut was refused, and which binding it conflicts with" />
+  </AnatomyItem>
+</Anatomy>
+
+`HotkeyKeys` draws any shortcut string as keycaps, for menus and help screens. Installing `hotkey-recorder` brings `Label` along as a registry dependency.
+
+## Behavior
+
+### Recording
+
+Clicking the field, or pressing Enter or Space on it, starts recording, and the field shows "Press keys…". While modifiers are held, they appear as keycaps. The first key pressed with them completes the shortcut. Recording ends, and `onValueChange` receives the new value.
+
+While recording:
+
+- **Escape** cancels and keeps the previous shortcut.
+- **Backspace or Delete**, pressed on their own, clear the shortcut. With modifiers, they can be recorded, as in `Mod+Backspace`.
+- **Tab** leaves the field and cancels.
+- **Leaving the field any other way** also cancels.
+
+When the field is not recording, Backspace clears the shortcut, and so does the clear button.
+
+### Rules
+
+With `requireModifier`, which is on by default, a shortcut needs ⌘, Ctrl, Option, or Alt. A bare `K` or `Shift+K` would fire while someone types in a text field. The field refuses it, says why, and keeps recording. Function keys are allowed on their own.
+
+### Conflicts
+
+A shortcut that matches one of `bindings` or `reserved` is a conflict. Comparison follows the viewer's platform: outside a Mac, `Mod+K` and `Ctrl+K` are the same keys. The binding being edited is skipped when its id is passed as `bindingId`.
+
+With `conflicts="warn"`, the default, the shortcut is saved and the status names the other binding. `details.conflict` tells your app, so it can unassign the other shortcut or ask. With `conflicts="block"`, the shortcut is refused and recording continues.
+
+Browsers handle some shortcuts, such as ⌘W and Ctrl+T, before the page sees them. Others, such as ⌘L, reach the page only sometimes. `browserReservedHotkeys` lists the common ones.
+
+### Platform
+
+The viewer's platform is read after hydration. The server renders the Windows and Linux spelling, and the field switches to Mac keycaps if needed. Pass `platform` to fix it, for example to preview shortcuts for another keyboard.
+
+## Accessibility
+
+The field is a button labelled by `HotkeyRecorderLabel`. Its accessible name includes the shortcut in words, such as "Open search, Shift Command K, press to change". The keycaps are hidden from screen readers. While recording, `aria-pressed` is true and the name reads "Press keys…".
+
+`HotkeyRecorderStatus` is a polite status region and describes the field. It reads the recording instructions, refusals, and conflicts as they happen. Keep it mounted. Refusals add an icon and an invalid outline, and conflicts add a warning icon, so neither depends on color alone.
+
+The clear button is a separate tab stop named "Clear shortcut".
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["hotkey-recorder"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the `label` component.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="hotkey-recorder" title="components/ui/hotkey-recorder/hotkey-recorder-types.ts" file="hotkey-recorder-types.ts" />
+
+<ComponentSource name="hotkey-recorder" title="components/ui/hotkey-recorder/hotkey-recorder-utils.ts" file="hotkey-recorder-utils.ts" />
+
+<ComponentSource name="hotkey-recorder" title="components/ui/hotkey-recorder/hotkey-recorder.tsx" file="hotkey-recorder.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  HotkeyRecorder,
+  HotkeyRecorderControl,
+  HotkeyRecorderLabel,
+  HotkeyRecorderStatus,
+} from "@/components/ui/hotkey-recorder/hotkey-recorder"
+
+const [hotkey, setHotkey] = React.useState<string | null>("Mod+K")
+
+<HotkeyRecorder value={hotkey} onValueChange={setHotkey} bindings={bindings} bindingId="search">
+  <HotkeyRecorderLabel>Open search</HotkeyRecorderLabel>
+  <HotkeyRecorderControl />
+  <HotkeyRecorderStatus />
+</HotkeyRecorder>
+```
+
+### Listening for the shortcut
+
+```tsx
+import { hotkeyFromEvent, hotkeysEqual, stringifyHotkey, useHotkeyPlatform } from "@/components/ui/hotkey-recorder/hotkey-recorder"
+
+const platform = useHotkeyPlatform()
+
+React.useEffect(() => {
+  const onKeyDown = (event: KeyboardEvent) => {
+    const pressed = hotkeyFromEvent(event, platform)
+    if (pressed && hotkey && hotkeysEqual(stringifyHotkey(pressed), hotkey, platform)) {
+      event.preventDefault()
+      openSearch()
+    }
+  }
+  window.addEventListener("keydown", onKeyDown)
+  return () => window.removeEventListener("keydown", onKeyDown)
+}, [hotkey, platform])
+```
+
+### Refusing browser shortcuts
+
+```tsx
+<HotkeyRecorder reserved={browserReservedHotkeys} conflicts="block">
+```
+
+### Showing a shortcut
+
+```tsx
+<HotkeyKeys hotkey="Mod+Shift+P" />
+```
+
+## Don't do this
+
+### Storing what the event says
+
+```tsx
+// Bad. "Meta+K" on a Mac and "Control+K" on Windows are two settings for one shortcut,
+// and event.key turns Option+K into "˚".
+save(`${event.metaKey ? "Meta+" : ""}${event.key}`)
+```
+
+Store the value the field gives you. It uses `Mod` and physical keys.
+
+### Recording inside a form field's keydown handler
+
+A form that submits on Enter, or a global shortcut handler on `window`, can act on keys meant for the recorder. Check `event.defaultPrevented` in your own handlers; the field prevents the default for every key it records.
+
+### Letting conflicts pass silently
+
+If two actions share keys, both fire. Use `details.conflict` to unassign the other action, or block the shortcut.
+
+## Examples
+
+### Browser shortcuts and keyboards
+
+Browser shortcuts are refused here instead of saved. The keyboard toggle changes the keycaps, and the stored value stays `Mod+Shift+Space`.
+
+<ComponentPreview name="hotkey-recorder-reserved" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### HotkeyRecorder
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string \| null` | None | The shortcut, such as `Mod+Shift+K`. `null` is no shortcut. |
+| `defaultValue` | `string \| null` | `null` | The initial shortcut when uncontrolled. |
+| `onValueChange` | `(value, details) => void` | None | Runs when a shortcut is recorded or cleared. `details.conflict` names a binding that uses the same keys. |
+| `bindings` | `HotkeyBinding[]` | `[]` | Shortcuts already in use. |
+| `bindingId` | string | None | The binding this field edits, so it does not conflict with itself. |
+| `reserved` | `HotkeyBinding[]` | `[]` | Shortcuts the app should not use, such as `browserReservedHotkeys`. |
+| `conflicts` | `"warn" \| "block"` | `"warn"` | Save a conflicting shortcut with a warning, or refuse it. |
+| `requireModifier` | boolean | `true` | Refuse shortcuts without ⌘, Ctrl, or Alt. Function keys are allowed. |
+| `platform` | `"mac" \| "other"` | The viewer's platform | The keyboard to read and draw for. |
+| `disabled` | boolean | `false` | Disables recording and the clear button. |
+| `labels` | `Partial<HotkeyRecorderLabels>` | English | Every word the field writes and the spoken key names. |
+
+### HotkeyRecorderLabel
+
+Accepts every `Label` prop. It is connected to the field for you.
+
+### HotkeyRecorderControl
+
+Accepts native div props. `data-recording` is set while recording and `data-invalid` after a refusal.
+
+### HotkeyRecorderStatus
+
+Accepts native paragraph props. `data-state` is `empty`, `hint`, `warning`, or `error`.
+
+### HotkeyKeys
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `hotkey` | `string \| Partial<ParsedHotkey>` | Required | The shortcut to draw. |
+| `platform` | `"mac" \| "other"` | The viewer's platform | The keyboard to draw for. |
+
+### Helpers
+
+| Export | Shape |
+| --- | --- |
+| `parseHotkey` | `(hotkey) => ParsedHotkey \| null` |
+| `stringifyHotkey` / `normalizeHotkey` | Write the canonical spelling: `Mod`, `Ctrl`, `Meta`, `Alt`, `Shift`, then the key |
+| `hotkeyFromEvent` | `(event, platform) => ParsedHotkey \| null`, from physical keys |
+| `hotkeysEqual` | `(a, b, platform) => boolean` |
+| `findHotkeyConflict` | `(hotkey, { bindings?, excludeId?, reserved?, platform }) => HotkeyConflict \| null` |
+| `describeHotkey` | `(parsed, platform) => string`, such as "Shift Command K" |
+| `useHotkeyPlatform` | `(override?) => "mac" \| "other"` |
+| `browserReservedHotkeys` | New tab, close tab, new window, private window, reopen tab, address bar, reload, and quit |

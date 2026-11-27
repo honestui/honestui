@@ -59,7 +59,8 @@ const statusIcon: Record<TaskStatus, { Icon: typeof CircleCheckIcon; className: 
     Icon: LoaderCircleIcon,
     className: "text-[var(--hui-color-foreground-base-secondary)] motion-safe:animate-spin",
   },
-  done: { Icon: CircleCheckIcon, className: "text-[var(--hui-color-foreground-success-primary)]" },
+  // Done is quiet: the check and the word say it, so color is kept for failures.
+  done: { Icon: CircleCheckIcon, className: "text-[var(--hui-color-foreground-base-secondary)]" },
   error: { Icon: CircleAlertIcon, className: "text-[var(--hui-color-foreground-danger-primary)]" },
 }
 
@@ -99,7 +100,7 @@ function TaskRows({
         "m-0 flex w-full min-w-0 list-none flex-col p-0 text-[var(--hui-color-foreground-base-primary)]",
         rowText,
         isList
-          ? "overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)]"
+          ? "overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)]"
           : "gap-[var(--hui-space-3)]",
         className
       )}
@@ -162,14 +163,14 @@ function TaskRow({
   )
 
   const rowLayout =
-    "flex min-h-[var(--hui-space-11)] w-full min-w-0 items-center gap-[var(--hui-space-3)] px-[var(--hui-space-4)] py-[var(--hui-space-3)] text-left"
+    "flex min-h-[var(--hui-space-11)] w-full min-w-0 items-center gap-[var(--hui-space-4)] px-[var(--hui-space-5)] py-[var(--hui-space-3)] text-left"
 
   // Every row keeps the chevron's width, so the status words line up down the list.
   const disclosureSlot = "size-3.5 shrink-0"
 
   // Try again can't sit inside the row's button, so it overlays the place the row holds for it.
   const retry = canRetry && (
-    <div className="pointer-events-none flex min-w-0 items-center justify-end gap-[var(--hui-space-3)] px-[var(--hui-space-4)]">
+    <div className="pointer-events-none flex min-w-0 items-center justify-end gap-[var(--hui-space-4)] px-[var(--hui-space-5)]">
       <RetryButton task={task} labels={labels} onRetry={onRetry} />
       <span aria-hidden="true" className={cn("invisible shrink-0", metaText)}>
         {labels[task.status]}
@@ -185,8 +186,8 @@ function TaskRow({
       className={cn(
         "@container/task min-w-0",
         isList
-          ? "border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] last:border-b-0"
-          : "overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)]"
+          ? "border-b-[0.5px] border-[var(--hui-color-border-base-primary)] last:border-b-0"
+          : "overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)]"
       )}
     >
       {hasDetails ? (
@@ -214,7 +215,7 @@ function TaskRow({
               role="list"
               // The rail starts under the status icon's center.
               className={cn(
-                "m-0 ms-[calc(var(--hui-space-4)+var(--hui-space-3))] mb-[var(--hui-space-4)] flex list-none flex-col gap-[var(--hui-space-2)] border-s-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-secondary)] py-[var(--hui-space-1)] ps-[var(--hui-space-5)] pe-[var(--hui-space-4)]",
+                "m-0 ms-[calc(var(--hui-space-5)+var(--hui-space-3))] mb-[var(--hui-space-4)] flex list-none flex-col gap-[var(--hui-space-3)] border-s-[0.5px] border-[var(--hui-color-border-base-secondary)] py-[var(--hui-space-1)] ps-[var(--hui-space-6)] pe-[var(--hui-space-5)]",
                 metaText
               )}
             >

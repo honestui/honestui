@@ -95,7 +95,7 @@ function AgentScreen({
   const isLive = status === "live" && Boolean(src)
 
   const frame =
-    "relative block aspect-video w-full overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-neutral-primary)] p-0"
+    "relative block aspect-video w-full overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] p-0 shadow-[var(--hui-shadow-feather)]"
 
   return (
     <div
@@ -124,7 +124,7 @@ function AgentScreen({
               className="absolute inset-0 size-full object-cover motion-safe:[transition:filter_var(--hui-duration-normal)_var(--hui-ease-out)] group-hover/screen:brightness-95"
             />
             {/* Always visible, so opening does not depend on hover. */}
-            <span className="absolute end-[var(--hui-space-3)] bottom-[var(--hui-space-3)] inline-flex items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay)] [font-weight:var(--hui-font-weight-medium)]">
+            <span className="absolute end-[var(--hui-space-4)] bottom-[var(--hui-space-4)] inline-flex h-[var(--hui-space-8)] items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-full)] border-[0.5px] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] px-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-overlay)] [font-weight:var(--hui-font-weight-medium)] motion-safe:[transition:var(--hui-transition-interactive)] group-hover/screen:shadow-[var(--hui-shadow-lifted)]">
               <MaximizeIcon aria-hidden="true" className="size-3.5" />
               {labels.open}
             </span>
@@ -159,7 +159,7 @@ function AgentScreen({
           </p>
         </div>
       )}
-      <div className="flex min-w-0 items-baseline gap-[var(--hui-space-3)]">
+      <div className="flex min-w-0 items-baseline gap-[var(--hui-space-3)] px-[var(--hui-space-1)]">
         {/* Two lines before truncating, so similar screens stay distinguishable. */}
         <p className="m-0 line-clamp-2 min-w-0 flex-1 break-words [font-size:var(--hui-font-size-regular)] [font-weight:var(--hui-font-weight-medium)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]">
           {title}

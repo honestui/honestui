@@ -1,5 +1,9 @@
 [
   {
+    "name": "agent-handoff",
+    "type": "registry:component"
+  },
+  {
     "name": "agent-screen",
     "type": "registry:component"
   },
@@ -12,7 +16,19 @@
     "type": "registry:component"
   },
   {
+    "name": "audio-player",
+    "type": "registry:component"
+  },
+  {
     "name": "chat-thread",
+    "type": "registry:component"
+  },
+  {
+    "name": "chat-welcome",
+    "type": "registry:component"
+  },
+  {
+    "name": "checkpoint",
     "type": "registry:component"
   },
   {
@@ -29,6 +45,14 @@
   },
   {
     "name": "diff-table",
+    "type": "registry:component"
+  },
+  {
+    "name": "eval-compare",
+    "type": "registry:component"
+  },
+  {
+    "name": "file-tree",
     "type": "registry:component"
   },
   {
@@ -56,7 +80,19 @@
     "type": "registry:lib"
   },
   {
+    "name": "guardrail-notice",
+    "type": "registry:component"
+  },
+  {
+    "name": "input-request",
+    "type": "registry:component"
+  },
+  {
     "name": "insight-cards",
+    "type": "registry:component"
+  },
+  {
+    "name": "live-waveform",
     "type": "registry:component"
   },
   {
@@ -76,11 +112,27 @@
     "type": "registry:lib"
   },
   {
+    "name": "memory-viewer",
+    "type": "registry:component"
+  },
+  {
     "name": "message-scroller",
     "type": "registry:component"
   },
   {
+    "name": "message-usage",
+    "type": "registry:component"
+  },
+  {
+    "name": "plan",
+    "type": "registry:component"
+  },
+  {
     "name": "prompt-bar",
+    "type": "registry:component"
+  },
+  {
+    "name": "prompt-suggestions",
     "type": "registry:component"
   },
   {
@@ -140,6 +192,10 @@
     "type": "registry:lib"
   },
   {
+    "name": "queue",
+    "type": "registry:component"
+  },
+  {
     "name": "recommendation-card",
     "type": "registry:component"
   },
@@ -164,6 +220,10 @@
     "type": "registry:component"
   },
   {
+    "name": "stack-trace",
+    "type": "registry:component"
+  },
+  {
     "name": "streaming-text",
     "type": "registry:component"
   },
@@ -172,11 +232,39 @@
     "type": "registry:component"
   },
   {
+    "name": "terminal-output",
+    "type": "registry:component"
+  },
+  {
+    "name": "test-results",
+    "type": "registry:component"
+  },
+  {
     "name": "thinking-state",
     "type": "registry:component"
   },
   {
     "name": "tool-chips",
+    "type": "registry:component"
+  },
+  {
+    "name": "trace-waterfall",
+    "type": "registry:component"
+  },
+  {
+    "name": "transcript-viewer",
+    "type": "registry:component"
+  },
+  {
+    "name": "voice-input",
+    "type": "registry:component"
+  },
+  {
+    "name": "voice-orb",
+    "type": "registry:component"
+  },
+  {
+    "name": "web-preview",
     "type": "registry:component"
   }
 ]

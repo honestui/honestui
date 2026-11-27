@@ -31,6 +31,9 @@ export type ContextMeterLabels = {
 
 const numberFormat = new Intl.NumberFormat("en-US")
 
+/** Formats a token count the way every Honest AI meter does: "12,480". Shared with Message Usage. */
+export const formatTokenCount = (value: number) => numberFormat.format(value)
+
 export const defaultContextMeterLabels: ContextMeterLabels = {
   title: "Context window",
   summary: (percent) => `${percent}% of context used`,
@@ -39,7 +42,7 @@ export const defaultContextMeterLabels: ContextMeterLabels = {
   near: "Near the limit",
   full: "At the limit",
   cost: "Cost",
-  number: (value) => numberFormat.format(value),
+  number: formatTokenCount,
 }
 
 const RING_RADIUS = 5.75
@@ -146,7 +149,7 @@ function ContextMeter({
             r={RING_RADIUS}
             fill="none"
             // Mixed from the text color, so the empty track stays near 3:1 on dark surfaces.
-            className="[stroke:color-mix(in_oklch,var(--hui-color-foreground-base-primary)_40%,var(--hui-color-background-base-primary))] forced-colors:[stroke:GrayText]"
+            className="[stroke:color-mix(in_oklch,var(--hui-color-foreground-base-primary)_22%,var(--hui-color-background-base-primary))] forced-colors:[stroke:GrayText]"
             strokeWidth="2.5"
           />
           <motion.circle
@@ -187,11 +190,11 @@ function ContextMeter({
               aria-valuemax={limit}
               aria-valuenow={Math.min(usedTokens, limit)}
               aria-valuetext={tokensText}
-              className="h-1.5 w-full overflow-hidden rounded-full bg-[color-mix(in_oklch,var(--hui-color-foreground-base-primary)_16%,transparent)]"
+              className="h-1 w-full overflow-hidden rounded-full bg-[color-mix(in_oklch,var(--hui-color-foreground-base-primary)_12%,transparent)]"
             >
               {/* A border, not a fill, so the bar survives forced colors. */}
               <motion.div
-                className={cn("h-full rounded-full border-t-[6px] border-current", statusTone[status])}
+                className={cn("h-full rounded-full border-t-[4px] border-current", statusTone[status])}
                 style={{ width: barWidth }}
               />
             </div>
@@ -242,7 +245,7 @@ function ContextMeter({
 }
 
 /** Tabular figures on the digits only; the tabular feature would space commas, signs and letters too. */
-function TabularDigits({ text }: { text: string }) {
+export function TabularDigits({ text }: { text: string }) {
   return text.split(/(\d+)/).map((part, i) =>
     i % 2 ? (
       <span key={i} className="tabular-nums">

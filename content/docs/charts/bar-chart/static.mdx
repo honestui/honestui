@@ -237,6 +237,12 @@ The root container. It owns the data, shared selection state, loading skeleton, 
   <ApiRow name="dataStatusText" type="DataStatusText">
     Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
   </ApiRow>
+  <ApiRow name="gaps" type='boolean | { interval?: "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year"; label?: string }'>
+    Hatches categories where no series has a value and marks any other absent bar as missing, so an empty slot never reads as zero. With an `interval`, rows absent from a time series are put back as empty categories. See <Link href="/docs/charts/honesty/data-gaps">Data Gaps</Link>.
+  </ApiRow>
+  <ApiRow name="honestyText" type="ChartHonestyText">
+    Replacement text for the partial-period, gap, axis, and sample-size labels and explanations.
+  </ApiRow>
   <ApiRow name="syncId" type="string">
     Charts with the same id show their crosshair and tooltip at the same category together. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link>.
   </ApiRow>
@@ -286,6 +292,15 @@ A single bar series. Each `<Bar />` carries its own fill variant, radius, glow, 
   <ApiRow name="compareDataKey" type="string">
     A data key holding the same measure for an earlier period. Draws it as a tick across each bar and adds the earlier value and the change to the tooltip. Stacked and percent charts compare in the tooltip only. See <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
   </ApiRow>
+  <ApiRow name="sampleSizeKey" type="string">
+    The row field with the number of observations behind each value. Writes `n=…` past the end of each bar, or inside the segment on a stacked chart, where it fits, and always in the tooltip. See <Link href="/docs/charts/honesty/sample-size">Sample Size</Link>.
+  </ApiRow>
+  <ApiRow name="minSampleSize" type="number">
+    Bars with fewer observations get a lighter fill and a dashed outline, and the key names the threshold.
+  </ApiRow>
+  <ApiRow name="sampleSizeDisplay" type='"label" | "tooltip"' default='"label"'>
+    `label` writes n on the chart; `tooltip` keeps it in the tooltip. Low samples are outlined either way.
+  </ApiRow>
 </ApiTable>
 
 <ApiHeading>XAxis and YAxis</ApiHeading>
@@ -304,6 +319,40 @@ The two axes. In the default (vertical) layout `<XAxis />` is the category axis 
   </ApiRow>
   <ApiRow name="hideDots" type="boolean" default="false">
     Hides the small tick dots that sit beside this axis's labels.
+  </ApiRow>
+  <ApiRow name="min" type="number">
+    The start of the value axis, read from whichever axis carries the values. Bars are lengths, so the axis starts at zero by default. A start above zero is kept, but the chart draws a break on the baseline, names the start in the key, and warns in development. `"auto"` is ignored on bars. See <Link href="/docs/charts/honesty/truncated-axis">Truncated Axis</Link>.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    The end of the value axis. Ignored when `stackType="percent"`.
+  </ApiRow>
+  <ApiRow name="truncationNotice" type='"auto" | "off"' default='"auto"'>
+    Set `off` to hide the break mark and key entry for an axis that does not reach zero. The development warning stays.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>PartialPeriod</ApiHeading>
+
+Marks the period that is still open. Its bars take the provisional hatched fill and outline, its slots are shaded, and the tooltip explains it. A pace projection appears only when you supply it, as forecast rows through `statusKey`. See <Link href="/docs/charts/honesty/partial-period">Partial Period</Link>.
+
+<ApiTable>
+  <ApiRow name="x" type="string | number">
+    The first category that is still open, as it appears in the data. It and every later category are marked.
+  </ApiRow>
+  <ApiRow name="period" type='"hour" | "day" | "week" | "month" | "quarter" | "year"'>
+    Finds the open period instead of naming it: the category whose period contains `now`. Needs ISO date strings, timestamps, or Date values.
+  </ApiRow>
+  <ApiRow name="now" type="Date | number">
+    The current time for `period`. Defaults to the time of render.
+  </ApiRow>
+  <ApiRow name="progress" type="number">
+    How much of the period has passed, from 0 to 1. Computed when `period` is set.
+  </ApiRow>
+  <ApiRow name="label" type="string" default='"In progress"'>
+    Shown above the shaded slots and in the key, such as "Month to date".
+  </ApiRow>
+  <ApiRow name="note" type="string">
+    Replaces the tooltip note.
   </ApiRow>
 </ApiTable>
 

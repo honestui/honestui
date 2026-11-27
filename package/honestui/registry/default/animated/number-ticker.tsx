@@ -1,6 +1,12 @@
 "use client";
 
-import { animate, motion, useInView, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useInView,
+  useReducedMotion,
+} from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EASE_OUT } from "@/lib/ease";
 import { cn } from "@/lib/utils";
@@ -23,6 +29,21 @@ export interface NumberTickerProps {
   digitClassName?: string;
   /** Insert locale group separators (commas). Server-component safe. */
   locale?: boolean;
+  /**
+   * Fixed number of decimal places. The value is rounded to this many places
+   * and every place, including fractional ones, rolls independently.
+   * Default 0, which rounds to an integer.
+   */
+  decimals?: number;
+  /**
+   * Intl.NumberFormat options, such as `{ notation: "compact" }` or
+   * `{ style: "percent" }`. Applied to the absolute value; the sign is drawn
+   * separately so it can fade in and out. Pass `locales` with it to keep
+   * server and client output identical.
+   */
+  formatOptions?: Intl.NumberFormatOptions;
+  /** BCP 47 locale(s) for `locale` and `formatOptions`. */
+  locales?: string | string[];
   /** Custom formatter. Client-only — server components must use `locale` instead. */
   format?: (value: number) => string;
 }
@@ -42,21 +63,52 @@ export function NumberTicker({
   className,
   digitClassName,
   locale,
+  decimals = 0,
+  formatOptions,
+  locales,
   format,
 }: NumberTickerProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const inView = useInView(containerRef, { once: true, amount: 0.6 });
   const armed = !startOnView || inView;
 
+  // The sign is rendered apart from the digits: it fades in and out instead of
+  // shifting every place value one slot when a value crosses zero.
+  const places = Math.max(0, Math.floor(decimals));
+  const factor = 10 ** places;
+  const rounded = Math.round(value * factor) / factor;
+  const negative = rounded < 0;
   const text = useMemo(() => {
-    const rounded = Math.round(value);
-    const formatted = format
-      ? format(rounded)
-      : locale
-        ? rounded.toLocaleString()
-        : rounded.toString();
-    return pad ? formatted.padStart(pad, "0") : formatted;
-  }, [value, pad, format, locale]);
+    const magnitude = Math.abs(rounded);
+    let formatted: string;
+    if (format) {
+      formatted = format(magnitude);
+    } else if (formatOptions || locales) {
+      // `decimals` only fills in fraction digits the options leave unset;
+      // mixing the two could ask Intl for a minimum above the maximum.
+      const ownsFraction =
+        formatOptions?.minimumFractionDigits !== undefined ||
+        formatOptions?.maximumFractionDigits !== undefined;
+      formatted = new Intl.NumberFormat(locales, {
+        ...(ownsFraction
+          ? null
+          : { minimumFractionDigits: places, maximumFractionDigits: places }),
+        useGrouping: locale ?? true,
+        ...formatOptions,
+      }).format(magnitude);
+    } else if (locale) {
+      formatted = magnitude.toLocaleString(undefined, {
+        minimumFractionDigits: places,
+        maximumFractionDigits: places,
+      });
+    } else {
+      formatted = magnitude.toFixed(places);
+    }
+    if (!pad) return formatted;
+    // Pad the integer part only, so decimals keep their places.
+    const [whole, ...rest] = formatted.split(".");
+    return [whole.padStart(pad, "0"), ...rest].join(".");
+  }, [rounded, places, pad, format, formatOptions, locales, locale]);
   const glyphs = useMemo(() => {
     const chars = text.split("");
     // Key by place value (position from the right): a changing digit keeps its
@@ -65,7 +117,7 @@ export function NumberTicker({
     // ones, tens, hundreds already on screen.
     return chars.map((char, i) => ({ char, id: `g-${chars.length - 1 - i}` }));
   }, [text]);
-  const readableText = `${prefix ?? ""}${text}${suffix ?? ""}`;
+  const readableText = `${negative ? "-" : ""}${prefix ?? ""}${text}${suffix ?? ""}`;
 
   // Stagger is an entrance flourish. Once the reveal has played, value
   // changes roll every digit immediately — a per-digit delay on live updates
@@ -85,6 +137,9 @@ export function NumberTicker({
     >
       <span className="sr-only">{readableText}</span>
       <span aria-hidden="true" className="inline-flex items-center">
+        <AnimatePresence initial={false}>
+          {negative ? <Sign key="sign" /> : null}
+        </AnimatePresence>
         {prefix ? <span>{prefix}</span> : null}
         {glyphs.map(({ char, id }, i) => {
           const isDigit = /\d/.test(char);
@@ -177,5 +232,21 @@ function Digit({
         ))}
       </motion.span>
     </span>
+  );
+}
+
+/** Minus sign that slides open and closed when a value crosses zero. */
+function Sign() {
+  const reduce = useReducedMotion();
+  return (
+    <motion.span
+      initial={reduce ? { opacity: 0 } : { opacity: 0, width: 0 }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, width: "auto" }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, width: 0 }}
+      transition={{ duration: reduce ? 0 : 0.28, ease: EASE_OUT }}
+      className="inline-block overflow-hidden"
+    >
+      {"\u2212"}
+    </motion.span>
   );
 }

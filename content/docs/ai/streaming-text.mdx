@@ -1,0 +1,227 @@
+---
+title: Streaming Text
+metaTitle: React Streaming Text with Reply Actions
+description: Render a reply as it arrives, then offer the actions that apply to it, such as copy, try again, feedback, and its sources.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="streaming-text-demo" previewClassName="h-auto min-h-[360px]" />
+
+## Overview
+
+Streaming Text shows the reply you have received so far, with a caret while more is on the way. When the reply settles, a row of actions appears under it: copy, try again, two feedback buttons, and a disclosure with the reply's sources.
+
+It renders what it is given. There is no timer inside it and it reveals nothing on its own schedule: append to its children as your stream delivers text, and change `status` when the stream ends or fails.
+
+Each action appears only when you handle it. A reply with no `onRetry` has no retry button, and one with no `onFeedbackChange` has no feedback buttons, so the row never holds a control that does nothing.
+
+## Anatomy
+
+<Anatomy title="StreamingText">
+  <AnatomyItem name="Content" description="The reply, with a caret while it streams" />
+  <AnatomyItem name="Error" description="A line under a reply that stopped early" />
+  <AnatomyItem name="Actions" description="Copy, Try again, Helpful, Not helpful, and the sources disclosure" />
+  <AnatomyItem name="Sources" description="Every source, as links" />
+  <AnatomyItem name="StreamingCitation" description="An inline source link, placed where the claim is made" />
+  <AnatomyItem name="StreamingFollowUps" description="Prompts the person can send next" />
+</Anatomy>
+
+Installing `streaming-text` brings [Button](/docs/components/button), [Tooltip](/docs/components/tooltip), and the shared easing constants in `lib/ease` along as registry dependencies, and installs `motion`.
+
+## Behavior
+
+### Status
+
+`status` is `streaming`, `complete`, or `error`, and defaults to `complete`.
+
+- `streaming` shows the caret and hides the actions.
+- `complete` shows the actions.
+- `error` shows a line saying the reply stopped early, and the actions except feedback. The text received so far stays.
+
+### Smooth streaming
+
+A stream delivers text in uneven chunks, so text rendered as it arrives moves in jumps. `useSmoothStream` paces it. Pass it the text you have received and render the text it returns, which grows at a steady rate, 110 characters a second by default.
+
+The hook only shows text you already have. It never runs ahead of the stream, and it does not delay `onRetry` or any other handler. Its `isSettled` value turns true once everything received is on screen, so wait for both the stream's end and `isSettled` before you set `status` to `complete`. Otherwise the actions appear while the last words are still being revealed.
+
+### Motion
+
+When the reply settles, the action row fades up. Buttons spring on press, the copy icon trades places with a check, the sources chevron turns, and the sources open with a slide while each link fades in. When `status` returns to `streaming`, the row fades out.
+
+### Content
+
+Children can be plain text or the output of a Markdown renderer. The content has the `honest-prose` class, so [Prose](/docs/ai/prose) styles the headings, paragraphs, lists, links, tables, inline code, and code blocks inside it. Installing `streaming-text` brings Prose along. Import it in your global stylesheet, after Tailwind:
+
+```css
+@import "../styles/prose.css";
+```
+
+[Markdown](/docs/ai/markdown) is the renderer in this registry, and it handles text that is still arriving. When the content holds one, Streaming Text leaves the caret to it, so the caret sits at the end of the last line and not under the last block. A [Code View](/docs/ai/code-view) inside the content keeps its own styles.
+
+### Copy
+
+Passing `copyText` shows Copy, which writes that text to the clipboard. Pass the plain text of the reply, because the rendered children may be elements. `onCopy` replaces the clipboard write with your own function. The icon changes to a check for a moment. If the write is refused or your function throws, "Copy failed" appears beside the actions.
+
+### Try again
+
+Passing `onRetry` shows Try again. It calls your handler. Requesting the reply again and resetting `status` are your application's work.
+
+### Feedback
+
+Passing `onFeedbackChange` shows Helpful and Not helpful on a complete reply. One can be chosen at a time, and pressing the chosen one again clears it. Your handler receives `"up"`, `"down"`, or `null`. Streaming Text does not send the rating anywhere.
+
+### Sources and follow-ups
+
+Sources are part of the action row: a button with a count that opens the list. `StreamingFollowUps` is a separate component, so you decide when it appears. Choosing a follow-up calls `onSelect` with the prompt.
+
+## Accessibility
+
+The content sets `aria-busy` while it streams and is a polite live region, so added text is announced. Set `announce` to `false` when the reply sits inside something that already announces it, such as a [Chat Thread](/docs/ai/chat-thread), which is a log. Leaving both on reads each addition twice.
+
+A screen reader announces a live region in whatever pieces you add. Appending a sentence at a time is easier to follow than a word at a time.
+
+Every action is a button with a name. The feedback buttons report whether they are pressed. The sources button reports whether the list is expanded, and each source is a link. "Copied" and "Copy failed" are announced through a status, and the error line is an alert. Every string comes from `labels`.
+
+The caret is decorative. With reduced motion, `useSmoothStream` returns text as it arrives with no pacing, the action row and the sources fade without moving, and buttons do not spring.
+
+Pacing text makes a live region change many times a second. When you use `useSmoothStream`, set `announce` to `false` and announce the finished reply once, or place the reply in a Chat Thread.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across citations, the actions, source links, and follow-ups |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Activate the focused action, or open the sources |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/streaming-text"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "ease", "@honestai/prose"]} />
+
+<Step>Install Motion.</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="streaming-text" title="components/ai/streaming-text.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  StreamingFollowUps,
+  StreamingText,
+  useSmoothStream,
+} from "@/components/ai/streaming-text"
+
+const stream = useSmoothStream(reply.text)
+const status = reply.isDone && stream.isSettled ? "complete" : reply.hasFailed ? "error" : "streaming"
+
+<StreamingText
+  status={status}
+  copyText={reply.text}
+  sources={reply.sources}
+  onRetry={() => chat.regenerate(reply.id)}
+  onFeedbackChange={(feedback) => chat.rate(reply.id, feedback)}
+>
+  <Markdown>{stream.text}</Markdown>
+</StreamingText>
+
+{status === "complete" && (
+  <StreamingFollowUps prompts={reply.followUps} onSelect={(prompt) => chat.send(prompt)} />
+)}
+```
+
+Inside a Chat Thread, turn off the reply's own announcements:
+
+```tsx
+<ChatMessage role="assistant" author="Billing agent">
+  <StreamingText status={reply.status} announce={false}>
+    {reply.text}
+  </StreamingText>
+</ChatMessage>
+```
+
+## Examples
+
+### A finished reply with formatted content
+
+Paragraphs, inline code, and a list, with the sources open from the start.
+
+<ComponentPreview name="streaming-text-static" previewClassName="h-auto min-h-[300px]" />
+
+### A reply that stopped early
+
+The error status keeps the partial text and offers Try again. This preview has no model: Try again swaps in the full reply after a pause.
+
+<ComponentPreview name="streaming-text-error" previewClassName="h-auto min-h-[180px]" />
+
+## API reference
+
+### StreamingText
+
+Accepts native div props beyond those listed. Its children are the reply so far.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `status` | `"streaming" \| "complete" \| "error"` | `"complete"` | Where the reply stands. |
+| `copyText` | string | None | The text Copy writes. Passing it shows Copy. |
+| `onCopy` | `() => void \| Promise<void>` | None | Replaces the clipboard write. Passing it shows Copy. |
+| `onRetry` | `() => void` | None | Passing it shows Try again. |
+| `sources` | `StreamingSource[]` | `[]` | Each has `href`, `title`, and an optional `domain`. |
+| `sourcesOpen` | boolean | None | Whether the sources are shown, when you control it. |
+| `defaultSourcesOpen` | boolean | `false` | Starts with the sources shown. |
+| `onSourcesOpenChange` | `(open: boolean) => void` | None | Runs when the sources are opened or closed. |
+| `feedback` | `"up" \| "down" \| null` | None | The rating, when you control it. |
+| `defaultFeedback` | `"up" \| "down" \| null` | `null` | The initial rating. |
+| `onFeedbackChange` | `(feedback) => void` | None | Passing it shows the feedback buttons. |
+| `announce` | boolean | `true` | Makes the content a polite live region. |
+| `showActions` | boolean | `true` | Shows the actions and sources once the reply settles. |
+| `contentClassName` | string | None | Added to the content. |
+| `labels` | `Partial<StreamingTextLabels>` | English | Action names, the sources count, and the error line. |
+
+### useSmoothStream
+
+`useSmoothStream(text, options)` returns `{ text, isSettled }`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `charactersPerSecond` | number | `110` | How fast received text is revealed. |
+
+### StreamingCitation
+
+Accepts native anchor props. `href` is required.
+
+### StreamingFollowUps
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `prompts` | `string[]` | Required | The suggested prompts. |
+| `onSelect` | `(prompt: string) => void` | Required | Runs when a prompt is chosen. |
+| `label` | string | `"Follow-ups"` | The heading above the prompts. |

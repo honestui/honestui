@@ -1,0 +1,46 @@
+---
+title: Progressive Blur
+description: Fade content into a soft blur toward one edge, with the blur ramping up smoothly instead of in one hard step.
+---
+
+<ComponentPreview name="progressive-blur-demo" />
+
+## Overview
+
+Progressive Blur stacks several `backdrop-filter` layers whose radius doubles toward one edge. Each layer is masked to an overlapping band, so the content behind it softens gradually: sharp where it is read, blurred where it scrolls out of view. Use it at the edges of scrolling lists, over the bottom of an image card behind a caption, or under a floating toolbar.
+
+It blurs whatever is behind it, so place it over the content it should soften, usually absolutely positioned against one edge of a container. It ignores the pointer, so the content underneath stays scrollable and clickable.
+
+## Installation
+
+<CliBlock commands={["progressive-blur"]} />
+
+## Usage
+
+```tsx
+import { ProgressiveBlur } from "@/components/animated/progressive-blur"
+
+<div className="relative overflow-hidden">
+  {/* scrolling content */}
+  <ProgressiveBlur direction="bottom" className="absolute inset-x-0 bottom-0 h-24" />
+</div>
+```
+
+The height of the element sets how far the ramp reaches. Combine two for a list that softens at both ends, with a shorter, gentler blur at the top.
+
+## Accessibility
+
+The blur is decorative and hidden from assistive technology. Blurred content is still in the page, so it stays readable to screen readers and reachable by keyboard. Do not use the blur to hide information people need: anything under the strongest part of the blur should also be available by scrolling it into the clear area.
+
+`backdrop-filter` costs more to paint than a plain gradient. Keep the number of layers modest on large areas, and test scrolling performance on lower-powered devices.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="direction" type='"top" | "bottom" | "left" | "right"' default='"bottom"'>Edge where the blur is strongest.</ApiRow>
+  <ApiRow name="layers" type="number" default="8">Number of stacked blur layers. More layers give a smoother ramp.</ApiRow>
+  <ApiRow name="intensity" type="number" default="16">Blur radius at the strongest edge, in px.</ApiRow>
+  <ApiRow name="className" type="string">Position and size the blur, for example `absolute inset-x-0 bottom-0 h-24`.</ApiRow>
+</ApiTable>
+
+Other `div` props are passed to the root element.

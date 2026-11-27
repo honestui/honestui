@@ -1,0 +1,52 @@
+---
+title: Spotlight
+description: A soft light that follows the pointer across a container and catches the borders of the cards inside it.
+---
+
+<ComponentPreview name="spotlight-demo" />
+
+## Overview
+
+Spotlight adds a quiet glow under the pointer as it moves across a container. Cards inside it, rendered with `SpotlightCard`, light up along the part of their border nearest the pointer, even before the pointer reaches them, so a grid of cards reads as one lit surface. It suits feature grids, pricing tiers, and dashboards where a little depth helps without moving anything.
+
+The surface glow follows the pointer with a light spring. Card borders update once per frame from a single listener on the container, so a large grid does not attach a handler to every card. Set `glow={false}` to light only the card borders.
+
+## Installation
+
+<CliBlock commands={["spotlight"]} />
+
+## Usage
+
+```tsx
+import { Spotlight, SpotlightCard } from "@/components/animated/spotlight"
+
+<Spotlight className="grid grid-cols-2 gap-3">
+  <SpotlightCard className="p-4">Edge functions</SpotlightCard>
+  <SpotlightCard className="p-4">Managed storage</SpotlightCard>
+</Spotlight>
+```
+
+Colors accept any CSS color, including `color-mix()` and variables. The defaults are tints of `--foreground`, so the light works in both themes.
+
+## Accessibility
+
+The light is decorative and hidden from assistive technology; the cards and their content are unchanged. It responds only to a mouse or trackpad: on touch devices and when the user prefers reduced motion, the cards render as plain bordered cards. Do not rely on the light to show focus or selection; style those states on the cards themselves.
+
+## API Reference
+
+### Spotlight
+
+<ApiTable>
+  <ApiRow name="size" type="number" default="420">Diameter of the light in px.</ApiRow>
+  <ApiRow name="color" type="string">Glow color on the container surface.</ApiRow>
+  <ApiRow name="borderColor" type="string">Color of the light on card borders. Defaults to `--foreground` at 60%.</ApiRow>
+  <ApiRow name="cardColor" type="string">Faint fill inside a card under the pointer.</ApiRow>
+  <ApiRow name="glow" type="boolean" default="true">Show the glow on the container surface.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the container, such as its grid layout.</ApiRow>
+</ApiTable>
+
+### SpotlightCard
+
+<ApiTable>
+  <ApiRow name="className" type="string">Classes for the card. It has a border, a card background, and rounded corners by default.</ApiRow>
+</ApiTable>

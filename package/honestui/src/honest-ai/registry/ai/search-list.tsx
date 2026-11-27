@@ -47,9 +47,9 @@ function SearchList({
     <div
       data-slot="search-list"
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-soft)]",
+        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)]",
         // A hairline under the field separates what is typed from what matches.
-        "[&_[data-slot=command-input-container]]:border-b-[length:var(--hui-border-width-surface)] [&_[data-slot=command-input-container]]:border-[var(--hui-color-border-base-primary)]",
+        "[&_[data-slot=command-input-container]]:border-b-[0.5px] [&_[data-slot=command-input-container]]:border-[var(--hui-color-border-base-primary)]",
         className
       )}
     >

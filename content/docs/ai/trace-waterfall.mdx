@@ -1,0 +1,159 @@
+---
+title: Trace Waterfall
+metaTitle: React Trace Waterfall for Agent Spans, Latency, and Tokens
+description: Show an agent run's spans on one time axis, with the latency, tokens, and cost of each step and the details of the one you choose.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="trace-waterfall-demo" previewClassName="h-auto max-h-none" />
+
+## Overview
+
+Trace Waterfall shows how an agent run spent its time. Each row is a span: a model call, a tool call, a retrieval, a sub-agent, or a step that groups others. Its bar starts when the span started and is as long as the span took, so slow steps, retries, and work that ran in parallel are visible at a glance. Choosing a span shows what went in, what came out, and why it failed.
+
+It shows the spans you pass. Send it the spans your tracing backend records, nested through `children`, or pass flat spans with a `parentId` through `buildTraceTree`.
+
+## Anatomy
+
+<Anatomy title="TraceWaterfall">
+  <AnatomyItem name="Header" description="The run's title, its status, and totals for duration, tokens, cost, and spans" />
+  <AnatomyItem name="Axis" description="Column names and time ticks from the first span's start" />
+  <AnatomyItem name="Span" description="A chevron, the kind's icon, the name, a bar on the time axis, the duration, and input and output tokens" />
+  <AnatomyItem name="Detail" description="The chosen span's timing, model, tokens, cost, error, input, output, and attributes" />
+</Anatomy>
+
+## Behavior
+
+### Time
+
+Times are milliseconds on any clock, as long as every span uses the same one. The axis runs from the earliest start to the latest end. A span without `end` is running: its bar reaches `now`, or the latest end when `now` is not passed, and it pulses. Pass a new `now` as time passes to grow running spans live.
+
+### Totals
+
+The header adds up the tokens and cost of spans without children, because a parent span usually reports the sum of its children already. The duration is the length of the axis. The status is Running while any span runs, Failed when any span failed, and Completed otherwise.
+
+### Spans
+
+Every span with children starts open. Clicking the chevron opens or closes it; clicking the row chooses it. A failed span shows a red icon and a red bar, so a failure is never hidden in a closed parent's row: the parent keeps its own status, and the header says Failed. Kinds are told apart by icon, not color.
+
+### Details
+
+Choosing a span shows its details under the tree. Strings in `input` and `output` are shown as preformatted text in a scrolling box; pass a React node to render them yourself, such as with [Code View](/docs/ai/code-view). Choose the span again, press <kbd>Escape</kbd>, or use the close button to hide the details. Pass `renderDetail` to replace the panel.
+
+### Narrow layouts
+
+The tokens column is hidden below about 34rem, and the time axis below about 28rem. Durations stay, and the detail panel still lists everything.
+
+## Accessibility
+
+The spans follow the tree view pattern and are named by the title. Each span reports its level, its place among its siblings, whether it is chosen, and whether it is open. Its name is followed by its kind, its status when it is not completed, its duration, and its tokens, written out as "812 input tokens, 96 output tokens". The bars and tick marks are hidden from assistive technology, since the duration says the same in words.
+
+| Key | Action |
+| --- | --- |
+| <kbd>ArrowDown</kbd> and <kbd>ArrowUp</kbd> | Move to the next or previous visible span |
+| <kbd>ArrowRight</kbd> | Open a closed span, or move into an open one |
+| <kbd>ArrowLeft</kbd> | Close an open span, or move to the parent |
+| <kbd>Home</kbd> and <kbd>End</kbd> | Move to the first or last visible span |
+| <kbd>Enter</kbd> and <kbd>Space</kbd> | Choose the span, or clear the choice |
+| <kbd>Escape</kbd> | Hide the details |
+| <kbd>*</kbd> | Open every span beside the focused one |
+
+In right-to-left layouts, the left and right arrows swap.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/trace-waterfall"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="trace-waterfall" title="components/ai/trace-waterfall.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { TraceWaterfall, buildTraceTree } from "@/components/ai/trace-waterfall"
+
+<TraceWaterfall
+  title={run.name}
+  spans={buildTraceTree(run.spans)}
+  onSelectedIdChange={(id) => setInspected(id)}
+/>
+```
+
+While the run is going, pass the current time so running spans grow:
+
+```tsx
+<TraceWaterfall spans={spans} now={Date.now()} />
+```
+
+## Examples
+
+### Live
+
+Spans arrive as the run goes, and running spans grow toward `now`.
+
+<ComponentPreview name="trace-waterfall-live" previewClassName="h-auto max-h-none min-h-[420px]" />
+
+## API reference
+
+### TraceWaterfall
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `spans` | `TraceSpan[]` | Required | The top-level spans, nested through `children`. |
+| `title` | ReactNode | "Trace" | The heading, which also names the tree. |
+| `now` | `number` | None | The current time on the spans' clock. Running spans reach it. |
+| `expanded` | `string[]` | None | The ids of open spans, controlled. |
+| `defaultExpanded` | `string[]` | Every span with children | The spans open at first. |
+| `onExpandedChange` | `(expanded: string[]) => void` | None | Runs when a span opens or closes. |
+| `selectedId` | `string \| null` | None | The chosen span, controlled. |
+| `defaultSelectedId` | `string \| null` | `null` | The span chosen at first. |
+| `onSelectedIdChange` | `(id: string \| null, span: TraceSpan \| null) => void` | None | Runs when a span is chosen or the choice is cleared. |
+| `renderDetail` | `(span: TraceSpan) => ReactNode` | None | Replaces the detail panel. |
+| `labels` | `Partial<TraceWaterfallLabels>` | English | Every word, plus `formatDuration`, `formatTick`, `formatTokens`, `formatCost`, and `tokensDescription`. |
+
+### TraceSpan
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | A stable id. |
+| `name` | `string` | The step's name, such as a tool's name. |
+| `kind` | `"run" \| "llm" \| "tool" \| "retrieval" \| "agent" \| "chain"` | Chooses the icon and the word read after the name. Defaults to `"chain"`. |
+| `status` | `"running" \| "ok" \| "error"` | Defaults to `"running"` without `end`, else `"ok"`. |
+| `start` | `number` | When the span started, in milliseconds. |
+| `end` | `number` | When it ended. Leave it out while it runs. |
+| `model` | `string` | The model an LLM span called. |
+| `tokens` | `{ input?: number; output?: number }` | The span's tokens. |
+| `cost` | `number` | What the span cost. |
+| `input` and `output` | ReactNode | What went in and came out. Strings are shown as preformatted text. |
+| `error` | `string` | Why the span failed. |
+| `attributes` | `Record<string, string \| number \| boolean>` | Extra facts shown in the details. |
+| `children` | `TraceSpan[]` | Spans inside this one. |
+
+### buildTraceTree
+
+`buildTraceTree(spans: FlatTraceSpan[]): TraceSpan[]` nests spans that carry a `parentId` under their parents and sorts each level by start. A span whose parent is not in the list becomes a top-level span.

@@ -117,6 +117,26 @@ export function AnimatedAreaIcon(props: ProductAreaIconProps) {
   );
 }
 
+/** A reply bubble with a spark: interfaces around a model. */
+export function AiAreaIcon(props: ProductAreaIconProps) {
+  return (
+    <Mark {...props}>
+      <path
+        d="M2 7.5A4.5 4.5 0 0 1 6.5 3h4A4.5 4.5 0 0 1 15 7.5v1a4.5 4.5 0 0 1-4.5 4.5H7l-3.4 2.55A1 1 0 0 1 2 14.75Z"
+        fill="currentColor"
+        fillOpacity={SOFT}
+      />
+      <path
+        d="M14.5 9.5c.3 1.6 1.4 2.7 3 3-1.6.3-2.7 1.4-3 3-.3-1.6-1.4-2.7-3-3 1.6-.3 2.7-1.4 3-3Z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinejoin="round"
+      />
+    </Mark>
+  );
+}
+
 /** A shaded sphere: a lit face over its own shadow. */
 export function ShadersAreaIcon(props: ProductAreaIconProps) {
   const clipId = useId();

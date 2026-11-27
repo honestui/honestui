@@ -1,0 +1,78 @@
+---
+title: Fluted Glass
+description: Look at an image or a procedural gradient through ribbed glass, with frost, groove shading, highlights, and prism fringes.
+---
+
+<ComponentPreview name="fluted-glass-demo" playground />
+
+## Overview
+
+Fluted Glass imitates reeded glass panels. Each flute acts as a small cylindrical lens: it squeezes a wider strip of the scene behind it and, at high distortion, mirrors it, which is what makes the real material read as glass rather than stripes. On top of the refraction:
+
+- **Frost** blurs along the flutes like sandblasted glass.
+- **Shading** darkens the grooves between flutes.
+- **Highlight** runs a soft sheen down each flute and catches a thin bright rim.
+- **Dispersion** bends red and blue slightly differently, leaving faint prism fringes at strong edges.
+
+With `animated`, the glass drifts slowly sideways over a still scene. Without `src`, it sits over a slow three-color field, a ready-made backdrop for hero sections and cards.
+
+The playground uses free Unsplash photographs by [Marc Wieland](https://unsplash.com/photos/sunset-over-a-serene-mountain-lake-1Kcgpq1ap9E) and [Martin Péchy](https://unsplash.com/photos/blue-and-orange-building-faPvxns9O70).
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+### Procedural backdrop
+
+```tsx
+import { FlutedGlass } from "honestui/shaders"
+
+<FlutedGlass
+  className="h-80 rounded-xl"
+  sourceColors={["#0e1226", "#ff7448", "#8d7bff"]}
+  fluteSize={40}
+/>
+```
+
+### Image
+
+```tsx
+<FlutedGlass
+  alt="An alpine lake reflecting an orange sunset between dark mountain ridges."
+  className="h-80 rounded-xl"
+  angle={12}
+  distortion={0.7}
+  frost={0.35}
+  src="https://images.unsplash.com/photo-1776348568867-24146d18b736?auto=format&fit=crop&w=1600&q=85"
+/>
+```
+
+Remote image hosts must allow cross-origin use so WebGL can read the pixels. Wider flutes read as architecture; narrow ones read as texture. Distortion past about 0.5 mirrors each strip, which looks most like real glass on photographs with strong shapes.
+
+## Accessibility
+
+Fluted Glass deliberately obscures what is behind it, so never put information a reader needs inside the source image. In image mode, write `alt` text describing what the image contributes, or an empty string when it is decorative; the original image shows until the canvas is ready and remains in the accessibility tree afterwards.
+
+The drift stops when the user prefers reduced motion, while the element is offscreen, and while the page is hidden. Keep text on a separate layer and check contrast against the brightest part of the scene.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="src" type="string">Image behind the glass. Omit it to use the procedural field.</ApiRow>
+  <ApiRow name="alt" type="string">Alternative text for the image. Required with `src`; use an empty string for decorative images.</ApiRow>
+  <ApiRow name="fluteSize" type="number" default="36">Width of one flute in CSS pixels.</ApiRow>
+  <ApiRow name="angle" type="number" default="0">Direction of the flutes in degrees. 0 is vertical.</ApiRow>
+  <ApiRow name="distortion" type="number" default="0.55">How strongly each flute bends the scene, from 0 to 1.</ApiRow>
+  <ApiRow name="frost" type="number" default="0.25">Frosted blur along the flutes, from 0 to 1.</ApiRow>
+  <ApiRow name="shading" type="number" default="0.5">Shadow in the grooves, from 0 to 1.</ApiRow>
+  <ApiRow name="highlight" type="number" default="0.6">Sheen and rim light on each flute, from 0 to 1.</ApiRow>
+  <ApiRow name="dispersion" type="number" default="0.3">Prism fringes at strong edges, from 0 to 1.</ApiRow>
+  <ApiRow name="animated" type="boolean" default="true">Drifts the glass slowly and animates the procedural field.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.6">Speed of the drift and the procedural field.</ApiRow>
+  <ApiRow name="sourceColors" type="[string, string, string]">Three colors of the procedural field.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders one still frame.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content layered above the effect.</ApiRow>
+</ApiTable>

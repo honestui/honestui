@@ -1,0 +1,45 @@
+---
+title: Meteors
+description: Rain thin diagonal streaks of light across a card or section background.
+---
+
+<ComponentPreview name="meteors-demo" />
+
+## Overview
+
+Meteors draws thin streaks that fall diagonally across their parent at staggered times and speeds. Use it sparingly behind a hero, a changelog entry, or a launch card. Positions come from a seeded generator, so the server and client render the same layout and there is no hydration mismatch; change `seed` for a different arrangement.
+
+## Installation
+
+<CliBlock commands={["meteors"]} />
+
+## Usage
+
+```tsx
+import { Meteors } from "@/components/animated/meteors"
+
+<div className="relative overflow-hidden rounded-xl border p-6">
+  <Meteors number={16} />
+  <h3 className="relative">Faster cold starts</h3>
+</div>
+```
+
+Meteors fills and clips to its nearest positioned ancestor. Give foreground content `relative` so it stacks above the streaks.
+
+## Accessibility
+
+The streaks are decorative and hidden from assistive technology. Keep text contrast high where streaks cross it. When reduced motion is requested, the streaks are not shown at all.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="number" type="number" default="14">Number of streaks.</ApiRow>
+  <ApiRow name="angle" type="number" default="215">Direction of travel in degrees.</ApiRow>
+  <ApiRow name="minDelay" type="number" default="0.2">Shortest delay before a streak first appears, in seconds.</ApiRow>
+  <ApiRow name="maxDelay" type="number" default="6">Longest delay before a streak first appears, in seconds.</ApiRow>
+  <ApiRow name="minDuration" type="number" default="3">Shortest fall, in seconds.</ApiRow>
+  <ApiRow name="maxDuration" type="number" default="8">Longest fall, in seconds.</ApiRow>
+  <ApiRow name="tailLength" type="number" default="64">Tail length in px.</ApiRow>
+  <ApiRow name="seed" type="number" default="7">Seed for the layout. The same seed always gives the same streaks.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the meteor layer.</ApiRow>
+</ApiTable>

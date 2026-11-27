@@ -19,8 +19,10 @@ export function TextShimmer({ children, as: Comp = "span", duration = 2.5, class
 
   return (
     <>
-      <style>
-        {`@keyframes beui-text-shimmer{from{background-position:200% 0}to{background-position:-200% 0}}@media(prefers-reduced-motion:reduce){.beui-text-shimmer{animation:none!important;background-position:50% 0}}`}
+      {/* href and precedence let React hoist this once, however many shimmers render.
+          Under reduced motion the text is plain and muted, not a frozen highlight. */}
+      <style href="beui-text-shimmer" precedence="default">
+        {`@keyframes beui-text-shimmer{from{background-position:200% 0}to{background-position:-200% 0}}@media(prefers-reduced-motion:reduce){.beui-text-shimmer{animation:none!important;background:none!important;color:var(--muted-foreground)!important}}`}
       </style>
       <Root
         style={{ animation: `beui-text-shimmer ${duration}s linear infinite` }}

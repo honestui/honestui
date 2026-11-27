@@ -1,0 +1,149 @@
+---
+title: Tool Chips
+metaTitle: React Tool Call Status and Results
+description: List the tool calls in an agent run, what each one returned, and the files the run changed.
+lastModified: "2026-11-04"
+---
+
+<ComponentPreview name="tool-chips-demo" previewClassName="h-auto min-h-[300px]" />
+
+## Overview
+
+Tool Chips is a compact record of a run. A summary line opens a list of calls. Each call shows what the tool did and what it acted on, and a call with output opens to show it. Under the calls, one chip for each changed file shows how many lines were added and removed, with the diff a hover or a press away.
+
+Tool Chips shows whatever is in `calls` and `changes`. Append a call when your agent starts one, and update its `status` when it settles. Nothing is revealed on a timer.
+
+Use [Thinking State](/docs/ai/thinking-state) instead when the run is reasoning or search with little tool output.
+
+## Anatomy
+
+<Anatomy title="ToolChips">
+  <AnatomyItem name="Summary" description="A button that opens and closes the run" />
+  <AnatomyItem name="Calls" description="A list with one row for each tool call">
+    <AnatomyItem name="Label" description="What the tool did" />
+    <AnatomyItem name="Detail" description="The file, command, or note it acted on" />
+    <AnatomyItem name="Output" description="What the call returned, behind a disclosure" />
+  </AnatomyItem>
+  <AnatomyItem name="Changes" description="One chip for each changed file, with its diff in a popover" />
+</Anatomy>
+
+`ToolChips` is one component that takes data. Installing `tool-chips` brings [Button](/docs/components/button), [Collapsible](/docs/components/collapsible), and [Popover](/docs/components/popover) along as registry dependencies.
+
+## Behavior
+
+### Calls
+
+A call's `status` is `running`, `done`, or `error`, and defaults to done. A running call shows a spinner in place of its icon. A failed call shows an alert icon in the danger color. A finished call without its own `icon` shows a check in the success color. A call with `output` becomes a button that opens the output. A call without output is plain text.
+
+### Output and diff lines
+
+Each line has a `kind`: `context`, `added`, or `removed`. When any line in a block is added or removed, every line in the block starts with a sign in the change's color, and changed lines sit on a light tint. A file's diff opens under a header with its path and counts. A change is marked by a character as well as by color.
+
+### File changes
+
+`maxVisibleChanges` chips are shown, three by default. The rest wait behind a "Show 2 more" button, which reveals them all. A change with `lines` is a button that opens its diff in a popover, on hover or on a press. A change without lines is a plain chip.
+
+## Accessibility
+
+The summary and every call with output are buttons that report whether they are expanded. The calls are a list. The file chips are a group named "Files changed".
+
+A running or failed call has its status in words after its label, read only by screen readers. A file chip reads its counts as "6 added" and "4 removed" in place of the bare signs, and leaves out a count that is zero. All of these strings come from `labels`.
+
+The diff popover can be opened and closed from the keyboard, and it takes its name from the file. Icons are decorative. With reduced motion, the spinner does not rotate and new rows appear without fading.
+
+Tool Chips does not announce new calls as they arrive. If the person needs to hear progress, announce it from your own status region, at a pace that is not one message per call.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the summary, the calls with output, and the file chips |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the focused summary, call, or diff |
+| <kbd>Escape</kbd> | Close an open diff |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/tool-chips"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["collapsible", "popover"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="tool-chips" title="components/ai/tool-chips.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Map your agent's tool events onto `calls`, and its edits onto `changes`:
+
+```tsx
+import { ToolChips, type ToolCall } from "@/components/ai/tool-chips"
+
+const calls: ToolCall[] = run.toolCalls.map((call) => ({
+  id: call.id,
+  label: call.title,
+  detail: call.target,
+  detailIsCode: true,
+  status: call.state,
+  output: call.result?.lines,
+}))
+
+<ToolChips summary={`${calls.length} tool calls`} calls={calls} changes={run.fileChanges} />
+```
+
+Write the summary yourself, so it can say what matters in your product: "3 tool calls, 1 failed" is more useful than a count.
+
+## Examples
+
+### A run in progress
+
+This preview adds one call each second and marks the last one failed. The failed call opens to show the error it returned.
+
+<ComponentPreview name="tool-chips-running" previewClassName="h-auto min-h-[260px]" />
+
+## API reference
+
+### ToolChips
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `summary` | string | Required | The header text. |
+| `calls` | `ToolCall[]` | Required | The tool calls, in order. |
+| `changes` | `FileChange[]` | `[]` | The files the run edited. |
+| `maxVisibleChanges` | number | `3` | How many file chips to show before the rest move behind a button. |
+| `open` | boolean | None | Controls whether the run is shown. |
+| `defaultOpen` | boolean | `true` | The initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | None | Runs when the person opens or closes the run. |
+| `labels` | `Partial<ToolChipsLabels>` | English | The status words, the group name, and the names read for counts and diffs. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ToolCall` | `id`, `label`, and optional `detail`, `detailIsCode`, `status`, `icon`, `output`, `outputIsCode` |
+| `FileChange` | `path`, `added`, `removed`, and optional `lines` |
+| `ToolLine` | `text`, and optional `kind` of `"context"`, `"added"`, or `"removed"` |
+| `ToolChipsLabels` | `running`, `failed`, `changes`, `showMoreChanges`, `diffFor`, `added`, `removed` |

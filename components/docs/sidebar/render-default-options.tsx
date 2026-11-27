@@ -11,6 +11,8 @@ import {
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { isRecentlyReleased } from "./new-pages";
 
 interface SidebarOption {
   name: string;
@@ -51,7 +53,13 @@ export function RenderDefaultOptions({ options, label, existingUrls }: RenderDef
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton
-                render={<Link href={item.url} onClick={handleLinkClick} />}
+                render={
+                  <Link
+                    href={item.url}
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={handleLinkClick}
+                  />
+                }
                 className={cn(
                   !isActive &&
                     "dark:text-muted-foreground/80 text-muted-foreground/90 hover:text-primary dark:hover:text-primary",
@@ -60,6 +68,11 @@ export function RenderDefaultOptions({ options, label, existingUrls }: RenderDef
               >
                 {item.icon}
                 <span>{item.name}</span>
+                {isRecentlyReleased(item.url) && (
+                  <Badge className="ms-auto" size="sm" variant="secondary">
+                    New
+                  </Badge>
+                )}
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

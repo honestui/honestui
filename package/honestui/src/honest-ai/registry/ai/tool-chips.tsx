@@ -187,7 +187,7 @@ function ToolChips({
               role="group"
               aria-label={labels.changes}
               data-slot="tool-chips-changes"
-              className="mt-[var(--hui-space-3)] flex min-w-0 flex-wrap items-center gap-[var(--hui-space-3)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] pt-[var(--hui-space-4)]"
+              className="mt-[var(--hui-space-4)] flex min-w-0 flex-wrap items-center gap-[var(--hui-space-3)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] pt-[var(--hui-space-5)]"
             >
               {visibleChanges.map((change) => (
                 <FileChangeChip key={change.path} change={change} labels={labels} />
@@ -223,9 +223,7 @@ function ToolCallRow({ call, labels }: { call: ToolCall; labels: ToolChipsLabels
           "flex size-4 shrink-0 items-center justify-center [&_svg]:size-3.5",
           status === "error"
             ? "text-[var(--hui-color-foreground-danger-primary)]"
-            : status === "done" && !call.icon
-              ? "text-[var(--hui-color-foreground-success-primary)]"
-              : "text-[var(--hui-color-foreground-base-tertiary)]"
+            : "text-[var(--hui-color-foreground-base-secondary)]"
         )}
       >
         {status === "running" ? (
@@ -283,7 +281,7 @@ function ToolCallRow({ call, labels }: { call: ToolCall; labels: ToolChipsLabels
           <ToolLines
             lines={call.output ?? []}
             isCode={call.outputIsCode}
-            className="ms-[var(--hui-space-4)] mt-[var(--hui-space-1)] mb-[var(--hui-space-2)] border-s-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-secondary)] ps-[var(--hui-space-3)]"
+            className="ms-[var(--hui-space-4)] mt-[var(--hui-space-1)] mb-[var(--hui-space-3)] border-s-[0.5px] border-[var(--hui-color-border-base-secondary)] ps-[var(--hui-space-3)]"
           />
         </CollapsiblePanel>
       </Collapsible>
@@ -327,7 +325,7 @@ function ToolLines({
 
 function FileChangeChip({ change, labels }: { change: FileChange; labels: ToolChipsLabels }) {
   const chipLayout = cn(
-    "inline-flex max-w-full items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] [line-height:var(--hui-line-height-mono-small)]",
+    "inline-flex h-[var(--hui-space-9)] max-w-full items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] [line-height:var(--hui-line-height-mono-small)]",
     codeText
   )
   const counts = (

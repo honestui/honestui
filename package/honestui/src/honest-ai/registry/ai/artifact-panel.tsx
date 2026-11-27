@@ -41,7 +41,7 @@ const regularText =
 const smallText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
 
-const hairline = "border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)]"
+const hairline = "border-[0.5px] border-[var(--hui-color-border-base-primary)]"
 
 export type ArtifactPanelProps = Omit<React.ComponentProps<"section">, "title"> & {
   /** Names the artifact, such as a file name or a document title. */
@@ -112,7 +112,7 @@ function ArtifactPanel({
     >
       <div
         data-slot="artifact-panel-header"
-        className="flex min-h-[var(--hui-space-11)] min-w-0 shrink-0 items-center gap-[var(--hui-space-3)] border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-2)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]"
+        className="flex min-h-[var(--hui-space-11)] min-w-0 shrink-0 items-center gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-3)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]"
       >
         <div className="min-w-0 flex-1">
           <p id={titleId} title={title} className="m-0 truncate [font-weight:var(--hui-font-weight-medium)]">
@@ -154,7 +154,7 @@ function ArtifactPanel({
       {status === "error" && (
         <div
           role="alert"
-          className="flex min-w-0 shrink-0 flex-wrap items-center gap-x-[var(--hui-space-3)] gap-y-[var(--hui-space-1)] border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-danger-primary)] bg-[color-mix(in_oklch,var(--hui-color-background-danger-primary)_55%,transparent)] py-[var(--hui-space-2)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]"
+          className="flex min-w-0 shrink-0 flex-wrap items-center gap-x-[var(--hui-space-3)] gap-y-[var(--hui-space-1)] border-b-[0.5px] border-[var(--hui-color-border-danger-primary)] bg-[color-mix(in_oklch,var(--hui-color-background-danger-primary)_55%,transparent)] py-[var(--hui-space-2)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]"
         >
           <span className="flex min-w-0 flex-1 items-start gap-[var(--hui-space-2)]">
             <CircleAlertIcon
@@ -201,7 +201,7 @@ function ArtifactPanel({
           <p
             data-slot="artifact-panel-incomplete"
             className={cn(
-              "m-0 mt-[var(--hui-space-4)] flex items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)] after:h-0 after:flex-1 after:border-t-[length:var(--hui-border-width-surface)] after:border-dashed after:border-[var(--hui-color-border-base-secondary)] after:content-['']",
+              "m-0 mt-[var(--hui-space-4)] flex items-center gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-secondary)] after:h-0 after:flex-1 after:border-t-[0.5px] after:border-dashed after:border-[var(--hui-color-border-base-secondary)] after:content-['']",
               flush && "px-[var(--hui-space-5)] pb-[var(--hui-space-4)]",
               smallText
             )}
@@ -298,7 +298,7 @@ function ArtifactCard({
       data-slot="artifact-card"
       data-status={status}
       className={cn(
-        "flex w-full max-w-sm min-w-0 cursor-pointer items-center gap-[var(--hui-space-4)] rounded-[var(--hui-radius-4)] bg-[var(--hui-color-background-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)] text-start text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] aria-expanded:border-[var(--hui-color-border-base-secondary)] aria-expanded:bg-[var(--hui-color-background-neutral-primary)] aria-expanded:shadow-none aria-expanded:hover:bg-[var(--hui-color-background-neutral-primary)]",
+        "flex w-full max-w-sm min-w-0 cursor-pointer items-center gap-[var(--hui-space-4)] rounded-[var(--hui-radius-4)] bg-[var(--hui-color-background-base-primary)] py-[var(--hui-space-3)] ps-[var(--hui-space-3)] pe-[var(--hui-space-5)] text-start text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)] outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-base-primary-hover)] focus-visible:[outline:var(--hui-focus-ring)] aria-expanded:border-[var(--hui-color-border-base-secondary)] aria-expanded:shadow-none",
         hairline,
         regularText,
         className
@@ -307,7 +307,7 @@ function ArtifactCard({
     >
       <span
         aria-hidden="true"
-        className="flex size-4 shrink-0 items-center justify-center text-[var(--hui-color-foreground-base-secondary)] [&_svg]:size-4"
+        className="flex size-9 shrink-0 items-center justify-center rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-neutral-secondary)] text-[var(--hui-color-foreground-base-secondary)] [&_svg]:size-4"
       >
         {status === "streaming" ? (
           <LoaderCircleIcon className="motion-safe:animate-spin" />

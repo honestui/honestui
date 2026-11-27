@@ -1,0 +1,55 @@
+---
+title: Water
+description: Ripple caustic light across a pool of color or an image, with ripples where the pointer moves.
+---
+
+<ComponentPreview name="water-demo" playground />
+
+## Overview
+
+Water draws the bright, shifting net of light you see on the floor of a sunny pool: caustics. Two layers of light threads drift at different sizes and speeds, a slow surface wave bends whatever lies beneath, and the brightest threads split slightly into color. Underneath is either a gradient from `deepColor` to `shallowColor`, or an image passed as `src`, which covers the container and wobbles with the surface. With `ripples`, moving the pointer leaves small rings and a tap sends out a larger one.
+
+Use it for a calm hero or a summer campaign, or over a product photo to suggest it is under water. Lower `intensity` and `distortion` behind content so the light network stays in the background.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Water } from "honestui/shaders"
+
+<div className="h-80">
+  <Water className="size-full" deepColor="#0b3a4f" shallowColor="#1d7a8c" />
+</div>
+```
+
+With an image beneath the water:
+
+```tsx
+<Water className="size-full" src="/images/pool-floor.jpg" intensity={0.8} />
+```
+
+A remote image must be served with CORS headers so WebGL can read it. Until it loads, and if it fails, the gradient shows instead.
+
+## Accessibility
+
+Water is decorative: the canvas is hidden from assistive technology, and text or actions belong in normal HTML above it. If the image carries meaning, describe it in nearby text, because the canvas has no alternative text. The caustics brighten and darken constantly, so test overlaid text across the full animation. Animation and ripples pause while the effect is offscreen, while the document is hidden, and when the user prefers reduced motion; a still frame is rendered instead. Use `paused` for your own control, and give the container a background for when WebGL is unavailable.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="deepColor" type="string" default='"#0b3a4f"'>Color of the deeper water, at the bottom of the container.</ApiRow>
+  <ApiRow name="shallowColor" type="string" default='"#1d7a8c"'>Color of the shallower water, at the top of the container.</ApiRow>
+  <ApiRow name="highlightColor" type="string" default='"#e6fbff"'>Color of the caustic light.</ApiRow>
+  <ApiRow name="intensity" type="number" default="1">Brightness of the caustics, from 0 to 2.</ApiRow>
+  <ApiRow name="scale" type="number" default="1">Size of the caustic pattern. Larger values give bigger, fewer cells.</ApiRow>
+  <ApiRow name="distortion" type="number" default="0.6">How much the surface bends what lies beneath it.</ApiRow>
+  <ApiRow name="dispersion" type="number" default="0.3">Color fringing along the brightest caustic lines, from 0 to 1.</ApiRow>
+  <ApiRow name="src" type="string">Optional image seen through the water, covering the container. Remote images need CORS headers.</ApiRow>
+  <ApiRow name="ripples" type="boolean" default="true">Leaves ripples where the pointer moves and taps.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed. Changing it never makes the water jump.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a static frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

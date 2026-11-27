@@ -55,7 +55,7 @@ const regularText =
 const smallText =
   "[font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
 
-const divider = "border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)]"
+const divider = "border-t-[0.5px] border-[var(--hui-color-border-base-primary)]"
 
 // Rising bars, so the scale reads even when every bar is filled.
 const meterBars = [
@@ -139,19 +139,19 @@ function RecommendationCard({
       data-slot="recommendation-card"
       data-phase={phase}
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
+        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
         regularText,
         className
       )}
       {...props}
     >
       <Collapsible>
-        <div className="flex flex-col gap-[var(--hui-space-3)] p-[var(--hui-space-5)]">
+        <div className="flex flex-col gap-[var(--hui-space-2)] p-[var(--hui-space-5)]">
           <p className="m-0 break-words [font-weight:var(--hui-font-weight-medium)]">{title}</p>
-          <div aria-live="polite" className="break-words text-[var(--hui-color-foreground-base-primary)]">
+          <div aria-live="polite" className="break-words text-[var(--hui-color-foreground-base-secondary)]">
             {selected.body}
           </div>
-          <p className={cn("m-0 flex items-center gap-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)]", smallText)}>
+          <p className={cn("m-0 mt-[var(--hui-space-2)] flex items-center gap-[var(--hui-space-2)] tabular-nums text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
             <ConfidenceMeter level={selected.confidence} />
             {selected.confidenceLabel}
             {hasSwitched && selected === recommended && (
@@ -204,7 +204,7 @@ function RecommendationCard({
           </CollapsiblePanel>
         )}
 
-        <div className={cn(divider, "flex flex-wrap items-center justify-end gap-[var(--hui-space-2)] py-[var(--hui-space-3)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]")}>
+        <div className={cn(divider, "flex flex-wrap items-center justify-end gap-[var(--hui-space-2)] py-[var(--hui-space-4)] ps-[var(--hui-space-5)] pe-[var(--hui-space-4)]")}>
           <p
             role={phase === "error" ? "alert" : "status"}
             className={cn("m-0 me-auto flex min-w-0 items-center gap-[var(--hui-space-2)]", smallText)}

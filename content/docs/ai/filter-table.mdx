@@ -1,0 +1,129 @@
+---
+title: Filter Table
+metaTitle: React Table with Filter Chips
+description: Filter a table's rows with a row of chips that each show how many rows they match.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="filter-table-demo" previewClassName="h-auto min-h-[360px]" />
+
+## Overview
+
+Filter Table puts a row of chips above a table. Each chip is one filter and shows how many rows it matches. Pressing a chip shows only those rows.
+
+The counts are computed from the rows you pass, so a chip never disagrees with the table under it.
+
+Use [Data Table](/docs/product/data-table) when people also need search, sorting, selection, or pagination.
+
+## Anatomy
+
+<Anatomy title="FilterTable">
+  <AnatomyItem name="Chips" description="All, then one chip for each filter, with its count" />
+  <AnatomyItem name="Table" description="The matching rows" />
+  <AnatomyItem name="Empty row" description="A message when the chosen filter matches nothing" />
+</Anatomy>
+
+Installing `filter-table` brings [Table](/docs/components/table) along as a registry dependency.
+
+## Behavior
+
+### Filters
+
+One filter is active at a time. All shows every row. A filter is a function, `matches`, so it can test anything on the row.
+
+### Empty
+
+A chip that matches no rows shows 0 and can still be pressed. The table then shows `emptyMessage` in place of the rows.
+
+## Accessibility
+
+The chips are a named group of toggle buttons in one segmented control, and the active one reports that it is pressed. On narrow screens the row scrolls sideways instead of wrapping above the table, a fade at the end edge shows more chips are out of view, and the chosen chip scrolls into view. The fade matches the page background; set `--filter-table-surface` when the table sits on another surface. The table uses native table markup with column headers, and is named by `label`.
+
+When the filter changes, a polite status announces how many rows are shown, as "Showing 2 of 5 rows". Pass `countLabel` to word it differently or translate it.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move into and out of the chips |
+| <kbd>ArrowLeft</kbd> or <kbd>ArrowRight</kbd> | Move between the chips |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Apply the focused filter |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/filter-table"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["table"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="filter-table" title="components/ai/filter-table.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { FilterTable } from "@/components/ai/filter-table"
+
+<FilterTable
+  label="Agent tasks"
+  rows={tasks}
+  getRowId={(task) => task.id}
+  columns={[
+    { id: "title", header: "Task", cell: (task) => task.title },
+    { id: "owner", header: "Owner", cell: (task) => task.owner },
+  ]}
+  filters={[
+    { id: "open", label: "Open", matches: (task) => !task.isDone },
+    { id: "done", label: "Completed", matches: (task) => task.isDone },
+  ]}
+/>
+```
+
+## Examples
+
+### Controlled filter
+
+The active filter is held in state and starts on Failed.
+
+<ComponentPreview name="filter-table-controlled" previewClassName="h-auto min-h-[260px]" />
+
+## API reference
+
+### FilterTable
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | Names the table. |
+| `columns` | `FilterTableColumn<Row>[]` | Required | Each has `id`, `header`, and `cell`. |
+| `rows` | `Row[]` | Required | The rows to show and count. |
+| `getRowId` | `(row: Row) => string` | Required | A stable id for each row. |
+| `filters` | `FilterTableFilter<Row>[]` | Required | Each has `id`, `label`, and `matches`. |
+| `allLabel` | string | `"All"` | The chip that shows every row. |
+| `filtersLabel` | string | English | The group name read before the chips. |
+| `emptyMessage` | string | English | Shown when the filter matches no rows. |
+| `countLabel` | `(shown: number, total: number) => string` | English | Announced when the filter changes. |
+| `activeFilter` | `string \| null` | None | The active filter's `id`, when you control it. |
+| `defaultActiveFilter` | `string \| null` | `null` | The initially active filter. |
+| `onActiveFilterChange` | `(filterId: string \| null) => void` | None | Runs when a chip is pressed. |

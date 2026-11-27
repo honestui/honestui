@@ -66,7 +66,7 @@ export function DataGridToolbar({
     <Toolbar
       data-slot="data-grid-toolbar"
       className={cn(
-        "min-w-0 flex-wrap gap-[var(--hui-space-2)] overflow-visible rounded-none border-0 p-0",
+        "min-w-0 flex-wrap items-center gap-[var(--hui-space-2)] overflow-visible rounded-none border-0 p-0",
         className,
       )}
       {...props}
@@ -126,11 +126,11 @@ export function DataGridSearch({
   return (
     <span
       data-slot="data-grid-search"
-      className={cn("relative block w-full sm:w-72", className)}
+      className={cn("relative block w-full sm:w-64", className)}
     >
       <SearchIcon
         aria-hidden
-        className="pointer-events-none absolute start-[var(--hui-space-3)] top-1/2 z-1 size-4 -translate-y-1/2 text-[var(--hui-color-foreground-base-secondary)]"
+        className="pointer-events-none absolute start-[var(--hui-space-3)] top-1/2 z-1 size-3.5 -translate-y-1/2 text-[var(--hui-color-foreground-base-tertiary)]"
       />
       <Input
         type="search"
@@ -140,7 +140,8 @@ export function DataGridSearch({
         onChange={(event) =>
           setDraft({ value: event.target.value, externalValue })
         }
-        className="min-h-[var(--hui-space-10)] [&>[data-slot=input]]:!ps-[var(--hui-space-9)]"
+        size="sm"
+        className="[&>[data-slot=input]]:!ps-[calc(var(--hui-space-3)+var(--hui-space-5)+2px)]"
         {...props}
       />
     </span>
@@ -264,7 +265,7 @@ export function DataGridFilterTrigger({ className }: { className?: string }) {
   return (
     <Popover>
       <PopoverTrigger
-        render={<Button variant="ghost" size="sm" className={className} />}
+        render={<Button variant="outline" size="sm" className={className} />}
       >
         <FunnelPlusIcon aria-hidden />
         Add filter
@@ -390,19 +391,19 @@ export function DataGridActiveFilters({ className }: { className?: string }) {
         return (
           <Button
             key={filter.id}
-            variant="secondary"
-            size="xs"
+            variant="outline"
+            size="sm"
             aria-label={`Remove filter: ${label}`}
             onClick={() => column.setFilterValue(undefined)}
-            className="max-w-64"
+            className="max-w-64 border-dashed ps-[var(--hui-space-3)] pe-[var(--hui-space-2)]"
           >
             <span className="truncate">{label}</span>
-            <XIcon aria-hidden />
+            <XIcon aria-hidden className="size-3.5 text-[var(--hui-color-foreground-base-tertiary)]" />
           </Button>
         )
       })}
       {filters.length > 1 && (
-        <Button variant="link" size="xs" onClick={() => table.resetColumnFilters()}>
+        <Button variant="ghost" size="sm" onClick={() => table.resetColumnFilters()}>
           Clear all
         </Button>
       )}
@@ -423,7 +424,7 @@ export function DataGridColumnVisibility({
 
   return (
     <Menu>
-      <MenuTrigger render={<Button variant="ghost" size="sm" className={className} />}>
+      <MenuTrigger render={<Button variant="outline" size="sm" className={className} />}>
         <Settings2Icon aria-hidden />
         {label}
       </MenuTrigger>
@@ -483,7 +484,7 @@ export function DataGridExport({
   }
 
   return (
-    <Button variant="ghost" size="sm" className={className} onClick={exportRows}>
+    <Button variant="outline" size="sm" className={className} onClick={exportRows}>
       <DownloadIcon aria-hidden />
       Export CSV
     </Button>
@@ -504,8 +505,8 @@ export function DataGridRefresh({
       <TooltipTrigger
         render={
           <Button
-            variant="ghost"
-            size="icon"
+            variant="outline"
+            size="icon-sm"
             aria-label="Refresh data"
             className={className}
             disabled={refreshing}

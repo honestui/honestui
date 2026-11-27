@@ -1,0 +1,159 @@
+---
+title: Message Usage
+metaTitle: React Token and Cost Meter per Message
+description: Show the tokens, cost, and latency of one reply or a whole thread, and open the breakdown on demand.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="message-usage-demo" previewClassName="h-auto min-h-[420px] items-start pt-[var(--hui-space-8)]" />
+
+## Overview
+
+Message Usage puts what a reply cost under the reply: how many tokens it used, what they cost, how long it took, and which model answered. It is a quiet row of figures that opens the full breakdown: input, the part of it read from the cache, output, the part of it spent reasoning, and the total.
+
+Take a support assistant that answers from a long policy document. Most of each prompt is the cached document, so a reply that reads "19,604 tokens" costs a fraction of a cent. The breakdown shows why: 12,288 of its 18,420 input tokens were cached.
+
+It is the per-message companion to [Context Meter](/docs/ai/context-meter). Context Meter answers "how full is the window now"; Message Usage answers "what did this reply use". They share the same token formatting.
+
+Message Usage counts nothing. Pass the figures your provider reported. It prices nothing either, unless you pass `pricing`, and then it marks the cost as an estimate.
+
+## Anatomy
+
+<Anatomy title="MessageUsage">
+  <AnatomyItem name="Summary" description="The figures chosen with show: tokens, cost, latency, and model" />
+  <AnatomyItem name="Breakdown" description="A popover with input, cached, output, reasoning, and total tokens" />
+  <AnatomyItem name="Cost and latency" description="Rows under the counts, when you pass them" />
+  <AnatomyItem name="Rates" description="The list prices an estimated cost was worked out from" />
+</Anatomy>
+
+`MessageUsage` is one component that takes data. Installing `message-usage` brings [Popover](/docs/components/popover) and [Context Meter](/docs/ai/context-meter) along as registry dependencies.
+
+## Behavior
+
+### Counts
+
+`usage.cachedInput` is part of `usage.input`, and `usage.reasoning` is part of `usage.output`, as most providers report them. The breakdown indents them under their parent rows, and the total is input plus output. Rows for cached and reasoning tokens appear only when they are above zero.
+
+### Cost
+
+Pass `cost` when your provider bills you a figure; it is shown as it is. Pass `pricing` instead to estimate it from list prices with `estimateCost`. An estimate is marked with a tilde, such as "~$0.0042", and the breakdown names the rates it used and says the bill may differ. When you pass both, `cost` wins.
+
+Costs under a cent keep two significant digits, so a cheap reply reads "$0.0042" instead of "$0.00".
+
+### Thread totals
+
+`variant="thread"` totals a conversation. Add the counts with `sumUsage` and the costs yourself, and pass `messageCount`. The thread variant leaves out latency, because the latencies of separate replies do not add up to anything meaningful.
+
+### What the row shows
+
+`show` picks the figures in the collapsed row and their order. The default is tokens, cost, and latency. The breakdown always shows everything you passed.
+
+## Accessibility
+
+The row is a button. Its name starts with "Usage details" and then reads the visible figures with a pause between each, such as "Usage details: 19,604 tokens, ~$0.0042, 2.4 s". The dots between the figures are hidden from assistive technology. The details open in a popover named by its title, which takes focus and closes on <kbd>Escape</kbd>, returning focus to the row.
+
+The counts are a description list, so each figure is read with its name. Every digit uses tabular figures, so columns of numbers line up.
+
+Every string comes from `labels`, including the number, currency, and duration formats.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the breakdown |
+| <kbd>Escape</kbd> | Close the breakdown |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/message-usage"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the items it is built from.</Step>
+
+<CliBlock commands={["popover", "@honestai/context-meter"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="message-usage" title="components/ai/message-usage.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { MessageUsage } from "@/components/ai/message-usage"
+
+<MessageUsage
+  model={message.model}
+  usage={{
+    input: message.usage.inputTokens,
+    cachedInput: message.usage.cachedInputTokens,
+    output: message.usage.outputTokens,
+    reasoning: message.usage.reasoningTokens,
+  }}
+  pricing={{ input: 0.25, cachedInput: 0.025, output: 2 }}
+  latency={message.latencyMs}
+/>
+```
+
+## Examples
+
+### Per turn and thread total
+
+Billed costs on each turn, with a thread total at the foot.
+
+<ComponentPreview name="message-usage-thread" previewClassName="h-auto min-h-[260px]" />
+
+## API reference
+
+### MessageUsage
+
+Accepts native button props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `usage` | `MessageUsageTokens` | Required | The token counts your provider reported. |
+| `cost` | number | None | The billed cost. Takes precedence over `pricing`. |
+| `pricing` | `ModelPricing` | None | List prices to estimate the cost from. |
+| `currency` | string | `pricing.currency`, then `"USD"` | The currency of `cost`. |
+| `latency` | number | None | Time to the last token, in milliseconds. |
+| `model` | string | None | The model that answered. |
+| `variant` | `"message"` or `"thread"` | `"message"` | One reply, or a conversation's total. |
+| `messageCount` | number | None | How many messages a thread total covers. |
+| `show` | `MessageUsageItem[]` | `["tokens", "cost", "latency"]` | The figures in the collapsed row, in order. |
+| `labels` | `Partial<MessageUsageLabels>` | English | Every string and the number, currency, and duration formats. |
+
+### Helpers
+
+| Export | Description |
+| --- | --- |
+| `estimateCost(usage, pricing)` | The cost at list prices. Cached input uses `pricing.cachedInput` when given. |
+| `sumUsage(usages)` | Adds several calls' counts. |
+| `formatUsageCost(value, currency?, locale?)` | Formats a cost, keeping small ones visible. |
+| `formatUsageDuration(ms)` | "820 ms", "2.4 s", or "1 min 12 s". |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `MessageUsageTokens` | `input`, `output`, and optional `cachedInput` and `reasoning` |
+| `ModelPricing` | `input`, `output`, and optional `cachedInput`, `per` (default 1,000,000), and `currency` |
+| `MessageUsageItem` | `"tokens"`, `"cost"`, `"latency"`, or `"model"` |
+| `MessageUsageLabels` | Titles, row names, `estimatedCost`, `estimatedNote`, `rates`, `number`, `currency`, `duration` |

@@ -1,0 +1,87 @@
+---
+title: Liquid Glass
+description: A glass panel whose curved edge bends the page behind it, with frost, prism fringes, and a rim that catches the light.
+---
+
+<ComponentPreview name="liquid-glass-demo" playground />
+
+## Overview
+
+Liquid Glass is a container. Its children sit on top, sharp and readable, while the surface behaves like a slab of thick glass:
+
+- **Refraction** happens at the curved edge. The edge pulls in what lies just beyond the panel, strongest at the rim and fading to nothing where the glass turns flat, so the middle shows the page unchanged. `bezel` sets how wide that curve is and `refraction` how hard it bends.
+- **Dispersion** bends red and blue by slightly different amounts, leaving thin prism fringes where the edge crosses strong shapes.
+- **Frost** blurs the backdrop and **saturation** lifts its color, the way real glass makes what is behind it look richer.
+- **Specular** light catches the rim on the side facing `lightAngle` and, more faintly, on the opposite side. With `interactive`, the light turns toward the pointer.
+- **Tint** lays a little of the page background over the glass so text keeps its contrast in light and dark themes.
+
+Unlike the other shaders, Liquid Glass does not draw its own scene. It bends whatever the page paints behind it: photographs, text, video, or another shader.
+
+<ComponentPreview name="liquid-glass-draggable" />
+
+## How it works
+
+WebGL cannot read the pixels of the page, so the refraction is done by the browser's own compositor. On mount and whenever the panel changes size, Liquid Glass draws a displacement map for its rounded shape: each pixel stores how far, and in which direction, the edge bends the backdrop at that point. The map feeds an SVG `feDisplacementMap` filter, which the panel applies through `backdrop-filter`. With dispersion, the filter runs three times with slightly different strengths, one for each color channel.
+
+Nothing runs between frames. The map is rebuilt only on resize, and the backdrop updates as the page scrolls or animates behind the panel, at the browser's normal cost for a backdrop filter.
+
+## Browser support
+
+| Browser | What you see |
+| --- | --- |
+| Chrome, Edge, and other Chromium browsers | Full refraction, dispersion, frost, rim light, and tint. |
+| Safari and Firefox | Frosted glass: blur, saturation, rim light, and a stronger tint. These browsers do not apply SVG filters to a backdrop, so there is no edge refraction. |
+
+`data-mode` on the root reads `refract` or `blur`, so you can style or test each case. Set `mode="blur"` to use the frosted version everywhere.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { LiquidGlass } from "honestui/shaders"
+
+<div className="relative grid h-96 place-items-center overflow-hidden rounded-xl">
+  <img alt="" className="absolute inset-0 size-full object-cover" src="/photo.jpg" />
+  <LiquidGlass className="w-80" radius={32} bezel={24} refraction={0.65}>
+    <div className="px-6 py-5">Glass Houses · Lumen Arc</div>
+  </LiquidGlass>
+</div>
+```
+
+Give the panel something with edges and detail behind it. Over a smooth gradient there is little for the edge to bend, and the glass reads as a plain blur.
+
+Keep these off the panel's ancestors, because each one stops the backdrop at that element and the glass sees only what is inside it: `opacity` below 1, `filter`, `mask`, `clip-path`, `mix-blend-mode`, and another `backdrop-filter`.
+
+## Accessibility
+
+The glass layers are decorative and hidden from assistive technology. Only the children are read.
+
+The backdrop behind the panel changes as the page scrolls, so check text contrast against the brightest and darkest things that can pass behind it. The default `tint` follows the page background; raise it with your own color when the backdrop is busy.
+
+When the user prefers reduced transparency, the panel turns into a nearly solid surface in the page background color. When they prefer reduced motion, the rim light stays at `lightAngle` instead of following the pointer.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="radius" type="number" default="28">Corner radius in CSS pixels.</ApiRow>
+  <ApiRow name="bezel" type="number" default="24">Width of the curved edge in CSS pixels. Inside it the glass is flat.</ApiRow>
+  <ApiRow name="refraction" type="number" default="0.65">How far the edge bends the backdrop, from 0 to 1. 0 turns refraction off.</ApiRow>
+  <ApiRow name="dispersion" type="number" default="0.25">Prism fringes at the edge, from 0 to 1.</ApiRow>
+  <ApiRow name="frost" type="number" default="0.08">Blur of the backdrop, from 0 to 1.</ApiRow>
+  <ApiRow name="saturation" type="number" default="1.5">Saturation of the backdrop. 1 leaves it unchanged.</ApiRow>
+  <ApiRow name="specular" type="number" default="0.7">Strength of the light on the rim, from 0 to 1.</ApiRow>
+  <ApiRow name="lightAngle" type="number" default="315">Direction of the light in degrees, clockwise from the top.</ApiRow>
+  <ApiRow name="interactive" type="boolean" default="true">Turns the rim light toward the pointer while it is over the panel.</ApiRow>
+  <ApiRow name="tint" type="string" default={'"auto"'}>Color laid over the backdrop. `"auto"` mixes in a little of the page background.</ApiRow>
+  <ApiRow name="shadow" type="boolean" default="true">Draws a soft shadow under the panel.</ApiRow>
+  <ApiRow name="mode" type={'"auto" | "refract" | "blur"'} default={'"auto"'}>`"auto"` refracts where the browser supports it. `"blur"` always uses the frosted version.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the panel.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content shown on the glass.</ApiRow>
+</ApiTable>
+
+Other props, such as `style`, `ref`, and event handlers, go to the root `div`.
+
+`createLiquidGlassMap(width, height, radius, bezel, margin)` is also exported. It returns the displacement map as a PNG data URL, for use in your own SVG filters.

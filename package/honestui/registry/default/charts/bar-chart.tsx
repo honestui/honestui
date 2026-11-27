@@ -63,6 +63,7 @@ import {
   statusDetailText,
   statusFillStyles,
   statusNotesHtml,
+  summarizeDataQuality,
   type DataQualityKeys,
   type DataStatus,
   type DataStatusText,
@@ -70,6 +71,34 @@ import {
   type RenderItemApi,
   type ResolvedDataStatusText,
 } from "@/registry/default/ui/charts/data-quality";
+import {
+  applyPartialPeriod,
+  axisBreakSeries,
+  axisTruncation,
+  collectHonesty,
+  fillMissingRows,
+  formatCount,
+  gapSpans,
+  niceStep,
+  HONESTY_PREFIX,
+  HonestyKeyItems,
+  honestyNotesHtml,
+  isLowSample,
+  labelStride,
+  PartialPeriod,
+  readSampleSizes,
+  readValue,
+  resolveHonestyText,
+  resolvePartialPeriod,
+  sampleSizeSeriesId,
+  type ChartHonestyText,
+  type GapSpan,
+  type GapsOption,
+  type HonestyKeyEntry,
+  type HonestyNote,
+  type ResolvedChartHonestyText,
+  type SampleSizeDisplay,
+} from "@/registry/default/ui/charts/honesty";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
 import {
   buildReferenceSeries,
@@ -201,6 +230,14 @@ export interface BarChartProps<TData extends Record<string, unknown>> {
   loadingBars?: number; 
   ariaLabel?: string;
   dataStatusText?: DataStatusText; 
+  /** Rewords the partial-period, gap, axis, and sample-size text. */
+  honestyText?: ChartHonestyText;
+  /**
+   * Shade categories where no series has a value, and mark an absent bar as
+   * missing instead of leaving a slot that reads as zero. With an `interval`,
+   * rows absent from a time series are found and shown as gaps too.
+   */
+  gaps?: GapsOption;
   /** Charts with the same id show their crosshair and tooltip together. */
   syncId?: string;
   chartOptions?: Record<string, unknown>; 
@@ -224,6 +261,12 @@ export interface BarProps {
    * bar as a tick. On stacked and percent charts only the tooltip compares.
    */
   compareDataKey?: string;
+  /** The row field with the number of observations behind each value. */
+  sampleSizeKey?: string;
+  /** Bars with fewer observations get a dashed outline and are named in the key. */
+  minSampleSize?: number;
+  /** `label` writes n at the end of each bar; `tooltip` keeps it in the tooltip. Defaults to `label`. */
+  sampleSizeDisplay?: SampleSizeDisplay;
 }
 
 const Bar: FC<BarProps> = () => null;
@@ -234,6 +277,16 @@ export interface XAxisProps {
   tickFormatter?: (value: string, index: number) => string; 
   label?: string; 
   hideDots?: boolean; 
+  /**
+   * The value axis start. Bars are lengths, so the axis starts at zero; a
+   * number above zero is kept but flagged. `"auto"` is ignored on bars.
+   * Applies to whichever axis carries the values.
+   */
+  min?: number | "auto";
+  /** The value axis end. Defaults to a rounded value above the data. */
+  max?: number;
+  /** When the value axis does not reach zero, mark the break and say where it starts. Defaults to `auto`. */
+  truncationNotice?: "auto" | "off";
 }
 
 const XAxis: FC<XAxisProps> = () => null;
@@ -243,6 +296,16 @@ export interface YAxisProps {
   tickFormatter?: (value: string, index: number) => string; 
   label?: string; 
   hideDots?: boolean; 
+  /**
+   * The value axis start. Bars are lengths, so the axis starts at zero; a
+   * number above zero is kept but flagged. `"auto"` is ignored on bars.
+   * Applies to whichever axis carries the values.
+   */
+  min?: number | "auto";
+  /** The value axis end. Defaults to a rounded value above the data. */
+  max?: number;
+  /** When the value axis does not reach zero, mark the break and say where it starts. Defaults to `auto`. */
+  truncationNotice?: "auto" | "off";
 }
 
 const YAxis: FC<YAxisProps> = () => null;
@@ -278,6 +341,9 @@ type BarSeriesConfig = {
   bufferBar: boolean;
   quality: DataQualityKeys | null;
   compareDataKey?: string;
+  sampleSizeKey?: string;
+  minSampleSize?: number;
+  sampleSizeDisplay: SampleSizeDisplay;
 };
 
 type AxisSlot = {
@@ -286,6 +352,9 @@ type AxisSlot = {
   tickFormatter?: (value: string, index: number) => string;
   label?: string;
   hideDots: boolean;
+  min?: number | "auto";
+  max?: number;
+  truncationNotice: "auto" | "off";
 };
 type TooltipSlot = {
   present: boolean;
@@ -320,8 +389,8 @@ type CollectedConfig = {
 
 function collectConfig(children: ReactNode): CollectedConfig {
   const bars: BarSeriesConfig[] = [];
-  let xAxis: AxisSlot = { present: false, hideDots: false };
-  let yAxis: AxisSlot = { present: false, hideDots: false };
+  let xAxis: AxisSlot = { present: false, hideDots: false, truncationNotice: "auto" };
+  let yAxis: AxisSlot = { present: false, hideDots: false, truncationNotice: "auto" };
   let showGrid = false;
   let tooltip: TooltipSlot = {
     present: false,
@@ -355,6 +424,9 @@ function collectConfig(children: ReactNode): CollectedConfig {
         bufferBar: props.bufferBar ?? false,
         quality: dataQualityKeys(props),
         compareDataKey: props.compareDataKey,
+        sampleSizeKey: props.sampleSizeKey,
+        minSampleSize: props.minSampleSize,
+        sampleSizeDisplay: props.sampleSizeDisplay ?? "label",
       });
     } else if (type === XAxis) {
       const props = child.props as XAxisProps;
@@ -364,6 +436,9 @@ function collectConfig(children: ReactNode): CollectedConfig {
         tickFormatter: props.tickFormatter,
         label: props.label,
         hideDots: props.hideDots ?? false,
+        min: props.min,
+        max: props.max,
+        truncationNotice: props.truncationNotice ?? "auto",
       };
     } else if (type === YAxis) {
       const props = child.props as YAxisProps;
@@ -373,6 +448,9 @@ function collectConfig(children: ReactNode): CollectedConfig {
         tickFormatter: props.tickFormatter,
         label: props.label,
         hideDots: props.hideDots ?? false,
+        min: props.min,
+        max: props.max,
+        truncationNotice: props.truncationNotice ?? "auto",
       };
     } else if (type === Grid) {
       showGrid = true;
@@ -644,6 +722,22 @@ function barStaggerDelay(type: BarAnimationType, index: number, count: number): 
   return step * BAR_STAGGER;
 }
 
+type BarHonestyPlan = {
+  text: ResolvedChartHonestyText;
+  partial: { start: number; progress: number | null; label: string; note: string } | null;
+  gaps: GapSpan[];
+  gapLabel: string;
+  axis: {
+    min?: number;
+    max?: number;
+    interval?: number;
+    truncatedAt: number | null;
+    label: string;
+    description: string;
+  };
+  sampleSizes: Record<string, (number | null)[]>;
+};
+
 type OptionBuildContext = {
   data: Record<string, unknown>[];
   config: ChartConfig;
@@ -670,7 +764,10 @@ type OptionBuildContext = {
   barCategoryGap?: number;
   resolved: ResolvedColors;
   quality: Record<string, PointQuality[]>; 
+  /** Point quality before the partial period marked its tail provisional. */
+  claimedQuality: Record<string, PointQuality[]>;
   statusText: ResolvedDataStatusText;
+  honesty: BarHonestyPlan;
   categories: string[];
   brushRange: BrushRange; 
   valuePxPerUnit: number | null; 
@@ -769,7 +866,11 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
   const valueAxis = {
     type: "value" as const,
     show: valueSlot.present || showGrid,
-    max: isPercent ? 1 : undefined,
+    // Bars are lengths: the axis keeps zero unless the app set a start, which
+    // the chart then marks as truncated.
+    min: isPercent || isLoading ? undefined : ctx.honesty.axis.min,
+    max: isPercent ? 1 : isLoading ? undefined : ctx.honesty.axis.max,
+    interval: isPercent || isLoading ? undefined : ctx.honesty.axis.interval,
 
     name: isLoading ? undefined : valueSlot.label,
     nameLocation: "middle" as const,
@@ -808,7 +909,8 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
 }
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
-  const { config, selectedDataKey, tooltipSlot, quality, statusText } = ctx;
+  const { config, selectedDataKey, tooltipSlot, quality, statusText, honesty } = ctx;
+  const barsByKey = new Map(ctx.bars.map((bar) => [bar.dataKey, bar]));
   const compareKeys = new Map(
     ctx.bars.flatMap((bar) => (bar.compareDataKey ? [[bar.dataKey, bar.compareDataKey]] : [])),
   );
@@ -818,6 +920,11 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
     if (!rows.length) return "";
 
     const first = rows[0] as { axisValue?: string | number; name?: string };
+    const rowIndex = rows
+      .map((row) => (row as { dataIndex?: number }).dataIndex)
+      .find((index): index is number => typeof index === "number");
+    const inPartial = honesty.partial !== null && rowIndex !== undefined && rowIndex >= honesty.partial.start;
+    let lowSampleMin: number | null = null;
 
     const axisValue = first.axisValue ?? first.name ?? "";
     const label = String(axisValue);
@@ -840,9 +947,32 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
         const dimmed = selectedDataKey != null && selectedDataKey !== key ? " opacity-30" : "";
         const point = typeof p.dataIndex === "number" ? quality[key]?.[p.dataIndex] : undefined;
         const hasValue = p.value !== null && p.value !== undefined && p.value !== "-";
-        if (point?.status) statuses.add(point.status);
+        // A bar marked provisional only by the partial period is explained by
+        // the period's own note, not again as "Provisional".
+        const claimed =
+          typeof p.dataIndex === "number" ? ctx.claimedQuality[key]?.[p.dataIndex] : undefined;
+        const periodMarked = inPartial && point?.status === "provisional" && claimed?.status !== "provisional";
+        if (point?.status && !periodMarked) statuses.add(point.status);
+        const n = typeof p.dataIndex === "number" ? honesty.sampleSizes[key]?.[p.dataIndex] : undefined;
+        const bar = barsByKey.get(key);
+        if (n !== undefined && n !== null && isLowSample(n, bar?.minSampleSize)) {
+          lowSampleMin = Math.max(lowSampleMin ?? 0, bar?.minSampleSize ?? 0);
+        }
+        const detail = [
+          periodMarked && honesty.partial ? honesty.partial.label : "",
+          point
+            ? statusDetailText(
+                periodMarked ? { ...point, status: null } : point,
+                statusText,
+                (bound) => bound.toLocaleString(),
+              )
+            : "",
+          n !== undefined && n !== null ? honesty.text.sampleSize(formatCount(n)) : "",
+        ]
+          .filter(Boolean)
+          .join(" · ");
         const value =
-          point && !hasValue
+          !hasValue
             ? noValueHtml(statusText)
             : typeof p.value === "number"
               ? p.value.toLocaleString()
@@ -867,17 +997,29 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
             labelText,
             valueText: value,
             dimmed,
-            detailText: point
-              ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
-              : undefined,
+            detailText: detail || undefined,
           }) + comparison
         );
       })
       .join("");
 
+    const notes: HonestyNote[] = [];
+    if (inPartial && honesty.partial) {
+      notes.push({ label: honesty.partial.label, description: honesty.partial.note });
+    }
+    if (rowIndex !== undefined && honesty.gaps.some((gap) => rowIndex >= gap.start && rowIndex <= gap.end)) {
+      notes.push({ label: honesty.gapLabel, description: honesty.text.noDataDescription });
+    }
+    if (lowSampleMin !== null) {
+      notes.push({
+        label: honesty.text.lowSampleLabel(formatCount(lowSampleMin)),
+        description: honesty.text.lowSampleDescription,
+      });
+    }
+
     return tooltipShell({
       label,
-      body: body + statusNotesHtml(statuses, statusText),
+      body: body + statusNotesHtml(statuses, statusText) + honestyNotesHtml(notes),
       roundness: tooltipSlot.roundness,
       variant: tooltipSlot.variant,
     });
@@ -1053,8 +1195,14 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
     // Fill carries data status on a series that reads one, so its buffer bar is not applied.
     const points = ctx.quality[key];
     const statusStyles = points ? statusFillStyles(base) : null;
+    // A bar resting on few observations keeps its place but loses its weight:
+    // a lighter fill and a dashed outline.
+    const sizes = ctx.honesty.sampleSizes[key];
+    const isLow = (i: number) => isLowSample(sizes?.[i] ?? null, bar.minSampleSize);
+    const hasLow = Boolean(sizes) && data.some((_, i) => isLow(i));
+    // An absent value is no bar, never a bar of zero.
     const values: (number | null)[] = data.map((row, i) => {
-      const value = points ? points[i].value : Number(row[key]) || 0;
+      const value = points ? points[i].value : readValue(row[key]);
       if (value === null || !isPercent) return value;
       const total = rowTotals[i];
       if (total === null) return null;
@@ -1089,19 +1237,22 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
       glowFor ||
       ctx.maxHighlightIndex != null ||
       statusStyles ||
+      hasLow ||
       (bufferStyle && lastIndex >= 0)
         ? values.map((value, i) => {
             if (value === null) return null;
             const isBuffer = !!bufferStyle && i === lastIndex;
             const status = points?.[i].status;
             const statusStyle = status ? statusStyles?.[status] : undefined;
+            const low = isLow(i);
             if (
               !isBuffer &&
               !glowFor &&
               !isStripped &&
               !isExpandable &&
               !isMuted(i) &&
-              !statusStyle
+              !statusStyle &&
+              !low
             ) {
               return value;
             }
@@ -1123,6 +1274,14 @@ function buildBarSeries(ctx: OptionBuildContext): BarSeriesOption[] {
                   ? { color: expandableDatumPaint(slots, expandOf(i)) }
                   : {}),
                 ...(statusStyle ?? {}),
+                ...(low
+                  ? {
+                      ...(statusStyle ? {} : { color: withAlpha(base, LOW_SAMPLE_FILL_OPACITY) }),
+                      borderColor: base,
+                      borderWidth: LOW_SAMPLE_OUTLINE_WIDTH,
+                      borderType: LOW_SAMPLE_DASH,
+                    }
+                  : {}),
                 ...(isBuffer && bufferStyle ? bufferStyle : {}),
                 ...(glowFor ? glowFor(i) : {}),
 
@@ -1323,6 +1482,414 @@ function buildBarCompareSeries(ctx: OptionBuildContext): CustomSeriesOption[] {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Honesty marks. Bars occupy whole category slots, so the partial-period and
+// gap regions cover slots rather than the space between points, and every
+// mark follows the layout: along x for vertical bars, along y for horizontal.
+
+const BAR_NO_DATA_DESCRIPTION = "Nothing was recorded here, so no bars are drawn.";
+const LOW_SAMPLE_FILL_OPACITY = 0.45;
+const LOW_SAMPLE_OUTLINE_WIDTH = 1.25;
+const LOW_SAMPLE_DASH: [number, number] = [3, 2];
+const PARTIAL_FILL_OPACITY = 0.035;
+const GAP_HATCH_OPACITY = 0.11;
+const HONESTY_LABEL_SIZE = 10;
+const SAMPLE_LABEL_SIZE = 9;
+const SAMPLE_CHAR_WIDTH = 5.2;
+
+type GridRect = { x: number; y: number; width: number; height: number };
+
+function categoryPixels(api: RenderItemApi, grid: GridRect, isHorizontal: boolean, rowCount: number) {
+  const size = (api as { size?: (dataSize: number[]) => number[] | number }).size?.(
+    isHorizontal ? [0, 1] : [1, 0],
+  );
+  const measured = Array.isArray(size) ? Math.abs(size[isHorizontal ? 1 : 0]) : NaN;
+  if (Number.isFinite(measured) && measured > 0) return measured;
+  return (isHorizontal ? grid.height : grid.width) / Math.max(rowCount, 1);
+}
+
+/** The pixel span of category slots `from`..`to`, clamped to the plot. */
+function slotSpan(
+  api: RenderItemApi,
+  grid: GridRect,
+  isHorizontal: boolean,
+  rowCount: number,
+  from: number,
+  to: number,
+): [number, number] {
+  const half = categoryPixels(api, grid, isHorizontal, rowCount) / 2;
+  const at = (index: number) => {
+    const [x, y] = api.coord(isHorizontal ? [0, index] : [index, 0]);
+    return isHorizontal ? y : x;
+  };
+  const a = at(from);
+  const b = at(to);
+  const lo = Math.min(a, b) - half;
+  const hi = Math.max(a, b) + half;
+  const min = isHorizontal ? grid.y : grid.x;
+  const max = min + (isHorizontal ? grid.height : grid.width);
+  return [Math.max(lo, min), Math.min(hi, max)];
+}
+
+function honestyText(
+  text: string,
+  x: number,
+  y: number,
+  color: string,
+  align: "left" | "center" | "right",
+  verticalAlign: "top" | "bottom" = "top",
+) {
+  return {
+    type: "text" as const,
+    silent: true,
+    style: { text, x, y, fill: color, fontSize: HONESTY_LABEL_SIZE, align, verticalAlign },
+  };
+}
+
+/** The open period: its slots shaded, a dashed edge where it starts, and its label. */
+function barPartialSeries(params: {
+  start: number;
+  rowCount: number;
+  label: string;
+  isHorizontal: boolean;
+  fill: string;
+  labelColor: string;
+}): CustomSeriesOption {
+  const { start, rowCount, label, isHorizontal, fill, labelColor } = params;
+  return {
+    id: `${HONESTY_PREFIX}partial`,
+    type: "custom",
+    data: [[start]],
+    encode: isHorizontal ? { y: 0 } : { x: 0 },
+    silent: true,
+    // Unclipped so the label can sit above the plot; the shapes stay inside it.
+    clip: false,
+    z: 0,
+    tooltip: { show: false },
+    renderItem: (itemParams, api) => {
+      const grid = itemParams.coordSys as unknown as GridRect;
+      const [lo, hi] = slotSpan(api as RenderItemApi, grid, isHorizontal, rowCount, start, rowCount - 1);
+      const length = Math.max(hi - lo, 0);
+      const labelWidth = label.length * 5.5 + 12;
+      const rect = isHorizontal
+        ? { x: grid.x, y: lo, width: grid.width, height: length }
+        : { x: lo, y: grid.y, width: length, height: grid.height };
+      const edge = isHorizontal
+        ? { x1: grid.x, y1: lo, x2: grid.x + grid.width, y2: lo }
+        : { x1: lo, y1: grid.y, x2: lo, y2: grid.y + grid.height };
+      // Vertical bars usually reach the top of the plot, where n labels sit
+      // too, so the label goes just above the plot: from the region's dashed
+      // edge, or against its right end when the region is narrow. Horizontal
+      // bars put it at the strip's right end when the strip is tall enough.
+      const text = isHorizontal
+        ? length >= HONESTY_LABEL_SIZE + 6
+          ? [honestyText(label, grid.x + grid.width - 4, lo + 3, labelColor, "right")]
+          : []
+        : [
+            length > labelWidth
+              ? honestyText(label, lo + 2, grid.y - 4, labelColor, "left", "bottom")
+              : honestyText(label, hi, grid.y - 4, labelColor, "right", "bottom"),
+          ];
+      return {
+        type: "group",
+        children: [
+          { type: "rect", shape: rect, style: { fill } },
+          {
+            type: "line",
+            shape: edge,
+            style: { stroke: labelColor, lineWidth: 1, lineDash: [2, 3], opacity: 0.45 },
+          },
+          ...text,
+        ],
+      };
+    },
+  };
+}
+
+/** Diagonal hatching over each stretch of categories with no value in any series. */
+function barGapSeries(params: {
+  spans: GapSpan[];
+  rowCount: number;
+  label: string;
+  isHorizontal: boolean;
+  hatch: string;
+  labelColor: string;
+}): CustomSeriesOption | null {
+  const { spans, rowCount, label, isHorizontal, hatch, labelColor } = params;
+  if (!spans.length) return null;
+  return {
+    id: `${HONESTY_PREFIX}gaps`,
+    type: "custom",
+    data: spans.map((span) => [span.start, span.end]),
+    encode: isHorizontal ? { y: [0, 1] } : { x: [0, 1] },
+    silent: true,
+    clip: true,
+    z: 0,
+    tooltip: { show: false },
+    renderItem: (itemParams, api) => {
+      const grid = itemParams.coordSys as unknown as GridRect;
+      const from = api.value(0) as number;
+      const to = api.value(1) as number;
+      const [lo, hi] = slotSpan(api as RenderItemApi, grid, isHorizontal, rowCount, from, to);
+      const rect = isHorizontal
+        ? { x: grid.x, y: lo, width: grid.width, height: Math.max(hi - lo, 0) }
+        : { x: lo, y: grid.y, width: Math.max(hi - lo, 0), height: grid.height };
+      const lines = [];
+      const spacing = 6;
+      for (let offset = -rect.height; offset < rect.width; offset += spacing) {
+        lines.push({
+          type: "line" as const,
+          shape: {
+            x1: rect.x + offset,
+            y1: rect.y + rect.height,
+            x2: rect.x + offset + rect.height,
+            y2: rect.y,
+          },
+          style: { stroke: hatch, lineWidth: 1 },
+        });
+      }
+      const fits = isHorizontal
+        ? rect.height >= HONESTY_LABEL_SIZE + 6
+        : rect.width > label.length * 5.5 + 8;
+      return {
+        type: "group",
+        children: [
+          { type: "group", clipPath: { type: "rect", shape: rect }, children: lines },
+          ...(fits
+            ? [
+                isHorizontal
+                  ? honestyText(label, rect.x + rect.width / 2, rect.y + rect.height / 2 - HONESTY_LABEL_SIZE / 2, labelColor, "center")
+                  : honestyText(label, rect.x + rect.width / 2, rect.y + 4, labelColor, "center"),
+              ]
+            : []),
+        ],
+      };
+    },
+  };
+}
+
+/**
+ * The break mark for a value axis that does not reach zero. Vertical bars
+ * grow from the bottom edge, so it sits there as on a line chart; horizontal
+ * bars grow from the left edge, so it crosses that edge instead.
+ */
+function barAxisBreakSeries(params: {
+  isHorizontal: boolean;
+  stroke: string;
+  background: string;
+}): CustomSeriesOption {
+  const { isHorizontal, stroke, background } = params;
+  if (!isHorizontal) return axisBreakSeries({ stroke, background, z: 6 });
+  return {
+    id: `${HONESTY_PREFIX}axis-break`,
+    type: "custom",
+    data: [[0]],
+    encode: { y: 0 },
+    silent: true,
+    clip: false,
+    z: 6,
+    tooltip: { show: false },
+    renderItem: (itemParams) => {
+      const grid = itemParams.coordSys as unknown as GridRect;
+      const x = grid.x;
+      const y = grid.y + grid.height - 10;
+      const slash = (dy: number) => ({
+        type: "line" as const,
+        shape: { x1: x - 3.5, y1: y + dy + 2.5, x2: x + 3.5, y2: y + dy - 2.5 },
+        style: { stroke, lineWidth: 1, lineCap: "round" as const },
+      });
+      return {
+        type: "group",
+        children: [
+          { type: "rect", shape: { x: x - 1.5, y: y - 1, width: 3, height: 6 }, style: { fill: background } },
+          slash(0),
+          slash(4),
+        ],
+      };
+    },
+  };
+}
+
+/**
+ * `n` for each bar: past the bar's end on grouped bars (above it when
+ * vertical, to its right when horizontal), inside the segment on stacked
+ * bars. A label shows only where it fits its slot, so labels never collide;
+ * the tooltip always carries n.
+ */
+function buildBarSampleSeries(ctx: OptionBuildContext): CustomSeriesOption[] {
+  const { data, bars, seriesKeys, isHorizontal, isStacked, isPercent, selectedDataKey, barGap, barCategoryGap } = ctx;
+  const { tokens } = ctx.resolved;
+  const sizesByKey = ctx.honesty.sampleSizes;
+  if (!bars.some((bar) => sizesByKey[bar.dataKey])) return [];
+
+  const rowTotals = isPercent ? shareTotals(data, seriesKeys, ctx.quality) : [];
+  const gapUnits =
+    isStacked && bars.length > 1 && ctx.valuePxPerUnit ? STACK_SEGMENT_GAP / ctx.valuePxPerUnit : 0;
+  const stackBase: number[] = new Array(data.length).fill(0);
+  const layout = {
+    count: isStacked ? 1 : bars.length,
+    ...(barGap !== undefined ? { barGap } : {}),
+    ...(barCategoryGap !== undefined ? { barCategoryGap } : {}),
+  };
+
+  return bars.flatMap((bar, position): CustomSeriesOption[] => {
+    const key = bar.dataKey;
+    const points = ctx.quality[key];
+    const values = data.map((row, i) => {
+      const value = points ? points[i].value : readValue(row[key]);
+      if (value === null || !isPercent) return value;
+      const total = rowTotals[i];
+      return total ? value / total : null;
+    });
+    const starts = values.map((value, i) => {
+      const startAt = isStacked ? stackBase[i] : 0;
+      if (isStacked) stackBase[i] += (value ?? 0) + gapUnits;
+      return startAt;
+    });
+    const sizes = sizesByKey[key];
+    if (!sizes) return [];
+    const showLabels = bar.sampleSizeDisplay === "label";
+    const items = values.flatMap((value, index) => {
+      const n = sizes[index];
+      if (value === null || n === null) return [];
+      const low = isLowSample(n, bar.minSampleSize);
+      if (!showLabels && !low) return [];
+      return [[index, starts[index] + value, n, low ? 1 : 0, starts[index]]];
+    });
+    // Low samples are already outlined on the bar; their label is what the
+    // tooltip-only mode adds.
+    if (!items.length) return [];
+    const opacity = selectionOpacity(selectedDataKey, key);
+    const format = (n: number) => ctx.honesty.text.sampleSize(formatCount(n));
+
+    return [
+      {
+        id: sampleSizeSeriesId(key),
+        type: "custom",
+        data: items,
+        encode: isHorizontal ? { y: 0, x: 1 } : { x: 0, y: 1 },
+        silent: true,
+        clip: false,
+        z: QUALITY_Z + 1,
+        tooltip: { show: false },
+        renderItem: (itemParams, api) => {
+          const grid = itemParams.coordSys as unknown as GridRect;
+          const index = api.value(0) as number;
+          const end = api.value(1) as number;
+          const n = api.value(2) as number;
+          const low = api.value(3) === 1;
+          const start = api.value(4) as number;
+          const slot = (api as RenderItemApi).barLayout(layout)?.[isStacked ? 0 : position];
+          const thickness = slot?.width ?? 8;
+          const shift = isStacked ? 0 : (slot?.offsetCenter ?? 0);
+          const text = format(n);
+          const textWidth = text.length * SAMPLE_CHAR_WIDTH;
+          const [endX, endY] = api.coord(isHorizontal ? [end, index] : [index, end]);
+          const [startX, startY] = api.coord(isHorizontal ? [start, index] : [index, start]);
+          const style = { fill: tokens.mutedForeground, fontSize: SAMPLE_LABEL_SIZE, opacity };
+
+          if (isStacked) {
+            // Inside the segment, on a small plate so it reads on any fill.
+            const segment = isHorizontal ? Math.abs(endX - startX) : Math.abs(endY - startY);
+            const fits = isHorizontal
+              ? segment >= textWidth + 8 && thickness >= SAMPLE_LABEL_SIZE + 4
+              : segment >= SAMPLE_LABEL_SIZE + 6 && thickness >= textWidth + 4;
+            if (!fits) return { type: "group", children: [] };
+            const cx = isHorizontal ? (startX + endX) / 2 : endX;
+            const cy = isHorizontal ? endY : (startY + endY) / 2;
+            return {
+              type: "group",
+              children: [
+                {
+                  type: "rect",
+                  shape: { x: cx - textWidth / 2 - 3, y: cy - 6.5, width: textWidth + 6, height: 13, r: 3 },
+                  style: { fill: withAlpha(tokens.background, 0.85), opacity },
+                },
+                {
+                  type: "text",
+                  style: { ...style, fill: tokens.foreground, text, x: cx, y: cy, align: "center", verticalAlign: "middle" },
+                },
+              ],
+            };
+          }
+
+          if (isHorizontal) {
+            if (thickness < SAMPLE_LABEL_SIZE - 1 && !low) return { type: "group", children: [] };
+            const negative = end < 0;
+            return {
+              type: "text",
+              style: {
+                ...style,
+                text,
+                x: negative ? endX - 4 : endX + 4,
+                y: endY + shift,
+                align: negative ? "right" : "left",
+                verticalAlign: "middle",
+              },
+            };
+          }
+
+          // Vertical, grouped or single: above the bar's end. Grouped labels
+          // need their own slot's width; a single series thins by category.
+          const categoryPx = categoryPixels(api as RenderItemApi, grid, false, data.length);
+          const fits =
+            layout.count === 1
+              ? index % labelStride(categoryPx, textWidth + 6) === 0
+              : thickness + 4 >= textWidth;
+          if (!fits && !low) return { type: "group", children: [] };
+          const negative = end < 0;
+          return {
+            type: "text",
+            style: {
+              ...style,
+              text,
+              x: endX + shift,
+              y: negative ? endY + 3 : endY - 3,
+              align: "center",
+              verticalAlign: negative ? "top" : "bottom",
+            },
+          };
+        },
+      },
+    ];
+  });
+}
+
+function buildBarHonestySeries(ctx: OptionBuildContext): CustomSeriesOption[] {
+  const { honesty, isHorizontal, data } = ctx;
+  const { tokens } = ctx.resolved;
+  const out: CustomSeriesOption[] = [];
+
+  if (honesty.partial) {
+    out.push(
+      barPartialSeries({
+        start: honesty.partial.start,
+        rowCount: data.length,
+        label: honesty.partial.label,
+        isHorizontal,
+        fill: withAlpha(tokens.foreground, PARTIAL_FILL_OPACITY),
+        labelColor: tokens.mutedForeground,
+      }),
+    );
+  }
+
+  const gaps = barGapSeries({
+    spans: honesty.gaps,
+    rowCount: data.length,
+    label: honesty.gapLabel,
+    isHorizontal,
+    hatch: withAlpha(tokens.foreground, GAP_HATCH_OPACITY),
+    labelColor: tokens.mutedForeground,
+  });
+  if (gaps) out.push(gaps);
+
+  if (honesty.axis.truncatedAt !== null && ctx.valueSlot.truncationNotice !== "off") {
+    out.push(barAxisBreakSeries({ isHorizontal, stroke: tokens.mutedForeground, background: tokens.background }));
+  }
+
+  return [...out, ...buildBarSampleSeries(ctx)];
+}
+
 type LiveState = {
   resolved: ResolvedColors | null; 
   hasRevealed: boolean; 
@@ -1361,7 +1928,7 @@ type LiveState = {
 };
 
 export function BarChart<TData extends Record<string, unknown>>({
-  data,
+  data: inputData,
   config,
   xDataKey,
   className,
@@ -1379,6 +1946,8 @@ export function BarChart<TData extends Record<string, unknown>>({
   loadingBars = LOADING_DEFAULT_BARS,
   ariaLabel,
   dataStatusText,
+  honestyText,
+  gaps,
   syncId,
   chartOptions,
   children,
@@ -1461,31 +2030,272 @@ export function BarChart<TData extends Record<string, unknown>>({
     [seriesKeys, references, config],
   );
 
-  // Bounds on a value say nothing about bounds on its share of a total, so a
-  // percent chart keeps the status and drops the range.
-  const quality = useMemo(
-    () => collectDataQuality(data, bars, { dropRanges: isPercent }),
-    [data, bars, isPercent],
-  );
-  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
-  const qualityIssues = quality.issues.join("\n");
-  useEffect(() => {
-    if (qualityIssues) reportDataQualityIssues("BarChart", qualityIssues.split("\n"));
-  }, [qualityIssues]);
-
-  const defaultAriaLabel = `Bar chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.${dataQualityAriaSummary(quality.summary, statusText)}`;
+  const honestySlots = useMemo(() => collectHonesty(children), [children]);
 
   const categoryKey = useMemo(() => {
     if (categorySlot.dataKey) return categorySlot.dataKey;
     if (xDataKey) return xDataKey as string;
-    const firstRow = data[0];
+    const firstRow = inputData[0];
     if (firstRow) {
       const claimed = new Set(seriesKeys);
       const found = Object.keys(firstRow).find((key) => !claimed.has(key));
       if (found) return found;
     }
     return "";
-  }, [categorySlot.dataKey, xDataKey, data, seriesKeys]);
+  }, [categorySlot.dataKey, xDataKey, inputData, seriesKeys]);
+
+  // With a gap interval, rows absent from the time series are put back as
+  // empty rows, so the axis keeps time even and the hole shows.
+  const gapInterval = typeof gaps === "object" ? gaps.interval : undefined;
+  const data = useMemo(
+    () =>
+      gapInterval && categoryKey
+        ? fillMissingRows(inputData, categoryKey, gapInterval).data
+        : (inputData as Record<string, unknown>[]),
+    [inputData, categoryKey, gapInterval],
+  );
+
+  // A partial period or gap shading reads every series' values as claims, so
+  // an absent value is never drawn as zero.
+  const trackAll = Boolean(honestySlots.partial || gaps);
+  const qualitySeries = useMemo(
+    () =>
+      bars.map((bar) => ({
+        dataKey: bar.dataKey,
+        quality: bar.quality ?? (trackAll ? {} : null),
+      })),
+    [bars, trackAll],
+  );
+
+  // Bounds on a value say nothing about bounds on its share of a total, so a
+  // percent chart keeps the status and drops the range.
+  const readQuality = useMemo(
+    () => collectDataQuality(data, qualitySeries, { dropRanges: isPercent }),
+    [data, qualitySeries, isPercent],
+  );
+
+  const gapList = useMemo(() => {
+    if (!gaps) return [];
+    const series = Object.values(readQuality.points).map((points) => points.map((point) => point.value));
+    return series.length ? gapSpans(series, data.length) : [];
+  }, [gaps, readQuality, data.length]);
+
+  // An empty bar slot reads as zero. With gaps on, a value absent outside a
+  // shaded no-data stretch is marked missing, so its slot carries a ring.
+  const claimed = useMemo(() => {
+    if (!gaps) return readQuality;
+    const inGap = (index: number) => gapList.some((gap) => index >= gap.start && index <= gap.end);
+    const points: Record<string, PointQuality[]> = {};
+    for (const [key, list] of Object.entries(readQuality.points)) {
+      points[key] = list.map((point, index) =>
+        point.value === null && point.status === null && !inGap(index)
+          ? { ...point, status: "missing" }
+          : point,
+      );
+    }
+    return { ...readQuality, points, summary: summarizeDataQuality(Object.values(points)) };
+  }, [gaps, readQuality, gapList]);
+
+  const [renderedAt] = useState(() => Date.now());
+  // Bars draw nothing across a gap, so the default note says bars, not a line.
+  const honestyTextResolved = useMemo(
+    () => resolveHonestyText({
+        ...honestyText,
+        noDataDescription: honestyText?.noDataDescription ?? BAR_NO_DATA_DESCRIPTION,
+      }),
+    [honestyText],
+  );
+  const partial = useMemo(() => {
+    if (!honestySlots.partial) return null;
+    const found = resolvePartialPeriod(
+      honestySlots.partial,
+      data.map((row) => row[categoryKey]),
+      renderedAt,
+    );
+    if (!found) return null;
+    const description = honestySlots.partial.note ?? [
+      honestyTextResolved.partialPeriodDescription,
+      found.progress !== null ? honestyTextResolved.partialProgress(found.progress) : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return {
+      start: found.start,
+      progress: found.progress,
+      label: honestySlots.partial.label ?? honestyTextResolved.partialPeriodLabel,
+      note: description,
+    };
+  }, [honestySlots, data, categoryKey, renderedAt, honestyTextResolved]);
+
+  // The open period's bars take the provisional fill: hatched and outlined.
+  const quality = useMemo(() => {
+    if (!partial) return claimed;
+    const points: Record<string, PointQuality[]> = {};
+    for (const [key, value] of Object.entries(claimed.points)) {
+      points[key] = applyPartialPeriod(value, partial.start);
+    }
+    return { ...claimed, points };
+  }, [claimed, partial]);
+
+  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
+
+  const sampleSizes = useMemo(() => {
+    const sizes: Record<string, (number | null)[]> = {};
+    for (const bar of bars) {
+      if (bar.sampleSizeKey) sizes[bar.dataKey] = readSampleSizes(data, bar.sampleSizeKey);
+    }
+    return sizes;
+  }, [bars, data]);
+
+  // Bars are lengths, so the value axis keeps zero. A start the app sets
+  // above zero (or an end below it) is kept but flagged; "auto" is refused.
+  const valueAxisName = isHorizontal ? "XAxis" : "YAxis";
+  const axis = useMemo(() => {
+    const issues: string[] = [];
+    let min = typeof valueSlot.min === "number" ? valueSlot.min : undefined;
+    let max = valueSlot.max;
+    if (valueSlot.min === "auto") {
+      issues.push(
+        `${valueAxisName} min="auto" is ignored: a bar's length is its value, so the axis starts at zero.`,
+      );
+    }
+    if (isPercent && (min !== undefined || max !== undefined)) {
+      issues.push(`${valueAxisName} min and max are ignored on a percent chart, which always runs from 0% to 100%.`);
+      min = undefined;
+      max = undefined;
+    }
+    const truncatedAt = axisTruncation(min ?? null, max ?? null);
+    if (truncatedAt !== null) {
+      issues.push(
+        `${valueAxisName} ${truncatedAt > 0 ? "min" : "max"} is ${truncatedAt}, so the axis does not reach zero. Bars must start at zero: their lengths are the values. The chart marks the axis as truncated.`,
+      );
+    }
+    // A start the app set rarely falls on ECharts' own tick step, which then
+    // crowds an extra label against it. Step from the start instead.
+    let interval: number | undefined;
+    if (truncatedAt !== null && min !== undefined && max === undefined) {
+      let dataMax = -Infinity;
+      for (let i = 0; i < data.length; i++) {
+        let rowTotal = 0;
+        for (const bar of bars) {
+          const value = quality.points[bar.dataKey]?.[i]?.value ?? readValue(data[i][bar.dataKey]);
+          if (value === null) continue;
+          if (isStacked) rowTotal += Math.max(value, 0);
+          else dataMax = Math.max(dataMax, value);
+        }
+        if (isStacked) dataMax = Math.max(dataMax, rowTotal);
+      }
+      if (Number.isFinite(dataMax) && dataMax > min) {
+        const step = niceStep(dataMax - min);
+        const digits = Math.max(0, Math.ceil(-Math.log10(step))) + 1;
+        interval = step;
+        max = Number((min + Math.ceil((dataMax - min) / step) * step).toFixed(digits));
+      }
+    }
+    const formatted =
+      truncatedAt === null
+        ? ""
+        : (valueSlot.tickFormatter?.(String(truncatedAt), 0) ?? truncatedAt.toLocaleString());
+    const atTop = truncatedAt !== null && truncatedAt < 0;
+    return {
+      min,
+      max,
+      interval,
+      truncatedAt,
+      issues,
+      label: atTop
+        ? honestyTextResolved.axisEndsAt(formatted)
+        : honestyTextResolved.axisStartsAt(formatted),
+      description: honestyTextResolved.axisDescription(formatted),
+    };
+  }, [valueSlot, valueAxisName, isPercent, isStacked, bars, data, quality, honestyTextResolved]);
+
+  const honesty = useMemo<BarHonestyPlan>(
+    () => ({
+      text: honestyTextResolved,
+      partial,
+      gaps: gapList,
+      gapLabel: (typeof gaps === "object" ? gaps.label : undefined) ?? honestyTextResolved.noDataLabel,
+      axis,
+      sampleSizes,
+    }),
+    [honestyTextResolved, partial, gapList, gaps, axis, sampleSizes],
+  );
+
+  const qualityIssues = quality.issues.join("\n");
+  useEffect(() => {
+    if (qualityIssues) reportDataQualityIssues("BarChart", qualityIssues.split("\n"));
+  }, [qualityIssues]);
+
+  const honestyIssues = [
+    ...axis.issues,
+    ...(honestySlots.bands.length
+      ? ["Band is not drawn on bars. Give each Bar lowerKey and upperKey to show its range."]
+      : []),
+  ].join("\n");
+  useEffect(() => {
+    if (!honestyIssues) return;
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "production") return;
+    console.warn(`[BarChart] ${honestyIssues.split("\n").join("\n  ")}`);
+  }, [honestyIssues]);
+
+  // The key and summary name what the app claimed; the partial period has its own entry.
+  const keySummary = claimed.summary;
+
+  const honestyEntries = useMemo((): HonestyKeyEntry[] => {
+    const text = honestyTextResolved;
+    const entries: HonestyKeyEntry[] = [];
+    if (partial) entries.push({ kind: "partial", label: partial.label, description: partial.note });
+    if (gapList.length) {
+      entries.push({ kind: "gap", label: honesty.gapLabel, description: text.noDataDescription });
+    }
+    if (axis.truncatedAt !== null && valueSlot.truncationNotice !== "off") {
+      entries.push({ kind: "axis", label: axis.label, description: axis.description });
+    }
+    const counted = bars.filter((bar) => sampleSizes[bar.dataKey]);
+    if (counted.some((bar) => bar.sampleSizeDisplay === "label")) {
+      entries.push({ kind: "sample", label: text.sampleSizeLabel, description: text.sampleSizeDescription });
+    }
+    const lowMins = counted.flatMap((bar) =>
+      sampleSizes[bar.dataKey].some((n) => isLowSample(n, bar.minSampleSize))
+        ? [bar.minSampleSize as number]
+        : [],
+    );
+    if (lowMins.length) {
+      entries.push({
+        kind: "low-sample",
+        label: text.lowSampleLabel(formatCount(Math.max(...lowMins))),
+        description: text.lowSampleDescription,
+      });
+    }
+    return entries;
+  }, [honestyTextResolved, partial, gapList, honesty.gapLabel, axis, valueSlot, bars, sampleSizes]);
+
+  // Categories are read the way the axis writes them, so "Nov 7", not "2026-11-07".
+  const categoryText = (index: number) => {
+    const raw = String(data[index]?.[categoryKey] ?? "");
+    return categorySlot.tickFormatter ? categorySlot.tickFormatter(raw, index) : raw;
+  };
+  const honestyAria = honestyEntries
+    .filter((entry) => entry.kind !== "sample")
+    .map((entry) =>
+      entry.kind === "partial" && partial
+        ? ` ${entry.label} from ${categoryText(partial.start)}.`
+        : entry.kind === "gap"
+          ? ` ${entry.label}: ${gapList
+              .map((gap) => {
+                const first = categoryText(gap.start);
+                const last = categoryText(gap.end);
+                return gap.start === gap.end ? first : `${first} to ${last}`;
+              })
+              .join(", ")}.`
+          : entry.kind === "axis"
+            ? ` ${entry.description}`
+            : ` ${entry.label}.`,
+    )
+    .join("");
+
+  const defaultAriaLabel = `Bar chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.${dataQualityAriaSummary(keySummary, statusText)}${honestyAria}`;
 
   const effectiveAnimation = bars[0]?.animationType ?? animationType;
 
@@ -1612,7 +2422,9 @@ export function BarChart<TData extends Record<string, unknown>>({
       barCategoryGap,
       resolved,
       quality: quality.points,
+      claimedQuality: claimed.points,
       statusText,
+      honesty,
       categories,
       brushRange: liveRef.current.brushRange,
       valuePxPerUnit: liveRef.current.valuePxPerUnit,
@@ -1660,6 +2472,7 @@ export function BarChart<TData extends Record<string, unknown>>({
       tooltip: buildTooltipOption(ctx),
       dataZoom,
       series: [
+        ...buildBarHonestySeries(ctx),
         ...buildBarSeries(ctx),
         ...buildBarQualitySeries(ctx),
         ...buildBarCompareSeries(ctx),
@@ -1695,7 +2508,9 @@ export function BarChart<TData extends Record<string, unknown>>({
     barCategoryGap,
     maxHighlightIndex,
     quality,
+    claimed,
     statusText,
+    honesty,
   ]);
 
   useEffect(() => {
@@ -2055,7 +2870,12 @@ export function BarChart<TData extends Record<string, unknown>>({
   // The status key takes the edge the series legend is not on, so the two never overlap.
   const statusKeyOnTop = legendSlot.present && legendSlot.verticalAlign === "bottom";
   const statusKey = !isLoading && (
-    <DataStatusKey summary={quality.summary} mark="fill" text={statusText} />
+    <DataStatusKey
+      summary={keySummary}
+      mark="fill"
+      text={statusText}
+      extra={honestyEntries.length ? <HonestyKeyItems entries={honestyEntries} /> : undefined}
+    />
   );
 
   return (
@@ -2181,3 +3001,4 @@ BarChart.Zoom = Zoom;
 BarChart.ReferenceLine = ReferenceLine;
 BarChart.ReferenceArea = ReferenceArea;
 BarChart.ReferenceDot = ReferenceDot;
+BarChart.PartialPeriod = PartialPeriod;

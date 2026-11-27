@@ -3,16 +3,19 @@
 import type { Root as PageTreeRoot } from "fumadocs-core/page-tree";
 import {
   ChartComponentOptions,
+  ChartHonestyOptions,
   ChartStartedOptions,
   DocumentationOptions,
   ExampleOptions,
   IconStartedOptions,
+  AiStartedOptions,
   AnimatedStartedOptions,
   ProductStartedOptions,
   ShaderStartedOptions,
 } from "@/globals/constants/docs-sidebar";
 import { RenderDefaultOptions } from "./render-default-options";
 import {
+  AiTreeNavigation,
   AnimatedTreeNavigation,
   DocsTreeNavigation,
   ProductTreeNavigation,
@@ -52,6 +55,7 @@ export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
           <RenderDefaultOptions label="Get Started" options={ChartStartedOptions} />
           <NavMain tree={tree} rootFolder="charts" label="Components" />
           <RenderDefaultOptions label="Chart Components" options={ChartComponentOptions} />
+          <RenderDefaultOptions label="Honesty" options={ChartHonestyOptions} />
           <RenderDefaultOptions label="Documentation" options={DocumentationOptions} />
         </>
       ) : activeArea === "icons" ? (
@@ -67,6 +71,11 @@ export function SidebarSections({ tree }: { tree: PageTreeRoot }) {
         <>
           <RenderDefaultOptions label="Get Started" options={ShaderStartedOptions} />
           <ShaderTreeNavigation tree={tree} />
+        </>
+      ) : activeArea === "ai" ? (
+        <>
+          <RenderDefaultOptions label="Get Started" options={AiStartedOptions} />
+          <AiTreeNavigation tree={tree} />
         </>
       ) : activeArea === "examples" ? (
         <RenderDefaultOptions label="Examples" options={ExampleOptions} />

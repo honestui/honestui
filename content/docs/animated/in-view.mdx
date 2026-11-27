@@ -1,0 +1,57 @@
+---
+title: In View
+description: Reveal content as it scrolls into view, as one block or one child at a time.
+---
+
+<ComponentPreview name="in-view-demo" />
+
+## Overview
+
+In View plays an entrance when its element scrolls into the viewport. Choose a preset (`fade`, `slide-up`, `slide-down`, `blur`, or `scale`) or pass your own variants. With `stagger`, each direct child is wrapped and enters in turn, which suits lists, feature grids, and timelines.
+
+By default the entrance plays once. Set `once={false}` to replay it whenever the element leaves and comes back. `amount` controls how much of the element must be visible before it starts, and `margin` grows or shrinks the viewport, so an entrance can begin a little before the element reaches the screen.
+
+## Installation
+
+<CliBlock commands={["in-view"]} />
+
+## Usage
+
+```tsx
+import { InView } from "@/components/animated/in-view"
+
+<InView preset="blur">
+  <h2>Built for teams</h2>
+</InView>
+
+<InView as="ul" preset="slide-up" stagger={0.08}>
+  {features.map((feature) => (
+    <FeatureCard key={feature.id} {...feature} />
+  ))}
+</InView>
+```
+
+When `as` is `ul` or `ol`, staggered children are wrapped in `li` elements, so pass the item content rather than your own `li`.
+
+## Accessibility
+
+Content is hidden only visually until it enters, so it stays in the page for screen readers and search. Under reduced motion the entrance keeps a short fade and drops movement, blur, and scale.
+
+Keep entrances short and avoid them on content people need immediately, such as the first screen of a page or an error message. Content revealed on scroll should never be the only place an important instruction appears.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode" required>Content to reveal.</ApiRow>
+  <ApiRow name="as" type='"div" | "section" | "article" | "header" | "footer" | "ul" | "ol" | "li" | "span" | "p"' default='"div"'>Element to render.</ApiRow>
+  <ApiRow name="preset" type='"fade" | "slide-up" | "slide-down" | "blur" | "scale"' default='"blur"'>Entrance style.</ApiRow>
+  <ApiRow name="variants" type="Variants">Custom motion variants with `hidden` and `visible` keys. Overrides `preset`.</ApiRow>
+  <ApiRow name="stagger" type="number" default="0">Seconds between each direct child's entrance. 0 animates the wrapper as one block.</ApiRow>
+  <ApiRow name="delay" type="number" default="0">Seconds before the entrance starts.</ApiRow>
+  <ApiRow name="duration" type="number" default="0.6">Entrance duration in seconds.</ApiRow>
+  <ApiRow name="once" type="boolean" default="true">Play only the first time the element enters.</ApiRow>
+  <ApiRow name="amount" type='"some" | "all" | number' default="0.25">How much of the element must be visible.</ApiRow>
+  <ApiRow name="margin" type="string">Root margin, such as `"0px 0px -10% 0px"`.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the wrapper.</ApiRow>
+  <ApiRow name="itemClassName" type="string">Classes for each wrapped child when `stagger` is set.</ApiRow>
+</ApiTable>

@@ -1,0 +1,158 @@
+---
+title: Message Scroller
+metaTitle: React Chat Message Scroller with Navigation
+description: Follow streamed replies and revisit earlier messages with a preview navigation rail.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="message-scroller-demo" previewClassName="h-auto min-h-[450px]" />
+
+## Overview
+
+Message Scroller keeps new output in view while the reader stays near the end of a conversation. Scrolling back pauses following, so growing replies do not pull the reader away from an earlier message.
+
+Set `navigation="rail"` to add message ticks on the right. Hover or focus a tick to preview its message, then activate it to scroll there. The rail appears only when the transcript overflows and contains at least two marked messages.
+
+Use this component when you need control over the transcript's layout and navigation. [Chat Thread](/docs/ai/chat-thread) includes a footer slot for the composer; Message Scroller leaves the composer layout to your application. Both can render [Chat Message](/docs/ai/chat-thread#chatmessage) rows.
+
+## Behavior
+
+### Following output
+
+Following starts enabled. The default live-edge threshold is 56 pixels from the end. Scrolling beyond that threshold pauses following; returning near the end resumes it. Selecting the last rail tick also resumes following. Set `followOutput={false}` to disable automatic following entirely.
+
+`onFollowChange` reports when the reader leaves or returns to the live edge. It does not load messages or control your model connection.
+
+### Message markers
+
+The rail finds descendants with `data-slot="message"`. Add `data-from="user"` or `data-from="assistant"` to name each row in navigation labels and pair user-message previews with the following assistant reply.
+
+Wrap just the message text in `data-slot="message-content"` or `data-slot="message-bubble-content"`. This keeps author labels and action text out of previews. Without that wrapper, the component uses the whole row's text content.
+
+Message additions, streamed text, and size changes refresh the rail. Give the scroller a bounded height, such as `h-96`, or place it in a flex layout with a constrained height and `min-h-0`.
+
+### Your application's responsibilities
+
+Pass rendered messages as children, keep message keys stable, and supply loading and error content. `busy` marks the transcript as receiving updates; it does not draw a loading indicator. Put your composer outside the scroller so it stays available while the transcript scrolls.
+
+## Accessibility
+
+The transcript is a keyboard-focusable section containing a polite live log. Set `label` to name the conversation and `navigationLabel` to name the rail. Set `busy` while a streamed response is incomplete. Reduced-motion preferences disable smooth scrolling and the rail's animated transitions.
+
+Rail ticks use native buttons with names that identify the sender and message position. Keyboard focus shows the same preview as hover. A touch selects a message and pins its preview; a tap outside clears that pinned preview.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move between the transcript and rail controls |
+| <kbd>Arrow Up</kbd>, <kbd>Arrow Down</kbd>, <kbd>Page Up</kbd>, <kbd>Page Down</kbd> | Scroll the focused transcript using browser controls |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Activate a focused rail button |
+| <kbd>Escape</kbd> | Clear a touch-pinned preview |
+
+## Installation
+
+<CodeTabs>
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/message-scroller"]} />
+
+</TabsPanel>
+<TabsPanel value="manual">
+
+<Steps>
+<Step>Install the animation and class utilities.</Step>
+
+```bash
+npm install motion clsx tailwind-merge
+```
+
+<Step>Copy the combined component file into your project.</Step>
+
+<ComponentSource name="message-scroller" title="components/ai/message-scroller.tsx" />
+
+<Step>Use React 19 and Tailwind with your theme's semantic color tokens.</Step>
+
+The file includes `MessageScroller`, `PreviewRail`, the motion tokens, and the supplied gesture and favicon helpers. It has no local helper imports. Its Tailwind classes use `background`, `foreground`, `card`, `card-foreground`, `border`, `muted-foreground`, and `ring`, which the Honest AI theme already provides.
+
+</Steps>
+</TabsPanel>
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { MessageScroller } from "@/components/ai/message-scroller"
+
+<MessageScroller
+  label="Conversation"
+  navigation="rail"
+  busy={isStreaming}
+  className="h-96"
+  contentClassName="flex flex-col gap-5 p-5"
+>
+  {messages.map((message) => (
+    <article
+      key={message.id}
+      data-slot="message"
+      data-from={message.role}
+      aria-label={message.role === "user" ? "You" : "Assistant"}
+    >
+      <div data-slot="message-content">{message.text}</div>
+    </article>
+  ))}
+</MessageScroller>
+```
+
+The [Generative UI playground](/docs/ai/generative/playground) uses this scroller with its composer fixed below the transcript.
+
+## API reference
+
+### MessageScroller
+
+Accepts native div props, including `children`, in addition to those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `followOutput` | boolean | `true` | Follow growing content while the reader remains near the end. |
+| `followThreshold` | number | `56` | Distance from the end, in pixels, that counts as following. |
+| `smooth` | boolean | `true` | Use smooth automatic scrolling unless reduced motion is requested. |
+| `onFollowChange` | `(following: boolean) => void` | None | Reports leaving or returning to the live edge. |
+| `label` | string | `"Conversation"` | Accessible name of the scrollable section. |
+| `busy` | boolean | None | Sets `aria-busy` on the transcript log. |
+| `navigation` | `"rail"` | None | Enable the preview navigation rail. Otherwise use a native scrollbar. |
+| `navigationLabel` | string | `"Message navigation"` | Accessible name of the navigation rail. |
+| `viewportClassName` | string | None | Classes for the scrolling section. |
+| `contentClassName` | string | None | Classes for the transcript log. |
+| `railClassName` | string | None | Classes for the rail navigation. |
+| `viewportRef` | `Ref<HTMLElement>` | None | Ref to the scrolling section; supports React 19 callback cleanup. |
+| `viewportProps` | section props | None | Native section props except `children`, `className`, and `ref`. |
+| `contentProps` | div props | None | Native log props except `children`, `className`, and `ref`. |
+
+### PreviewRail
+
+Exported from the same file for standalone section navigation. `items` is required; each item has `id` and `label`, with optional `ariaLabel`, `description`, `href`, `target`, and `rel`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `PreviewRailItem[]` | Required | Navigation items and preview content. |
+| `label` | string | `"Section navigation"` | Accessible name of the navigation. |
+| `orientation` | `"vertical" \| "horizontal"` | `"vertical"` | Direction of the tick rail. |
+| `activeId` | string | None | Controlled active item. |
+| `defaultActiveId` | string | First item | Initial active item in uncontrolled use. |
+| `onActiveChange` | `(id: string) => void` | None | Reports selection. |
+| `onItemSelect` | `(item: PreviewRailItem) => void` | None | Handles item activation. |
+| `renderPreview` | `(item: PreviewRailItem) => ReactNode` | None | Replaces the default preview card. |
+| `showPreview` | boolean | `true` | Show preview cards. |
+| `previewSide` | `"before" \| "after"` | `"after"` | Side of the vertical rail used for previews. |
+| `highlightActive` | boolean | `false` | Highlight the selected tick when no preview is displayed. |
+| `itemSize` | number | `24` | Space per item along the rail, in pixels. |
+| `children` | ReactNode | None | Content placed beside the rail. |
+| `className` | string | None | Classes for the outer layout. |
+| `railClassName` | string | None | Classes for the navigation. |
+| `previewContainerClassName` | string | None | Classes for the preview-positioning grid. |
+| `previewClassName` | string | None | Classes for the preview wrapper. |
+
+For standalone items with `href`, the first touch previews the link and the second follows it. Mouse and keyboard activation follow the link directly. Custom preview content is visually displayed with `aria-hidden="true"`; keep essential information in the item label or linked destination.

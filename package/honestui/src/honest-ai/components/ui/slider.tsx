@@ -36,6 +36,7 @@ function Slider({
 
   return (
     <SliderPrimitive.Root
+      data-slot="slider"
       thumbAlignment="center"
       data-size={size}
       data-variant={_values.length > 1 ? "range" : "single"}
@@ -72,7 +73,7 @@ function Slider({
               key={index}
               getAriaLabel={getAriaLabel}
               getAriaValueText={getAriaValueText}
-              className="group/slider-thumb absolute flex cursor-grab items-center justify-center outline-none active:cursor-grabbing active:outline-none has-focus-visible:[&_[data-slot=slider-thumb-visual]]:[outline:var(--hui-focus-ring)] hover:[&_[data-slot=slider-thumb-visual]]:scale-[1.04] active:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] active:[&_[data-slot=slider-thumb-visual]]:shadow-[var(--hui-shadow-lifted)] data-dragging:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] data-dragging:[&_[data-slot=slider-thumb-visual]]:shadow-[var(--hui-shadow-lifted)] [&_input:focus-visible]:outline-none"
+              className="group/slider-thumb absolute flex cursor-grab items-center justify-center outline-none active:cursor-grabbing active:outline-none has-focus-visible:[&_[data-slot=slider-thumb-visual]]:[outline:var(--hui-focus-ring)] hover:[&_[data-slot=slider-thumb-visual]]:bg-[oklch(0.97_0_0)] motion-safe:active:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] motion-safe:data-dragging:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] [&_input:focus-visible]:outline-none"
             >
               <span
                 data-slot="slider-thumb-visual"
@@ -89,7 +90,7 @@ function Slider({
                 <SliderPrimitive.Value
                   data-slot="slider-thumb-label"
                   className={cn(
-                    "absolute top-[calc(-1*var(--hui-space-7))] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[var(--hui-radius-1)] border border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] px-1.5 py-0.5 text-xs tabular-nums text-[var(--hui-color-foreground-base-primary)]",
+                    "absolute top-[calc(-1*(var(--hui-space-8)+1px))] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[var(--hui-radius-1)] border-[0.5px] border-[var(--hui-color-border-overlay)] bg-[var(--hui-color-background-overlay)] p-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] tabular-nums shadow-[var(--hui-shadow-overlay)] [font-size:var(--hui-font-size-small)] [line-height:var(--hui-line-height-small)]",
                     size === "small" && "top-[calc(-1*var(--hui-space-7))]"
                   )}
                 >

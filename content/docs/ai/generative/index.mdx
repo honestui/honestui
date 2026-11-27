@@ -1,0 +1,53 @@
+---
+title: Generative UI
+metaTitle: Honest AI Generative UI for React
+description: Turn model output into React interfaces with a local parser, component library, streaming renderer, and chat shell.
+lastModified: "2026-10-12"
+---
+
+Generative UI lets a model choose the content and structure of an interface from components you allow. The model returns a text program in Honest AI Lang. Honest AI parses that program and renders it with Honest AI and Honest UI components.
+
+For example, a response can contain a chart, a form, or a set of tabs instead of only a paragraph. You control the available components, the data they can request, and what happens when someone acts on the result.
+
+## Try it locally
+
+Choose **Layout**, **Form**, **Chart**, or **Tabs**. Edit the source to change the rendered result. **Replay stream** sends the example to the renderer a little at a time so you can see how partial output behaves.
+
+<ComponentPreview name="generative-ui-demo" hideCode playground />
+
+This playground runs locally. It does not call a model. The Form example validates the email field and displays its action below the preview; it does not submit the email anywhere.
+
+## Explore more examples
+
+The [gallery](/docs/ai/generative/gallery) renders a live sample of every component a chat reply can use, with the reply the model writes for it.
+
+The [examples page](/docs/ai/generative/examples) includes saved state, query loading and retry, a custom delivery component, and parser diagnostics. Each demo includes the React source and runs without a model service.
+
+Use [Language](/docs/ai/generative/language) to learn the program format, [State and forms](/docs/ai/generative/state) to keep an interface interactive, and [Data and tools](/docs/ai/generative/tools) to connect permitted reads and writes.
+
+## Build your first integration
+
+1. [Install the renderer](/docs/ai/generative/installation) and its styles.
+2. [Render a fixed program](/docs/ai/generative/renderer#render-a-fixed-program) to check your setup before connecting a model.
+3. [Generate a model prompt](/docs/ai/generative/server#generate-the-model-prompt) from the same library used by your renderer.
+4. [Stream the response](/docs/ai/generative/renderer#stream-a-response) into that renderer, or [connect the chat shell](/docs/ai/generative/chat) if you need conversation history and a composer.
+
+## Choose what to install
+
+| Your task | Use |
+| --- | --- |
+| Render a generated form, chart, or layout inside your app | `Renderer` with `honestLibrary` |
+| Display generated interfaces in a conversation | `GenerativeChat`, which uses `honestChatLibrary` by default |
+| Let people open, edit, export and ask about parts of a reply | [Reply features](/docs/ai/generative/replies): artifacts, tables, charts and visuals |
+| Give the model your allowed components and check its output | The JSON library spec and local server helpers |
+| Add your own product component | [Extend the component library](/docs/ai/generative/library#extend-the-library) |
+
+Both libraries use a `Stack` root. The application `Stack` is a flex container; the chat `Stack` is a plain vertical list inside a Markdown reply. Keep the model prompt, server spec, and client library matched; a program generated for one library may contain components the other does not accept.
+
+## What runs here
+
+The parser, React renderer, form state, chat state, and transport adapters are local source. Generative UI has no upstream package dependency or default vendor service. Its controls share Honest UI's components and theme; Markdown, code, records, and the conversation shell reuse Honest AI.
+
+Your application supplies the model endpoint, credentials, persistent storage, and tool implementations. Rendering a generated button does not save data or grant permission. Its action handler decides what to do, and your server authorizes any operation on protected data.
+
+The renderer interprets the registered language; it does not evaluate generated JavaScript in your page. The one exception is the chat library's `HtmlVisual`, which runs model-written HTML and scripts in nested sandboxed frames with an opaque origin and a policy that blocks the network requests a page policy can govern, and any navigation, so the code cannot reach your page, its cookies or storage, load from or send to the network, or replace itself with another site. Some limits remain. Browsers do not let a page's policy block WebRTC, so a visual could still reach a STUN server, and some have let DNS prefetch past a page's policy. A visual that loops forever can freeze the tab in browsers that run sandboxed frames in the page's process. A visual can post messages to your top window, so any `message` listener you add must check its sender. And a sandboxed `srcdoc` frame inherits your page's Content Security Policy, so a strict nonce-based `script-src` stops visuals from running. Leave `HtmlVisual` out of your library if you don't want generated code to run at all. Optional server repair calls only the callback you supply. The installed source retains its required MIT copyright and license notice.

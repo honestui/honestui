@@ -85,6 +85,24 @@ Add `ComboChart.Brush` to zoom a long series. The preview strip shows the first 
 
 Charts that share a `syncId` show their tooltip at the same category when any one of them is hovered, here a candlestick chart above a combo chart of trading activity. Add `ComboChart.Zoom` to zoom and pan inside the plot; it shares its window with the brush. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link> and <Link href="/docs/charts/ui/brush">Brush and Zoom</Link>.
 
+### Partial Period
+
+`ComboChart.PartialPeriod` marks the period that is still open. Its bars take a hatched fill, its lines turn to short dashes, and the region is shaded and named, so a month to date does not read as a drop.
+
+<ComponentPreview title="ComboChart.PartialPeriod" name="ex-partial-period-echarts-combo-chart" />
+
+### Interval Band
+
+`ComboChart.Band` shades the range around a line, such as a forecast's interval. It is drawn only across consecutive rows that have both bounds, and it attaches to lines, not bars.
+
+<ComponentPreview title="ComboChart.Band" name="ex-confidence-band-echarts-combo-chart" />
+
+### Sample Size
+
+`sampleSizeKey` writes n above each bar or point. Values below `minSampleSize` get a dashed outline and a key entry. Stacked bars keep n in the tooltip.
+
+<ComponentPreview title="sampleSizeKey on a bar" name="ex-sample-size-echarts-combo-chart" />
+
 ### Loading State
 
 <ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-combo-chart" />
@@ -138,8 +156,57 @@ Charts that share a `syncId` show their tooltip at the same category when any on
   <ApiRow name="ariaLabel" type="string">
     Accessible name for the canvas. A description of the series is generated when omitted.
   </ApiRow>
+  <ApiRow name="gaps" type="boolean | { interval?: GapInterval; label?: string }">
+    `true` shades stretches where every series is empty. `{ interval }` also puts back rows absent from a time series, so the hole shows.
+  </ApiRow>
+  <ApiRow name="honestyText" type="ComboHonestyText">
+    Rewords the partial-period, interval, gap, axis, and sample-size text. With two value axes, `leftAxisStartsAt` and `rightAxisStartsAt` name each side.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record<string, unknown>">
     Escape hatch merged over the generated ECharts option.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>PartialPeriod</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="x" type="string | number">
+    The first category that is still open. It and every later category are drawn as provisional.
+  </ApiRow>
+  <ApiRow name="period" type='"hour" | "day" | "week" | "month" | "quarter" | "year"'>
+    Finds the open period from date values on the x axis instead of naming it.
+  </ApiRow>
+  <ApiRow name="now" type="Date | number">
+    The current time for `period`. Defaults to the time of render.
+  </ApiRow>
+  <ApiRow name="progress" type="number">
+    How much of the period has passed, 0 to 1. Computed when `period` is set.
+  </ApiRow>
+  <ApiRow name="label" type="string" default='"In progress"'>
+    Shown over the shaded region and in the key.
+  </ApiRow>
+  <ApiRow name="note" type="string">
+    Replaces the tooltip note.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Band</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="lowerKey" type="string" required>
+    The row field with the lower bound.
+  </ApiRow>
+  <ApiRow name="upperKey" type="string" required>
+    The row field with the upper bound.
+  </ApiRow>
+  <ApiRow name="dataKey" type="string">
+    The line the band belongs to: its color, axis, curve, and tooltip row. A bar key is not drawn.
+  </ApiRow>
+  <ApiRow name="label" type="string" default='"Interval"'>
+    Names the band in the key and tooltip, such as "80% interval".
+  </ApiRow>
+  <ApiRow name="color" type="string">
+    A config key or any CSS color. Defaults to the line's color.
   </ApiRow>
 </ApiTable>
 
@@ -167,6 +234,15 @@ Charts that share a `syncId` show their tooltip at the same category when any on
   <ApiRow name="compareDataKey" type="string">
     A field holding the same measure for an earlier period, drawn as a tick across the bar and compared in the tooltip. Stacked bars compare in the tooltip only.
   </ApiRow>
+  <ApiRow name="sampleSizeKey" type="string">
+    The row field with the number of observations behind each bar.
+  </ApiRow>
+  <ApiRow name="minSampleSize" type="number">
+    Bars with fewer observations get a dashed outline, a tooltip note, and a key entry.
+  </ApiRow>
+  <ApiRow name="sampleSizeDisplay" type='"label" | "tooltip"' default='"label"'>
+    Where n shows. Stacked bars always use the tooltip.
+  </ApiRow>
 </ApiTable>
 
 <ApiHeading>Line</ApiHeading>
@@ -188,7 +264,16 @@ Charts that share a `syncId` show their tooltip at the same category when any on
     Line width in pixels.
   </ApiRow>
   <ApiRow name="connectNulls" type="boolean" default="false">
-    Bridges missing values instead of leaving a gap.
+    Bridges missing values instead of leaving a gap. Ignored while a `PartialPeriod` or `gaps` is set.
+  </ApiRow>
+  <ApiRow name="sampleSizeKey" type="string">
+    The row field with the number of observations behind each point.
+  </ApiRow>
+  <ApiRow name="minSampleSize" type="number">
+    Points with fewer observations get a dashed ring, a tooltip note, and a key entry.
+  </ApiRow>
+  <ApiRow name="sampleSizeDisplay" type='"label" | "tooltip"' default='"label"'>
+    Where n shows.
   </ApiRow>
   <ApiRow name="compareDataKey" type="string">
     A field holding the same measure for an earlier period, drawn as a faded dashed line and compared in the tooltip.
@@ -213,11 +298,14 @@ Charts that share a `syncId` show their tooltip at the same category when any on
   <ApiRow name="label" type="string">
     Axis title.
   </ApiRow>
-  <ApiRow name="min" type="number">
-    Fixes the lower bound.
+  <ApiRow name="min" type='number | "auto"'>
+    Fixes the lower bound, or `"auto"` fits it to the lines on this axis. An axis that measures bars keeps zero: `"auto"` is ignored there, and a start above zero is kept but marked, with a development warning.
   </ApiRow>
   <ApiRow name="max" type="number">
     Fixes the upper bound.
+  </ApiRow>
+  <ApiRow name="truncationNotice" type='"auto" | "off"' default='"auto"'>
+    `"off"` hides the break mark and key entry for an axis that does not reach zero.
   </ApiRow>
   <ApiRow name="hideDots" type="boolean" default="false">
     Hides the tick dots.

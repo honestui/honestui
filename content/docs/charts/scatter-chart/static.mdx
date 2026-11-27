@@ -77,6 +77,18 @@ Lines at the averages of both measures, and an annotated standout. Positions are
 
 <ComponentPreview title="<ScatterChart.Zoom />" name="ex-zoom-echarts-scatter-chart" />
 
+### Sample Size
+
+`sampleSizeKey` names the field with the number of observations behind each point. It shows in the tooltip, and points below `minSampleSize` get a dashed ring and a key entry, so a shaky average does not look as solid as the rest.
+
+<ComponentPreview title="sampleSizeKey and minSampleSize" name="ex-sample-size-echarts-scatter-chart" />
+
+### Axis That Does Not Start at Zero
+
+`min="auto"` fits an axis to the data on round numbers. When an axis you set stops short of zero, the chart marks it with a break and names it in the key, one entry per axis. A default axis fits the points and is not reported, because a scatter plot compares positions, not lengths.
+
+<ComponentPreview title='XAxis and YAxis min="auto"' name="ex-truncated-axis-echarts-scatter-chart" />
+
 ### Loading State
 
 <ComponentPreview title="isLoading='true'" name="ex-loading-state-echarts-scatter-chart" />
@@ -119,6 +131,18 @@ The loading state preserves the plot dimensions with neutral placeholder points 
   <ApiRow name="dataStatusText" type="DataStatusText">
     Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
   </ApiRow>
+  <ApiRow name="sampleSizeKey" type="string">
+    The row field with the number of observations behind each point.
+  </ApiRow>
+  <ApiRow name="minSampleSize" type="number">
+    Points with fewer observations get a dashed ring, a tooltip note, and a key entry.
+  </ApiRow>
+  <ApiRow name="sampleSizeDisplay" type='"label" | "tooltip"' default='"tooltip"'>
+    `"label"` also writes n above each point. Rings for small samples show either way.
+  </ApiRow>
+  <ApiRow name="honestyText" type="ScatterHonestyText">
+    Rewords the axis and sample-size text, including `xAxisStartsAt` and `yAxisStartsAt` for each axis's notice.
+  </ApiRow>
   <ApiRow name="chartOptions" type="Record&lt;string, unknown&gt;">Escape hatch merged over generated ECharts options.</ApiRow>
 </ApiTable>
 
@@ -153,8 +177,9 @@ The loading state preserves the plot dimensions with neutral placeholder points 
   <ApiRow name="tickFormatter" type="(value: number, index: number) => string">Formats numeric ticks.</ApiRow>
   <ApiRow name="label" type="string">Axis title.</ApiRow>
   <ApiRow name="hideDots" type="boolean" default="false">Hides small tick marks.</ApiRow>
-  <ApiRow name="min" type="number">Explicit lower bound.</ApiRow>
+  <ApiRow name="min" type='number | "auto"'>Explicit lower bound, or `"auto"` to fit the data on round numbers. An axis you set that stops short of zero is marked and named in the key.</ApiRow>
   <ApiRow name="max" type="number">Explicit upper bound.</ApiRow>
+  <ApiRow name="truncationNotice" type='"auto" | "off"' default='"auto"'>`"off"` hides the break mark and key entry for an axis that does not reach zero.</ApiRow>
 </ApiTable>
 
 <ApiHeading>Tooltip</ApiHeading>

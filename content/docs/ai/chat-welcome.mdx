@@ -1,0 +1,116 @@
+---
+title: Chat Welcome
+metaTitle: React Chat Welcome and Empty State
+description: Open a new conversation with a greeting, what the assistant can do, a composer, and prompts to start from.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="chat-welcome-demo" previewClassName="h-auto min-h-[360px]" />
+
+## Overview
+
+Chat Welcome is what a new conversation opens on: a greeting, a line on what the assistant can help with, and a few [Prompt Suggestions](/docs/ai/prompt-suggestions) to start from.
+
+Give it a `composer` for a full-page start, or drop it into [Chat Thread](/docs/ai/chat-thread)'s `emptyMessage`, where it gives way to the first message.
+
+## Anatomy
+
+<Anatomy title="ChatWelcome">
+  <AnatomyItem name="Icon" description="Your assistant's mark, above the title" />
+  <AnatomyItem name="Title" description="The greeting" />
+  <AnatomyItem name="Description" description="What the assistant can help with" />
+  <AnatomyItem name="Composer" description="An optional slot, such as a Prompt Bar" />
+  <AnatomyItem name="Suggestions" description="Prompt Suggestions, when you pass them" />
+</Anatomy>
+
+Installing `chat-welcome` brings [Prompt Suggestions](/docs/ai/prompt-suggestions) along.
+
+## Behavior
+
+### Suggestions
+
+Pass `suggestions` and `onSelectSuggestion` to show starters. A common choice is to put the prompt in the composer, so the person can change it before sending. `suggestionsLayout` takes the same layouts as Prompt Suggestions.
+
+### Alignment
+
+`center` suits a new chat page. `start` aligns everything to the left, for a narrow side panel.
+
+## Accessibility
+
+The welcome is a region named by its title, which is a level-two heading. The icon is decorative. The suggestions behave as in [Prompt Suggestions](/docs/ai/prompt-suggestions#accessibility).
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/chat-welcome"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the items it is built from.</Step>
+
+<CliBlock commands={["@honestai/prompt-suggestions"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="chat-welcome" title="components/ai/chat-welcome.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { ChatWelcome } from "@/components/ai/chat-welcome"
+import { PromptBar } from "@/components/ai/prompt-bar"
+
+<ChatWelcome
+  title="What should we look into?"
+  description="Ask about invoices, payouts, or a failed export."
+  composer={<PromptBar value={draft} onValueChange={setDraft} onSubmit={send} />}
+  suggestions={starters}
+  onSelectSuggestion={(suggestion) => setDraft(suggestion.prompt)}
+/>
+```
+
+## Examples
+
+### In a Chat Thread
+
+As the thread's empty state.
+
+<ComponentPreview name="chat-welcome-thread" previewClassName="h-auto min-h-[360px]" />
+
+## API reference
+
+### ChatWelcome
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | Required | The greeting. |
+| `description` | `ReactNode` | None | What the assistant can help with. |
+| `icon` | `ReactNode` | None | A decorative mark above the title. |
+| `suggestions` | `PromptSuggestion[]` | None | Prompt starters. |
+| `onSelectSuggestion` | `(suggestion) => void` | None | Called with the chosen starter. Needed to show them. |
+| `suggestionsLayout` | `"wrap" \| "scroll" \| "list"` | `"wrap"` | How the starters are laid out. |
+| `composer` | `ReactNode` | None | A composer under the greeting. |
+| `align` | `"center" \| "start"` | `"center"` | Centered, or aligned to the start. |
+| `disabled` | `boolean` | `false` | Turns the starters off. |
+| `labels` | `Partial<ChatWelcomeLabels>` | English | The starters' accessible name. |

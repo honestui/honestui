@@ -16,8 +16,10 @@ import { Toggle, ToggleGroup } from "../../components/ui/toggle.js"
 // The frame is drawn here rather than by a Table variant, so the component
 // keeps it when Table is installed from Honest UI. Cells wrap between words
 // first, so short values such as "EMEA" do not split at narrow widths.
+// The filters sit in the plate's top bar, so they read as the table's own
+// tabs; the header row sits on the plate, set apart by type and a hairline.
 const tableFrame =
-  "overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)] [&_thead]:bg-[var(--hui-color-background-base-secondary)] [&_th]:bg-[var(--hui-color-background-base-secondary)] [&_td]:text-[var(--hui-color-foreground-base-primary)] [&_td]:[overflow-wrap:break-word] [&_tbody>tr:last-child>td]:border-b-0"
+  "overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)] [&_th]:h-10 [&_th]:text-[var(--hui-color-foreground-base-secondary)]! [&_td]:h-11 [&_td]:text-[var(--hui-color-foreground-base-primary)] [&_td]:[overflow-wrap:break-word] [&_tbody>tr:last-child>td]:border-b-0"
 
 export type FilterTableColumn<Row> = {
   id: string
@@ -116,14 +118,14 @@ function FilterTable<Row>({
   }, [activeValue])
 
   return (
-    <div data-slot="filter-table" className={cn("flex w-full min-w-0 flex-col gap-[var(--hui-space-3)]", className)}>
+    <div data-slot="filter-table" className={cn("flex w-full min-w-0 flex-col", tableFrame, className)}>
       {/* Scrolls sideways on narrow screens instead of wrapping above the table.
           A fade at the end edge shows more filters are out of view; set
           --filter-table-surface when the table sits on another surface. It follows
           the scroll position and clears at the end; where scroll-driven
           animation is unsupported, or nothing overflows, it stays hidden. */}
-      <div className="relative min-w-0 [timeline-scope:--filter-table-scroll]">
-        <div ref={stripRef} className="-m-[var(--hui-space-1)] flex min-w-0 overflow-x-auto p-[var(--hui-space-1)] [scroll-timeline:--filter-table-scroll_inline] [scrollbar-width:none]">
+      <div className="relative min-w-0 border-b-[0.5px] border-[var(--hui-color-border-base-primary)] [timeline-scope:--filter-table-scroll]">
+        <div ref={stripRef} className="flex min-w-0 overflow-x-auto px-[var(--hui-space-3)] py-[var(--hui-space-3)] [scroll-timeline:--filter-table-scroll_inline] [scrollbar-width:none]">
           <ToggleGroup
             size="sm"
             aria-label={filtersLabel}
@@ -133,13 +135,14 @@ function FilterTable<Row>({
               const chosen = chips.find((chip) => chip.value === next[0])
               if (chosen) select(chosen.id)
             }}
-            className="shrink-0"
+            // Flat tabs on the plate: the chosen one is a quiet fill, not a raised key.
+            className="shrink-0 bg-transparent p-0 shadow-none"
           >
             {chips.map((chip) => (
               <Toggle
                 key={chip.value}
                 value={chip.value}
-                className="whitespace-nowrap"
+                className="h-[var(--hui-space-8)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] whitespace-nowrap hover:bg-[var(--hui-color-background-base-primary-hover)] data-pressed:bg-[var(--hui-color-background-neutral-secondary)] data-pressed:shadow-none data-pressed:hover:bg-[var(--hui-color-background-neutral-secondary)]"
               >
                 {chip.label}
                 <span className="tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-weight:var(--hui-font-weight-regular)]">
@@ -151,13 +154,13 @@ function FilterTable<Row>({
         </div>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -inset-y-[var(--hui-space-1)] -end-[var(--hui-space-1)] w-[var(--hui-space-9)] bg-[linear-gradient(to_left,var(--filter-table-surface,var(--hui-color-background-base-primary)),transparent)] opacity-0 rtl:bg-[linear-gradient(to_right,var(--filter-table-surface,var(--hui-color-background-base-primary)),transparent)]"
+          className="pointer-events-none absolute inset-y-0 end-0 w-[var(--hui-space-9)] bg-[linear-gradient(to_left,var(--filter-table-surface,var(--hui-color-background-base-primary)),transparent)] opacity-0 rtl:bg-[linear-gradient(to_right,var(--filter-table-surface,var(--hui-color-background-base-primary)),transparent)]"
           style={{ animation: "hui-scroll-cue linear both", animationTimeline: "--filter-table-scroll" }}
         />
       </div>
 
       {/* The first and last cells clear the card's rounded corner. */}
-      <div className={tableFrame}>
+      <div>
         <Table
           aria-label={label}
           className="[&_tr>*:first-child]:ps-[var(--hui-space-5)] [&_tr>*:last-child]:pe-[var(--hui-space-5)]"
@@ -176,7 +179,7 @@ function FilterTable<Row>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="text-center text-[var(--hui-color-foreground-base-secondary)]"
+                  className="h-24! text-center text-[var(--hui-color-foreground-base-secondary)]!"
                 >
                   {emptyMessage}
                 </TableCell>

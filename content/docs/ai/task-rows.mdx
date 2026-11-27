@@ -1,0 +1,134 @@
+---
+title: Task Rows
+metaTitle: React Agent Task List with Status and Retry
+description: List the tasks in an agent run with the status of each, and offer a retry on the ones that failed.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="task-rows-demo" previewClassName="h-auto min-h-[300px]" />
+
+## Overview
+
+Task Rows shows where each task in a run stands: queued, running, completed, or failed. A task with details opens to show what it is made of, and a failed task can offer Try again.
+
+It shows the status you pass for each task. Update the array as your agent reports progress.
+
+Use [Tool Chips](/docs/ai/tool-chips) for individual tool calls and their output, and Task Rows for the larger units of work a person would recognize.
+
+## Anatomy
+
+<Anatomy title="TaskRows">
+  <AnatomyItem name="Row" description="One task: its status icon, label, summary, and status in words" />
+  <AnatomyItem name="Details" description="Lines under a task, behind a disclosure" />
+  <AnatomyItem name="Try again" description="A button on a failed task, when you handle it" />
+</Anatomy>
+
+Installing `task-rows` brings [Button](/docs/components/button) and [Collapsible](/docs/components/collapsible) along as registry dependencies.
+
+## Behavior
+
+### Status
+
+Each status has an icon and a word. The word is always shown, so the icon's color is never the only cue.
+
+### Details
+
+A task with `details` is a button that opens them. A task without details is plain text.
+
+### Retry
+
+Pass `onRetry` to show a Try again button on every failed task. It calls your handler with the task `id`. Changing the task's status is your application's work.
+
+### Variants
+
+`cards` gives each task its own bordered card. `list` joins the tasks in one block with dividers, which suits a longer run.
+
+## Accessibility
+
+The tasks are a list. A task with details is a button that reports whether it is expanded. Try again is named with its task, such as "Try again: Draft supplier emails". Icons are decorative, and with reduced motion the running icon does not rotate.
+
+Task Rows does not announce status changes. If the person needs to hear that a task failed, announce it from your own status region.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across tasks with details and Try again buttons |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the focused task, or retry it |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/task-rows"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "collapsible"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="task-rows" title="components/ai/task-rows.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { TaskRows } from "@/components/ai/task-rows"
+
+<TaskRows
+  tasks={run.tasks.map((task) => ({
+    id: task.id,
+    label: task.title,
+    status: task.state,
+    summary: task.summary,
+  }))}
+  onRetry={(taskId) => agent.retryTask(run.id, taskId)}
+/>
+```
+
+## Examples
+
+### List variant
+
+The same tasks joined in one block.
+
+<ComponentPreview name="task-rows-list" previewClassName="h-auto min-h-[220px]" />
+
+## API reference
+
+### TaskRows
+
+Accepts native ul props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tasks` | `Task[]` | Required | The tasks, in order. |
+| `variant` | `"cards" \| "list"` | `"cards"` | Separate cards, or one joined block. |
+| `onRetry` | `(taskId: string) => void` | None | Passing it shows Retry on failed tasks. |
+| `labels` | `Partial<TaskRowsLabels>` | English | The four status words and the Try again name. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `Task` | `id`, `label`, `status`, and optional `summary`, `details` |
+| `TaskStatus` | `"queued"`, `"running"`, `"done"`, or `"error"` |
+| `TaskDetail` | `label`, and an optional `value` |

@@ -1,0 +1,160 @@
+---
+title: Eval Compare
+metaTitle: React Model and Eval Comparison
+description: Compare the same prompt's outputs from several models or prompt versions side by side, with a word diff, a scorecard, and a preference vote.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="eval-compare-demo" previewClassName="h-auto min-h-[560px]" />
+
+## Overview
+
+Eval Compare puts two to four answers to the same prompt next to each other: different models, prompt versions, or settings. It can show what changed word by word against a baseline, score each answer on the metrics you measured, list the checks each one passed, and collect a person's preference.
+
+It shows the results you pass. Running the models and scoring them is your application's work.
+
+## Anatomy
+
+<Anatomy title="Eval Compare">
+  <AnatomyItem name="Header" description="The prompt, the expected answer, the case switcher, and the Differences toggle" />
+  <AnatomyItem name="Column" description="One per candidate: its label, note, output, checks, and Prefer" />
+  <AnatomyItem name="Scorecard" description="A table with a row per metric and a column per candidate" />
+  <AnatomyItem name="Footer" description="Tie, and the announcement of the vote, when you collect votes" />
+</Anatomy>
+
+Installing `eval-compare` brings [Button](/docs/components/button) and [Toggle](/docs/components/toggle) along as registry dependencies.
+
+## Behavior
+
+### Differences
+
+Differences compares every column with the baseline, word by word. Added words are tinted and removed words are struck through, and each column counts both. The first candidate is the baseline until a person chooses another with its "Compare against" link. `diffWords` is exported if you need the same comparison elsewhere.
+
+Very long outputs fall back to marking the whole text as changed instead of blocking the page.
+
+### Scorecard
+
+Each metric names the direction that wins with `better`. The best value in a row gets a dot and medium weight. A row where every candidate ties, or with fewer than two values, has no best. A missing value shows as a dash. Pass `format` to show units such as seconds or dollars.
+
+### Checks and votes
+
+Passed checks keep a neutral mark and failed ones are red. Passing `onVote` shows Prefer under each column and Tie in the footer. Pressing the current choice again clears it, and `onVote` receives `null`.
+
+### Cases
+
+With `caseIndex`, `caseCount`, and `onCaseChange`, the header shows a switcher such as "Case 2 of 12". Pass the new case's prompt and candidates when it changes.
+
+### Layout
+
+Columns sit side by side when the component is wide enough and stack when it is narrow. Rows line up across columns, so outputs of different lengths still start their checks at the same height.
+
+## Accessibility
+
+The comparison is a group named Comparison, not a landmark, so several on one page stay distinct. Each candidate is an article named by its label. Added and removed words use `ins` and `del`. The scorecard is a table with row and column headers, and the best value is announced as best. Prefer and Differences are toggle buttons that report whether they are pressed, and a vote is announced.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the switcher, Differences, the baseline links, and the votes |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Press the focused control |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/eval-compare"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "toggle"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="eval-compare" title="components/ai/eval-compare.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { EvalCompare, type EvalMetric } from "@/components/ai/eval-compare"
+
+const metrics: EvalMetric[] = [
+  { key: "correctness", label: "Correctness", better: "higher" },
+  { key: "latency", label: "Latency", better: "lower", format: (ms) => `${ms} ms` },
+]
+
+<EvalCompare
+  prompt={run.prompt}
+  candidates={run.outputs.map((output) => ({
+    id: output.model,
+    label: output.model,
+    output: output.text,
+    metrics: output.scores,
+  }))}
+  metrics={metrics}
+  vote={vote}
+  onVote={setVote}
+/>
+```
+
+## Examples
+
+### Two prompt versions
+
+Differences starts on, so the change between versions is the first thing a reviewer sees.
+
+<ComponentPreview name="eval-compare-diff" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### EvalCompare
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `candidates` | `EvalCandidate[]` | Required | Two to four outputs, in column order. |
+| `prompt` | `ReactNode` | None | The input every candidate answered. |
+| `expected` | `ReactNode` | None | A reference answer, shown under the prompt. |
+| `metrics` | `EvalMetric[]` | None | The scorecard rows. Without it, no scorecard is shown. |
+| `diff` | `boolean` | None | Controls whether Differences is on. |
+| `defaultDiff` | `boolean` | `false` | Whether Differences starts on. |
+| `onDiffChange` | `(diff: boolean) => void` | None | Called when Differences is toggled. |
+| `baselineId` | `string` | First candidate | Controls the column the others are compared against. |
+| `defaultBaselineId` | `string` | None | The starting baseline. |
+| `onBaselineChange` | `(id: string) => void` | None | Called when a person picks another baseline. |
+| `vote` | `string \| "tie" \| null` | None | The current preference. |
+| `onVote` | `(vote: EvalVote) => void` | None | Passing it shows Prefer and Tie. |
+| `caseIndex` | `number` | None | The current case, from zero. |
+| `caseCount` | `number` | None | How many cases there are. |
+| `onCaseChange` | `(index: number) => void` | None | Passing it with the two above shows the case switcher. |
+| `renderOutput` | `(candidate: EvalCandidate) => ReactNode` | None | Draws an output, such as Markdown, while Differences is off. |
+| `labels` | `Partial<EvalCompareLabels>` | English | Every visible and announced string. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `EvalCandidate` | `id`, `label`, `output`, and optional `meta`, `metrics`, and `assertions` |
+| `EvalMetric` | `key`, `label`, and optional `better` (`"higher"` or `"lower"`) and `format` |
+| `EvalAssertion` | `label`, `passed`, and an optional `detail` |
+| `WordDiffPart` | `type` (`"equal"`, `"added"`, or `"removed"`) and `text` |
+| `diffWords` | `(before: string, after: string) => WordDiffPart[]` |

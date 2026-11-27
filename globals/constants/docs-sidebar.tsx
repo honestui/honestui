@@ -65,6 +65,39 @@ export const DocumentationOptions: SidebarOption[] = [
   },
 ];
 
+export const ChartHonestyOptions: SidebarOption[] = [
+  {
+    name: "Honest Charts",
+    url: "/docs/charts/honesty",
+    icon: <CheckIcon />,
+  },
+  {
+    name: "Partial Period",
+    url: "/docs/charts/honesty/partial-period",
+    icon: <ChartConfigIcon />,
+  },
+  {
+    name: "Confidence Bands",
+    url: "/docs/charts/honesty/confidence-bands",
+    icon: <ChartConfigIcon />,
+  },
+  {
+    name: "Data Gaps",
+    url: "/docs/charts/honesty/data-gaps",
+    icon: <ChartConfigIcon />,
+  },
+  {
+    name: "Truncated Axis",
+    url: "/docs/charts/honesty/truncated-axis",
+    icon: <ChartConfigIcon />,
+  },
+  {
+    name: "Sample Size",
+    url: "/docs/charts/honesty/sample-size",
+    icon: <ChartConfigIcon />,
+  },
+];
+
 export const IconStartedOptions: SidebarOption[] = [
   {
     name: "Installation",
@@ -93,6 +126,24 @@ export const AnimatedStartedOptions: SidebarOption[] = [
     name: "Installation",
     url: "/docs/animated/installation",
     icon: <SquareAddonIcon />,
+  },
+];
+
+export const AiStartedOptions: SidebarOption[] = [
+  {
+    name: "Overview",
+    url: "/docs/ai",
+    icon: <AddMagicIcon />,
+  },
+  {
+    name: "Installation",
+    url: "/docs/ai/installation",
+    icon: <SquareAddonIcon />,
+  },
+  {
+    name: "Playground",
+    url: "/docs/ai/generative/playground",
+    icon: <ShapesIcon />,
   },
 ];
 

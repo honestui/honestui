@@ -1,0 +1,59 @@
+---
+title: Typewriter
+description: Type a phrase one character at a time, or type, erase, and cycle through several, with a blinking caret.
+---
+
+<ComponentPreview name="typewriter-demo" />
+
+## Overview
+
+Typewriter reveals text one character at a time behind a caret. With one phrase it types once and stops, which suits a command line or a generated answer. With several, it types each one, holds it, erases it, and moves on to the next, a common way to show the range of a product in a heading.
+
+The caret only blinks while the text is idle. A caret that blinks in the middle of typing looks like a stall.
+
+## Installation
+
+<CliBlock commands={["typewriter"]} />
+
+## Usage
+
+```tsx
+import { Typewriter } from "@/components/animated/typewriter"
+
+<h2>
+  Interfaces that feel{" "}
+  <Typewriter text={["calm.", "precise.", "honest."]} />
+</h2>
+```
+
+Type a single line once, after a short delay:
+
+```tsx
+<Typewriter text="npx honestui add typewriter" startDelay={600} />
+```
+
+Keep the line from reflowing as text is typed by giving the container room for the longest phrase, such as a `min-w-[12ch]` on the parent.
+
+## Accessibility
+
+Screen readers receive every phrase once, joined with commas, from a visually hidden copy. The animated text and caret are hidden from them, so they never hear partial words. Don't put the only copy of important instructions in a cycling typewriter: sighted readers see each phrase for only a few seconds.
+
+With reduced motion enabled, each phrase appears whole instead of being typed character by character, and the caret stops blinking.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="text" type="string | string[]" required>One phrase, or several to type, erase, and cycle through.</ApiRow>
+  <ApiRow name="as" type="ElementType" default='"span"'>Element to render.</ApiRow>
+  <ApiRow name="typeSpeed" type="number" default="55">Milliseconds per typed character.</ApiRow>
+  <ApiRow name="deleteSpeed" type="number" default="28">Milliseconds per erased character.</ApiRow>
+  <ApiRow name="pause" type="number" default="1600">Milliseconds a finished phrase stays before it is erased.</ApiRow>
+  <ApiRow name="startDelay" type="number" default="0">Milliseconds before typing starts.</ApiRow>
+  <ApiRow name="loop" type="boolean">Cycles back to the first phrase. Defaults to true when `text` is an array.</ApiRow>
+  <ApiRow name="startOnView" type="boolean" default="false">Waits until the element scrolls into view.</ApiRow>
+  <ApiRow name="cursor" type="boolean" default="true">Shows the caret.</ApiRow>
+  <ApiRow name="keepCursor" type="boolean" default="true">Keeps the caret after the last phrase is typed.</ApiRow>
+  <ApiRow name="cursorClassName" type="string">Class for the caret, such as a color or width.</ApiRow>
+  <ApiRow name="onPhraseComplete" type="(index: number) => void">Called after each phrase finishes typing.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element.</ApiRow>
+</ApiTable>

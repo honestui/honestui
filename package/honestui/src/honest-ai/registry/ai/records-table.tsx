@@ -23,8 +23,10 @@ import {
 // The frame is drawn here rather than by a Table variant, so the component
 // keeps it when Table is installed from Honest UI. Cells wrap between words
 // first, so short values such as "EMEA" do not split at narrow widths.
+// The header sits on the plate itself, set apart by type and a hairline
+// rather than a tinted band.
 const tableFrame =
-  "overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)] [&_thead]:bg-[var(--hui-color-background-base-secondary)] [&_th]:bg-[var(--hui-color-background-base-secondary)] [&_td]:text-[var(--hui-color-foreground-base-primary)] [&_td]:[overflow-wrap:break-word] [&_tbody>tr:last-child>td]:border-b-0"
+  "overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] shadow-[var(--hui-shadow-feather)] [&_th]:h-10 [&_th]:text-[var(--hui-color-foreground-base-secondary)]! [&_td]:h-11 [&_td]:text-[var(--hui-color-foreground-base-primary)] [&_td]:[overflow-wrap:break-word] [&_tbody>tr:last-child>td]:border-b-0"
 
 export type RecordsTableColumn = {
   id: string
@@ -179,13 +181,26 @@ function RecordsTable({
     <div data-slot="records-table" className={cn("flex w-full min-w-0 flex-col gap-[var(--hui-space-3)]", className)}>
       {total > 0 && (
         // Above the table, next to the columns it counts, and announced as the
-        // count changes so progress is heard without reading every cell.
-        <p
-          role="status"
-          className="m-0 text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
-        >
-          {labels.progress(done, total)}
-        </p>
+        // count changes so progress is heard without reading every cell. The
+        // bar repeats the count for sighted readers, so it is hidden from
+        // assistive technology.
+        <div className="flex min-w-0 items-center gap-[var(--hui-space-4)]">
+          <p
+            role="status"
+            className="m-0 min-w-0 tabular-nums text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]"
+          >
+            {labels.progress(done, total)}
+          </p>
+          <span
+            aria-hidden="true"
+            className="relative h-1 w-16 shrink-0 overflow-hidden rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-primary)]"
+          >
+            <span
+              className="absolute inset-y-0 start-0 rounded-[var(--hui-radius-full)] bg-[var(--hui-color-foreground-base-primary)] motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-out"
+              style={{ width: `${(done / total) * 100}%` }}
+            />
+          </span>
+        </div>
       )}
       {/* The first and last cells clear the card's rounded corner, as the
           other cards inset their content. */}
@@ -229,7 +244,7 @@ function RecordsTable({
                     // reading as part of the column name.
                     <span className="inline-flex flex-wrap items-baseline gap-x-[var(--hui-space-2)]">
                       <span>{column.header}</span>
-                      <span className="inline-flex items-baseline gap-x-[var(--hui-space-2)] [font-weight:var(--hui-font-weight-regular)]">
+                      <span className="inline-flex items-baseline gap-x-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)] [font-weight:var(--hui-font-weight-regular)]">
                         <span aria-hidden="true">·</span>
                         {labels.generated}
                       </span>
@@ -296,11 +311,11 @@ function GeneratedCellContent({
           // The negative block margin keeps the 24px button inside the 20px
           // line, so a failed cell does not make its row taller.
           <Button
-            variant="secondary"
+            variant="outline"
             size="xs"
             aria-label={retryLabel}
             onClick={onRetry}
-            className="-my-[var(--hui-space-1)]"
+            className="-my-[var(--hui-space-1)] ms-[var(--hui-space-1)]"
           >
             {labels.retry}
           </Button>

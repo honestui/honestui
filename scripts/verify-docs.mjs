@@ -54,6 +54,8 @@ function resolveDocPath(pathname) {
   const candidates = [
     path.join(docsRoot, `${relativePath}.mdx`),
     path.join(docsRoot, relativePath, "index.mdx"),
+    // Interactive docs such as the AI playground are App Router pages.
+    path.join(process.cwd(), "app/docs", relativePath, "page.tsx"),
   ]
 
   return candidates.find((candidate) => fs.existsSync(candidate))

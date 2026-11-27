@@ -107,7 +107,7 @@ function ChatThread({
     <div
       data-slot="chat-thread"
       className={cn(
-        "flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[calc(var(--hui-radius-frame)+var(--hui-frame-padding))] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)]",
+        "flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[calc(var(--hui-radius-frame)+var(--hui-frame-padding))] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
         className
       )}
       {...props}
@@ -126,10 +126,10 @@ function ChatThread({
         }}
         // `relative` keeps absolutely positioned content, such as visually hidden
         // labels, inside this scroller. Without it they extend the page instead.
-        className="relative flex min-h-0 flex-1 flex-col gap-[var(--hui-space-5)] overflow-y-auto rounded-[inherit] p-[var(--hui-space-4)] outline-none sm:p-[var(--hui-space-5)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]"
+        className="relative flex min-h-0 flex-1 flex-col gap-[var(--hui-space-6)] overflow-y-auto rounded-[inherit] p-[var(--hui-space-5)] outline-none sm:p-[var(--hui-space-6)] focus-visible:[outline:var(--hui-focus-ring)] focus-visible:outline-offset-[var(--hui-focus-ring-offset-inset)]"
       >
         {messageCount === 0 && emptyMessage ? (
-          <div className="m-auto text-center text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-small)] [letter-spacing:var(--hui-letter-spacing-small)] [line-height:var(--hui-line-height-small)]">
+          <div className={cn("m-auto text-center", typeof emptyMessage === "string" ? "max-w-[32ch]" : "w-full max-w-full", "text-pretty text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]")}>
             {emptyMessage}
           </div>
         ) : (
@@ -299,8 +299,8 @@ function ChatMessage({
           (isUser || hideAuthor) && "sr-only"
         )}
       >
-        <span className="[font-weight:var(--hui-font-weight-medium)]">{author}</span>
-        {meta && <span className="text-[var(--hui-color-foreground-base-secondary)]">{meta}</span>}
+        <span className="text-[var(--hui-color-foreground-base-secondary)] [font-weight:var(--hui-font-weight-medium)]">{author}</span>
+        {meta && <span className="text-[var(--hui-color-foreground-base-secondary)] tabular-nums">{meta}</span>}
       </p>
 
       {attachments.length > 0 && (
@@ -317,7 +317,7 @@ function ChatMessage({
             <li
               key={`${file.name}-${index}`}
               className={cn(
-                "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-neutral-primary)] px-[var(--hui-space-3)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
+                "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] px-[var(--hui-space-3)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)] tabular-nums",
                 smallText
               )}
             >
@@ -395,7 +395,7 @@ function ChatMessage({
           className={cn(
             "min-w-0 max-w-full break-words [font-size:var(--hui-font-size-regular)] [letter-spacing:var(--hui-letter-spacing-regular)] [line-height:var(--hui-line-height-regular)]",
             isUser &&
-              "rounded-[var(--hui-radius-5)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-4)] py-[var(--hui-space-3)]"
+              "rounded-[var(--hui-radius-5)] bg-[var(--hui-color-background-neutral-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)]"
           )}
         >
           {children}

@@ -1,0 +1,237 @@
+---
+title: Conflict Resolver
+description: Resolve two edits to the same record field by field, choosing your version, theirs, or a value of your own, and merge everything else automatically.
+---
+
+<ComponentPreview name="conflict-resolver-demo" previewClassName="h-auto min-h-[520px]" />
+
+## Overview
+
+Two people edit the same record. One saves first, and the other's save would overwrite it. ConflictResolver is the screen between those two saves. It compares three versions of the record: the one both edits started from, yours, and theirs.
+
+A field only one person changed merges on its own, because there is nothing to decide. A field both people changed, to different values, is a conflict. The resolver lists only the conflicts by default, side by side, and asks for one choice each: keep yours, take theirs, or write a different value. A header counts the conflicts left and can settle them all at once.
+
+When every conflict has a choice, Apply merge returns the merged record. ConflictResolver saves nothing itself. Like [Change Review](/docs/product/change-review), it describes a change in words and leaves the write to your application.
+
+## Anatomy
+
+<Anatomy title="ConflictResolver">
+  <AnatomyItem name="Header" description="One row above the fields">
+    <AnatomyItem name="Summary" description="Conflicts resolved so far, and how many changes merged on their own" />
+    <AnatomyItem name="Progress" description="A slim bar for the share of conflicts resolved" />
+    <AnatomyItem name="Show merged fields" description="Switch that lists the fields that merged on their own" />
+    <AnatomyItem name="Bulk actions" description="Keep all yours and Take all theirs" />
+  </AnatomyItem>
+  <AnatomyItem name="Field" description="One row per conflict, under group headings when fields are grouped">
+    <AnatomyItem name="Label" description="The field's name, a resolved mark, and the original value" />
+    <AnatomyItem name="Choices" description="Your version and theirs as two cards, then a text box for a value of your own" />
+  </AnatomyItem>
+  <AnatomyItem name="Footer" description="Apply merge, shown when you pass onApply" />
+</Anatomy>
+
+Installing `conflict-resolver` brings `Button`, `Input`, and `Switch` along as registry dependencies.
+
+## Behavior
+
+### Three versions
+
+Pass `base`, `ours`, and `theirs`, with `fields` naming what to compare. Each field has a `key`, a dot path such as `billing.email`, and a `label`. Wrap fields in `{ group, fields }` to put them under a heading.
+
+Each field gets one of five statuses:
+
+| Status | Meaning | Choice made for you |
+| --- | --- | --- |
+| `conflict` | Both changed it, to different values | None; someone must choose |
+| `ours` | Only you changed it | Yours |
+| `theirs` | Only they changed it | Theirs |
+| `both` | You both made the same change | The shared value |
+| `unchanged` | Nobody changed it | Not shown |
+
+Without `base` there is no way to tell who changed what, so every difference is a conflict. Pass the base version whenever you have it.
+
+Values compare by content, so equal dates, arrays, and objects match. Give a field `isEqual` for a different rule, such as ignoring surrounding spaces.
+
+### Choosing
+
+Each conflict offers your version and theirs as two cards, with the original value under the label for context. Choosing one dims the other. "Write a different value" opens a text box for text and number fields, prefilled with your value. Use `editable`, `parse`, and `format` to offer it for other types, or to turn it off.
+
+Keep all yours and Take all theirs choose a side for every conflict. Choices already made on fields that merged on their own are kept.
+
+### Merged fields
+
+"Show merged fields" lists the fields that merged on their own, with a line saying who changed each one. Their choice can be changed like any other, which helps when a teammate's change should be undone as part of the merge. Fields you both changed the same way show the one value, since there is nothing to choose.
+
+### Applying
+
+Pass `onApply` to show Apply merge. It stays disabled until every conflict has a choice, with a line saying so. It receives the merged record and the choices.
+
+The merged record starts from `ours`, so keys outside `fields` keep your values. Call `mergeVersions(ours, entries, resolutions)` yourself to merge without the button, for example to preview the result.
+
+### Controlled choices
+
+Choices are a record keyed by field key: `{ source: "ours" }`, `{ source: "theirs" }`, or `{ source: "custom", value }`. Pass `resolutions` and `onResolutionsChange` to hold them yourself, such as to keep a half-finished merge in a draft.
+
+## Accessibility
+
+Each field's choices are a radio group named "Version of Billing email to keep". The cards are labels for real radio inputs, so a screen reader hears "Yours, billing@northwind.example, radio button, 1 of 3", and the arrow keys move between yours, theirs, and a value of your own, as in any radio group. The text box that opens is named "Your value for Billing email".
+
+The summary is a polite status region, so "1 of 2 conflicts resolved" is announced as choices are made. The chosen card gains a dark outline and a filled radio dot, not only a color, and an unresolved conflict's dot beside its label is backed by the count in the summary.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to the next field's choices, then the header and footer buttons |
+| <kbd>↓</kbd> / <kbd>↑</kbd> | Choose the next or previous version within a field |
+| <kbd>Space</kbd> | Choose the focused version, or toggle the merged-field switch |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["conflict-resolver"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="conflict-resolver" title="components/ui/conflict-resolver/conflict-resolver-types.ts" file="conflict-resolver-types.ts" />
+
+<ComponentSource name="conflict-resolver" title="components/ui/conflict-resolver/conflict-resolver-utils.ts" file="conflict-resolver-utils.ts" />
+
+<ComponentSource name="conflict-resolver" title="components/ui/conflict-resolver/conflict-resolver.tsx" file="conflict-resolver.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Keep the version the form loaded as the base. When a save is rejected because the record changed, fetch the latest version and show the resolver:
+
+```tsx
+import {
+  ConflictResolver,
+  type ConflictFieldNode,
+} from "@/components/ui/conflict-resolver/conflict-resolver"
+
+const fields: ConflictFieldNode[] = [
+  { key: "email", label: "Billing email" },
+  { key: "plan", label: "Plan" },
+  { key: "seats", label: "Seats" },
+]
+
+<ConflictResolver
+  aria-label="Resolve edits to Northwind Labs"
+  base={loaded}
+  ours={draft}
+  theirs={latest}
+  fields={fields}
+  labels={{ theirs: latestAuthor.name }}
+  onApply={(merged) => save(merged, { expectedVersion: latest.version })}
+/>
+```
+
+Define `fields` outside the component, or memoize it, so the comparison does not run on every render. Naming the other side, as `labels.theirs` does above, tells people whose work they are about to replace.
+
+### Custom values
+
+A field's `render` controls how each version is shown. For a value people can type, pair it with `format` and `parse`:
+
+```tsx
+{
+  key: "budget.amount",
+  label: "Amount",
+  render: (cents) => money.format(Number(cents) / 100),
+  format: (cents) => (Number(cents) / 100).toFixed(2),
+  parse: (text) => Math.round(Number(text) * 100),
+}
+```
+
+## Don't do this
+
+### Overwriting without asking
+
+```tsx
+// Bad. The save that lost the race silently replaces the one that won.
+await api.save(draft)
+```
+
+Send the version you loaded with every save, and show ConflictResolver when the server says it changed. Last write wins is only safe when nobody else can write.
+
+### Hiding the other side's name
+
+```tsx
+// Bad. "Theirs" could be anyone, including an automated sync.
+<ConflictResolver base={base} ours={ours} theirs={theirs} fields={fields} />
+```
+
+Pass `labels={{ theirs: "Dee Park" }}` or the name of the system that made the change, so people know whose work they are choosing over.
+
+## Examples
+
+### Groups, merged fields, and custom values
+
+Grouped fields with formatted money, shown with the merged fields visible so their automatic choice can be overridden.
+
+<ComponentPreview name="conflict-resolver-groups" previewClassName="h-auto min-h-[720px]" />
+
+## API reference
+
+### ConflictResolver
+
+Accepts native section props beyond those listed. Give it an `aria-label` that names the record.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `base` | `unknown` | None | The version both edits started from. Without it, every difference is a conflict. |
+| `ours` | `unknown` | Required | The version of the person resolving. |
+| `theirs` | `unknown` | Required | The other edit. |
+| `fields` | `ConflictFieldNode[]` | Required | Fields to compare, with labels and groups. |
+| `resolutions` | `ConflictResolutions` | None | Controlled choices keyed by field key. |
+| `defaultResolutions` | `ConflictResolutions` | `{}` | Initial choices when uncontrolled. |
+| `onResolutionsChange` | `(resolutions) => void` | None | Receives every change of choice. |
+| `showAll` | boolean | None | Controlled switch for merged fields. |
+| `defaultShowAll` | boolean | `false` | Initial switch state when uncontrolled. |
+| `onShowAllChange` | `(showAll) => void` | None | Runs when the switch changes. |
+| `onApply` | `(merged, resolutions) => void` | None | Shows Apply merge. |
+| `disabled` | boolean | `false` | Keeps the choices visible but inactive. |
+| `renderValue` | `(value, entry) => ReactNode` | None | Display for fields without their own `render`. |
+| `labels` | `Partial<ConflictResolverLabels>` | English | Replacement text, including the side names. |
+
+### Fields
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `key` | string | Dot path into each version. Also the choice key. |
+| `label` | string | The field's visible name. |
+| `render` | `(value) => ReactNode` | Display for one version's value. |
+| `isEqual` | `(a, b) => boolean` | Replaces comparison by content. |
+| `editable` | boolean | Offers a text box. Defaults to true for text and numbers. |
+| `parse` | `(text) => unknown` | Turns typed text into the stored value. |
+| `format` | `(value) => string` | Turns a value into the text box's starting text. |
+| `group` and `fields` | `string` and `ConflictFieldNode[]` | A heading and the fields under it. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `getConflictEntries` | `({ base?, ours, theirs }, fields) => ConflictEntry[]` | The comparison the component runs. |
+| `getFieldStatus` | `(base, ours, theirs, options) => ConflictFieldStatus` | The three-way rule for one value. |
+| `mergeVersions` | `(ours, entries, resolutions) => { value; unresolved }` | The merged record, and the conflicts still open. |
+| `countConflicts` | `(entries, resolutions) => ConflictCounts` | Conflicts, resolved, merged, and total. |
+| `chooseSideForAll` | `(entries, resolutions, side) => ConflictResolutions` | The bulk action as a function. |

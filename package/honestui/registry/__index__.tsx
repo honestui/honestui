@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { AnimatedIndex } from "./animated-index";
+import { AiIndex } from "./honest-ai/index";
 import { ChartIndex } from "./chart-index";
 import { ShaderIndex } from "./shader-index";
 
@@ -184,6 +185,29 @@ import change_review_empty from "./default/examples/change-review-empty";
 import paste_table_demo from "./default/examples/paste-table-demo";
 import paste_table_validation from "./default/examples/paste-table-validation";
 import paste_table_failure from "./default/examples/paste-table-failure";
+import csv_column_mapper_demo from "./default/examples/csv-column-mapper-demo";
+import csv_column_mapper_import_flow from "./default/examples/csv-column-mapper-import-flow";
+import query_builder_demo from "./default/examples/query-builder-demo";
+import query_builder_filter_bar from "./default/examples/query-builder-filter-bar";
+import saved_views_demo from "./default/examples/saved-views-demo";
+import saved_views_states from "./default/examples/saved-views-states";
+import conflict_resolver_demo from "./default/examples/conflict-resolver-demo";
+import conflict_resolver_groups from "./default/examples/conflict-resolver-groups";
+import audit_log_demo from "./default/examples/audit-log-demo";
+import audit_log_record from "./default/examples/audit-log-record";
+import hotkey_recorder_demo from "./default/examples/hotkey-recorder-demo";
+import hotkey_recorder_reserved from "./default/examples/hotkey-recorder-reserved";
+import permission_matrix_demo from "./default/examples/permission-matrix-demo";
+import permission_matrix_scopes from "./default/examples/permission-matrix-scopes";
+import schedule_builder_cron from "./default/examples/schedule-builder-cron";
+import schedule_builder_daylight from "./default/examples/schedule-builder-daylight";
+import schedule_builder_demo from "./default/examples/schedule-builder-demo";
+import secret_row_demo from "./default/examples/secret-row-demo";
+import secret_row_states from "./default/examples/secret-row-states";
+import undoable_action_demo from "./default/examples/undoable-action-demo";
+import undoable_action_failure from "./default/examples/undoable-action-failure";
+import onboarding_checklist_demo from "./default/examples/onboarding-checklist-demo";
+import onboarding_checklist_complete from "./default/examples/onboarding-checklist-complete";
 import async_action_demo from "./default/examples/async-action-demo";
 import async_action_failure from "./default/examples/async-action-failure";
 import async_action_cancel from "./default/examples/async-action-cancel";
@@ -470,6 +494,7 @@ import resizable_with_handle from "./default/examples/resizable-with-handle";
 
 export const Index: Record<string, { component: ComponentType }> = {
   ...AnimatedIndex,
+  ...AiIndex,
   ...ChartIndex,
   ...ShaderIndex,
   "accordion-product-faq": { component: accordion_product_faq },
@@ -742,6 +767,29 @@ export const Index: Record<string, { component: ComponentType }> = {
   "paste-table-demo": { component: paste_table_demo },
   "paste-table-validation": { component: paste_table_validation },
   "paste-table-failure": { component: paste_table_failure },
+  "csv-column-mapper-demo": { component: csv_column_mapper_demo },
+  "csv-column-mapper-import-flow": { component: csv_column_mapper_import_flow },
+  "query-builder-demo": { component: query_builder_demo },
+  "query-builder-filter-bar": { component: query_builder_filter_bar },
+  "saved-views-demo": { component: saved_views_demo },
+  "saved-views-states": { component: saved_views_states },
+  "conflict-resolver-demo": { component: conflict_resolver_demo },
+  "conflict-resolver-groups": { component: conflict_resolver_groups },
+  "audit-log-demo": { component: audit_log_demo },
+  "audit-log-record": { component: audit_log_record },
+  "hotkey-recorder-demo": { component: hotkey_recorder_demo },
+  "hotkey-recorder-reserved": { component: hotkey_recorder_reserved },
+  "permission-matrix-demo": { component: permission_matrix_demo },
+  "permission-matrix-scopes": { component: permission_matrix_scopes },
+  "schedule-builder-demo": { component: schedule_builder_demo },
+  "schedule-builder-cron": { component: schedule_builder_cron },
+  "schedule-builder-daylight": { component: schedule_builder_daylight },
+  "secret-row-demo": { component: secret_row_demo },
+  "secret-row-states": { component: secret_row_states },
+  "undoable-action-demo": { component: undoable_action_demo },
+  "undoable-action-failure": { component: undoable_action_failure },
+  "onboarding-checklist-demo": { component: onboarding_checklist_demo },
+  "onboarding-checklist-complete": { component: onboarding_checklist_complete },
   "async-action-demo": { component: async_action_demo },
   "async-action-failure": { component: async_action_failure },
   "async-action-cancel": { component: async_action_cancel },

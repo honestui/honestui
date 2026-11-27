@@ -1,0 +1,113 @@
+---
+title: Context Cards
+metaTitle: React Context Cards for Retrieved Sources
+description: Show the passages an agent retrieved, each with its title, text, and source.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="context-cards-demo" previewClassName="h-auto min-h-[340px]" />
+
+## Overview
+
+Context Cards lists what an agent retrieved before it answered. Each card has a title, the passage itself, and where it came from. The heading carries a count, computed from the passages you pass.
+
+Showing the retrieved text lets a person check an answer against its evidence. Pass the passages your retrieval step returned, unedited.
+
+## Anatomy
+
+<Anatomy title="ContextCards">
+  <AnatomyItem name="Heading" description="The title and a count of passages" />
+  <AnatomyItem name="Card" description="One passage: title, an optional rank, score, or size, and the text" />
+  <AnatomyItem name="Source" description="Where the passage came from, as a link with its domain when you pass an address" />
+</Anatomy>
+
+`context-cards` has no registry dependencies.
+
+## Behavior
+
+### Sources
+
+A source with `href` is a link, followed by its domain and an external-link icon. A source without one is plain secondary text after a file icon, with no chip, for files a person cannot open from the page, so it does not look pressable. Long source names wrap rather than truncate.
+
+### Empty
+
+With no passages, the count reads 0 and `emptyMessage` is shown in place of the list. Say what that means for the answer.
+
+## Accessibility
+
+The component is a section named by its heading, and the cards are a list. Source links sit in a filled chip with an external-link icon, so they are not marked by color alone. Icons are decorative.
+
+Context Cards has no motion and no keyboard interaction beyond its links.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/context-cards"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="context-cards" title="components/ai/context-cards.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { ContextCards } from "@/components/ai/context-cards"
+
+<ContextCards
+  title="Retrieved context"
+  chunks={retrieval.chunks.map((chunk) => ({
+    id: chunk.id,
+    title: chunk.heading,
+    body: chunk.text,
+    meta: `${chunk.text.length} characters`,
+    source: { label: chunk.document.name, href: chunk.document.url },
+  }))}
+/>
+```
+
+## Examples
+
+### Nothing retrieved
+
+The empty state, with a message written for this case.
+
+<ComponentPreview name="context-cards-empty" previewClassName="h-auto min-h-[140px]" />
+
+## API reference
+
+### ContextCards
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | The heading. |
+| `chunks` | `ContextChunk[]` | Required | The retrieved passages. |
+| `emptyMessage` | string | English | Shown when `chunks` is empty. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ContextChunk` | `id`, `title`, `body`, and optional `meta`, `source` (`label` and optional `href`) |

@@ -1,0 +1,46 @@
+---
+title: Transition Panel
+description: Swap between panels with a directional slide while the container springs to each panel's height.
+---
+
+<ComponentPreview name="transition-panel-demo" />
+
+## Overview
+
+Transition Panel shows one of several panels at a time. When the active index changes, the outgoing panel slides and blurs away in the direction of travel, the incoming one slides in from the other side, and the container springs to the new panel's height so content below moves smoothly. Use it for steppers, segmented views, and settings sections whose panels differ in length.
+
+## Installation
+
+<CliBlock commands={["transition-panel"]} />
+
+## Usage
+
+```tsx
+import { TransitionPanel } from "@/components/animated/transition-panel"
+
+const [active, setActive] = useState(0)
+
+<TransitionPanel activeIndex={active}>
+  <div>Account</div>
+  <div>Invite</div>
+  <div>Connect</div>
+</TransitionPanel>
+```
+
+Pass your own `variants` with `enter`, `center`, and `exit` keys to change the motion. Each variant can be a function of the direction, which is `1` when moving to a later panel and `-1` when moving back.
+
+## Accessibility
+
+Transition Panel only animates; it does not add roles. When the panels belong to a tab-like control, give the control `role="tablist"` semantics or use [Animated Tabs](/docs/animated/animated-tabs). With reduced motion enabled, panels cross-fade and the height changes immediately.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="activeIndex" type="number" required>Index of the visible panel.</ApiRow>
+  <ApiRow name="children" type="ReactNode" required>One child per panel.</ApiRow>
+  <ApiRow name="variants" type="Variants">Variants with `enter`, `center`, and `exit` keys. Defaults to a directional slide with a blur.</ApiRow>
+  <ApiRow name="transition" type="Transition">Transition for panel enter and exit.</ApiRow>
+  <ApiRow name="animateHeight" type="boolean" default="true">Springs the container between panel heights.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the container.</ApiRow>
+  <ApiRow name="panelClassName" type="string">Classes for the wrapper around each panel.</ApiRow>
+</ApiTable>

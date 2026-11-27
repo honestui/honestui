@@ -317,6 +317,14 @@ function getDependencies(source: string) {
       continue;
     }
 
+    // A product component importing a sibling product folder, such as
+    // "../filter-bar/filter-bar-types", depends on that whole item.
+    const siblingItem = specifier.match(/^\.\.\/([a-z0-9-]+)\/[^/]+$/);
+    if (siblingItem) {
+      registryDependencies.add(siblingItem[1]);
+      continue;
+    }
+
     if (specifier.startsWith(".")) {
       registryDependencies.add(path.basename(specifier));
       continue;

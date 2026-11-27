@@ -1,0 +1,322 @@
+---
+title: Component library
+metaTitle: Honest AI Generative UI Component Library
+description: Use Honest AI component contracts backed by existing Honest AI and Honest UI implementations.
+lastModified: "2026-11-05"
+---
+
+`honestLibrary` renders application layouts with a `Stack` root. `honestChatLibrary` renders the generated blocks inside a Markdown chat reply. Its `Stack` root is a plain vertical list, `Card` is an optional frame, and it adds follow-ups and sections.
+
+## Choose a library
+
+| Library | Root | Server spec | Use |
+| --- | --- | --- | --- |
+| `honestLibrary` | `Stack` | `spec.json` | Application layouts with flex containers |
+| `honestChatLibrary` | `Stack` | `chat-spec.json` | Blocks in a Markdown chat reply, with follow-ups and sections |
+
+A component must be registered in the selected library, and its parent must allow it as a child. The catalogs share many names but are not interchangeable. Use the matching JSON spec to inspect the exact accepted arguments.
+
+## Read a component signature
+
+A signature lists positional arguments in the order the model must write them. For example, `TextContent(text: string, size?: …)` accepts text first and an optional size second:
+
+```text
+root = Stack([TextContent("Example note", "small")])
+```
+
+`?` means optional. Arrays describe repeated children; unions list allowed component types or values. When skipping an optional argument before a later one, use `null` to keep its position. The generated spec includes the complete signatures and JSON schemas.
+
+## Reused components
+
+| Generated capability | Implementation |
+| --- | --- |
+| Markdown and text content | Honest AI Markdown |
+| Code blocks | Honest AI Code View |
+| Read-only tables | Honest AI Records Table |
+| Context cards | Honest AI Context Cards |
+| Conversation, composer, tool activity, loading | Honest AI Chat Thread, Prompt Bar, Tool Chips, Loading State |
+| Buttons, inputs, selections, sliders, switches, tabs, accordions, dialogs, badges, cards | Honest UI components |
+| Editable tables | Honest UI Data Grid |
+| Single dates and date ranges | Honest UI calendar popover and Date Range Picker |
+| Bar, line, area, pie, scatter, and stacked bars | Honest UI Charts |
+| Radar and polar bars | Additional ECharts renderers with a text data table |
+| Relationship diagrams | Honest AI diagram renderer on Honest UI theme tokens |
+| Calculators | Honest UI fields with an Honest AI result panel |
+| Quizzes | Honest UI radio groups with local marking and scoring |
+| Parts diagrams | Honest AI parts renderer on Honest UI theme tokens |
+| Maps | MapLibre GL JS with a place list on Honest UI theme tokens |
+| Artifacts (chat) | Honest AI Artifact Panel and Artifact Card |
+| HTML visuals (chat) | Nested sandboxed frames on Honest UI theme tokens |
+
+Card layouts, entity lists, follow-up actions, and form bindings compose the existing components. They share the existing primitive components and theme tokens.
+
+## Registered contracts
+
+These names are the Honest AI Lang wire format. The generated output stays compatible with those contracts while the visual implementation uses Honest components.
+
+### Layout
+
+`Stack`, `Tabs`, `TabItem`, `Accordion`, `AccordionItem`, `Steps`, `StepsItem`, `Carousel`, `Separator`, `Modal`.
+
+### Content
+
+`Card`, `CardHeader`, `TextContent`, `MarkDownRenderer`, `Callout`, `TextCallout`, `Image`, `ImageBlock`, `ImageGallery`, `CodeBlock`, `InlineHeader`.
+
+### Tables
+
+`Table`, `Col`, `EditableTable`.
+
+`Table(columns, title?)` is for reading: people can sort, filter, export and, in chat, select rows to ask about. `EditableTable` is for changing values and saving them. [Reply features](/docs/ai/generative/replies#tables) describes every table control.
+
+### Chat only
+
+`Artifact`, `HtmlVisual`, `FollowUpBlock`, `FollowUpItem`, `SectionBlock`, `SectionItem`.
+
+`Artifact` opens a document, code file or report in a panel beside the conversation, where people can edit it and move between versions. `HtmlVisual` runs model-written HTML and SVG in a sandboxed frame. See [Reply features](/docs/ai/generative/replies) for both.
+
+### Diagrams
+
+`Diagram`, `DiagramNode`.
+
+A `Diagram` is a chain of two to four boxes joined by arrows. Use it when an explanation depends on how one thing refers to, becomes, or flows into the next: a pointer and its variable, or a request passing between services. `arrows[i]` labels the arrow from `nodes[i]` to `nodes[i + 1]`. Each `DiagramNode` takes a title, an optional value shown in monospace, and an optional one-line detail. Titles, details, arrow labels, and the caption render Markdown code spans, bold and italics. Emphasis follows Markdown's rule that a marker cannot touch a space on its inside, so C syntax such as `int **pp` or `*p = 20; *q` stays intact; other Markdown shows as typed.
+
+```text
+root = Stack([diagram])
+diagram = Diagram([pointer, target], ["points to"], "Example addresses for illustration")
+pointer = DiagramNode("Pointer `p`", "0x100", "Holds the address of `x`")
+target = DiagramNode("Variable `x`", "10", "Stored at address 0x100")
+```
+
+The boxes are an ordered list, and each box tells screen readers where its arrow leads, so the drawn arrows stay hidden from assistive technology. Two boxes sit side by side once the reply is wide enough and three need more room; longer chains, and any chain in a narrow column, stack vertically with the arrows pointing down. When values are invented to illustrate, such as memory addresses, say so in the caption.
+
+### Calculators
+
+`Calculator`, `Result`, and the functions `@Pow`, `@Format`, and `@Range`.
+
+A `Calculator` puts inputs beside results that recompute as the reader changes them, with no submit step. Each input is a `FormControl` whose control binds a `$variable`; each `Result` computes from those variables. The runtime does the arithmetic, so the same inputs always give the same result.
+
+```text
+root = Stack([split])
+$total = "184.50"
+$people = "4"
+split = Calculator([fcTotal, fcPeople], [each], "Each person pays the total divided by the number of people.")
+fcTotal = FormControl("Bill total ($)", Input("total", "184.50", "number", { required: true, min: 0 }, $total))
+fcPeople = FormControl("People", Input("people", "4", "number", { required: true, min: 1 }, $people))
+each = Result("Each person pays", $total / $people, "currency")
+```
+
+The `formula` argument is required. It appears under the calculator as "How it's calculated" and should name every assumption, such as an interest rate or what the estimate ignores. Make each assumed rate or price an input rather than a constant in the formula.
+
+Inputs keep their validation rules. While any input fails a rule, every `Result` shows "—" and the main one explains that the inputs are incomplete, so the calculator never shows a number computed from a blank or impossible input. Use `{ required: true, min: 1 }` on a count you divide by.
+
+`Result` formats its value in the reader's locale: `"number"`, `"currency"` (an ISO code, default `"USD"`), or `"percent"` (pass the percentage, so `5` shows 5%). Currency shows cents below 1,000 and drops them above, where they are false precision in an estimate; pass `decimals` to choose. The first `Result` is the largest. Screen readers hear a result once it settles, not on every step of a slider drag.
+
+A chart or `Table` placed after the calculator can use the same variables and updates with it. `@Range(1, $years)` with `@Each` gives one label or value per year, and `@Format(number, "currency")` formats numbers in text and table cells. A single-thumb `Slider` holds `[n]`, and arithmetic reads it as `n`.
+
+### Parts of one thing
+
+`PartsDiagram`, `DiagramPart`.
+
+A `PartsDiagram` labels what one thing is made of. Use `Diagram` instead when one thing points to or flows into another.
+
+- `"row"` shows parts side by side in order, such as the pieces of a URL or the fields of a header. A part's `size` sets its relative width, such as its length in bytes. Rows of up to eight parts are drawn as one bar with each label under its segment; narrow columns and longer rows show one part per line.
+- `"stack"` shows layers, top first, such as network layers.
+- `"nested"` shows each part inside the one before, outermost first, such as the CSS box model. It renders as nested lists, so screen readers hear the containment.
+
+```text
+root = Stack([urlParts])
+urlParts = PartsDiagram([scheme, host, path], "row", "Read it left to right.")
+scheme = DiagramPart("Scheme", "https://", "How to connect")
+host = DiagramPart("Host", "example.com", "Which server", 2)
+path = DiagramPart("Path", "/docs/page", "Which resource", 2)
+```
+
+Every part is shown; none is dropped to fit.
+
+### Quizzes
+
+`Quiz`, `QuizQuestion`.
+
+A `Quiz` holds multiple-choice questions with one known right answer each, shown one at a time with Back and Next. The reader can change answers until they submit on the last question; nothing is marked before then. After submitting, the browser shows the score and reviews every question with the reader's answer, the right answer and its explanation, with Try again and, when something was missed, Explain what I missed, which sends the missed questions to the assistant as context. `answer` must be the exact text of one option; a question whose answer is not among its options is shown but not scored.
+
+```text
+root = Stack([quiz])
+quiz = Quiz([q1])
+q1 = QuizQuestion("What is 2 + 2?", ["3", "4", "5"], "4", "Two pairs make four.")
+```
+
+Focus moves to each new question and to the score after submitting, so screen readers follow the steps. In the review, answers are locked but stay focusable and readable, and right and wrong answers are marked with icons and words, not color alone. For questionnaires, surveys, select-all-that-apply questions or answers that need judgment, use a `Form` whose submit sends the answers to the assistant.
+
+### Simulations
+
+`@Random(seed, min, max)` draws a whole number from `min` to `max`, or a fraction from 0 up to 1 without them. The same seed always gives the same number, so results never change on re-render. To draw again, change the seed: declare `$run = 1` and add a button with `@Set($run, $run + 1)`. For many draws, use a list seed that includes the run and the trial, such as `[$run, t, "die"]`. Draws are not suitable for security.
+
+```text
+root = Stack([dice])
+$run = 1
+$rolls = "600"
+dice = Calculator([fcRolls], [sixes], "Each roll is a fair six-sided die; a run counts the sixes.", again)
+fcRolls = FormControl("Rolls", Input("rolls", "600", "number", { required: true, min: 1, max: 10000 }, $rolls))
+sixes = Result("Sixes rolled", @Sum(@Each(@Range(1, $rolls), "t", @Random([$run, t, "die"], 1, 6) == 6 ? 1 : 0)))
+again = Buttons([Button("Roll again", @Set($run, $run + 1), "secondary")])
+```
+
+`@Range` returns at most 10,000 numbers, so bound any input that sets its end. Rerunning happens in the browser; nothing is sent to the model.
+
+### Maps
+
+`Map`, `MapPlace`.
+
+A `Map` shows real places by name. The model never supplies coordinates: your app looks each place up and the renderer places what it finds. `"route"` numbers the stops in order without drawing roads; `"points"` marks places in no particular order. Every place is also listed under the map with the name the lookup matched, so a wrong match is visible, and a place that is not found is listed as not on the map.
+
+```text
+root = Stack([trip])
+trip = Map([denver, moab], "route", "Stops in order. No roads are drawn.")
+denver = MapPlace("Denver", "Denver, Colorado, USA", "Start")
+moab = MapPlace("Moab", "Moab, Utah, USA", "Overnight")
+```
+
+Maps need services from your app, provided with `MapServicesContext`. Without them, a `Map` shows its places as a list and says why.
+
+```tsx
+import { MapServicesContext, type MapServices } from "@/lib/generative"
+
+const mapServices: MapServices = {
+  // Resolve to { lat, lon, label }, or null when nothing matches.
+  geocode: (query, signal) => findPlace(query, signal),
+  // MapLibre's worker, served by your app.
+  workerUrl: "/vendor/maplibre-gl/6.11.2/maplibre-gl-worker.mjs",
+  styles: { light: "https://tiles.example/light.json", dark: "https://tiles.example/dark.json" },
+  placeAttribution: "Place data © OpenStreetMap contributors",
+  // Optional aerial or satellite tiles; maps open on them where they cover every place.
+  imagery: {
+    tiles: ["https://imagery.example/{z}/{x}/{y}.jpg"],
+    maxzoom: 16,
+    attribution: "Imagery © its provider",
+    label: "Satellite",
+  },
+}
+
+<MapServicesContext.Provider value={mapServices}>
+  <GenerativeChat llm={llm} />
+</MapServicesContext.Provider>
+```
+
+The map renderer uses MapLibre GL JS, which needs WebGL2 and is loaded only when a reply contains a map. MapLibre creates its worker from a URL at runtime, so serve `maplibre-gl-worker.mjs` and `maplibre-gl-shared.mjs` from `node_modules/maplibre-gl/dist` together in one folder. Scrolling the conversation scrolls it; zooming the map takes a modifier key or two fingers, or the zoom buttons. If the map cannot draw, the list remains.
+
+With `imagery`, a map first requests one imagery tile at each place. When every place has one, the map opens on the imagery, showing only the imagery and the style's labels, with a Satellite and Map switch. Otherwise it opens on the drawn map with no switch, so the reader never gets a blank photo. Imagery often stops at a border no simple box describes, which is why the map asks rather than guesses.
+
+Your geocoder and tile provider are third-party services with their own terms. Do not send personal data, such as a home address, to a public geocoder. On this site, the playground's tiles come from OpenFreeMap, its aerial imagery from the US Geological Survey's The National Map (public domain, United States only), and place lookups go through its server to OpenStreetMap's Nominatim, at most one per second, cached, and switchable off with `PLAYGROUND_GEOCODER=off`. Follow the [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/) if you use it: it forbids heavy use and autocomplete and requires attribution.
+
+### Charts (2D)
+
+`BarChart`, `LineChart`, `AreaChart`, `RadarChart`, `HorizontalBarChart`, `Series`.
+
+### Charts (1D)
+
+`PieChart`, `RadialChart`, `SingleStackedBarChart`, `Slice`.
+
+### Charts (Scatter)
+
+`ScatterChart`, `ScatterSeries`, `Point`.
+
+### Forms
+
+`Form`, `FormControl`, `Label`, `Input`, `TextArea`, `Select`, `SelectItem`, `DatePicker`, `Slider`, `CheckBoxGroup`, `CheckBoxItem`, `RadioGroup`, `RadioItem`, `SwitchGroup`, `SwitchItem`, `Chips`, `ChipItem`, `OptionCards`, `OptionCard`.
+
+### Choose an input
+
+The model can use any registered component that fits the task. Prompt examples do not limit the catalog; the matching server spec lists every accepted signature and parent/child relationship.
+
+Use `RadioGroup` for one answer from a short visible list, such as a multiple-choice quiz. Use `CheckBoxGroup` for select-all-that-apply questions, `Select` for a longer list, `SwitchGroup` for on/off preferences, and `Slider` for a bounded number. Each input belongs in a labeled `FormControl` inside a `Form`.
+
+Leave quiz answers unselected. The submit action sends the selected values to the consuming application or, with `@ToAssistant`, to the assistant for feedback. The components do not grade answers or save them themselves.
+
+```text
+root = Stack([quiz])
+quiz = Form("quiz", buttons, [question])
+question = FormControl("What is 2 + 2?", RadioGroup("answer", options))
+options = [RadioItem("3", "", "3"), RadioItem("4", "", "4"), RadioItem("5", "", "5")]
+buttons = Buttons([Button("Check my answer", @ToAssistant("Check my submitted answer"))])
+```
+
+`Modal` is available in both libraries. In chat, keep it closed initially and open it from an explicit button action for a secondary task; keep the main answer in the reply.
+
+### Date fields
+
+Use `DatePicker("targetDate", "single")` for a deadline or target date. It opens an Honest UI calendar popover and stores one date as `YYYY-MM-DD`. Picking a day closes the calendar; optional fields can be cleared.
+
+Use `DatePicker("travelDates", "range")` for a period. It opens the Honest UI Date Range Picker and stores a `from` and `to` value once both endpoints are selected. Wrap either picker in `FormControl` inside a `Form`. Date fields use these pickers rather than a browser-native date input.
+
+```text
+root = Stack([form])
+form = Form("plan", buttons, [deadline, period])
+buttons = Buttons([Button("Save dates", @ToAssistant("Save dates"))])
+deadline = FormControl("Target date", DatePicker("targetDate", "single"))
+period = FormControl("Travel dates", DatePicker("travelDates", "range"))
+```
+
+### Buttons
+
+`Button`, `Buttons`, `IconButton`.
+
+### Data Display
+
+`TagBlock`, `Tag`, `Icon`, `EntityList`, `ListBlock`, `ListItem`.
+
+### Cards
+
+`SnippetCardBlock`, `SnippetCardItem`, `OverviewCardBlock`, `OverviewCardItem`, `ContextCardBlock`, `ContextCardItem`, `CompositeCardBlock`, `CompositeCardItem`, `VisualCardBlock`, `VisualCardItem`, `Text`, `BoldText`, `IconText`, `ImageText`, `ImageTextLarge`, `MetricIndicatorInline`, `MetricIndicatorWithStrikethrough`.
+
+## Extend the library
+
+This example adds a delivery summary using Honest UI Card and Badge. The status is sample content, not a live shipment.
+
+<ComponentPreview name="generative-custom-demo" playground />
+
+Register components at module scope. Schemas define the props the model may generate; the React function defines how those props render.
+
+```tsx
+"use client"
+
+import { z } from "zod/v4"
+import { defineComponent, honestLibrary } from "@/lib/generative"
+
+const Notice = defineComponent({
+  name: "Notice",
+  description: "A short notice supplied by the application",
+  props: z.object({ text: z.string() }),
+  component: ({ props }) => <p>{props.text}</p>,
+})
+
+export const library = honestLibrary.extend({ components: { add: [Notice] } })
+```
+
+The `Stack` root accepts the new component, so `root = Stack([Notice("Example notice")])` can render it. If you add it inside a constrained container such as Card, extend that container's child schema as well. Regenerate the server spec after changing the library.
+
+## Keep the server spec in sync
+
+After adding or changing a component, export a spec from that same library:
+
+```ts
+import { honestLibrary } from "@/lib/generative"
+
+export const spec = {
+  ...honestLibrary.toSpec(),
+  schema: honestLibrary.toJSONSchema(),
+}
+
+export const serializedSpec = JSON.stringify(spec, null, 2)
+```
+
+Use your extended library in place of `honestLibrary` when exporting custom contracts. Write the serialized result to the JSON file used by your server. Run this export in a Node build script that can load your library source; do not call the client library from a Next.js server route. Server routes import the generated JSON instead.
+
+Regenerate after changing names, argument order, validation rules, or allowed children. Then test a program containing the changed component against both the client renderer and server parser.
+
+## Forms and actions
+
+`FormControl` associates a label and hint with the field. Field values flow into the runtime's form or reactive state. Validation runs before primary form actions; invalid input stays in place and shows an error. Fields and generated actions are disabled while output is streaming.
+
+Date range values use ISO strings in `{ from, to }`. Editable tables use positional row `values` matching the column order. Save changes emits the edited form state through `onAction`; your handler owns persistence.
+
+Image and source URLs accept HTTP or HTTPS. URL actions and custom actions are delivered to your application handler. Handle these explicitly instead of treating generated URLs or actions as trusted instructions.

@@ -1,0 +1,123 @@
+---
+title: Chat
+metaTitle: Connect Generative Chat to Your Model Endpoint
+description: Connect a streaming endpoint to the Honest AI chat shell, match the request and response protocols, and configure history.
+lastModified: "2026-10-12"
+---
+
+`GenerativeChat` combines the composer, conversation, loading state, and tool activity components with local thread state. An assistant reply is Markdown, rendered with Honest AI Markdown. Where the reply fences an `honestai` block, `honestChatLibrary` renders that block as components.
+
+## Try the chat shell
+
+Send a message, start a new conversation, then return to the first one through history.
+
+<ComponentPreview name="generative-chat-demo" hideCode playground />
+
+This preview uses a local echo transport. It does not call a model, and its in-memory history is discarded when the preview unmounts.
+
+## Reply format
+
+The model writes its reply in Markdown. When a component shows something better than prose, it adds a fenced `honestai` block holding one complete program:
+
+``````text
+Rent is the largest cost in this sample budget.
+
+```honestai
+root = Stack([chart])
+chart = PieChart(["Rent", "Food", "Transport"], [1400, 520, 180], "donut")
+```
+
+Food is the easiest of the three to reduce.
+``````
+
+Text outside a block renders as Markdown. Each block renders in place, between the text around it, and streams as it arrives. A reply can hold several blocks or none.
+
+A block's `Stack` root adds no frame, so its components read as part of the reply. The model adds a `Card` inside the block when a group should stand apart, such as a form. Card is a choice the model makes for each block, not a wrapper around every reply.
+
+A reply that is only a program, with no Markdown around it, still renders.
+
+Replies can also open artifacts in a side panel, hold sortable tables, and run sandboxed visuals. See [Reply features](/docs/ai/generative/replies) for every control a person gets.
+
+## Connect your endpoint
+
+After [installing `generative-chat`](/docs/ai/generative/installation#add-the-renderer), create a client component:
+
+```tsx
+"use client"
+
+import {
+  GenerativeChat,
+  fetchLLM,
+  openAIAdapter,
+  openAIMessageFormat,
+} from "@/lib/generative/chat"
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+})
+
+export function Chat() {
+  return <GenerativeChat llm={llm} />
+}
+```
+
+You must implement `/api/chat`. Keep the model credentials there and use [the chat library spec](/docs/ai/generative/server#generate-the-model-prompt) to instruct the model. That prompt asks for the [reply format](#reply-format) above. The component does not create a route or select a model for you.
+
+## Match your endpoint to the adapter
+
+The example posts JSON with `threadId`, `runId`, `messages`, `tools`, and `context`. `messages` are converted to OpenAI Chat Completions format; `tools` and `context` are empty arrays. Extra fields, such as your model selection, can be supplied through `fetchLLM`'s `body` option.
+
+The endpoint must return a streaming response in the format selected by `streamAdapter`. The example expects OpenAI Chat Completions events, not a single JSON object or an unframed plain-text response. The [server stream wrapper](/docs/ai/generative/server#validate-a-provider-stream) can produce the matching Server-Sent Events response.
+
+For another provider, use its matching stream adapter and outgoing message format. The headless layer includes adapters for AG-UI, OpenAI Chat Completions and Responses, Vercel AI SDK, LangGraph, and Eve. These are protocol adapters; they do not supply the model service.
+
+If the browser receives data but no reply appears, inspect the response format before changing the UI. Confirm that the selected adapter can parse the endpoint's events. If the text appears but a block shows as code, check that its fence is labeled `honestai` and that its program starts with the chat library's `Stack` root.
+
+## Sending, stopping, and failure
+
+Sending updates the real transport state. **Stop** cancels through the provider's abort controller. A failed response shows an error, keeps the submitted message in the conversation, and restores the composer draft so the user can retry.
+
+New-conversation and history controls operate on the configured storage. Without `storage`, history lasts while the provider remains mounted; it is not durable across a reload.
+
+## Persist conversations
+
+Supply a `ChatStorage` implementation to connect your own persistence. For a backend using the built-in REST convention, use `restStorage({ baseUrl: "/api/threads" })`.
+
+That adapter expects these routes:
+
+| Request | Expected result |
+| --- | --- |
+| `GET /api/threads/get?cursor=…` | `{ threads, nextCursor? }` |
+| `POST /api/threads/create` with `{ messages }` | The created `Thread` |
+| `GET /api/threads/get/{threadId}` | The thread's messages |
+| `PATCH /api/threads/update/{threadId}` with a thread | The updated `Thread` |
+| `DELETE /api/threads/delete/{threadId}` | A successful HTTP response |
+
+`restStorage` implements thread requests only. Your backend must persist generated messages as well as the initial user message, and enforce access checks on every thread. Use `ChatStorage.artifact` for persisted artifact reads and edits. Installing an adapter does not create database tables or storage routes.
+
+A separate `createHonestAIStorage` factory supports the local `/v1` thread and artifact contract. It requires your own `apiBaseUrl` and token provider or token-mint endpoint. It has no default service URL.
+
+## Handle generated actions
+
+The default chat handler continues the conversation for `@ToAssistant` and opens valid HTTP or HTTPS URL actions. Supply `rendererProps.onAction` to take control of action handling; your callback replaces the default handler, so it must handle the actions you want to support.
+
+When an action carries context, as in `@ToAssistant("Explain my quiz", { missed: 2 })`, the default handler sends it to the model with the message. The person sees the message, with the context as a readable list beneath it, rather than raw JSON.
+
+The renderer also accepts a custom library, tools, diagnostics, and state restoration through `rendererProps`. Use the same library contract in your model prompt.
+
+## Customize the shell
+
+| Prop | Use |
+| --- | --- |
+| `renderMessage` | Render a message using your own component |
+| `sidebar` | Add application content beside the conversation |
+| `detailPanel` | Supply a surface for detailed results |
+| `artifactRenderers` | Register how artifact types render |
+| `artifactCategories` | Group artifacts for your application |
+| `artifactAutoOpen` | Configure whether an artifact opens automatically |
+
+The headless hooks expose thread, detail-view, and artifact state. Honest AI's [Artifact Panel](/docs/ai/artifact-panel) can display your artifact content. Artifact renderer registrations are captured at provider mount; remount the provider when changing those registrations.
+
+<ComponentSource name="generative-chat" file="chat.tsx" title="chat.tsx" />

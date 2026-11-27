@@ -1,0 +1,53 @@
+---
+title: Installation
+metaTitle: Install Honest AI components
+description: Copy an AI component into your project and connect it to your agent's state.
+lastModified: "2026-10-12"
+---
+
+Honest AI components are installed with the Honest UI CLI. The CLI copies the selected source into your project, adds the Honest UI components it is built from, and installs the packages they need.
+
+## Requirements
+
+- Node.js 20.18.1 or later.
+- React 19.
+- Tailwind CSS v4.
+- A project initialized with Honest UI. The components use its theme tokens.
+
+If the project does not have `components.json`, initialize it first:
+
+```bash
+npx honestui@latest init
+```
+
+## Add a component
+
+The Honest UI CLI includes every Honest AI component, so add one by name:
+
+<CliBlock commands={["@honestai/prompt-bar"]} />
+
+Other registry clients, such as shadcn, install from the component's registry address. The list of all of them is at [`/r/ai/registry.json`](/r/ai/registry.json).
+
+The component's source is written under `components/ai`. The Honest UI components it imports, such as Button or Collapsible, come from the Honest UI registry and are written under `components/ui` if they are not already there.
+
+Icons and charts come from the `honestui` package, which the CLI adds to your dependencies.
+
+Review the reported files and dependencies before committing. You can edit the installed source directly.
+
+## Connect it to your agent
+
+A copied component shows nothing until you pass it state. After adding one:
+
+1. Render its smallest usage example with fixed values.
+2. Replace the fixed values with state from your agent: its status, its tool calls, or its questions.
+3. Pass the error status when a step fails, and check how the component reads.
+4. Replace the default `labels` if your interface is not in English.
+
+## Verify the result
+
+1. Complete the task with a keyboard only.
+2. Listen to status changes with the screen reader your product supports.
+3. Enable reduced motion in the operating system and confirm that nothing spins or slides.
+4. Try long text, a long file name, and a narrow container.
+
+Each component page lists what the component handles and what is left to your application.

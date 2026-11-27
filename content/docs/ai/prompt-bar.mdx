@@ -1,0 +1,225 @@
+---
+title: Prompt Bar
+metaTitle: React Prompt Input with Attachments and Model Selection
+description: Collect a prompt, with optional sources, commands, attachments, and a model menu, and hand it to your application.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="prompt-bar-demo" previewClassName="h-auto min-h-[380px]" />
+
+## Overview
+
+Prompt Bar is the field a person types into. On its own it is a text area that grows with its content and a Send button. Each extra is added by passing a prop: `mentions` for an `@` list, `commands` for a `/` list, `models` for a model menu, and `allowAttachments` for files.
+
+When the person sends, `onSubmit` receives the text, the files, and the selected model, and the bar clears. While a reply is in progress, pass `onStop` and Stop takes the place of Send. Prompt Bar does not call a model, upload a file, or cancel a request. What happens to the prompt, and what stopping means, are your application's decisions.
+
+## Anatomy
+
+<Anatomy title="PromptBar">
+  <AnatomyItem name="Suggestions" description="The list that opens above the field after @ or /" />
+  <AnatomyItem name="Attachments" description="One chip for each chosen file, with a remove button" />
+  <AnatomyItem name="Input" description="A text area that grows to a limit, then scrolls" />
+  <AnatomyItem name="Controls" description="The row under the input">
+    <AnatomyItem name="Attach" description="Opens the file picker, when attachments are allowed" />
+    <AnatomyItem name="Model" description="A menu of models, when models are passed" />
+    <AnatomyItem name="Actions" description="Your own controls, before Send" />
+    <AnatomyItem name="Send" description="Submits the prompt, or stops the reply while one is in progress" />
+  </AnatomyItem>
+</Anatomy>
+
+`PromptBar` is one component. Installing `prompt-bar` brings [Button](/docs/components/button) and [Menu](/docs/components/menu) along as registry dependencies.
+
+## Behavior
+
+### Sending
+
+<kbd>Enter</kbd> sends. <kbd>Shift</kbd> + <kbd>Enter</kbd> adds a line. Send is disabled while there is no text and no file. While a person is composing text with an input method editor, <kbd>Enter</kbd> confirms the composition and does not send.
+
+### Suggestions
+
+Typing `@` or `/` at the start of a word opens the matching list. Typing more filters it: sources match anywhere in the label, commands match from the start. Choosing an item replaces what was typed with `@label` or `/label` and a space, and calls `onItemSelect` so your application can record what the text refers to.
+
+<kbd>Escape</kbd> closes the list and leaves the text as typed. The list stays closed until the text changes.
+
+Prompt Bar inserts text. It does not turn a mention into a token or run a command. Read the selection from `onItemSelect`, or parse the text you receive.
+
+### Attachments
+
+With `allowAttachments`, the attach button opens the system file picker, and each chosen file appears as a chip that can be removed. Pass `accept` to limit the file types the picker offers. Prompt Bar does not check file size or type itself, and does not read or upload the files. `onSubmit` receives them as `File` objects.
+
+### Model
+
+Passing `models` adds a menu. The first model is selected unless you pass `defaultModel` or control it with `model` and `onModelChange`. Each model has an `id` and a `label`, and can have a `description` shown beside it and an `icon` shown before it.
+
+### Stopping
+
+Pass `onStop` while a reply is in progress, and leave it out the rest of the time. While it is passed, the Send button becomes Stop and calls your handler. Cancelling the request is your application's work, and so is leaving `onStop` out once the reply has ended.
+
+Typing stays possible while Stop is shown, so the next prompt can be written during a reply. <kbd>Enter</kbd> does not send it until the reply has ended or been stopped. The draft is kept either way.
+
+Stop and Send are one button, so focus does not move when a reply starts. After Stop is pressed, focus moves to the text area.
+
+### Disabled
+
+`disabled` blocks typing, attaching, and sending, and dims the bar. Use it while the bar cannot be used at all, such as before a conversation has loaded, or during a reply that cannot be stopped. The typed text is kept. Stop still works while the bar is disabled.
+
+## Accessibility
+
+The bar is a form, the input is a native text area named "Prompt", and Send is a submit button. Attach, Send, and each remove button have names. While `onStop` is passed, the same button is named "Stop". The model button is read as "Model: " followed by the selection.
+
+When `mentions` or `commands` are passed, the text area stays a text box and points at the list with `aria-controls`. Focus stays in the text area while the list is open. The active option is exposed through `aria-activedescendant`, and a polite status region says how many suggestions there are, or that nothing matches.
+
+Every string comes from `labels`.
+
+This behavior has been checked with a keyboard. It has not been checked with a screen reader yet, and suggestions on a multi-line field are read differently across them. Test it with the screen readers your product supports before you rely on it.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> | Send, or choose the active suggestion when the list is open |
+| <kbd>Shift</kbd> + <kbd>Enter</kbd> | Add a line |
+| <kbd>↓</kbd> and <kbd>↑</kbd> | Move through an open list |
+| <kbd>Tab</kbd> | Choose the active suggestion when the list is open |
+| <kbd>Escape</kbd> | Close the list |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/prompt-bar"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "menu"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="prompt-bar" title="components/ai/prompt-bar.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+The smallest bar takes one handler:
+
+```tsx
+import { PromptBar } from "@/components/ai/prompt-bar"
+
+<PromptBar placeholder="Write a message…" onSubmit={({ text }) => chat.send(text)} />
+```
+
+Add `onStop` while a reply is in progress:
+
+```tsx
+<PromptBar
+  placeholder="Write a message…"
+  onStop={chat.isStreaming ? () => chat.stop() : undefined}
+  onSubmit={({ text }) => chat.send(text)}
+/>
+```
+
+Add the extras your product has:
+
+```tsx
+<PromptBar
+  mentions={[{ id: "invoices", label: "invoices", description: "Billing database" }]}
+  commands={[{ id: "summarize", label: "summarize", description: "Condense the thread so far" }]}
+  models={[{ id: "large", label: "Large" }, { id: "small", label: "Small" }]}
+  allowAttachments
+  accept="image/*,.pdf"
+  onItemSelect={(item, kind) => context.add(kind, item.id)}
+  onSubmit={({ text, attachments, model }) => chat.send({ text, attachments, model })}
+/>
+```
+
+Labels are matched against one typed word, so give each source and command a label without spaces.
+
+### Your own controls
+
+`actions` places controls before Send. Use it for a dictation button that your application wires up, or for a [Context Meter](/docs/ai/context-meter):
+
+```tsx
+<PromptBar
+  onSubmit={send}
+  actions={
+    <Button variant="link" size="icon" aria-label="Start dictation" onClick={startDictation}>
+      <MicIcon aria-hidden="true" />
+    </Button>
+  }
+/>
+```
+
+## Examples
+
+### Stop a reply
+
+This preview has no model. A six-second timer stands in for a reply. Send a prompt, and Stop takes the place of Send until the timer ends or you press it.
+
+<ComponentPreview name="prompt-bar-stop" previewClassName="h-auto min-h-[200px]" />
+
+### Disabled while a reply is pending
+
+This preview has no model. A two-second timer stands in for a reply, and the bar is disabled until it ends.
+
+<ComponentPreview name="prompt-bar-disabled" previewClassName="h-auto min-h-[200px]" />
+
+### Glow while a reply streams
+
+Wrap the bar in [AI Glow Border](/docs/shaders/ai-glow-border) from `honestui/shaders` to light its edge from the same status that drives Stop: a slow comet while the model thinks, a flowing shimmer while the reply streams, and nothing once it is done. This preview has no model; timers stand in for the first token and the stream, and pressing Stop flashes the edge once.
+
+<ComponentPreview name="prompt-bar-glow" previewClassName="h-auto min-h-[240px]" />
+
+## API reference
+
+### PromptBar
+
+Accepts native form props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onSubmit` | `(submission: PromptBarSubmission) => void` | Required | Receives the prompt when the person sends it. |
+| `value` | string | None | The text, when you control it. |
+| `defaultValue` | string | `""` | The initial text. |
+| `onValueChange` | `(value: string) => void` | None | Runs when the text changes. |
+| `placeholder` | string | None | Shown while the input is empty. |
+| `disabled` | boolean | `false` | Blocks typing, attaching, and sending. |
+| `onStop` | `() => void` | None | Shows Stop in place of Send. Pass it only while a reply is in progress. |
+| `mentions` | `PromptBarItem[]` | None | Offered after `@`. |
+| `commands` | `PromptBarItem[]` | None | Offered after `/`. |
+| `onItemSelect` | `(item, kind: "mention" \| "command") => void` | None | Runs when a suggestion is inserted. |
+| `models` | `PromptBarModel[]` | None | Adds the model menu. |
+| `model` | string | None | The selected model's `id`, when you control it. |
+| `defaultModel` | string | First model | The initially selected model. |
+| `onModelChange` | `(model: string) => void` | None | Runs when the person picks a model. |
+| `allowAttachments` | boolean | `false` | Adds the attach button and the file chips. |
+| `attachments` | `File[]` | None | The chosen files, when you control them. |
+| `onAttachmentsChange` | `(attachments: File[]) => void` | None | Runs when files are added or removed. |
+| `accept` | string | None | The file types the picker offers. |
+| `actions` | ReactNode | None | Controls placed before Send. |
+| `labels` | `Partial<PromptBarLabels>` | English | Control names, list names, and suggestion messages. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `PromptBarSubmission` | `text` (trimmed), `attachments`, and `model` (undefined without `models`) |
+| `PromptBarItem` | `id`, `label`, and optional `description`, `icon` |
+| `PromptBarModel` | `id`, `label`, and optional `description` and `icon` |
+| `PromptBarLabels` | `prompt`, `send`, `stop`, `attach`, `attachments`, `removeAttachment`, `model`, `mentions`, `commands`, `noMatches`, `suggestionCount` |

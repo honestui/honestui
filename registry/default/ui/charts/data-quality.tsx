@@ -2,6 +2,7 @@ import { escapeHtml } from "@/registry/default/ui/charts/tooltip";
 import type { CustomSeriesOption } from "echarts/charts";
 import type { ImagePatternObject } from "echarts/core";
 import * as echarts from "echarts/core";
+import type { ReactNode } from "react";
 
 export const DATA_STATUSES = ["measured", "estimated", "provisional", "forecast", "missing"] as const;
 export type DataStatus = (typeof DATA_STATUSES)[number];
@@ -753,14 +754,17 @@ export function DataStatusKey({
   mark,
   text,
   missingNote,
+  extra,
 }: {
   summary: DataQualitySummary;
   mark: DataStatusMark;
   text: ResolvedDataStatusText;
   // Names or a count for missing values that the chart has no place to draw.
   missingNote?: string;
+  // More list items, such as the honesty marks, kept in the same key.
+  extra?: ReactNode;
 }) {
-  if (!summary.statuses.length && !summary.hasRanges) return null;
+  if (!summary.statuses.length && !summary.hasRanges && !extra) return null;
   const Swatch = SWATCHES[mark];
   const itemClass = "flex min-h-6 items-center gap-1.5";
 
@@ -784,6 +788,7 @@ export function DataStatusKey({
           <span className="sr-only">. {text.rangeDescription}</span>
         </li>
       )}
+      {extra}
     </ul>
   );
 }

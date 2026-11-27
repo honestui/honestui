@@ -1,0 +1,122 @@
+---
+title: Agent Screen
+metaTitle: React Agent Screen Capture Viewer
+description: Show what an agent sees in a framed capture that opens in a larger viewer.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="agent-screen-demo" previewClassName="h-auto min-h-[320px]" />
+
+## Overview
+
+Agent Screen frames a capture of an agent's screen, for agents that drive a browser or a desktop. The frame opens a larger viewer, where you can add your own controls, such as a button to take over.
+
+It shows the image or video you pass. Connecting to the agent and keeping the capture current are your application's work, reported through `status`.
+
+## Anatomy
+
+<Anatomy title="AgentScreen">
+  <AnatomyItem name="Frame" description="The capture, as a button that opens the viewer" />
+  <AnatomyItem name="Open" description="A label on the frame, always visible" />
+  <AnatomyItem name="Title" description="Names the screen" />
+  <AnatomyItem name="Viewer" description="A dialog with the capture, the title, and your actions" />
+</Anatomy>
+
+Installing `agent-screen` brings [Dialog](/docs/components/dialog) along as a registry dependency.
+
+## Behavior
+
+### Status
+
+`live` shows the capture and the word "Live" beside the title. `connecting` shows a spinner and a message. `offline` shows a message and no capture. The frame can be opened only while live.
+
+### Media
+
+Pass an image by default, or set `mediaType` to `video`. A video does not start by itself: the viewer gives it controls, and the frame shows a still.
+
+### Actions
+
+`actions` are placed in the viewer's header. What they do is yours.
+
+## Accessibility
+
+The frame is a button named "Open: " followed by the title, and the Open label is always visible, so opening does not depend on hover. The viewer is the Honest UI [Dialog](/docs/components/dialog): it traps focus, closes on <kbd>Escape</kbd>, and returns focus to the frame.
+
+`alt` is required. Describe what is on the screen, and update it as the screen changes if people rely on it. The connecting and offline messages are statuses.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open the viewer |
+| <kbd>Escape</kbd> | Close the viewer |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/agent-screen"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["dialog"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="agent-screen" title="components/ai/agent-screen.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { AgentScreen } from "@/components/ai/agent-screen"
+
+<AgentScreen
+  title="Research agent's screen"
+  status={session.status}
+  src={session.captureUrl}
+  alt={session.captureDescription}
+  actions={<Button variant="secondary" size="sm" onClick={session.takeOver}>Take over</Button>}
+/>
+```
+
+## Examples
+
+### Connecting and offline
+
+The two states with no capture.
+
+<ComponentPreview name="agent-screen-status" previewClassName="h-auto min-h-[260px]" />
+
+## API reference
+
+### AgentScreen
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | Names the screen. |
+| `alt` | string | Required | Describes what is on the screen. |
+| `status` | `"connecting" \| "live" \| "offline"` | `"live"` | Whether the capture can be shown. |
+| `src` | string | None | The capture or stream URL. |
+| `mediaType` | `"image" \| "video"` | `"image"` | How to render `src`. |
+| `actions` | ReactNode | None | Controls in the viewer's header. |
+| `labels` | `Partial<AgentScreenLabels>` | English | The Open name, the Live label, and the two status messages. |

@@ -1,0 +1,40 @@
+---
+title: Shine Border
+description: Drift a soft sheen along an element's border to give it quiet emphasis.
+---
+
+<ComponentPreview name="shine-border-demo" />
+
+## Overview
+
+Shine Border paints a slow, soft sheen that drifts around its parent's border. It suits a recommended pricing plan, a featured card, or a sign-in panel where a static border feels flat but a travelling beam would feel too busy. By default the sheen uses tints of the foreground color, so it works in light and dark themes without extra configuration.
+
+## Installation
+
+<CliBlock commands={["shine-border"]} />
+
+## Usage
+
+```tsx
+import { ShineBorder } from "@/components/animated/shine-border"
+
+<div className="relative rounded-xl border p-5">
+  Pro plan
+  <ShineBorder colors={["#a1a1aa", "#e4e4e7"]} />
+</div>
+```
+
+Place it inside a `relative` element. It inherits the parent's border radius and draws over the existing border, so keep the parent's border subtle.
+
+## Accessibility
+
+The sheen is decorative and hidden from assistive technology. Do not rely on it to signal state or selection. When reduced motion is requested, it stops and holds a still highlight.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colors" type="string[]">Colors the sheen passes through. Defaults to foreground tints.</ApiRow>
+  <ApiRow name="duration" type="number" default="12">Seconds for one sweep and back.</ApiRow>
+  <ApiRow name="borderWidth" type="number" default="1">Width of the shining border in px.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the border layer.</ApiRow>
+</ApiTable>

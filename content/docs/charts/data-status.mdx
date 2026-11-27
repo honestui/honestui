@@ -11,6 +11,8 @@ A chart can mix numbers that deserve different amounts of trust: closed months, 
 
 The charts never work a status out for you. A value with no status is drawn as an ordinary value and is not labelled "Measured". A range appears only where you supply both bounds.
 
+Data Status is the foundation of [Honest Charts](/docs/charts/honesty): marks for an open period, confidence bands, gaps, truncated axes, and sample sizes build on the same styles.
+
 ## Statuses
 
 | Status | Use it for |
@@ -94,6 +96,7 @@ On line, area, bar, and scatter charts, a range is drawn as a whisker from the l
 
 A pie sector and a heatmap cell have no place to draw a whisker, so those charts report the range in the tooltip only.
 
+
 ## Examples
 
 ### An estimated value and a missing value
@@ -125,7 +128,7 @@ A missing sector cannot be drawn, so the key names it. The remaining sectors are
 ## Behavior to know about
 
 - **Other stroke and fill options.** Dashes and fills carry status on a series that sets `statusKey`, `lowerKey`, or `upperKey`. On that series, `strokeVariant`, `glowing`, `enableBufferLine`, `bufferBar`, and `connectNulls` are not applied, and a bar's status fill replaces its `variant` fill for estimated, provisional, and forecast values.
-- **Absent values.** On a series or chart that reads a status, a `null`, empty, or non-numeric value is left empty instead of being drawn at zero. Charts and series that do not read a status keep their existing behavior.
+- **Absent values.** A `null`, empty, or non-numeric value is left empty instead of being drawn at zero, on every series of a line, area, bar, or combo chart. Set `connectNulls` on a line or area series without a status to bridge the gap on purpose. See [Data Gaps](/docs/charts/honesty/data-gaps).
 - **Points that cannot be placed.** A scatter point needs both coordinates. A point marked `missing` is left out and counted in the key, for example "Missing: 1 not shown".
 - **Small marks.** Heatmap status marks need room. In a dense heatmap with cells only a few pixels wide, rely on the tooltip and a text summary.
 - **Stacked charts.** In a stacked chart, a range moves up with the series it belongs to. In an expanded area chart or a percent bar chart, ranges are not drawn, because bounds on a value are not bounds on its share. If any value in a category is missing, every share in that category is unknown and the category is left empty.

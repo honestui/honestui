@@ -1,0 +1,111 @@
+---
+title: Search List
+metaTitle: React Searchable List for Prompts and Conversations
+description: Filter a short list, such as saved prompts or recent threads, from a search field.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="search-list-demo" previewClassName="h-auto min-h-[340px]" />
+
+## Overview
+
+Search List is a search field over one flat list. Typing filters the list, the arrow keys move through it, and choosing an item calls `onSelect`.
+
+It is the Honest UI [Command](/docs/components/command), arranged for this one case. Use Command directly when you need groups, shortcuts, or a dialog.
+
+## Anatomy
+
+<Anatomy title="SearchList">
+  <AnatomyItem name="Field" description="The search input" />
+  <AnatomyItem name="Items" description="The matching items, each with an optional icon and description" />
+  <AnatomyItem name="Empty" description="A message when nothing matches" />
+</Anatomy>
+
+Installing `search-list` brings [Command](/docs/components/command) along as a registry dependency.
+
+## Behavior
+
+### Filtering
+
+Items are matched against their `label`, ignoring case. The description is shown but not searched.
+
+### Empty
+
+When nothing matches, `emptyMessage` replaces the list. Say how to recover, such as clearing the search.
+
+## Accessibility
+
+Search List takes its keyboard and screen reader behavior from Command: the field is a combobox, focus stays in it, and the highlighted item is exposed to assistive technology. Pass `label` to name the field. A placeholder is not a name.
+
+| Key | Action |
+| --- | --- |
+| <kbd>↓</kbd> and <kbd>↑</kbd> | Move through the items |
+| <kbd>Enter</kbd> | Choose the highlighted item |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/search-list"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["command"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="search-list" title="components/ai/search-list.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { SearchList } from "@/components/ai/search-list"
+
+<SearchList
+  label="Search saved prompts"
+  placeholder="Search saved prompts…"
+  items={prompts.map((prompt) => ({ id: prompt.id, label: prompt.title }))}
+  onSelect={(item) => composer.insert(item.id)}
+/>
+```
+
+## Examples
+
+### With icons
+
+Recent threads, with an icon on each item and an empty message that says how to recover.
+
+<ComponentPreview name="search-list-threads" previewClassName="h-auto min-h-[300px]" />
+
+## API reference
+
+### SearchList
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `SearchListItem[]` | Required | Each has `id`, `label`, and optional `description`, `icon`. |
+| `onSelect` | `(item: SearchListItem) => void` | Required | Runs when an item is chosen. |
+| `label` | string | Required | Names the search field. |
+| `placeholder` | string | None | Shown while the field is empty. |
+| `emptyMessage` | string | English | Shown when nothing matches. |
+| `className` | string | None | Added to the root. |

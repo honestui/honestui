@@ -1,0 +1,193 @@
+---
+title: Onboarding Checklist
+description: Guide a new account through its setup steps, with progress, a button into each step, optional steps that can be skipped, and a guide that can be dismissed and brought back.
+---
+
+<ComponentPreview name="onboarding-checklist-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+Onboarding Checklist is the setup guide on a new account's home page: "Get started with Northwind, 2 of 5 done". It lists the steps that make the product useful, shows how far along the account is, and opens the next step with a short explanation and a button that goes to do it.
+
+Some steps the person ticks off themselves, such as "Invite your team". Others complete on their own when your application sees them happen, such as a first deploy; those cannot be ticked by hand, so the guide never claims something that did not happen. Optional steps can be skipped, and the guide counts as complete without them.
+
+The checklist holds no progress of its own. You pass which steps are done and which were skipped, and store them with the account, so the guide reads the same on every device and survives a reload.
+
+## Anatomy
+
+<Anatomy title="OnboardingChecklist">
+  <AnatomyItem name="Header" description="The title and description, the count of steps done, Collapse, and Dismiss">
+    <AnatomyItem name="Progress" description="A slim bar for the share of steps done" />
+  </AnatomyItem>
+  <AnatomyItem name="Step" description="One row per step">
+    <AnatomyItem name="Mark" description="A round checkbox for manual steps; a dashed circle for steps that complete on their own" />
+    <AnatomyItem name="Title" description="Opens the step's detail, with an Optional badge where it applies" />
+    <AnatomyItem name="Detail" description="The description, the step's button, and Skip for optional steps" />
+  </AnatomyItem>
+  <AnatomyItem name="Skipped" description="A count of skipped steps that opens a list with Restore" />
+  <AnatomyItem name="Restore" description="The small button left behind after the guide is dismissed" />
+</Anatomy>
+
+Installing `onboarding-checklist` brings `Badge` and `Button` along as registry dependencies.
+
+## Behavior
+
+### Progress
+
+The count and the bar measure the steps that were not skipped: three of five done, or three of four once an optional step is skipped. The guide is complete when every required step is done. Optional steps count towards progress when they are done but never hold the guide back.
+
+### The next step
+
+The first step that is neither done nor skipped is the next step. Its title is set in medium weight, its detail is open, and its button is the filled one. Finishing it opens the following step. Clicking another title opens that one instead.
+
+### Manual and automatic steps
+
+A step is manual by default: its mark is a checkbox, and ticking it calls `onCompletedChange` with the new list. Set `completion: "auto"` for a step your application completes itself. Its mark is not interactive, and it shows as done only when its id is in `completed`.
+
+### Skipping
+
+Optional steps offer Skip when you pass `onSkippedChange`. A skipped step leaves the list and appears behind the "1 skipped · Show" line, where Restore brings it back.
+
+### Complete
+
+When every required step is done, the title reads "You're all set", the bar is full, and a Dismiss guide button takes the place of the dismiss icon. The steps stay listed below.
+
+### Dismissing
+
+Passing `onDismissedChange` offers Dismiss in the header. While `dismissed` is true the guide is replaced by a small button showing its progress, which brings it back. Pass `hideRestore` when your app offers its own way back, such as a Help menu item.
+
+## Accessibility
+
+The guide is a section named by its title. The progress bar has a name and reads as "2 of 5 done".
+
+Each manual mark is a checkbox named after its step, "Mark “Invite your team” as done". Automatic marks are images named "Done" or "Completes on its own when we see it happen", so a screen reader user knows why there is nothing to tick.
+
+Step titles with detail are disclosure buttons with `aria-expanded`, and the detail is a group named by its step. Collapse is also a disclosure button. Skip and Restore are named with their step.
+
+Dismissing moves focus to the Restore button, and restoring moves it back to the guide, so focus is never dropped.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move through Collapse, Dismiss, then each step's mark, title, and buttons |
+| <kbd>Space</kbd> | Tick or untick the focused mark |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the focused step, or activate a button |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["onboarding-checklist"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="onboarding-checklist" title="components/ui/onboarding-checklist/onboarding-checklist-types.ts" file="onboarding-checklist-types.ts" />
+
+<ComponentSource name="onboarding-checklist" title="components/ui/onboarding-checklist/onboarding-checklist-utils.ts" file="onboarding-checklist-utils.ts" />
+
+<ComponentSource name="onboarding-checklist" title="components/ui/onboarding-checklist/onboarding-checklist.tsx" file="onboarding-checklist.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { OnboardingChecklist } from "@/components/ui/onboarding-checklist/onboarding-checklist"
+
+const steps = [
+  { id: "invite", title: "Invite your team", action: { label: "Invite teammates", href: "/settings/members" } },
+  { id: "repo", title: "Connect a repository", completion: "auto", action: { label: "Connect GitHub", href: "/new" } },
+  { id: "domain", title: "Add a custom domain", optional: true, action: { label: "Add domain", href: "/domains" } },
+]
+
+<OnboardingChecklist
+  title="Get started"
+  steps={steps}
+  completed={account.onboarding.completed}
+  onCompletedChange={(completed) => saveOnboarding({ completed })}
+  skipped={account.onboarding.skipped}
+  onSkippedChange={(skipped) => saveOnboarding({ skipped })}
+  dismissed={account.onboarding.dismissed}
+  onDismissedChange={(dismissed) => saveOnboarding({ dismissed })}
+/>
+```
+
+`onCompletedChange` and `onSkippedChange` receive the whole new list in step order, plus the step that changed, so you can save the list or record the single change.
+
+### Counting helpers
+
+`getOnboardingProgress(steps, completed, skipped)` returns the same `done`, `total`, `complete`, and `nextId` the guide uses, for a badge in your navigation or a nudge elsewhere.
+
+## Don't do this
+
+### Ticking automatic steps for the person
+
+```tsx
+// Bad. "Connect a repository" shows as done because a button was pressed, not because a repository is connected.
+action: { label: "Connect GitHub", onClick: () => markDone("repo") }
+```
+
+Mark an automatic step done when your application sees the result, for instance when the first webhook arrives.
+
+### Keeping the guide in local state only
+
+Progress kept in component state resets on reload and differs between devices. Store `completed`, `skipped`, and `dismissed` with the account.
+
+## Examples
+
+### Finishing the guide
+
+One manual step remains and the optional step is skipped. Tick the last step to see the complete state, then dismiss the guide and bring it back with the small button it leaves.
+
+<ComponentPreview name="onboarding-checklist-complete" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### OnboardingChecklist
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `steps` | `OnboardingStep[]` | Required | The steps, in order. |
+| `completed` | `string[]` | Required | Ids of the steps that are done. |
+| `onCompletedChange` | `(completed, step, done) => void` | None | Called when a manual step is ticked. Without it, marks are read-only. |
+| `skipped` | `string[]` | `[]` | Ids of skipped optional steps. |
+| `onSkippedChange` | `(skipped, step, isSkipped) => void` | None | Passing it offers Skip and Restore. |
+| `title` | ReactNode | Required | The guide's title. |
+| `description` | ReactNode | None | A line under the title. |
+| `headingLevel` | `2` to `6` | `2` | The title's heading level. |
+| `dismissed` | boolean | `false` | Shows only the Restore button. |
+| `onDismissedChange` | `(dismissed) => void` | None | Passing it offers Dismiss and Restore. |
+| `hideRestore` | boolean | `false` | Renders nothing while dismissed. |
+| `open` | boolean | None | Controls whether the steps are shown. |
+| `defaultOpen` | boolean | `true` | Whether the steps start shown. |
+| `onOpenChange` | `(open) => void` | None | Called when Collapse is pressed. |
+| `labels` | `Partial<OnboardingChecklistLabels>` | English | Every visible word and accessible name. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `OnboardingStep` | `id`, `title`, and optional `description`, `action` (`label` with `href` or `onClick`), `optional`, `completion` (`"manual"` or `"auto"`) |
+| `OnboardingProgress` | `done`, `total`, `complete`, `nextId` |
+| `getOnboardingProgress` | `(steps, completed, skipped?) => OnboardingProgress` |

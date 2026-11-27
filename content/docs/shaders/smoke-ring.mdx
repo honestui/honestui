@@ -1,0 +1,50 @@
+---
+title: Smoke Ring
+description: A glowing ring of noisy smoke that drifts outward from its center.
+---
+
+<ComponentPreview name="smoke-ring-demo" playground />
+
+## Overview
+
+Smoke Ring draws a ring of smoke centered in its container. The ring's edge wobbles with noise, its density thins into wisps that drift outward, and an optional glow fills the inside. Colors run from the dense core of the smoke (first color) to its thin edges (last color).
+
+The background is transparent by default, so the ring sits on your own surface. It works well as a focal point behind a logo, an avatar, a voice or AI status indicator, or an empty state.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { SmokeRing } from "honestui/shaders"
+
+<div className="relative h-80 bg-[#0c0d14]">
+  <SmokeRing className="size-full" colors={["#ffffff", "#b4bcfa", "#5560cf"]} />
+  <div className="absolute inset-0 grid place-items-center text-white">Listening…</div>
+</div>
+```
+
+Set `colorBack` to paint an opaque background in the shader instead of relying on the container.
+
+## Accessibility
+
+Smoke Ring is decorative and its canvas is hidden from assistive technology. When the ring signals a state, such as listening or thinking, also announce that state in text or with a live region; the animation alone does not convey it.
+
+The effect pauses while it is offscreen or the tab is hidden, and shows a still frame when the user prefers reduced motion. Without WebGL2 the container shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colors" type="string[]" default='["#ffffff", "#b4bcfa", "#5560cf"]'>One to five hex colors, from the dense core to the thin edges.</ApiRow>
+  <ApiRow name="colorBack" type="string">Opaque background color. Unset keeps the background transparent.</ApiRow>
+  <ApiRow name="radius" type="number" default="0.26">Ring radius as a fraction of the shorter side, from 0.1 to 0.45.</ApiRow>
+  <ApiRow name="thickness" type="number" default="0.45">Ring width, from 0 to 1.</ApiRow>
+  <ApiRow name="noiseScale" type="number" default="3">Size of the smoke detail. Higher values give finer wisps.</ApiRow>
+  <ApiRow name="turbulence" type="number" default="0.6">How far the smoke wobbles and drifts, from 0 to 1.</ApiRow>
+  <ApiRow name="innerGlow" type="number" default="0.35">Light filling the inside of the ring, from 0 to 1.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.6">Animation speed.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

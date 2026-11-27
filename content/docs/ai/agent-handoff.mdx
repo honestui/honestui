@@ -1,0 +1,141 @@
+---
+title: Agent Handoff
+metaTitle: React Agent Handoff Card with Passed Context
+description: Show one agent handing a conversation to another, with the reason and the context that went with it.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="agent-handoff-demo" previewClassName="h-auto max-h-none" />
+
+## Overview
+
+Agent Handoff marks the moment a conversation moves from one agent to another, such as from a triage agent to a billing agent. It says who handed it over, who took it, and why, and it can show the context the receiving agent was given: a summary, named facts, attached files, and the size of the payload in tokens. People can see what the new agent knows instead of wondering why it seems to know it.
+
+Use the card in a conversation or a run log. Use the inline variant between two messages, where the handoff should read as a divider.
+
+## Anatomy
+
+<Anatomy title="AgentHandoff">
+  <AnatomyItem name="Header" description="A sentence for the status, such as Handed off to Billing, with the status and time" />
+  <AnatomyItem name="Agents" description="The handing and receiving agents, with avatars or initials and their roles" />
+  <AnatomyItem name="Reason" description="Why the conversation was handed over" />
+  <AnatomyItem name="Context" description="A summary, facts, and attached items, shown on request" />
+  <AnatomyItem name="Footer" description="The context toggle, the payload's token count, View full context, and Accept and Decline while pending" />
+</Anatomy>
+
+## Behavior
+
+### Status
+
+`pending` reads "Handing off to Billing" with a spinning icon. `accepted` reads "Handed off to Billing". `declined` reads "Billing declined the handoff" in red, the only status with color. `returned` reads "Billing handed back to Triage". Reword them with `labels.title`.
+
+### Context
+
+The context is closed by default and opens from the footer. Control it with `open` and `onOpenChange`, or start it open with `defaultOpen`. Without a summary, facts, or items, there is no toggle. `onViewContext` adds a button for the full payload, such as a panel with the raw message.
+
+### Deciding
+
+When the handoff is pending and you pass `onAccept` or `onDecline`, the footer shows Accept and Decline, for handoffs a person must approve. Update `status` when they choose.
+
+### Inline
+
+`variant="inline"` draws one line between hairlines: both avatars, an arrow, the sentence, the time, and a Context button. The context opens as a small plate under the line, with the reason first.
+
+## Accessibility
+
+The card is a region named by its sentence, and the inline variant is a group named the same way. The avatars are hidden from assistive technology, since the names are in text. The context toggle reports whether it is open and which panel it controls. A declined inline handoff also reads "Declined", so the red icon is never the only cue.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/agent-handoff"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="agent-handoff" title="components/ai/agent-handoff.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { AgentHandoff } from "@/components/ai/agent-handoff"
+
+<AgentHandoff
+  from={{ name: "Triage", role: "Routes new conversations" }}
+  to={{ name: "Billing", role: "Refunds and invoices" }}
+  status="accepted"
+  reason={handoff.reason}
+  summary={handoff.summary}
+  facts={[{ label: "Order", value: "#48213" }]}
+  tokens={handoff.tokens}
+/>
+
+<AgentHandoff variant="inline" from={triage} to={billing} status="accepted" time="2:14 PM" />
+```
+
+## Examples
+
+### Inline
+
+Between two messages, the handoff reads as a divider, and its context opens under the line.
+
+<ComponentPreview name="agent-handoff-inline" previewClassName="h-auto min-h-[360px]" />
+
+### Pending
+
+A handoff a person must approve, with Accept and Decline.
+
+<ComponentPreview name="agent-handoff-pending" previewClassName="h-auto min-h-[420px]" />
+
+## API reference
+
+### AgentHandoff
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `from` | `HandoffAgent` | Required | The agent handing the conversation over. |
+| `to` | `HandoffAgent` | Required | The agent taking it. |
+| `status` | `"pending" \| "accepted" \| "declined" \| "returned"` | Required | Where the handoff stands. |
+| `reason` | ReactNode | None | Why the conversation was handed over. |
+| `summary` | ReactNode | None | What the receiving agent was told. |
+| `facts` | `HandoffFact[]` | None | Named values passed along. |
+| `items` | `HandoffItem[]` | None | Files or records passed along. |
+| `tokens` | `number` | None | The payload's size in tokens. |
+| `time` | ReactNode | None | When the handoff happened. |
+| `variant` | `"card" \| "inline"` | `"card"` | A plate, or one line between messages. |
+| `open` | `boolean` | None | Whether the context is shown, controlled. |
+| `defaultOpen` | `boolean` | `false` | Whether the context starts open. |
+| `onOpenChange` | `(open: boolean) => void` | None | Runs when the context opens or closes. |
+| `onViewContext` | `() => void` | None | Shows View full context. |
+| `onAccept` and `onDecline` | `() => void` | None | Show Accept and Decline while pending. |
+| `labels` | `Partial<AgentHandoffLabels>` | English | Every word, plus the `title` and `tokens` sentences. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `HandoffAgent` | `name`, and optional `role` and `avatar` (an image URL) |
+| `HandoffFact` | `label` and `value` |
+| `HandoffItem` | `name`, and optional `meta`, such as "PDF · 240 KB" |

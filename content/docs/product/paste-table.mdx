@@ -251,6 +251,7 @@ Accepts native section props beyond those listed.
 | `onImport` | `(rows) => void \| Promise<void>` | Required | Receives the valid rows. A returned promise is awaited. |
 | `delimiter` | string | `"\t"` | The character between cells. |
 | `maxRows` | number | `1000` | A paste with more data rows is refused. |
+| `defaultRows` | `string[][]` | — | Opens the review step with these rows, read once on mount. Pairs with [CSV Column Mapper](/docs/product/csv-column-mapper). |
 | `disabled` | boolean | `false` | Keeps every control visible but inactive. |
 | `labels` | `Partial<PasteTableLabels>` | English | Replacement text and count wording. |
 

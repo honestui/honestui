@@ -1,0 +1,168 @@
+---
+title: Approval Card
+metaTitle: React Approval Card for Agent Decisions
+description: Ask the person one or more questions before an agent acts, and send nothing until they choose to.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="approval-card-demo" previewClassName="h-auto min-h-[380px]" />
+
+## Overview
+
+Approval Card puts an agent's questions in front of the person one at a time. A question offers one choice or several, and can take a typed answer when none of the options fit. The person can go back, skip a question that is not required, and send from the last question.
+
+Take an agent that is about to write an export. It needs to know which invoices to include before it starts. The card asks, the person picks "Paid only", and your `onSubmit` receives that answer and resumes the run.
+
+Choosing an option never sends and never moves to the next question. The card sends only when the person presses Send. This is on purpose: the card exists so the agent waits for a decision.
+
+Approval Card does not talk to your agent. It collects the answers and passes them to `onSubmit`.
+
+When the agent needs typed values, such as a date, a number, or free text, in one form, use [Input Request](/docs/ai/input-request). It shares this card's look.
+
+## Anatomy
+
+<Anatomy title="ApprovalCard">
+  <AnatomyItem name="Step" description="Which question this is, when there is more than one" />
+  <AnatomyItem name="Prompt" description="The question, in the agent's words" />
+  <AnatomyItem name="Options" description="A radio group for one choice, or checkboxes for several" />
+  <AnatomyItem name="Custom answer" description="A text field, when the question allows one" />
+  <AnatomyItem name="Footer" description="Back, then Skip or Continue, and Send on the last question" />
+  <AnatomyItem name="Dismiss" description="A close button, shown only when you handle it" />
+</Anatomy>
+
+`ApprovalCard` is one component that takes data. Installing `approval-card` brings [Button](/docs/components/button), [Checkbox](/docs/components/checkbox), [Radio Group](/docs/components/radio-group), and [Input](/docs/components/input) along as registry dependencies.
+
+## Behavior
+
+### Moving between questions
+
+An unanswered question that is not required offers Skip. Once it has an answer, the same button becomes Continue. A required question offers only Continue, which stays disabled until there is an answer. Back appears from the second question on, and answers are kept when the person moves either way.
+
+### Typed answers
+
+With `allowCustom`, a text field sits under the options. A single-choice question holds one answer, so typing clears the chosen option and choosing an option clears the text. On a multiple-choice question, the typed answer is added to the chosen options.
+
+### Sending
+
+Send is enabled when at least one question has an answer and every required question has one. While it is disabled, a line beside it says why.
+
+`onSubmit` receives an object with an entry for every question, keyed by question `id`. A skipped question's entry has an empty `selected` array and an empty `custom` string. Typed answers are trimmed.
+
+If `onSubmit` returns a promise, the card shows "Sending…" and locks its controls until the promise settles. When it resolves, the card is replaced by a confirmation. When it rejects, the card shows an error, keeps every answer, and offers Send again.
+
+### Dismissing
+
+Pass `onDismiss` to show a close button. The card does not hide itself: remove it from your tree when the handler runs, and decide what the agent does with no answer.
+
+## Accessibility
+
+The options are a radio group or a group of checkboxes, named by the prompt. Each option is a native label around its control, so the whole row is the target. The custom field has its own name, "Another answer".
+
+The step line is a polite live region, so moving to another question announces "Question 2 of 3". The confirmation is a status. The error is an alert.
+
+Sending replaces the Send button with the confirmation. When that happens, the card takes focus so the next <kbd>Tab</kbd> continues from the card instead of the top of the page. While sending, Send stays focusable and ignores presses rather than becoming disabled. Going Back to the first question removes Back, so focus moves to the footer's main button.
+
+Every string comes from `labels`, including the dismiss button's name. The prompt and the option labels are yours.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the options, the custom field, and the footer buttons |
+| Arrow keys | Move between radio options and choose the focused one |
+| <kbd>Space</kbd> | Check or clear the focused checkbox |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Activate the focused button |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/approval-card"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "checkbox", "radio-group", "input"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="approval-card" title="components/ai/approval-card.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Render the card when your agent pauses for input, and resume the run from `onSubmit`:
+
+```tsx
+import { ApprovalCard, type ApprovalQuestion } from "@/components/ai/approval-card"
+
+const questions: ApprovalQuestion[] = [
+  {
+    id: "scope",
+    prompt: "Which invoices should the export include?",
+    type: "single",
+    required: true,
+    options: [
+      { value: "paid", label: "Paid only" },
+      { value: "all", label: "Paid and open" },
+    ],
+  },
+]
+
+<ApprovalCard
+  questions={questions}
+  onSubmit={(answers) => agent.resume(run.id, answers)}
+  onDismiss={() => agent.cancel(run.id)}
+/>
+```
+
+Return the promise from your request, as above, so the card can show progress and a failure.
+
+Write each prompt so it states the consequence. "The migration drops the legacy_region column. Run it on staging?" lets the person decide. "Proceed?" does not.
+
+## Examples
+
+### A send that fails
+
+This preview rejects the first send. The answer stays selected and Send is offered again. The second send succeeds.
+
+<ComponentPreview name="approval-card-failure" previewClassName="h-auto min-h-[300px]" />
+
+## API reference
+
+### ApprovalCard
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `questions` | `ApprovalQuestion[]` | Required | The questions, in order. |
+| `onSubmit` | `(answers: ApprovalAnswers) => void \| Promise<void>` | Required | Receives every answer when the person presses Send. |
+| `onDismiss` | `() => void` | None | Runs when the person closes the card. Passing it shows the close button. |
+| `labels` | `Partial<ApprovalCardLabels>` | English | Button names, the step line, the hint, and the outcome messages. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ApprovalQuestion` | `id`, `prompt`, `type` of `"single"` or `"multiple"`, `options`, and optional `allowCustom`, `required` |
+| `ApprovalOption` | `value`, `label` |
+| `ApprovalAnswer` | `selected` (the chosen option values) and `custom` (the typed answer) |
+| `ApprovalAnswers` | An `ApprovalAnswer` for each question, keyed by question `id` |
+| `ApprovalCardLabels` | `back`, `skip`, `continue`, `send`, `sending`, `dismiss`, `customAnswer`, `customPlaceholder`, `step`, `incomplete`, `incompleteSingle`, `required`, `submitted`, `error` |

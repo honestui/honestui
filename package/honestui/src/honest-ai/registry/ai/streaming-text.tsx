@@ -398,7 +398,7 @@ function StreamingText({
                       <ul
                         role="list"
                         data-slot="streaming-text-sources"
-                        className="m-0 mt-[var(--hui-space-2)] flex list-none flex-col rounded-[var(--hui-radius-3)] bg-[var(--hui-color-background-neutral-primary)] p-[var(--hui-space-2)]"
+                        className="m-0 mt-[var(--hui-space-3)] flex list-none flex-col divide-y-[0.5px] divide-[var(--hui-color-border-base-primary)] overflow-hidden rounded-[var(--hui-radius-3)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-0 shadow-[var(--hui-shadow-feather)]"
                       >
                         {sources.map((source, index) => (
                           <motion.li
@@ -411,23 +411,22 @@ function StreamingText({
                             <a
                               href={source.href}
                               className={cn(
-                                "flex min-w-0 items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] px-[var(--hui-space-3)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] no-underline!",
+                                "flex min-h-10 min-w-0 items-center gap-[var(--hui-space-3)] px-[var(--hui-space-4)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] no-underline!",
                                 interactive,
-                                // The list sits on a neutral fill, so a row needs the next step up to show hover.
-                                "hover:bg-[var(--hui-color-background-neutral-secondary)]"
+                                "rounded-none hover:bg-[var(--hui-color-background-neutral-primary)]"
                               )}
                             >
                               <span className="min-w-0 truncate" title={source.title}>
                                 {source.title}
                               </span>
                               {source.domain && (
-                                <span className={cn("shrink-0 text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
+                                <span className={cn("ms-auto shrink-0 text-[var(--hui-color-foreground-base-secondary)]", smallText)}>
                                   {source.domain}
                                 </span>
                               )}
                               <ArrowUpRightIcon
                                 aria-hidden="true"
-                                className="size-3 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
+                                className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)]"
                               />
                             </a>
                           </motion.li>
@@ -501,7 +500,7 @@ function StreamingFollowUps({
       <ul
         role="list"
         aria-labelledby={headingId}
-        className="m-0 mt-[var(--hui-space-2)] flex list-none flex-col gap-[var(--hui-space-1)] p-0"
+        className="m-0 mt-[var(--hui-space-2)] flex list-none flex-col divide-y-[0.5px] divide-[var(--hui-color-border-base-primary)] border-t-[0.5px] border-[var(--hui-color-border-base-primary)] p-0"
       >
         {prompts.map((prompt) => (
           <li key={prompt}>
@@ -509,8 +508,9 @@ function StreamingFollowUps({
               type="button"
               onClick={() => onSelect(prompt)}
               className={cn(
-                "-mx-[var(--hui-space-2)] flex w-[calc(100%+var(--hui-space-2)*2)] cursor-pointer items-center gap-[var(--hui-space-3)] rounded-[var(--hui-radius-2)] border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-2)] text-left text-[var(--hui-color-foreground-base-primary)]",
-                interactive
+                "group/follow-up flex min-h-10 w-full cursor-pointer items-center gap-[var(--hui-space-3)] rounded-none border-0 bg-transparent px-0 py-[var(--hui-space-2)] text-left text-[var(--hui-color-foreground-base-secondary)] [font-size:var(--hui-font-size-regular)] [line-height:var(--hui-line-height-regular)] hover:text-[var(--hui-color-foreground-base-primary)]",
+                interactive,
+                "hover:bg-transparent"
               )}
             >
               <CornerDownRightIcon

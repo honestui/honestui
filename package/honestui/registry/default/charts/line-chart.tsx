@@ -29,6 +29,7 @@ import {
 import {
   buildChartCss,
   flattenColor,
+  normalizeColor,
   getColorsCount,
   resolveColors,
   seriesPaint,
@@ -72,6 +73,7 @@ import {
   runFocusPatch,
   resolveDataStatusText,
   runValues,
+  summarizeDataQuality,
   statusDetailText,
   statusNotesHtml,
   STROKE_DASH,
@@ -83,6 +85,39 @@ import {
   type ResolvedDataStatusText,
 } from "@/registry/default/ui/charts/data-quality";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
+import {
+  applyPartialPeriod,
+  axisBreakSeries,
+  axisTruncation,
+  Band,
+  bandSeries,
+  bandSeriesId,
+  collectHonesty,
+  fillMissingRows,
+  fitDomain,
+  formatCount,
+  gapRegionSeries,
+  gapSpans,
+  HonestyKeyItems,
+  honestyNotesHtml,
+  isLowSample,
+  PartialPeriod,
+  partialPeriodSeries,
+  readBand,
+  readSampleSizes,
+  readValue,
+  resolveHonestyText,
+  resolvePartialPeriod,
+  sampleSizeSeries,
+  type BandRun,
+  type ChartHonestyText,
+  type GapSpan,
+  type GapsOption,
+  type HonestyKeyEntry,
+  type HonestyNote,
+  type ResolvedChartHonestyText,
+  type SampleSizeDisplay,
+} from "@/registry/default/ui/charts/honesty";
 import {
   buildReferenceSeries,
   collectReferences,
@@ -122,6 +157,9 @@ import * as echarts from "echarts/core";
 
 export type {
   ChartConfig,
+  ChartHonestyText,
+  GapsOption,
+  SampleSizeDisplay,
   DotVariant,
   LegendVariant,
   TooltipPosition,
@@ -198,6 +236,13 @@ export interface LineChartProps<TData extends Record<string, unknown>> {
   loadingPoints?: number; 
   ariaLabel?: string;
   dataStatusText?: DataStatusText; 
+  /** Rewords the partial-period, interval, gap, axis, and sample-size text. */
+  honestyText?: ChartHonestyText;
+  /**
+   * Shade stretches where no series has a value. With an `interval`, rows
+   * absent from a time series are found and shown as gaps too.
+   */
+  gaps?: GapsOption;
   /** Charts with the same id show their crosshair and tooltip together. */
   syncId?: string;
   chartOptions?: Record<string, unknown>; 
@@ -219,6 +264,12 @@ export interface LineProps {
   upperKey?: string; 
   /** A data key holding the same measure for an earlier period, drawn as a ghost line. */
   compareDataKey?: string;
+  /** The row field with the number of observations behind each value. */
+  sampleSizeKey?: string;
+  /** Values with fewer observations are ringed and named in the key. */
+  minSampleSize?: number;
+  /** `label` writes n above the points; `tooltip` keeps it in the tooltip. Defaults to `label`. */
+  sampleSizeDisplay?: SampleSizeDisplay;
   children?: ReactNode; 
 }
 
@@ -247,6 +298,12 @@ export interface YAxisProps {
   tickFormatter?: (value: number, index: number) => string; 
   label?: string; 
   hideDots?: boolean; 
+  /** The axis start. `"auto"` fits the data instead of starting at zero. Defaults to zero. */
+  min?: number | "auto";
+  /** The axis end. Defaults to a rounded value above the data. */
+  max?: number;
+  /** When the axis does not reach zero, mark the break and say where it starts. Defaults to `auto`. */
+  truncationNotice?: "auto" | "off";
 }
 
 const YAxis: FC<YAxisProps> = () => null;
@@ -285,6 +342,9 @@ type LineSeriesConfig = {
   dotVariant: DotVariant; 
   activeDotVariant: DotVariant; 
   compareDataKey?: string;
+  sampleSizeKey?: string;
+  minSampleSize?: number;
+  sampleSizeDisplay: SampleSizeDisplay;
 };
 
 type XAxisSlot = {
@@ -300,6 +360,9 @@ type YAxisSlot = {
   tickFormatter?: (value: number, index: number) => string;
   label?: string;
   hideDots: boolean;
+  min?: number | "auto";
+  max?: number;
+  truncationNotice: "auto" | "off";
 };
 type TooltipSlot = {
   present: boolean;
@@ -335,7 +398,7 @@ type CollectedConfig = {
 function collectConfig(children: ReactNode): CollectedConfig {
   const lines: LineSeriesConfig[] = [];
   let xAxis: XAxisSlot = { present: false, hideDots: false };
-  let yAxis: YAxisSlot = { present: false, hideDots: false };
+  let yAxis: YAxisSlot = { present: false, hideDots: false, truncationNotice: "auto" };
   let showGrid = false;
   let tooltip: TooltipSlot = {
     present: false,
@@ -384,6 +447,9 @@ function collectConfig(children: ReactNode): CollectedConfig {
         dotVariant,
         activeDotVariant,
         compareDataKey: props.compareDataKey,
+        sampleSizeKey: props.sampleSizeKey,
+        minSampleSize: props.minSampleSize,
+        sampleSizeDisplay: props.sampleSizeDisplay ?? "label",
       });
     } else if (type === XAxis) {
       const props = child.props as XAxisProps;
@@ -402,6 +468,9 @@ function collectConfig(children: ReactNode): CollectedConfig {
         tickFormatter: props.tickFormatter,
         label: props.label,
         hideDots: props.hideDots ?? false,
+        min: props.min,
+        max: props.max,
+        truncationNotice: props.truncationNotice ?? "auto",
       };
     } else if (type === Grid) {
       showGrid = true;
@@ -567,6 +636,25 @@ const BUFFER_PREFIX = "__buffer-";
 
 const REVEAL_PREFIX = "__reveal-";
 
+type ResolvedBand = {
+  index: number;
+  dataKey?: string;
+  label: string;
+  color?: string;
+  bounds: ({ lower: number; upper: number } | null)[];
+  runs: BandRun[];
+};
+
+type HonestyPlan = {
+  text: ResolvedChartHonestyText;
+  partial: { start: number; progress: number | null; label: string; note: string } | null;
+  bands: ResolvedBand[];
+  gaps: GapSpan[];
+  gapLabel: string;
+  axis: { min?: number; max?: number; truncatedAt: number | null; label: string; description: string };
+  sampleSizes: Record<string, (number | null)[]>;
+};
+
 type OptionBuildContext = {
   data: Record<string, unknown>[];
   config: ChartConfig;
@@ -589,7 +677,10 @@ type OptionBuildContext = {
   revealSink: Record<string, unknown[]>; 
   resolved: ResolvedColors;
   quality: Record<string, PointQuality[]>; 
+  /** Point quality before the partial period marked its tail provisional. */
+  claimedQuality: Record<string, PointQuality[]>;
   statusText: ResolvedDataStatusText;
+  honesty: HonestyPlan;
   rendererSize: { width: number; height: number }; 
   categories: string[];
   brushRange: BrushRange; 
@@ -662,6 +753,8 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
   const yAxis: YAxisOption = {
     type: "value",
     show: yAxisSlot.present || showGrid,
+    min: isLoading ? undefined : ctx.honesty.axis.min,
+    max: isLoading ? undefined : ctx.honesty.axis.max,
 
     name: isLoading ? undefined : yAxisSlot.label,
     nameLocation: "middle",
@@ -695,7 +788,8 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
 }
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
-  const { config, selectedDataKey, tooltipSlot, getHoveredKey, quality, statusText } = ctx;
+  const { config, selectedDataKey, tooltipSlot, getHoveredKey, quality, statusText, honesty } = ctx;
+  const linesByKey = new Map(ctx.lines.map((line) => [line.dataKey, line]));
   const compareKeys = new Map(
     ctx.lines.flatMap((line) => (line.compareDataKey ? [[line.dataKey, line.compareDataKey]] : [])),
   );
@@ -704,7 +798,12 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
     const rows = Array.isArray(params) ? params : [params];
     if (!rows.length) return "";
 
-    const first = rows[0] as { axisValue?: string | number; name?: string };
+    const first = rows[0] as { axisValue?: string | number; name?: string; dataIndex?: number };
+    const rowIndex = rows
+      .map((row) => (row as { dataIndex?: number }).dataIndex)
+      .find((index): index is number => typeof index === "number");
+    const inPartial = honesty.partial !== null && rowIndex !== undefined && rowIndex >= honesty.partial.start;
+    let lowSampleMin: number | null = null;
 
     const axisValue = first.axisValue ?? first.name ?? "";
     const label = String(axisValue);
@@ -733,7 +832,12 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
         if (!hasValue && !point) return "";
         if (seen.has(key)) return "";
         seen.add(key);
-        if (point?.status) statuses.add(point.status);
+        // A tail marked provisional only by the partial period is explained by
+        // the period's own note, not again as "Provisional".
+        const claimed =
+          typeof p.dataIndex === "number" ? ctx.claimedQuality[key]?.[p.dataIndex] : undefined;
+        const periodMarked = inPartial && point?.status === "provisional" && claimed?.status !== "provisional";
+        if (point?.status && !periodMarked) statuses.add(point.status);
 
         const item = config[key];
         const colorsCount = item ? getColorsCount(item) : 1;
@@ -767,21 +871,83 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
             labelText,
             valueText: value,
             dimmed,
-            detailText: point
-              ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
-              : undefined,
+            detailText: honestyDetail({
+              base: point
+                ? statusDetailText(
+                    periodMarked ? { ...point, status: null } : point,
+                    statusText,
+                    (bound) => bound.toLocaleString(),
+                  )
+                : "",
+              periodLabel: periodMarked && honesty.partial ? honesty.partial.label : "",
+              bands: honesty.bands
+                .filter((band) => band.dataKey === key)
+                .flatMap((band) => {
+                  const range = typeof p.dataIndex === "number" ? band.bounds[p.dataIndex] : null;
+                  return range
+                    ? [`${band.label} ${range.lower.toLocaleString()} – ${range.upper.toLocaleString()}`]
+                    : [];
+                }),
+              sample: (() => {
+                const n =
+                  typeof p.dataIndex === "number" ? honesty.sampleSizes[key]?.[p.dataIndex] : undefined;
+                if (n === undefined || n === null) return "";
+                const line = linesByKey.get(key);
+                if (isLowSample(n, line?.minSampleSize)) {
+                  lowSampleMin = Math.max(lowSampleMin ?? 0, line?.minSampleSize ?? 0);
+                }
+                return honesty.text.sampleSize(formatCount(n));
+              })(),
+            }) || undefined,
           }) + comparison
         );
       })
       .join("");
 
+    const looseBands = honesty.bands
+      .filter((band) => !band.dataKey)
+      .map((band) => {
+        const range = rowIndex !== undefined ? band.bounds[rowIndex] : null;
+        if (!range) return "";
+        return tooltipRow({
+          indicatorHtml: `<div class="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-current opacity-20"></div>`,
+          labelText: band.label,
+          valueText: `${range.lower.toLocaleString()} – ${range.upper.toLocaleString()}`,
+          dimmed: "",
+        });
+      })
+      .join("");
+
+    const notes: HonestyNote[] = [];
+    if (inPartial && honesty.partial) {
+      notes.push({ label: honesty.partial.label, description: honesty.partial.note });
+    }
+    if (rowIndex !== undefined && honesty.gaps.some((gap) => rowIndex >= gap.start && rowIndex <= gap.end)) {
+      notes.push({ label: honesty.gapLabel, description: honesty.text.noDataDescription });
+    }
+    if (lowSampleMin !== null) {
+      notes.push({
+        label: honesty.text.lowSampleLabel(formatCount(lowSampleMin)),
+        description: honesty.text.lowSampleDescription,
+      });
+    }
+
     return tooltipShell({
       label,
-      body: body + statusNotesHtml(statuses, statusText),
+      body: body + looseBands + statusNotesHtml(statuses, statusText) + honestyNotesHtml(notes),
       roundness: tooltipSlot.roundness,
       variant: tooltipSlot.variant,
     });
   };
+}
+
+function honestyDetail(parts: {
+  base: string;
+  periodLabel: string;
+  bands: string[];
+  sample: string;
+}): string {
+  return [parts.periodLabel, parts.base, ...parts.bands, parts.sample].filter(Boolean).join(" · ");
 }
 
 function buildTooltipOption(ctx: OptionBuildContext): TooltipComponentOption {
@@ -846,7 +1012,7 @@ function buildBrushOption(
       type: "line",
       xAxisIndex: 1,
       yAxisIndex: 1,
-      data: ctx.quality[key]?.map((point) => point.value) ?? data.map((row) => Number(row[key]) || 0),
+      data: ctx.quality[key]?.map((point) => point.value) ?? data.map((row) => readValue(row[key])),
       smooth: curve.smooth,
       step: curve.step,
       connectNulls: line.connectNulls && !ctx.quality[key],
@@ -943,9 +1109,10 @@ function buildLineSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
     // variant, glow, buffer segment, and null bridging are not applied.
     const points = ctx.quality[key];
     const tracked = points !== undefined;
+    // An absent value is a gap, never a zero.
     const values: (number | null)[] = points
       ? points.map((point) => point.value)
-      : data.map((row) => Number(row[key]) || 0);
+      : data.map((row) => readValue(row[key]));
     const n = values.length;
 
     const reveal = enableHoverReveal;
@@ -1161,6 +1328,24 @@ function buildLineSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
       if (missingMarkers) qualitySeries.push(missingMarkers);
     }
 
+    const sizes = ctx.honesty.sampleSizes[key];
+    if (sizes) {
+      const sampleMarks = sampleSizeSeries({
+        dataKey: key,
+        values,
+        sizes,
+        minSampleSize: line.minSampleSize,
+        showLabels: line.sampleSizeDisplay === "label",
+        format: (count) => ctx.honesty.text.sampleSize(formatCount(count)),
+        labelColor: resolved.tokens.mutedForeground,
+        ringColor: multiColor ? resolved.tokens.foreground : slots[0],
+        background,
+        opacity: opacity.stroke,
+        z: z + 1,
+      });
+      if (sampleMarks) qualitySeries.push(sampleMarks);
+    }
+
     if (reveal) {
       const muted = resolved.tokens.mutedForeground;
       const revealBase: LineSeriesOption = {
@@ -1230,6 +1415,71 @@ function buildLineSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
   });
 }
 
+// Bands sit under the lines and fade with the selection like their series.
+function bandColor(ctx: OptionBuildContext, band: ResolvedBand): string {
+  const { resolved } = ctx;
+  if (band.color) return resolved.series[band.color]?.[0] ?? normalizeColor(band.color);
+  if (band.dataKey) return resolved.series[band.dataKey]?.[0] ?? resolved.tokens.foreground;
+  return resolved.tokens.foreground;
+}
+
+const BAND_FILL_OPACITY = 0.12;
+const BAND_EDGE_OPACITY = 0.35;
+const PARTIAL_FILL_OPACITY = 0.035;
+const GAP_HATCH_OPACITY = 0.11;
+
+function buildHonestySeries(ctx: OptionBuildContext): CustomSeriesOption[] {
+  const { honesty, resolved, curveType } = ctx;
+  const { tokens } = resolved;
+  const out: CustomSeriesOption[] = [];
+
+  for (const band of honesty.bands) {
+    const color = bandColor(ctx, band);
+    const line = band.dataKey ? ctx.lines.find((l) => l.dataKey === band.dataKey) : undefined;
+    const dim = band.dataKey ? getOpacity(ctx.selectedDataKey, band.dataKey).stroke : 1;
+    const curve = curveConfig(line?.curveType ?? curveType);
+    const series = bandSeries({
+      id: bandSeriesId(band.index, band.dataKey),
+      bounds: band.bounds,
+      runs: band.runs,
+      fill: withAlpha(color, BAND_FILL_OPACITY * dim),
+      edge: withAlpha(color, BAND_EDGE_OPACITY * dim),
+      step: curve.step !== false,
+      smooth: curve.smooth,
+      z: 1,
+    });
+    if (series) out.push(series);
+  }
+
+  if (honesty.partial) {
+    out.push(
+      partialPeriodSeries({
+        start: honesty.partial.start,
+        label: honesty.partial.label,
+        fill: withAlpha(tokens.foreground, PARTIAL_FILL_OPACITY),
+        labelColor: tokens.mutedForeground,
+        z: 0,
+      }),
+    );
+  }
+
+  const gaps = gapRegionSeries({
+    spans: honesty.gaps,
+    rowCount: ctx.data.length,
+    label: honesty.gapLabel,
+    hatch: withAlpha(tokens.foreground, GAP_HATCH_OPACITY),
+    labelColor: tokens.mutedForeground,
+    z: 0,
+  });
+  if (gaps) out.push(gaps);
+
+  if (honesty.axis.truncatedAt !== null && ctx.yAxisSlot.truncationNotice !== "off") {
+    out.push(axisBreakSeries({ stroke: tokens.mutedForeground, background: tokens.background, z: 6 }));
+  }
+
+  return out;
+}
+
 function sliceToNull<T>(vals: readonly T[], idx: number): (T | null)[] {
   return vals.map((v, i) => (i > idx ? null : v));
 }
@@ -1273,7 +1523,7 @@ type LiveState = {
 };
 
 export function LineChart<TData extends Record<string, unknown>>({
-  data,
+  data: inputData,
   config,
   xDataKey,
   className,
@@ -1288,6 +1538,8 @@ export function LineChart<TData extends Record<string, unknown>>({
   loadingPoints = LOADING_DEFAULT_POINTS,
   ariaLabel,
   dataStatusText,
+  honestyText,
+  gaps,
   syncId,
   chartOptions,
   children,
@@ -1358,31 +1610,251 @@ export function LineChart<TData extends Record<string, unknown>>({
   const [zoomed, setZoomed] = useState(false);
 
   const seriesKeys = useMemo(() => lines.map((line) => line.dataKey), [lines]);
+  const honestySlots = useMemo(() => collectHonesty(children), [children]);
   const colorKeys = useMemo(
-    () => [...seriesKeys, ...referenceColorKeys(references, config)],
-    [seriesKeys, references, config],
+    () => [
+      ...seriesKeys,
+      ...referenceColorKeys(references, config),
+      ...honestySlots.bands.flatMap((band) => (band.color && config[band.color] ? [band.color] : [])),
+    ],
+    [seriesKeys, references, config, honestySlots],
   );
-
-  const quality = useMemo(() => collectDataQuality(data, lines), [data, lines]);
-  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
-  const qualityIssues = quality.issues.join("\n");
-  useEffect(() => {
-    if (qualityIssues) reportDataQualityIssues("LineChart", qualityIssues.split("\n"));
-  }, [qualityIssues]);
-
-  const defaultAriaLabel = `Line chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.${dataQualityAriaSummary(quality.summary, statusText)}`;
 
   const xCategoryKey = useMemo(() => {
     if (xAxisSlot.dataKey) return xAxisSlot.dataKey;
     if (xDataKey) return xDataKey as string;
-    const firstRow = data[0];
+    const firstRow = inputData[0];
     if (firstRow) {
       const claimed = new Set(seriesKeys);
       const found = Object.keys(firstRow).find((key) => !claimed.has(key));
       if (found) return found;
     }
     return "";
-  }, [xAxisSlot.dataKey, xDataKey, data, seriesKeys]);
+  }, [xAxisSlot.dataKey, xDataKey, inputData, seriesKeys]);
+
+  // With a gap interval, rows absent from the time series are put back as
+  // empty rows, so the axis keeps time even and the hole shows.
+  const gapInterval = typeof gaps === "object" ? gaps.interval : undefined;
+  const data = useMemo(
+    () =>
+      gapInterval && xCategoryKey
+        ? fillMissingRows(inputData, xCategoryKey, gapInterval).data
+        : (inputData as Record<string, unknown>[]),
+    [inputData, xCategoryKey, gapInterval],
+  );
+
+  // A partial period or gap shading reads every series' values as claims, so
+  // an absent value is never drawn as zero or bridged.
+  const trackAll = Boolean(honestySlots.partial || gaps);
+  const qualitySeries = useMemo(
+    () =>
+      lines.map((line) => ({
+        dataKey: line.dataKey,
+        quality: line.quality ?? (trackAll ? {} : null),
+      })),
+    [lines, trackAll],
+  );
+  const claimed = useMemo(() => collectDataQuality(data, qualitySeries), [data, qualitySeries]);
+
+  const [renderedAt] = useState(() => Date.now());
+  const honestyTextResolved = useMemo(() => resolveHonestyText(honestyText), [honestyText]);
+  const partial = useMemo(() => {
+    if (!honestySlots.partial) return null;
+    const found = resolvePartialPeriod(
+      honestySlots.partial,
+      data.map((row) => row[xCategoryKey]),
+      renderedAt,
+    );
+    if (!found) return null;
+    const description = honestySlots.partial.note ?? [
+      honestyTextResolved.partialPeriodDescription,
+      found.progress !== null ? honestyTextResolved.partialProgress(found.progress) : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return {
+      start: found.start,
+      progress: found.progress,
+      label: honestySlots.partial.label ?? honestyTextResolved.partialPeriodLabel,
+      note: description,
+    };
+  }, [honestySlots, data, xCategoryKey, renderedAt, honestyTextResolved]);
+
+  const quality = useMemo(() => {
+    if (!partial) return claimed;
+    const points: Record<string, PointQuality[]> = {};
+    for (const [key, value] of Object.entries(claimed.points)) {
+      points[key] = applyPartialPeriod(value, partial.start);
+    }
+    return { ...claimed, points };
+  }, [claimed, partial]);
+
+  const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
+
+  const bands = useMemo(
+    () =>
+      honestySlots.bands.map((band, index) => {
+        const read = readBand(data, band);
+        return {
+          index,
+          dataKey: band.dataKey,
+          label: band.label ?? honestyTextResolved.intervalLabel,
+          color: band.color,
+          bounds: read.bounds,
+          runs: read.runs,
+          issues: read.issues,
+        };
+      }),
+    [honestySlots, data, honestyTextResolved],
+  );
+
+  const gapList = useMemo(() => {
+    if (!gaps) return [];
+    const series = Object.values(quality.points).map((points) => points.map((point) => point.value));
+    return series.length ? gapSpans(series, data.length) : [];
+  }, [gaps, quality, data.length]);
+
+  const sampleSizes = useMemo(() => {
+    const sizes: Record<string, (number | null)[]> = {};
+    for (const line of lines) {
+      if (line.sampleSizeKey) sizes[line.dataKey] = readSampleSizes(data, line.sampleSizeKey);
+    }
+    return sizes;
+  }, [lines, data]);
+
+  const axis = useMemo(() => {
+    const { min: minProp, max: maxProp } = yAxisSlot;
+    let min: number | undefined = typeof minProp === "number" ? minProp : undefined;
+    let max: number | undefined = maxProp;
+    if (minProp === "auto") {
+      const values: number[] = [];
+      for (const line of lines) {
+        const points = quality.points[line.dataKey];
+        for (let i = 0; i < data.length; i++) {
+          const value = points ? points[i].value : readValue(data[i][line.dataKey]);
+          if (value !== null) values.push(value);
+          const range = points?.[i].range;
+          if (range) values.push(range.lower, range.upper);
+        }
+      }
+      for (const band of bands) {
+        for (const range of band.bounds) if (range) values.push(range.lower, range.upper);
+      }
+      const domain = fitDomain(values);
+      if (domain) {
+        min = domain.min;
+        max = max ?? domain.max;
+      }
+    }
+    const truncatedAt = axisTruncation(min ?? null, max ?? null);
+    const formatted =
+      truncatedAt === null
+        ? ""
+        : (yAxisSlot.tickFormatter?.(truncatedAt, 0) ?? truncatedAt.toLocaleString());
+    const atTop = truncatedAt !== null && truncatedAt < 0;
+    return {
+      min,
+      max,
+      truncatedAt,
+      label: atTop
+        ? honestyTextResolved.axisEndsAt(formatted)
+        : honestyTextResolved.axisStartsAt(formatted),
+      description: honestyTextResolved.axisDescription(formatted),
+    };
+  }, [yAxisSlot, lines, quality, data, bands, honestyTextResolved]);
+
+  const honesty = useMemo<HonestyPlan>(
+    () => ({
+      text: honestyTextResolved,
+      partial,
+      bands,
+      gaps: gapList,
+      gapLabel: (typeof gaps === "object" ? gaps.label : undefined) ?? honestyTextResolved.noDataLabel,
+      axis,
+      sampleSizes,
+    }),
+    [honestyTextResolved, partial, bands, gapList, gaps, axis, sampleSizes],
+  );
+
+  const qualityIssues = [...quality.issues, ...bands.flatMap((band) => band.issues)].join("\n");
+  useEffect(() => {
+    if (qualityIssues) reportDataQualityIssues("LineChart", qualityIssues.split("\n"));
+  }, [qualityIssues]);
+
+  // The key and summary name what the app claimed; the partial period has its own entry.
+  const keySummary = useMemo(
+    () => summarizeDataQuality(Object.values(claimed.points)),
+    [claimed],
+  );
+
+  const honestyEntries = useMemo((): HonestyKeyEntry[] => {
+    const text = honestyTextResolved;
+    const entries: HonestyKeyEntry[] = [];
+    if (partial) entries.push({ kind: "partial", label: partial.label, description: partial.note });
+    for (const band of bands) {
+      if (!band.runs.length) continue;
+      entries.push({
+        kind: "band",
+        label: band.label,
+        description: text.intervalDescription,
+        color: band.color
+          ? config[band.color]
+            ? `var(--color-${band.color}-0)`
+            : band.color
+          : band.dataKey
+            ? `var(--color-${band.dataKey}-0)`
+            : undefined,
+      });
+    }
+    if (gapList.length) {
+      entries.push({ kind: "gap", label: honesty.gapLabel, description: text.noDataDescription });
+    }
+    if (axis.truncatedAt !== null && yAxisSlot.truncationNotice !== "off") {
+      entries.push({ kind: "axis", label: axis.label, description: axis.description });
+    }
+    const labelled = lines.filter((line) => sampleSizes[line.dataKey]);
+    if (labelled.some((line) => line.sampleSizeDisplay === "label")) {
+      entries.push({
+        kind: "sample",
+        label: text.sampleSizeLabel,
+        description: text.sampleSizeDescription,
+      });
+    }
+    const lowMins = labelled.flatMap((line) =>
+      sampleSizes[line.dataKey].some((n) => isLowSample(n, line.minSampleSize))
+        ? [line.minSampleSize as number]
+        : [],
+    );
+    if (lowMins.length) {
+      entries.push({
+        kind: "low-sample",
+        label: text.lowSampleLabel(formatCount(Math.max(...lowMins))),
+        description: text.lowSampleDescription,
+      });
+    }
+    return entries;
+  }, [honestyTextResolved, partial, bands, config, gapList, honesty.gapLabel, axis, yAxisSlot, lines, sampleSizes]);
+
+  const honestyAria = honestyEntries
+    .filter((entry) => entry.kind !== "sample")
+    .map((entry) =>
+      entry.kind === "partial" && partial
+        ? ` ${entry.label} from ${String(data[partial.start]?.[xCategoryKey] ?? "")}.`
+        : entry.kind === "gap"
+          ? ` ${entry.label}: ${gapList
+              .map((gap) => {
+                const first = String(data[gap.start]?.[xCategoryKey] ?? "");
+                const last = String(data[gap.end]?.[xCategoryKey] ?? "");
+                return gap.start === gap.end ? first : `${first} to ${last}`;
+              })
+              .join(", ")}.`
+          : entry.kind === "axis"
+            ? ` ${entry.description}`
+            : ` ${entry.label}.`,
+    )
+    .join("");
+
+  const defaultAriaLabel = `Line chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.${dataQualityAriaSummary(keySummary, statusText)}${honestyAria}`;
 
   const effectiveAnimation = lines[0]?.animationType ?? animationType;
 
@@ -1498,7 +1970,9 @@ export function LineChart<TData extends Record<string, unknown>>({
       revealSink,
       resolved,
       quality: quality.points,
+      claimedQuality: claimed.points,
       statusText,
+      honesty,
       rendererSize: {
         width: echartsRef.current?.getWidth() ?? mountRef.current?.clientWidth ?? 0,
         height: echartsRef.current?.getHeight() ?? mountRef.current?.clientHeight ?? 0,
@@ -1523,6 +1997,7 @@ export function LineChart<TData extends Record<string, unknown>>({
     });
 
     const series = [
+      ...buildHonestySeries(ctx),
       ...buildLineSeries(ctx),
       ...(reference ? [reference] : []),
       ...(brush?.miniSeries ?? []),
@@ -1595,7 +2070,9 @@ export function LineChart<TData extends Record<string, unknown>>({
     enableHoverHighlight,
     enableHoverReveal,
     quality,
+    claimed,
     statusText,
+    honesty,
   ]);
 
   useEffect(() => {
@@ -1981,7 +2458,12 @@ export function LineChart<TData extends Record<string, unknown>>({
   // The status key takes the edge the series legend is not on, so the two never overlap.
   const statusKeyOnTop = legendSlot.present && legendSlot.verticalAlign === "bottom";
   const statusKey = !isLoading && (
-    <DataStatusKey summary={quality.summary} mark="line" text={statusText} />
+    <DataStatusKey
+      summary={keySummary}
+      mark="line"
+      text={statusText}
+      extra={honestyEntries.length ? <HonestyKeyItems entries={honestyEntries} /> : undefined}
+    />
   );
 
   return (
@@ -2066,3 +2548,5 @@ LineChart.Zoom = Zoom;
 LineChart.ReferenceLine = ReferenceLine;
 LineChart.ReferenceArea = ReferenceArea;
 LineChart.ReferenceDot = ReferenceDot;
+LineChart.PartialPeriod = PartialPeriod;
+LineChart.Band = Band;

@@ -1,0 +1,79 @@
+---
+title: Data and tools
+metaTitle: Generative UI Queries, Mutations, and Retry
+description: Connect generated interfaces to registered data tools, distinguish reads from writes, and handle loading and query failure.
+lastModified: "2026-10-12"
+---
+
+`toolProvider` maps tool names in a generated program to implementations you allow. Use `Query()` for data the interface reads and `Mutation()` for operations triggered by an action. The model describes the call; your application decides whether and how to execute it.
+
+## Load data and retry a failure
+
+This example reads a local fixture through `example_sales`. Choose **Simulate query failure** to make that tool reject, then **Retry data query** to recover without changing the program.
+
+<ComponentPreview name="generative-query-demo" playground />
+
+The short delay and failure are deliberate example behavior. No network or model request is sent. The chart uses illustrative data.
+
+## Declare a read
+
+`Query` takes a registered tool name, an arguments object, and a default result. The default gives the interface a predictable shape before data arrives:
+
+```text
+sales = Query("example_sales", {}, {labels: [], values: []})
+root = Stack([InlineHeader("Example orders", "Local fixture data"), chart])
+chart = BarChart(sales.labels, [Series("Orders", sales.values)], "grouped")
+```
+
+Query results use ordinary statement names such as `sales`, not reactive declarations such as `$sales`. A query can use `$` variables in its arguments; changes to those inputs can cause the data to refresh.
+
+Supply the matching implementation through the renderer:
+
+```tsx
+"use client"
+
+import { Renderer, honestLibrary } from "@/lib/generative"
+
+const toolProvider = {
+  example_sales: async () => ({
+    labels: ["Jan", "Feb", "Mar"],
+    values: [12, 18, 15],
+  }),
+}
+
+export function ExampleOrders({ response }: { response: string }) {
+  return <Renderer response={response} library={honestLibrary} toolProvider={toolProvider} />
+}
+```
+
+This implementation returns a local fixture. In a real application, call your authorized backend and validate its returned data. Keep provider functions stable between renders so changes in component identity do not become accidental changes to the data source.
+
+## Show loading and recovery
+
+Use `Renderer.Content` when composing your own query feedback. `useRendererQuery` exposes `isLoading`, `errors`, `retry`, and `isRetrying` within the renderer. The demo uses that hook to show a loading message and an Honest UI retry button.
+
+A failed query is different from an invalid program. Retry the data source when its request failed. Correct or regenerate the source when it names a missing component or uses invalid arguments. Preserve user input while either recovery is pending.
+
+`Renderer.QueryLoading` and `Renderer.QueryError` provide conditional slots for custom feedback. `Renderer.Content` retains mounted content while loading and hides it when query errors are present. Default rendering is less restrictive and can leave content visible during a failed query, so choose how stale data should appear in your product.
+
+## Declare a write explicitly
+
+A mutation does not run just because the program declares it. An action executes it through `@Run`:
+
+```text
+$title = "Example draft"
+result = Mutation("save_draft", {title: $title})
+root = Stack([Button("Save draft", @Run(result), "primary")])
+```
+
+This is a syntax example, not a connected save demo. To use it, register `save_draft` in `toolProvider` and implement the write on your server. Do not show “saved” until the server confirms success.
+
+An `Action([...])` sequence can run a mutation, refresh a query, then reset a variable. If a mutation step fails, the remaining steps stop; that keeps a failed save from clearing the user's values.
+
+## Describe the same tools to the model
+
+Pass tool descriptions through `generateSystemPrompt`'s `promptOptions.tools`. Each structured tool description includes its name, input schema, and output schema. Those names must match the functions supplied by the renderer.
+
+The prompt is an instruction, not an authorization boundary. Validate arguments and check user access on the backend even when the model used a registered tool correctly. An MCP client with `callTool` can also supply the tool provider; it still needs the same access controls.
+
+For server-side registration and an optional script sandbox, see [Server tools and authorization](/docs/ai/generative/server#tools-and-authorization).

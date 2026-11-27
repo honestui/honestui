@@ -1,0 +1,90 @@
+// Copyright (c) 2011-2024 Thesys Inc. MIT; see the generative source LICENSE.
+import type { LibraryJSONSchema, LibrarySpec } from "../../core/index";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+
+export const MAX_AUTOFIX_GENERATION_LENGTH = 100_000;
+
+export interface AutofixOptions {
+  /** The same local schema used by the renderer. */
+  library: LibrarySpec & { schema: LibraryJSONSchema };
+  /** Your application's model call. Omit for validation only. No default network call. */
+  repair?: (request: RepairRequest) => Promise<string>;
+  /** Bounded repair attempts, 1–3. Default 2. */
+  maxAttempts?: number;
+}
+
+export interface AutofixDiagnostic {
+  code: string;
+  message: string;
+  component?: string;
+  path?: string;
+  statementId?: string;
+}
+
+export type AutofixResult = {
+  original: string;
+  fixedErrors: AutofixDiagnostic[];
+  unfixedErrors: AutofixDiagnostic[];
+} & (
+  { status: "already_valid" | "fixed"; content: string } | { status: "fix_failed"; content: null }
+);
+
+export interface BaseAutofixInput {
+  /** Context before the generated assistant message. The wrapper appends that message itself. */
+  messages?: ChatCompletionMessageParam[];
+  signal?: AbortSignal;
+}
+
+export interface AutofixInput extends BaseAutofixInput {
+  generation: string;
+}
+
+export type StreamSource<T> = AsyncIterable<T> & { controller?: AbortController };
+
+export interface AutofixStreamInput<Chunk> extends BaseAutofixInput {
+  /** Native SDK events for the selected import path. */
+  stream: StreamSource<Chunk>;
+}
+
+/** Wrap provider events with validation and repair while preserving the selected output protocol. */
+export interface StreamAdapter<Chunk> {
+  /** SSE format for emitted events; transform must produce chunks compatible with this protocol. */
+  protocol: "openai-chat-completions" | "vercel-ai";
+  /** Forward events and use fix to validate completed UI before emitting its completion marker. */
+  transform(
+    source: StreamSource<Chunk>,
+    fix: (generation: string) => Promise<AutofixResult>,
+  ): AsyncGenerator<Chunk>;
+}
+
+export interface AutofixStream<T> {
+  /** Single consumer. Preserves provider chunks and appends the corrected program before UI completion. */
+  chunks: AsyncIterable<T>;
+  /** Alternative to consuming chunks: SSE in the selected adapter's protocol. */
+  toResponse(): Response;
+  /** Settles after chunks or toResponse() finish. Null when Autofix did not run. Persist content, not joined deltas. */
+  result: Promise<AutofixResult | null>;
+}
+
+/** Stream and request failures throw; exhausted repairs include their diagnostics. */
+export class AutofixError extends Error {
+  // Attach a code and optional HTTP status or repair result to the error.
+  constructor(
+    message: string,
+    readonly code: string,
+    readonly status?: number,
+    readonly result?: AutofixResult,
+  ) {
+    super(message);
+    this.name = "AutofixError";
+  }
+}
+
+export interface RepairRequest {
+  generation: string;
+  diagnostics: AutofixDiagnostic[];
+  systemPrompt: string;
+  messages: ChatCompletionMessageParam[];
+  attempt: number;
+  signal?: AbortSignal;
+}

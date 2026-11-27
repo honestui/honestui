@@ -138,9 +138,16 @@ function renderRegistrySource(
           "registry/default/examples/charts",
           "registry/default/examples/animated",
         ]
-  const absolutePath = directories
-    .map((directory) => path.join(process.cwd(), directory, `${name}.tsx`))
-    .find((candidate) => fs.existsSync(candidate))
+  // Honest AI items live in their own registry folder and include plain
+  // modules and stylesheets as well as components.
+  const aiCandidates =
+    kind === "component"
+      ? [`ai/${name}.tsx`, `lib/${name}.ts`, `lib/${name}.tsx`, `styles/${name}.css`]
+      : [`examples/${name}.tsx`]
+  const absolutePath = [
+    ...directories.map((directory) => path.join(process.cwd(), directory, `${name}.tsx`)),
+    ...aiCandidates.map((candidate) => path.join(process.cwd(), "registry/honest-ai", candidate)),
+  ].find((candidate) => fs.existsSync(candidate))
 
   if (!absolutePath) {
     return undefined
@@ -158,11 +165,14 @@ function renderRegistrySource(
   )
   src = src.replaceAll("@/registry/examples/", "@/components/")
   src = src.replaceAll("@/registry/blocks/", "@/components/honest-ui/blocks/")
+  src = src.replaceAll("@/registry/honest-ai/ai/", "@/components/ai/")
+  src = src.replaceAll("@/registry/honest-ai/lib/", "@/lib/")
+  src = src.replaceAll("@/registry/honest-ai/generative/", "@/lib/generative/")
   src = src.replaceAll("export default", "export")
 
   const heading = title ? `### ${title}\n\n` : ""
 
-  return `${heading}\`\`\`tsx
+  return `${heading}\`\`\`${path.extname(absolutePath).slice(1)}
 ${src}
 \`\`\``
 }

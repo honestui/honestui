@@ -1,0 +1,56 @@
+---
+title: Animated Beam
+description: Connect two elements with a curved line and send a pulse of light along it.
+---
+
+<ComponentPreview name="animated-beam-demo" />
+
+## Overview
+
+Animated Beam draws a curved path between two elements and sends a light pulse along it. Use it to explain how data moves through a system: sources feeding an assistant, services calling an API, or steps in a pipeline. The path is measured from the elements' boxes and recomputed whenever the container or either node resizes, so layouts can be responsive.
+
+## Installation
+
+<CliBlock commands={["animated-beam"]} />
+
+## Usage
+
+```tsx
+import { AnimatedBeam } from "@/components/animated/animated-beam"
+
+const containerRef = useRef<HTMLDivElement>(null)
+const fromRef = useRef<HTMLDivElement>(null)
+const toRef = useRef<HTMLDivElement>(null)
+
+<div ref={containerRef} className="relative flex justify-between">
+  <div ref={fromRef} className="z-10">Source</div>
+  <div ref={toRef} className="z-10">Destination</div>
+  <AnimatedBeam containerRef={containerRef} fromRef={fromRef} toRef={toRef} />
+</div>
+```
+
+The container must be positioned. Give the nodes `z-10` or a background so the beam passes behind them. Stagger several beams with `delay` so their pulses don't arrive together.
+
+## Accessibility
+
+The beam is decorative and hidden from assistive technology, so the diagram's meaning must come from the nodes. Give each node an accessible name, and describe the flow in nearby text when it matters. When reduced motion is requested, the pulse is removed and the resting path stays.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="containerRef" type="RefObject<HTMLElement>" required>Positioned element both nodes sit inside.</ApiRow>
+  <ApiRow name="fromRef" type="RefObject<HTMLElement>" required>Element the beam starts from.</ApiRow>
+  <ApiRow name="toRef" type="RefObject<HTMLElement>" required>Element the beam ends at.</ApiRow>
+  <ApiRow name="curvature" type="number" default="0">Lifts the middle of the curve by this many px. Negative pushes it down. The path always leaves and arrives level.</ApiRow>
+  <ApiRow name="reverse" type="boolean" default="false">Sends the pulse from the end back to the start.</ApiRow>
+  <ApiRow name="duration" type="number" default="4">Seconds for the pulse to travel the path.</ApiRow>
+  <ApiRow name="delay" type="number" default="0">Seconds before the first pulse.</ApiRow>
+  <ApiRow name="pulseLength" type="number" default="0.25">Length of the pulse and its fading tail, as a fraction of the path.</ApiRow>
+  <ApiRow name="pathColor" type="string" default='"var(--muted-foreground)"'>Color of the resting path.</ApiRow>
+  <ApiRow name="pathWidth" type="number" default="1.5">Stroke width in px.</ApiRow>
+  <ApiRow name="pathOpacity" type="number" default="0.2">Opacity of the resting path.</ApiRow>
+  <ApiRow name="gradientStartColor" type="string" default='"var(--foreground)"'>Color at the head of the pulse.</ApiRow>
+  <ApiRow name="gradientStopColor" type="string">Color the tail fades to.</ApiRow>
+  <ApiRow name="startXOffset" type="number" default="0">Horizontal offset of the start point in px. `startYOffset`, `endXOffset`, and `endYOffset` work the same way.</ApiRow>
+  <ApiRow name="className" type="string">Classes for the SVG.</ApiRow>
+</ApiTable>

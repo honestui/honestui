@@ -1,0 +1,212 @@
+---
+title: Artifact Panel
+metaTitle: React Artifact Panel for Files and Documents
+description: Give something an agent made, such as a file or a document, a surface beside the conversation that can be opened again.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="artifact-panel-demo" previewClassName="h-auto min-h-[560px]" />
+
+## Overview
+
+Some replies are not messages. A file, a document, or a page the agent wrote is something a person returns to, and it gets lost when it scrolls away inside a thread. Artifact Panel gives it a surface of its own, and Artifact Card leaves a mention of it in the message, so it can be opened again.
+
+The panel is a frame: a header with the title, a status, your actions, and Close, over a body that scrolls. What goes in the body is yours, such as a [Code View](/docs/ai/code-view), a [Markdown](/docs/ai/markdown) document, or a preview.
+
+Neither component holds the artifact or decides when it shows. Your application keeps which artifact is open, renders the panel when one is, and places it in your layout.
+
+## Anatomy
+
+<Anatomy title="ArtifactPanel">
+  <AnatomyItem name="ArtifactPanel" description="The frame beside the conversation">
+    <AnatomyItem name="Header" description="The title, a short description, the status, your actions, and Close" />
+    <AnatomyItem name="Error" description="A line under the header when the artifact stopped early, with Try again" />
+    <AnatomyItem name="Body" description="Your content, in a region that scrolls, ending with an Incomplete marker after an error" />
+  </AnatomyItem>
+  <AnatomyItem name="ArtifactCard" description="The mention of the artifact inside a message, which opens the panel" />
+</Anatomy>
+
+Installing `artifact-panel` brings [Button](/docs/components/button) along as a registry dependency.
+
+## Behavior
+
+### Status
+
+`status` is `streaming`, `complete`, or `error`, and defaults to `complete`. Pass the same value to the panel and to the card.
+
+- `streaming` shows "Writing…" in the panel's header and on the card.
+- `complete` shows the description.
+- `error` shows a line under the header saying the artifact stopped early, and the same sentence on the card. What was written so far stays in the body, followed by an Incomplete marker where it stops.
+
+Passing `onRetry` adds Try again to the error line. Requesting the artifact again and resetting `status` are your application's work.
+
+### Opening and closing
+
+Artifact Card is a button. Give it an `onClick` that opens the panel, and pass `isOpen` so it can show which state it is in: "Open" when the panel is closed, "Showing" when it is open.
+
+Passing `onClose` to the panel adds Close. A panel with no `onClose` has no Close button, for a layout where the panel is always present.
+
+### Layout
+
+The panel fills its parent's width and height. Give the parent a height, or the body will grow with its content and never scroll.
+
+Where the panel sits is your layout's decision. A common one is two columns on a wide screen, and the panel in place of the conversation on a narrow one, with Close leading back. The preview above is narrow, so it puts the panel under the message.
+
+### Content that reaches the edges
+
+The body has padding, which suits a document. Set `flush` to remove it for content that should reach the panel's edges, such as code. A [Code View](/docs/ai/code-view) with `embedded` drops its own frame and header, so the panel's header is the only one. An embedded Code View has no Copy button, so put your own in `actions`, as the preview does.
+
+### Focus
+
+When a person opens the panel, set `autoFocus`, so the panel takes focus and a keyboard or screen reader user lands in what they asked for. When a reply opens the panel by itself, leave `autoFocus` off, so focus is not pulled out of the prompt the person is typing.
+
+Closing the panel removes the focused button. In `onClose`, return focus to the card that opened it, as the preview does. Try again removes the error line it sits in, so the panel takes focus when it is pressed.
+
+## Accessibility
+
+The panel is a region named by its title. "Writing…" is a status and the error line is an alert, so both are announced when they appear. While its content is taller or wider than the body, the body can take focus, so it can be scrolled from the keyboard.
+
+The card reports whether its panel is open through `aria-expanded`, and shows the same thing in words. Close and Try again are buttons with names.
+
+The panel is not a dialog. It does not trap focus or close on <kbd>Escape</kbd>, because the conversation beside it stays usable. If your narrow layout covers the conversation with the panel, the conversation should be hidden from assistive technology while it is covered.
+
+Every string comes from `labels`.
+
+The preview has been checked with a keyboard and with axe. It has not been checked with a screen reader yet.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open the panel from its card, or activate Close or Try again |
+| <kbd>Tab</kbd> | Move through the header's controls, then into the body when it scrolls |
+| Arrow keys | Scroll the focused body |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/artifact-panel"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the component it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="artifact-panel" title="components/ai/artifact-panel.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { ArtifactCard, ArtifactPanel } from "@/components/ai/artifact-panel"
+
+// In the message that produced the artifact:
+<ArtifactCard
+  ref={cardRef}
+  title={artifact.title}
+  description={artifact.kind}
+  status={artifact.status}
+  isOpen={openArtifactId === artifact.id}
+  onClick={() => setOpenArtifactId(artifact.id)}
+/>
+
+// Beside the conversation:
+{openArtifact && (
+  <ArtifactPanel
+    title={openArtifact.title}
+    description={openArtifact.kind}
+    status={openArtifact.status}
+    autoFocus
+    onRetry={() => agent.rewrite(openArtifact.id)}
+    onClose={() => {
+      setOpenArtifactId(null)
+      cardRef.current?.focus()
+    }}
+  >
+    <Markdown>{openArtifact.text}</Markdown>
+  </ArtifactPanel>
+)}
+```
+
+### Code, with your own actions
+
+`actions` places controls in the header, before Close. For code, pair `flush` with an embedded Code View:
+
+```tsx
+<ArtifactPanel
+  title={artifact.title}
+  flush
+  actions={
+    <Button variant="link" size="sm" onClick={() => copy(artifact.text)}>
+      Copy
+    </Button>
+  }
+>
+  <CodeView embedded filename={artifact.title} code={artifact.text} />
+</ArtifactPanel>
+```
+
+## Examples
+
+### Stopped early
+
+A draft that stopped before it finished. Try again stands in for a second attempt.
+
+<ComponentPreview name="artifact-panel-error" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### ArtifactPanel
+
+Accepts native section props beyond those listed. Its children are the body.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | Names the artifact. |
+| `description` | string | None | A short note under the title. |
+| `status` | `ArtifactStatus` | `"complete"` | Whether the artifact is being written, is finished, or stopped early. |
+| `actions` | ReactNode | None | Controls in the header. |
+| `onClose` | `() => void` | None | Shows Close. |
+| `onRetry` | `() => void` | None | Shows Try again when `status` is `"error"`. |
+| `flush` | boolean | `false` | Removes the body's padding. |
+| `autoFocus` | boolean | `false` | Moves focus to the panel when it mounts. |
+| `labels` | `Partial<ArtifactLabels>` | English | Control names and status text. |
+
+### ArtifactCard
+
+Accepts native button props beyond those listed, including `onClick`.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | The same title as the panel it opens. |
+| `description` | string | None | A short note under the title. |
+| `status` | `ArtifactStatus` | `"complete"` | Replaces the description while the artifact is unfinished. While `isOpen`, a finished card hides the description, which the panel header shows. |
+| `isOpen` | boolean | `false` | Whether this artifact's panel is showing. |
+| `icon` | ReactNode | A document | Shown before the title. |
+| `labels` | `Partial<ArtifactLabels>` | English | Control names and status text. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ArtifactStatus` | `"streaming"`, `"complete"`, or `"error"` |
+| `ArtifactLabels` | `open`, `showing`, `close`, `streaming`, `error`, `retry`, `incomplete` |

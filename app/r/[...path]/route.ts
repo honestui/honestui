@@ -7,6 +7,11 @@ import {
   getRegistryIndex,
 } from "@/lib/registry-locations";
 import { getRegistryItem } from "@/lib/registry";
+import {
+  getPublicItems as getAiPublicItems,
+  getRegistryDependencyUrls as getAiRegistryDependencyUrls,
+  getRegistryItem as getAiRegistryItem,
+} from "@/lib/ai/registry";
 
 type RouteContext = {
   params: Promise<{ path: string[] }>;
@@ -29,8 +34,51 @@ function getPublicRequestOrigin(request: NextRequest) {
   return `${protocol}://${host}`;
 }
 
+const aiItemNotFound = () =>
+  jsonApiError(
+    {
+      code: "REGISTRY_ITEM_NOT_FOUND",
+      message: "Registry item not found",
+      resolution: "Use /r/ai/registry.json to find a valid Honest AI registry item name.",
+    },
+    404,
+  );
+
+/** Honest AI items: `/r/ai/registry.json` and `/r/ai/<name>.json`. */
+async function getAiRegistryResponse(request: NextRequest, fileName: string) {
+  if (!fileName.endsWith(".json")) return aiItemNotFound();
+  const name = fileName.slice(0, -".json".length);
+
+  if (name === "registry") {
+    return NextResponse.json({
+      $schema: "https://ui.shadcn.com/schema/registry.json",
+      name: "Honest AI",
+      homepage: `${getPublicRequestOrigin(request)}/docs/ai`,
+      items: await getAiPublicItems(),
+    });
+  }
+
+  const item = await getAiRegistryItem(name);
+  if (!item) return aiItemNotFound();
+
+  const registryDependencies = getAiRegistryDependencyUrls(item, getPublicRequestOrigin(request));
+
+  return NextResponse.json({
+    $schema: "https://ui.shadcn.com/schema/registry-item.json",
+    name: item.name,
+    type: item.type,
+    ...(item.dependencies.length > 0 && { dependencies: item.dependencies }),
+    ...(registryDependencies.length > 0 && { registryDependencies }),
+    files: item.files,
+  });
+}
+
 export async function GET(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
+
+  if (path.length === 2 && path[0] === "ai") {
+    return getAiRegistryResponse(request, path[1]);
+  }
   const fileName = path.at(-1);
   const name = fileName?.replace(/\.json$/, "");
 

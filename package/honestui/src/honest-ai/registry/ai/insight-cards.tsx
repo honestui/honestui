@@ -19,7 +19,7 @@ export const defaultInsightCardsLabels: InsightCardsLabels = {
 }
 
 // The Button primitive's disabled look, kept focusable with aria-disabled.
-// Shared with Chat Thread's version pager; the outline variant also keeps its edge.
+// Shared with Chat Thread's version pager.
 const pagerDisabled =
   "aria-disabled:cursor-not-allowed aria-disabled:bg-transparent aria-disabled:text-[var(--hui-color-foreground-base-tertiary)] aria-disabled:shadow-none aria-disabled:hover:bg-transparent aria-disabled:active:scale-100!"
 
@@ -61,12 +61,12 @@ function InsightCards({ title, children, labels: labelsProp, className, ...props
         {cards.length > 1 && (
           <div className="flex shrink-0 items-center gap-[var(--hui-space-1)]">
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon-sm"
               aria-label={labels.previous}
               // aria-disabled keeps focus on the button at either end.
               aria-disabled={current === 0}
-              className={cn(pagerDisabled, "aria-disabled:border-[var(--hui-color-border-base-primary)]")}
+              className={pagerDisabled}
               onClick={() => setIndex(Math.max(current - 1, 0))}
             >
               <ChevronLeftIcon aria-hidden="true" />
@@ -89,11 +89,11 @@ function InsightCards({ title, children, labels: labelsProp, className, ...props
                 )}
             </span>
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon-sm"
               aria-label={labels.next}
               aria-disabled={current === cards.length - 1}
-              className={cn(pagerDisabled, "aria-disabled:border-[var(--hui-color-border-base-primary)]")}
+              className={pagerDisabled}
               onClick={() => setIndex(Math.min(current + 1, cards.length - 1))}
             >
               <ChevronRightIcon aria-hidden="true" />
@@ -125,7 +125,7 @@ function InsightCard({ title, className, children, ...props }: InsightCardProps)
     <article
       data-slot="insight-card"
       className={cn(
-        "flex min-w-0 flex-1 flex-col gap-[var(--hui-space-4)] rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-5)] shadow-[var(--hui-shadow-feather)]",
+        "flex min-w-0 flex-1 flex-col gap-[var(--hui-space-4)] rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-5)] shadow-[var(--hui-shadow-feather)]",
         className
       )}
       {...props}

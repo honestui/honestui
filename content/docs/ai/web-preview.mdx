@@ -1,0 +1,155 @@
+---
+title: Web Preview
+metaTitle: React Web Preview with a Sandboxed Frame and Console
+description: Show a page an agent built in a sandboxed frame, with a browser bar, device widths, and a console.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="web-preview-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+Web Preview shows a running page next to the conversation that made it: a dev server URL, a deployed preview, or HTML the agent wrote. The page loads in a sandboxed frame under a slim bar with history, reload, the address, a device width, and a link to open it in a new tab.
+
+It shows the state you pass. It does not run a server or record history: wire `onBack`, `onForward`, and `onNavigate` to your own, and pass `canGoBack` and `canGoForward`. Pass `logs` to show what the page printed, such as messages your sandbox forwards from the page's console.
+
+## Anatomy
+
+<Anatomy title="WebPreview">
+  <AnatomyItem name="Bar" description="Back, Forward, Reload, the address, the device widths, and Open in new tab" />
+  <AnatomyItem name="Viewport" description="The sandboxed frame, narrowed to the chosen device width" />
+  <AnatomyItem name="Console" description="A drawer of logged messages, when logs are passed" />
+</Anatomy>
+
+## Behavior
+
+### Loading and errors
+
+Until the frame reports that it loaded, the viewport shows a loading state and the address bar shows a spinner. Pass `status` when your app knows more than the frame does, such as a build that is still running. With `status="error"`, the page is hidden behind a message, your `error` text, and Try again, which reloads the frame.
+
+### Address
+
+Submitting the address calls `onNavigate` with the new value. Escape puts the current address back. Without `onNavigate`, the address is read-only and can still be selected and copied.
+
+### Reload
+
+Reload remounts the frame, so it works for `srcDoc` pages as well as URLs, then calls `onReload`.
+
+### Device width
+
+Desktop fills the viewport. Tablet narrows the frame to 768px and Mobile to 390px, centered, so you can check a layout without resizing the window. The widths hide on narrow screens, where the viewport is already small.
+
+### Sandbox
+
+The frame's default sandbox allows scripts and forms only. The page cannot reach the hosting page, its storage, or its cookies, open popups, or navigate the top window. Widen `sandbox` only for pages you trust: adding both `allow-scripts` and `allow-same-origin` lets a same-origin page remove its own sandbox.
+
+### Console
+
+With `logs`, a Console row sits under the page with the message count and, when there are errors, the error count. It opens to a scrolling list that keeps the newest message in view. Warnings and errors are colored; other messages are not.
+
+## Accessibility
+
+The frame is named by `title`. Each bar button has a name, and the device widths are a group of toggle buttons that report which is pressed. The loading state is a status and the error is an alert. The console toggle reports whether it is open, and the open list can take focus so it can be scrolled from the keyboard.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move through the bar, the frame, and the console |
+| <kbd>Enter</kbd> | In the address, go to the typed address |
+| <kbd>Escape</kbd> | In the address, restore the current address |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/web-preview"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="web-preview" title="components/ai/web-preview.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { WebPreview } from "@/components/ai/web-preview"
+
+<WebPreview url={server.url} title="App preview" />
+
+<WebPreview url="Generated page" srcDoc={artifact.html} title="Generated page" />
+
+<WebPreview
+  url={location}
+  title="App preview"
+  onNavigate={setLocation}
+  canGoBack={history.canGoBack}
+  onBack={history.back}
+  logs={consoleMessages}
+/>
+```
+
+## Examples
+
+### Error
+
+The dev server stopped, so the page is replaced by the reason and Try again.
+
+<ComponentPreview name="web-preview-error" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### WebPreview
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `url` | string | Required | The address shown, and loaded when `src` and `srcDoc` are missing. |
+| `title` | string | Required | The frame's accessible name. |
+| `src` | string | `url` | The page to load, when it differs from the address shown. |
+| `srcDoc` | string | None | HTML to show in place of a page. |
+| `sandbox` | string | `"allow-scripts allow-forms"` | The frame's sandbox tokens. |
+| `status` | `"loading" \| "ready" \| "error"` | The frame's load | Overrides the load state. |
+| `error` | ReactNode | None | The reason, shown with an error status. |
+| `onNavigate` | `(url: string) => void` | None | Runs when the address is submitted. Without it, the address is read-only. |
+| `onBack`, `onForward` | `() => void` | None | Run on Back and Forward. |
+| `canGoBack`, `canGoForward` | boolean | `false` | Enable Back and Forward. |
+| `onReload` | `() => void` | None | Runs after Reload or Try again reloads the frame. |
+| `device` | `"desktop" \| "tablet" \| "mobile"` | None | The device width, controlled. |
+| `defaultDevice` | `"desktop" \| "tablet" \| "mobile"` | `"desktop"` | The starting device width. |
+| `onDeviceChange` | `(device) => void` | None | Runs when a width is chosen. |
+| `logs` | `WebPreviewLog[]` | None | Logged messages. Passing them adds the console. |
+| `consoleOpen` | boolean | None | Whether the console is open, controlled. |
+| `defaultConsoleOpen` | boolean | `false` | Whether the console starts open. |
+| `onConsoleOpenChange` | `(open: boolean) => void` | None | Runs when the console opens or closes. |
+| `height` | number or string | `360` | The viewport's height. |
+| `labels` | `Partial<WebPreviewLabels>` | English | Button names, states, and console counts. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `WebPreviewLog` | `level` of `"log"`, `"info"`, `"warn"`, or `"error"`, `message`, and optional `time` |
+| `WebPreviewDevice` | `"desktop"`, `"tablet"`, or `"mobile"` |

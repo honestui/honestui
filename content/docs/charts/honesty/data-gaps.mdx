@@ -1,0 +1,88 @@
+---
+title: Data Gaps
+description: Show missing data as a gap, and find dates that are absent from a time series, instead of drawing a line across them.
+image: /og/og-image.png
+---
+
+<ComponentPreview title='gaps={{ interval: "day" }}' name="ex-data-gaps-echarts-line-chart" />
+
+## Overview
+
+When a pipeline fails for three days, the data has no rows for those days. A line chart joins the day before to the day after, and the outage disappears into a smooth slope. A chart that treats an empty value as zero does the opposite and draws a crash that never happened.
+
+Honest UI charts draw neither. An empty value breaks the line. With `gaps`, the chart also shades stretches where nothing was recorded and labels them, and it can find whole rows that are absent from a time series.
+
+## Usage
+
+Set `gaps` on the chart root to shade every stretch where all series are empty:
+
+```tsx
+<LineChart data={data} config={chartConfig} xDataKey="date" gaps>
+  <LineChart.Line dataKey="signups" />
+</LineChart>
+```
+
+When your data skips rows instead of sending empty values, give the expected interval. The chart inserts the absent rows so the axis keeps even time, then shades them.
+
+```tsx
+import { LineChart } from "honestui/charts";
+
+<LineChart data={data} config={chartConfig} xDataKey="date" gaps={{ interval: "day" }}>
+  <LineChart.XAxis dataKey="date" tickFormatter={dayLabel} />
+  <LineChart.YAxis />
+  <LineChart.Tooltip />
+  <LineChart.Line dataKey="signups" />
+</LineChart>
+```
+
+`interval` accepts `"minute"`, `"hour"`, `"day"`, `"week"`, `"month"`, `"quarter"`, or `"year"`, and reads ISO date strings, timestamps, and `Date` objects. Inserted rows hold only the x value, in the same format as the rows around them. To fill rows yourself, for example before passing the data to a table too, use the exported `fillMissingRows(data, xKey, interval)`.
+
+## Behavior to know about
+
+- **Absent values are never zero.** A value that is `null`, empty, or not a number leaves a gap on every series, with or without `gaps`. Set `connectNulls` on a series to bridge it on purpose.
+- **Shaded only when everything is empty.** The "No data" region covers rows where every series is empty. A gap in one series out of three breaks that line but does not shade the plot.
+- **Known statuses.** With [Data Status](/docs/charts/data-status), a value marked `missing` also gets a ring on the baseline. `gaps` turns status tracking on for every series, so their empty values are read as claims rather than ignored.
+- **Bars.** An absent bar leaves its slot empty, with the missing-value ring on the baseline.
+- **Stacks.** An absent value in a stacked area leaves a hole. The chart does not stack the series above it across the gap.
+- **Category labels.** Interval detection needs dates. Category labels such as `"Mon"` cannot be checked for missing rows.
+
+## Accessibility
+
+The default `ariaLabel` lists the gaps, for example "No data: Jun 3 to Jun 5." Hovering a row inside a gap shows the "No data" note in the tooltip, and the key explains the shaded region.
+
+## Changing the text
+
+| Field | Default |
+| --- | --- |
+| `noDataLabel` | "No data" |
+| `noDataDescription` | "Nothing was recorded here, so the line is not drawn across it." |
+
+`gaps={{ label }}` replaces the label for one chart. See [Honest Charts](/docs/charts/honesty) for the full `honestyText` object.
+
+## Examples
+
+### Area chart
+
+<ComponentPreview title='<AreaChart gaps={{ interval: "day" }} />' name="ex-data-gaps-echarts-area-chart" />
+
+### Bar chart
+
+<ComponentPreview title='<BarChart gaps={{ interval: "day" }} />' name="ex-data-gaps-echarts-bar-chart" />
+
+## API Reference
+
+<ApiHeading>Line, Area, Bar, and Combo chart roots</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="gaps" type='boolean | { interval?: "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year"; label?: string }'>
+    `true` shades stretches where every series is empty. An object with `interval` also inserts rows that are absent from a time series. `label` replaces the "No data" label.
+  </ApiRow>
+</ApiTable>
+
+<ApiHeading>Line and Area parts</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="connectNulls" type="boolean" default="false">
+    Draws the line across empty values. Ignored on a series that reads a status, and on every series when `gaps` or a partial period is set.
+  </ApiRow>
+</ApiTable>

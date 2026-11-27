@@ -1,0 +1,130 @@
+---
+title: Stack Trace
+metaTitle: React Stack Trace Viewer with a JavaScript Stack Parser
+description: Show an error's name, message, and frames, with library frames folded away.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="stack-trace-demo" previewClassName="h-auto min-h-[360px]" />
+
+## Overview
+
+Stack Trace shows an error an agent hit while running your code. The header carries the error's name and message. Below it, the frames from your code are listed in full, and each run of library frames folds into one row, so the frames worth reading come first.
+
+Pass `stack`, such as `error.stack` or text from a log, and Stack Trace reads it with `parseStackTrace`. Or parse it yourself and pass `trace`.
+
+## Anatomy
+
+<Anatomy title="StackTrace">
+  <AnatomyItem name="Header" description="The error's name, its message, your actions, and Copy" />
+  <AnatomyItem name="Frame" description="The function name and its file, line, and column" />
+  <AnatomyItem name="Library row" description="A folded run of library frames, with its count" />
+</Anatomy>
+
+## Behavior
+
+### Frames
+
+Frames keep the order of the trace, newest call first. The first frame from your code is set in medium weight, as the likeliest place to look. Long paths are cut short at the end, and the full location shows on hover.
+
+### Library frames
+
+A frame counts as a library frame when its file is in `node_modules`, is a Node internal, or is native code, such as `<anonymous>`. Neighboring library frames fold into one row, such as "3 library frames", which opens them in place. Pass `defaultShowLibraryFrames` to start with them open.
+
+### Opening a frame
+
+With `onFrameClick`, each frame is a button that calls it with the frame and its index, so you can open the file in an editor or a [Code View](/docs/ai/code-view). Without it, frames are plain text.
+
+### Copy
+
+Copy puts the original `stack` on the clipboard, or, for a parsed `trace`, the trace written in the V8 format. If the browser refuses clipboard access, the block says "Copy failed".
+
+### Parsing
+
+`parseStackTrace(stack)` reads V8 stacks, from Chrome, Edge, and Node, and the `function@file:line:column` stacks of Firefox and Safari. Lines before the first frame make up the message, so a message can span several lines. It returns `{ name, message, frames }`, and each frame records whether it is a library frame. `isLibraryFile(file)` is exported for your own checks.
+
+## Accessibility
+
+The block is a group named by the error's name. Frames are an ordered list. A library row reports whether it is open. Frame buttons are named for their location, such as "Open lib/export.ts:14:32". The error is marked by its name and an icon as well as color.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to your actions, Copy, each frame, and each library row |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open a frame, or open or close a library row |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/stack-trace"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="stack-trace" title="components/ai/stack-trace.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { StackTrace, parseStackTrace } from "@/components/ai/stack-trace"
+
+<StackTrace stack={error.stack} />
+
+<StackTrace stack={run.stderr} onFrameClick={(frame) => openFile(frame.file, frame.line)} />
+
+const trace = parseStackTrace(text)
+<StackTrace trace={trace} defaultShowLibraryFrames />
+```
+
+## API reference
+
+### StackTrace
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `stack` | string | None | A raw stack string, read with `parseStackTrace`. |
+| `trace` | `ParsedStackTrace` | None | A parsed trace. Takes the place of `stack`. |
+| `onFrameClick` | `(frame: StackFrame, index: number) => void` | None | Makes frames buttons that call it. |
+| `defaultShowLibraryFrames` | boolean | `false` | Starts with library frames open. |
+| `actions` | ReactNode | None | Controls for the header, placed before Copy. |
+| `onCopy` | `(text: string) => void` | None | Runs after the trace reaches the clipboard. |
+| `labels` | `Partial<StackTraceLabels>` | English | Copy states, library counts, and frame names. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `parseStackTrace` | `(stack: string) => ParsedStackTrace` | Reads a V8, Firefox, or Safari stack. |
+| `isLibraryFile` | `(file: string) => boolean` | Whether a path is library, internal, or native code. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ParsedStackTrace` | `name`, `message`, and `frames` |
+| `StackFrame` | `file`, and optional `functionName`, `line`, `column`, `library`, and `raw` |

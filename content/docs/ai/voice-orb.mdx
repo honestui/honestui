@@ -1,0 +1,147 @@
+---
+title: Voice Orb
+metaTitle: React Voice Assistant Orb
+description: Show whose turn it is in a voice conversation, with a round mark that listens, thinks, and speaks.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="voice-orb-demo" previewClassName="h-auto min-h-[300px]" />
+
+## Overview
+
+In a voice conversation there is no text to read while the turn changes hands. Voice Orb gives the person something to watch: it breathes at rest, swells with their voice while it listens, turns while the assistant thinks, and ripples with the reply while it speaks.
+
+It shows state; it does not decide it. `state` comes from your voice pipeline, and `inputLevel` and `outputLevel` are loudness figures you measure. The orb opens no microphone and plays no audio.
+
+## Anatomy
+
+<Anatomy title="VoiceOrb">
+  <AnatomyItem name="Canvas" description="The body, its halo, and the thinking arc, drawn each frame" />
+  <AnatomyItem name="Glyph" description="A still disc with a mark for each state, shown in place of the canvas with reduced motion" />
+  <AnatomyItem name="Status" description="The state as text, for assistive technology" />
+</Anatomy>
+
+`VoiceOrb` is one component. It installs `motion`, which it uses to read the reduced motion setting.
+
+## Behavior
+
+### States
+
+| State | What it shows | Level it follows |
+| --- | --- | --- |
+| `idle` | A slow breath | None |
+| `listening` | A swell and a rippling edge | `inputLevel` |
+| `thinking` | An arc travelling around the outside | None |
+| `speaking` | A livelier ripple | `outputLevel` |
+
+The state is reported as `data-state` on the root. A change of state or a jump in level eases in, so the orb never snaps.
+
+### Levels
+
+A level is a number from 0 to 1. Pass a number when it comes from React state, or a function the orb calls once per frame, which avoids re-rendering on every audio frame:
+
+```tsx
+<VoiceOrb state="listening" inputLevel={() => meter.current} />
+```
+
+Values outside 0 to 1 are clamped.
+
+### Color
+
+The orb is drawn in the text color, so it is dark on light surfaces and light on dark ones. Pass `accent` with any CSS color to tint it; the color is read at draw time, so tokens such as `var(--hui-color-foreground-accent-primary)` follow the theme.
+
+## Accessibility
+
+The canvas and glyph are hidden from assistive technology. A visually hidden status reads the state, such as "Listening", and is announced when it changes. If text nearby already says the state, set `announce` to `false` so it is not read twice.
+
+The orb is not interactive. Put your microphone and stop controls next to it as real buttons.
+
+With reduced motion, the orb does not animate: it shows a still glyph for the state, a dot, a microphone, three dots, or bars.
+
+Every string comes from `labels`.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/voice-orb"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install Motion.</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="voice-orb" title="components/ai/voice-orb.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { VoiceOrb } from "@/components/ai/voice-orb"
+
+<VoiceOrb
+  state={session.state}
+  inputLevel={() => micLevel.current}
+  outputLevel={() => replyLevel.current}
+/>
+```
+
+## Examples
+
+### Accent color
+
+A smaller orb, tinted with the accent color, in a call header whose text already says the state.
+
+<ComponentPreview name="voice-orb-accent" previewClassName="h-auto min-h-[160px]" />
+
+### With the Audio Orb shader
+
+For a voice agent's main screen, the [Audio Orb](/docs/shaders/audio-orb) shader from Honest UI takes the same `state`, `inputLevel`, and `outputLevel`, and draws a colored glass orb with WebGL. Here it plays through a made-up exchange with a [Live Waveform](/docs/ai/live-waveform) under it and the turn written out, so the state is never shown by the orb alone.
+
+<ComponentPreview name="voice-orb-shader" previewClassName="h-auto min-h-[420px]" />
+
+## API reference
+
+### VoiceOrb
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `state` | `VoiceOrbState` | `"idle"` | What the assistant is doing. |
+| `inputLevel` | `VoiceOrbLevel` | `0` | The person's loudness, followed while listening. |
+| `outputLevel` | `VoiceOrbLevel` | `0` | The assistant's loudness, followed while speaking. |
+| `size` | number | `96` | Diameter in CSS pixels. |
+| `accent` | string | Text color | A CSS color for the orb. |
+| `announce` | boolean | `true` | Reads the state in a status region. |
+| `labels` | `Partial<VoiceOrbLabels>` | English | The text read for each state. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `VoiceOrbState` | `"idle"`, `"listening"`, `"thinking"`, or `"speaking"` |
+| `VoiceOrbLevel` | A number from 0 to 1, or a function that returns one |
+| `VoiceOrbLabels` | One string per state |

@@ -908,6 +908,7 @@ export {
   SelectLabel,
   SelectGroupLabel,
   SelectSeparator,
+  selectTriggerVariants,
   type ItemType,
   type SelectContentProps,
   type SelectItemProps,

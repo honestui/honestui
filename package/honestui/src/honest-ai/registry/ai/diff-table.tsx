@@ -74,14 +74,15 @@ const regularText =
 const edgePadding = "px-[var(--hui-space-5)]"
 const edgeCells = "[&_tr>*:first-child]:ps-[var(--hui-space-5)] [&_tr>*:last-child]:pe-[var(--hui-space-5)]"
 
-// A half-strength tint keeps the values the focus; the change word carries the full color.
-const rowTone = {
-  added: "bg-[color-mix(in_oklch,var(--hui-color-background-success-primary)_50%,var(--hui-color-background-base-primary))]",
-  removed: "bg-[color-mix(in_oklch,var(--hui-color-background-danger-primary)_50%,var(--hui-color-background-base-primary))]",
+// A change is marked by a hairline at the row's start edge and a glyph in its
+// change cell, so the values themselves stay on the plain surface.
+const rowEdge = {
+  added: "[&>td:first-child]:shadow-[inset_2px_0_0_var(--hui-color-border-success-emphasis)]",
+  removed: "[&>td:first-child]:shadow-[inset_2px_0_0_var(--hui-color-border-danger-emphasis)]",
 } as const
 
-const changeText = {
-  added: "text-[var(--hui-color-foreground-success-primary-hover)]",
+const changeGlyph = {
+  added: "text-[var(--hui-color-foreground-success-primary)]",
   removed: "text-[var(--hui-color-foreground-danger-primary)]",
 } as const
 
@@ -151,7 +152,7 @@ function DiffTable({
       data-slot="diff-table"
       data-phase={phase}
       className={cn(
-        "@container/diff-table w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
+        "@container/diff-table w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
         regularText,
         edgeCells,
         className
@@ -161,7 +162,7 @@ function DiffTable({
       <p
         id={titleId}
         className={cn(
-          "m-0 border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-4)] [font-weight:var(--hui-font-weight-medium)]",
+          "m-0 py-[var(--hui-space-4)] [font-weight:var(--hui-font-weight-medium)]",
           edgePadding
         )}
       >
@@ -188,7 +189,7 @@ function DiffTable({
                 key={row.id}
                 data-change={row.change}
                 data-included={isIncluded ? "" : undefined}
-                className={cn(isIncluded && row.change !== "unchanged" && rowTone[row.change])}
+                className={cn(isIncluded && row.change !== "unchanged" && rowEdge[row.change])}
               >
                 <TableCell>
                   {isChange ? (
@@ -214,22 +215,33 @@ function DiffTable({
                           if (phase === "error") setPhase("editing")
                         }}
                       />
-                      {/* The word carries the change, so the row tint is never the only cue. */}
+                      {/* The glyph and the word carry the change, so the edge color is never the only cue. */}
                       <span
                         aria-hidden="true"
                         className={cn(
-                          "whitespace-nowrap [font-weight:var(--hui-font-weight-medium)]",
-                          isIncluded ? changeText[row.change as "added" | "removed"] : "text-[var(--hui-color-foreground-base-secondary)]"
+                          "inline-flex items-center gap-[var(--hui-space-2)] whitespace-nowrap",
+                          isIncluded ? "text-[var(--hui-color-foreground-base-primary)]" : "text-[var(--hui-color-foreground-base-secondary)]"
                         )}
                       >
-                        {row.change === "added" ? `+ ${labels.added}` : `− ${labels.removed}`}
+                        <span
+                          className={cn(
+                            "inline-flex w-[1ch] justify-center font-mono [font-weight:var(--hui-font-weight-medium)]",
+                            isIncluded ? changeGlyph[row.change as "added" | "removed"] : "text-[var(--hui-color-foreground-base-tertiary)]"
+                          )}
+                        >
+                          {row.change === "added" ? "+" : "−"}
+                        </span>
+                        {row.change === "added" ? labels.added : labels.removed}
                       </span>
                     </label>
                   ) : (
                     // The spacer holds a checkbox's width, so every change word starts on one line.
                     <span className="flex items-center gap-[var(--hui-space-3)] whitespace-nowrap text-[var(--hui-color-foreground-base-secondary)]">
                       <span aria-hidden="true" className="size-[var(--hui-space-4)] shrink-0" />
-                      {labels.unchanged}
+                      <span className="inline-flex items-center gap-[var(--hui-space-2)]">
+                        <span aria-hidden="true" className="inline-flex w-[1ch] justify-center font-mono text-[var(--hui-color-foreground-base-tertiary)]">·</span>
+                        {labels.unchanged}
+                      </span>
                     </span>
                   )}
                 </TableCell>
@@ -238,8 +250,8 @@ function DiffTable({
                     key={column.id}
                     className={cn(
                       // The row's name is struck through; the other values stay readable for review.
-                      isIncluded && row.change === "removed" && index === 0 && "line-through decoration-[var(--hui-color-foreground-danger-primary)]",
-                      row.change !== "unchanged" && "text-[var(--hui-color-foreground-base-primary)]"
+                      isIncluded && row.change === "removed" && index === 0 && "line-through decoration-[var(--hui-color-foreground-danger-primary)] decoration-1",
+                      row.change === "unchanged" ? "text-[var(--hui-color-foreground-base-secondary)]!" : "text-[var(--hui-color-foreground-base-primary)]"
                     )}
                   >
                     {row.cells[column.id]}
@@ -252,18 +264,18 @@ function DiffTable({
       </Table>
 
       {/* On a narrow card the summary sits above the button, so neither clips. */}
-      <div className={cn("flex flex-col items-start gap-[var(--hui-space-3)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-3)] @sm/diff-table:flex-row @sm/diff-table:items-center", edgePadding)}>
+      <div className={cn("flex flex-col items-start gap-[var(--hui-space-3)] border-t-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-4)] @sm/diff-table:flex-row @sm/diff-table:items-center", edgePadding)}>
         <p
           ref={statusRef}
           tabIndex={-1}
           role={phase === "error" ? "alert" : "status"}
-          className="m-0 flex min-w-0 items-start @sm/diff-table:me-auto gap-[var(--hui-space-3)] rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-primary)] outline-none focus-visible:[outline:var(--hui-focus-ring)]"
+          className="m-0 flex min-w-0 items-start @sm/diff-table:me-auto gap-[var(--hui-space-3)] rounded-[var(--hui-radius-1)] text-[var(--hui-color-foreground-base-secondary)] tabular-nums outline-none focus-visible:[outline:var(--hui-focus-ring)]"
         >
           {phase === "applied" ? (
             <>
               <CircleCheckIcon
                 aria-hidden="true"
-                className="mt-[3px] size-3.5 shrink-0 text-[var(--hui-color-foreground-success-primary)]"
+                className="mt-[3px] size-3.5 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
               />
               <span className="text-[var(--hui-color-foreground-base-primary)]">
                 {labels.applied(included.length)}

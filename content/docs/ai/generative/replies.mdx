@@ -1,0 +1,138 @@
+---
+title: Reply features
+metaTitle: What a Generative Chat Reply Can Do
+description: Artifacts in a side panel, editable documents, sortable tables, chart data and downloads, sandboxed visuals, and asking about part of a reply.
+lastModified: "2026-11-05"
+---
+
+A `GenerativeChat` reply is more than text and pictures. A person can open a long result beside the conversation, edit it, sort and filter a table, download a chart's data, and pick out a passage or a few rows to ask about. This page covers what each feature does and what your app needs to supply.
+
+## Try the features
+
+Send **artifact**, **table**, **chart** or **visual**. Each reply is a fixed sample written in the [reply format](/docs/ai/generative/chat#reply-format), so you can try every control without a model.
+
+<ComponentPreview name="generative-reply-demo" playground />
+
+To see a model write these replies, use the [playground](/docs/ai/generative/playground).
+
+## Features at a glance
+
+| Feature | Component | What the person can do |
+| --- | --- | --- |
+| [Artifacts](#artifacts) | `Artifact` | Open a document, code file or report in a panel beside the chat, and move between versions |
+| [Editing](#edit-an-artifact) | `Artifact` | Edit the Markdown or code, preview it, and send the edit with their next message |
+| [Ask about a passage](#ask-about-a-passage) | `Artifact` | Select text in the panel and attach it as a quote |
+| [Tables](#tables) | `Table` | Sort, filter, select rows, ask about rows, copy or download CSV, expand |
+| [Charts](#charts) | `BarChart`, `LineChart`, `PieChart` and others | Read the figures as a table, copy or download CSV, save an image, expand |
+| [Visuals](#sandboxed-visuals) | `HtmlVisual` | Use an interactive diagram the model wrote in HTML and SVG, view its code, expand |
+
+All of these are in `honestChatLibrary`, the default library for `GenerativeChat`. `Artifact` and `HtmlVisual` are chat-only. `Table` and the charts are in both libraries, but row selection and asking about rows need the chat shell.
+
+## Artifacts
+
+An `Artifact` is something the person will keep, revise or reuse: a plan, a report, a code file, a long table or a set of charts. The reply shows a card, and the content opens in a panel beside the conversation.
+
+```text
+root = Stack([plan])
+plan = Artifact("Onboarding plan", [doc], "Markdown · 4 weeks")
+doc = MarkDownRenderer("## Week 1: Setup\n- Laptop, accounts and access")
+```
+
+`Artifact(title, children, description?)`. `children` can hold any block a reply can, such as Markdown, code, tables and charts. `description` is a short note such as "Markdown · 6 sections" or "TypeScript".
+
+- **Opening.** A streaming artifact opens on its own when there is room beside the conversation. When the chat is too narrow to fit the panel beside it, the panel covers the chat instead, so it waits for the person to open it. The chat behind a covering panel can't be reached until the panel closes. Escape closes the panel and focus returns to the card.
+- **Versions.** To revise, the model sends a new `Artifact` with the same title. The panel shows **Previous version** and **Next version**, and each card keeps its own description so the versions stay distinguishable.
+- **Copy and Download.** These keep what the artifact was written in. A Markdown document copies as Markdown, and a single code block downloads with its language's file extension. An artifact that also holds charts or tables says **Copy text only** and **Download text only**, because the file can't include them.
+- **Reading width.** A written document keeps a comfortable line length in a wide panel. Code and data use the full width.
+
+The panel is mounted inside `GenerativeChat`. If you build your own layout with the headless hooks, `useDetailedViewPortalTarget` gives the artifact a node to render into; without one, the content renders in place in the reply.
+
+## Edit an artifact
+
+**Edit** turns a Markdown or code artifact into a text editor. Its tooltip names what will be edited, such as "Edit as Markdown" or "Edit the Python source".
+
+| Key or control | Result |
+| --- | --- |
+| **Preview** | Renders the draft. **Back to editing** returns to the text with the caret where it was. |
+| Cmd+Enter or Ctrl+Enter | Saves |
+| Escape | Leaves the preview, then leaves the editor. With unsaved changes, the first Escape warns and the second discards. |
+| **Cancel** | Same as Escape: asks before discarding changes |
+| **Save** | Disabled for an empty draft. Saving an unchanged draft just closes the editor. |
+
+A saved edit doesn't go to the model right away. It appears as a chip above the composer and goes with the person's next message, so they can make several edits and explain them together. The chip has a remove button. **Restore original** puts the model's version back, and if the model had already seen an edit, the next message tells it the original is back.
+
+A sent message shows each edit as its own block above what the person typed, so the conversation stays readable. If sending fails, the edit stays attached and the panel says so.
+
+Editing is plain text with a preview, not rich text. An artifact that holds charts, tables or other components can't be edited, because its text is only part of it.
+
+### Where edits are saved
+
+Saved edits are kept in the browser's `localStorage`, keyed by conversation, so a reload doesn't lose them. They are never sent to another conversation. Edits expire after 30 days, and deleting a conversation in the history removes its edits.
+
+On a shared or signed-in device, call `clearArtifactEdits()` when the person signs out. Pass a conversation ID to clear only that conversation.
+
+```tsx
+import { clearArtifactEdits } from "@/lib/generative/chat"
+
+async function signOut() {
+  await endSession()
+  clearArtifactEdits()
+}
+```
+
+## Ask about a passage
+
+Selecting text in an open artifact shows **Ask about this** beside the selection. Choosing it attaches the passage as a quote chip and moves the caret to the composer. When the panel covers the chat, it closes first so the chip and composer are visible. Quotes stay with their conversation if the person switches chats, and the sent message shows the quote above their question.
+
+## Tables
+
+`Table(columns, title?)` builds a read-only table from columns. `Col(label, data, type?)` holds one column; `"number"` right-aligns it and sorts it by value.
+
+```text
+root = Stack([tbl])
+tbl = Table([Col("City", cities), Col("Population (M)", pops, "number")], "Largest cities")
+cities = ["Tokyo", "Delhi", "Shanghai"]
+pops = [37.1, 33.8, 29.9]
+```
+
+- **Title.** The optional title shows above the table with its row count, and names the table in buttons, file names and chips.
+- **Sort.** Each header sorts the column. Number columns understand grouped figures ("1,200"), currency, percentages, plus and minus signs, and placeholders such as "N/A" or "—", which sort after the figures either way. Negative figures display with a true minus sign.
+- **Filter.** A table with more than 8 rows gets a filter box. The status line says how many rows match, and **Clear filter** resets it.
+- **Select and ask.** **Ask about rows** adds a checkbox to each row, plus one that selects every row shown. The chosen rows attach to the next message as a small table, in the order shown, with a chip such as "2 rows from Largest cities: Tokyo, Delhi". Without the chat shell, the rows are sent as a message instead.
+- **Data.** **Copy as CSV** and **Download CSV** export the rows shown, with figures as written ("1200", not "1,200") so any spreadsheet reads them as numbers. Cells that a spreadsheet would run as a formula are escaped.
+- **Expand.** Opens the table in a larger dialog.
+
+Use `EditableTable` when the person should change values and save them; `Table` is for reading.
+
+## Charts
+
+Charts that have a data table get **View data**, which shows the figures as a table beneath the chart. Each chart also has:
+
+- **Copy as CSV** and **Download CSV**, when the chart's figures can be read as rows
+- **Download image**, a PNG of the chart with its title
+- **Expand**, a larger view
+
+The buttons appear once the chart has finished streaming, because a partial chart has no final data to copy.
+
+## Sandboxed visuals
+
+`HtmlVisual(title, html, description?, height?)` runs HTML, SVG and script the model wrote, for a process or diagram no registered component can draw, such as a step-through of a network handshake.
+
+```text
+root = Stack([steps])
+steps = HtmlVisual("TCP three-way handshake", "<svg …>…</svg><script>…</script>", "Press Next to send each message", 200)
+```
+
+- **Theme.** The visual can use CSS variables that follow the page's theme: `--foreground`, `--muted`, `--surface`, `--border` and `--chart-1` onward. It also gets the page's font, inlined because the sandbox can't load fonts. Switching between light and dark updates a visual that is already open.
+- **Height.** The frame grows to fit the visual, between 120 and 1,600 pixels. `height` sets the space reserved while it loads.
+- **Controls.** **View code** shows the source, and **Expand** opens a larger copy. A link in the visual is offered to the person to open in a new tab instead of navigating the frame.
+- **Recovery.** A visual that tries to open another page is stopped and replaced by a notice with **Show the visual again**.
+
+The visual runs in nested sandboxed frames with no network access and no access to your page, its cookies or its storage. Read the [limits that remain](/docs/ai/generative#what-runs-here) before you ship it, and leave `HtmlVisual` out of your library if generated code must never run.
+
+## Accessibility
+
+- Every control is reachable by keyboard and has a name that includes what it acts on, such as "Download Largest cities as CSV".
+- Screen readers hear what was attached to the next message, the result of copying, how many rows a filter matched, and when an edit is saved.
+- The artifact panel takes focus when a person opens it, and focus returns to the card when it closes. While the panel covers the conversation, the conversation behind it is inert.
+- Charts expose their figures as a table, and visuals ask the model to label their content in visible text.

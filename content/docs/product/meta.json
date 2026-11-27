@@ -1,4 +1,1 @@
-{
-  "title": "Product",
-  "pages": ["index", "data-table", "data-grid", "date-range-picker", "filter-bar", "file-upload", "change-review", "paste-table", "async-action", "overflow-toolbar", "quantity-field"]
-}
+{"title": "Product", "pages": ["index", "async-action", "audit-log", "change-review", "conflict-resolver", "csv-column-mapper", "data-grid", "data-table", "date-range-picker", "file-upload", "filter-bar", "hotkey-recorder", "onboarding-checklist", "overflow-toolbar", "paste-table", "permission-matrix", "quantity-field", "query-builder", "saved-views", "schedule-builder", "secret-row", "undoable-action"]}

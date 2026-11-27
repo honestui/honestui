@@ -1,0 +1,139 @@
+---
+title: Live Waveform
+metaTitle: React Live Audio Waveform
+description: Draw audio as it happens, from a microphone stream, an analyser, or a level you measure.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="live-waveform-demo" previewClassName="h-auto min-h-[220px]" />
+
+## Overview
+
+When someone talks to a voice input, they want proof it hears them. Live Waveform draws that proof: bars of recent loudness that scroll in from the right, or a line of the current samples.
+
+Give it a `stream`, an `analyser`, or a `level`. It never asks for the microphone itself, and it records nothing.
+
+## Anatomy
+
+<Anatomy title="LiveWaveform">
+  <AnatomyItem name="Canvas" description="The bars or line, drawn each frame at the screen's pixel density" />
+</Anatomy>
+
+`LiveWaveform` is one component. It installs `motion`, which it uses to read the reduced motion setting.
+
+## Behavior
+
+### Sources
+
+| Prop | Use it when | What happens |
+| --- | --- | --- |
+| `stream` | You have a `MediaStream` from `getUserMedia` | The waveform opens its own `AudioContext` and analyser, and closes them when the stream changes or it unmounts |
+| `analyser` | Your audio graph already has an `AnalyserNode` | The waveform reads it and never closes it |
+| `level` | You measure loudness elsewhere, or have no audio at all | The waveform draws that level. Pass a function to have it read once per frame |
+
+`analyser` wins over `stream`, and both win over `level`. Stopping the stream's tracks is up to you.
+
+### States
+
+| State | What it shows |
+| --- | --- |
+| `idle` | A flat line |
+| `active` | The source |
+| `processing` | Low bars with a soft crest moving across them, while audio is being handled |
+
+Without `state`, the waveform is `active` when it has a source and `idle` otherwise. The state is reported as `data-state` on the root.
+
+### Bars and line
+
+`variant="bars"` keeps a history of loudness, one bar about every 45 ms, and fits as many bars as the width allows. Set `barWidth` and `barGap` to change the density. `variant="line"` draws the analyser's current samples; with only a `level`, it draws a calm wave of that size.
+
+### Size and color
+
+The canvas fills its box, which is 40 px tall by default; set the height with `className`. Bars are drawn in the text color, read at draw time, so they follow the theme. Set a text color class to change it.
+
+## Accessibility
+
+The waveform is a picture with the `img` role. Its name says the state, such as "Audio waveform, live". It is not a live region, so changes are not announced; announce recording start and stop in your own controls.
+
+With reduced motion, bars change about four times a second instead of scrolling, the line holds still, and processing is a still row of bars.
+
+Every string comes from `labels`.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/live-waveform"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install Motion.</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="live-waveform" title="components/ai/live-waveform.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { LiveWaveform } from "@/components/ai/live-waveform"
+
+<LiveWaveform stream={microphone} state={transcribing ? "processing" : undefined} />
+```
+
+## Examples
+
+### Microphone
+
+The microphone opens only when the button is pressed, and stops when it is pressed again.
+
+<ComponentPreview name="live-waveform-microphone" previewClassName="h-auto min-h-[140px]" />
+
+## API reference
+
+### LiveWaveform
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `state` | `LiveWaveformState` | From the source | Idle, active, or processing. |
+| `stream` | `MediaStream \| null` | None | A stream to analyse. |
+| `analyser` | `AnalyserNode \| null` | None | An analyser you own. |
+| `level` | `LiveWaveformLevel` | None | A level from 0 to 1, or a function that returns one. |
+| `variant` | `"bars" \| "line"` | `"bars"` | Scrolling bars or a line of samples. |
+| `barWidth` | number | `3` | Width of one bar in CSS pixels. |
+| `barGap` | number | `2` | Space between bars in CSS pixels. |
+| `sensitivity` | number | `1` | Multiplies the level before it is drawn. |
+| `labels` | `Partial<LiveWaveformLabels>` | English | The name for each state. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `LiveWaveformState` | `"idle"`, `"active"`, or `"processing"` |
+| `LiveWaveformVariant` | `"bars"` or `"line"` |
+| `LiveWaveformLevel` | A number from 0 to 1, or a function that returns one |
+| `LiveWaveformLabels` | `idle`, `active`, `processing` |

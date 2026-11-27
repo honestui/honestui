@@ -32,11 +32,31 @@ assert.ok(vectors.Abstract1Shapes, "honestui/vectors must export Abstract1Shapes
 assert.ok(charts.BarChart, "honestui/charts must export BarChart")
 assert.ok(shaders.LightRays, "honestui/shaders must export LightRays")
 assert.deepEqual(Object.keys(shaders).sort(), [
+  "AiGlowBorder",
+  "Ascii",
+  "AudioOrb",
+  "Aurora",
   "ChromaticImage",
   "DitherShader",
+  "DotGrid",
+  "Fluid",
+  "FlutedGlass",
   "GradientBlinds",
   "Grainient",
+  "Halftone",
   "LightRays",
+  "LiquidGlass",
+  "LiquidMetal",
+  "MeshGradient",
+  "Metaballs",
+  "Pixelate",
+  "PulsingBorder",
+  "SmokeRing",
+  "Voronoi",
+  "Warp",
+  "Water",
+  "createLiquidGlassMap",
+  "defaultAudioOrbLabels",
 ])
 
 const [ai, promptBar, prose, syntax, syntaxReact, genui, genuiChat, genuiServer] = await Promise.all([

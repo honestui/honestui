@@ -363,7 +363,7 @@ function PromptBar({
                     {item.description && (
                       <span
                         className={cn(
-                          "min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]",
+                          "ms-auto min-w-0 truncate text-[var(--hui-color-foreground-base-secondary)]",
                           smallText
                         )}
                       >
@@ -394,7 +394,7 @@ function PromptBar({
 
       <div
         data-slot="prompt-bar-field"
-        className="flex flex-col gap-[var(--hui-space-2)] rounded-[var(--hui-radius-frame)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-field,var(--hui-color-border-base-tertiary))] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] p-[var(--hui-frame-padding)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:var(--hui-transition-interactive)] not-focus-within:not-in-data-disabled:hover:border-[var(--hui-color-border-field-hover,var(--hui-color-border-field))] focus-within:border-[var(--hui-color-border-accent-emphasis)] focus-within:shadow-[var(--hui-focus-ring-field)] in-data-disabled:border-[var(--hui-color-border-base-primary)] in-data-disabled:bg-[var(--hui-color-background-base-secondary)] in-data-disabled:shadow-none"
+        className="flex flex-col gap-[var(--hui-space-2)] rounded-[var(--hui-radius-frame)] border-[0.5px] border-[var(--hui-color-border-base-secondary)] bg-[var(--hui-color-background-field,var(--hui-color-background-base-primary))] p-[var(--hui-frame-padding)] shadow-[var(--hui-shadow-soft)] motion-safe:[transition:var(--hui-transition-interactive)] not-focus-within:not-in-data-disabled:hover:border-[var(--hui-color-border-base-tertiary)] focus-within:border-[var(--hui-color-border-accent-emphasis)] focus-within:shadow-[var(--hui-focus-ring-field)] in-data-disabled:border-[var(--hui-color-border-base-primary)] in-data-disabled:bg-[var(--hui-color-background-base-secondary)] in-data-disabled:shadow-none"
       >
         {attachments.length > 0 && (
           <ul
@@ -407,11 +407,11 @@ function PromptBar({
               <li
                 key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
                 className={cn(
-                  "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-neutral-primary)] py-[var(--hui-space-1)] ps-[var(--hui-space-3)] pe-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-secondary)]",
+                  "flex min-w-0 max-w-full items-center gap-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-secondary)] py-[var(--hui-space-1)] ps-[var(--hui-space-3)] pe-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-primary)] tabular-nums",
                   smallText
                 )}
               >
-                <FileIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                <FileIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)]" />
                 <span className="min-w-0 truncate" title={file.name}>
                   {file.name}
                 </span>
@@ -453,7 +453,7 @@ function PromptBar({
           onSelect={(event) => setCaret(event.currentTarget.selectionStart)}
           onKeyDown={handleKeyDown}
           className={cn(
-            "m-0 block w-full min-w-0 resize-none border-0 bg-transparent px-[var(--hui-space-2)] py-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] outline-none [overflow-wrap:anywhere] placeholder:text-[var(--hui-color-foreground-base-secondary)] disabled:cursor-not-allowed disabled:text-[var(--hui-color-foreground-base-tertiary)]",
+            "m-0 block min-h-[calc(2lh+var(--hui-space-3))] w-full min-w-0 resize-none border-0 bg-transparent px-[var(--hui-space-3)] pt-[var(--hui-space-3)] pb-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-primary)] outline-none [overflow-wrap:anywhere] placeholder:text-[var(--hui-color-foreground-base-secondary)] disabled:cursor-not-allowed disabled:text-[var(--hui-color-foreground-base-tertiary)]",
             bodyText
           )}
         />
@@ -482,7 +482,7 @@ function PromptBar({
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-[var(--hui-radius-frame-panel)]"
+                className="rounded-full text-[var(--hui-color-foreground-base-secondary)] not-disabled:hover:text-[var(--hui-color-foreground-base-primary)]"
                 disabled={disabled}
                 aria-label={labels.attach}
                 onClick={() => fileInputRef.current?.click()}
@@ -500,7 +500,7 @@ function PromptBar({
                   // Default size, so its hit area matches Attach and Send in the same row.
                   <Button
                     variant="ghost"
-                    className="max-w-full min-w-0 rounded-[var(--hui-radius-frame-panel)]"
+                    className="max-w-full min-w-0 rounded-full px-[var(--hui-space-4)] text-[var(--hui-color-foreground-base-secondary)] not-disabled:hover:text-[var(--hui-color-foreground-base-primary)] data-popup-open:text-[var(--hui-color-foreground-base-primary)]"
                   />
                 }
               >
@@ -511,7 +511,7 @@ function PromptBar({
                 </span>
                 <ChevronDownIcon
                   aria-hidden="true"
-                  className="size-3 shrink-0 text-[var(--hui-color-foreground-base-secondary)]"
+                  className="size-3 shrink-0 text-[var(--hui-color-foreground-base-tertiary)]"
                 />
               </MenuTrigger>
               <MenuPopup align="start" className="min-w-48">
@@ -546,7 +546,7 @@ function PromptBar({
               ref={sendButtonRef}
               type={isStoppable ? "button" : "submit"}
               size="icon"
-              className="rounded-[var(--hui-radius-frame-panel)]"
+              className="rounded-full"
               disabled={!isStoppable && !canSend}
               aria-label={isStoppable ? labels.stop : labels.send}
               onClick={

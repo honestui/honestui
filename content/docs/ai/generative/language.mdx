@@ -1,0 +1,92 @@
+---
+title: Language
+metaTitle: Honest AI Lang Syntax and Component Programs
+description: Learn root statements, component arguments, references, reactive variables, actions, and the stored-message format.
+lastModified: "2026-10-12"
+---
+
+Honest AI Lang is the text format consumed by `Renderer`. A program declares a component tree, values, and actions. You can write it by hand to test an integration, then give the same component signatures to a model.
+
+## Start at root
+
+Every rendered program needs a `root` statement. Use `Stack` for the application library:
+
+```text
+root = Stack([heading, details])
+heading = InlineHeader("Example checklist", "Before departure")
+details = Card([TextContent("Confirm the booking and pack your charger.")])
+```
+
+The renderer follows `root` to its children. `heading` and `details` are references to other statements; they can be declared after the statement that uses them. Inline children such as `TextContent(...)` are allowed too.
+
+In a chat reply, a program is a fenced `honestai` block inside Markdown. It uses the chat library, whose `Stack` root takes only children:
+
+```text
+root = Stack([Callout("info", "Example checklist", "Confirm the booking and pack your charger.")])
+```
+
+See the [chat reply format](/docs/ai/generative/chat#reply-format).
+
+Send the matching `spec.json` or `chat-spec.json` to your [prompt generator](/docs/ai/generative/server#generate-the-model-prompt). The root is part of that contract, not a layout preference inferred by the renderer.
+
+## Follow the component signature
+
+Component calls use positional arguments. Read each signature from left to right. `TextContent(text: string, size?: …)` takes text first and size second:
+
+```text
+root = Stack([TextContent("Example note", "small")])
+```
+
+An argument marked `?` is optional. To supply a later argument while omitting an earlier optional one, put `null` in the earlier position. Do not replace positional arguments with a props object unless that argument's schema is itself an object.
+
+Strings use double quotes. Arrays use square brackets. Objects use braces. Use `\n` inside a string for a line break, such as a Markdown paragraph break. Names and enum values must match the library exactly; `TextContent` and `textcontent` are different names.
+
+The [component library reference](/docs/ai/generative/library#read-a-component-signature) lists registered names. Its generated JSON spec contains the complete signatures, allowed child types, and argument schemas.
+
+## Use reactive variables for interactive values
+
+A `$` prefix marks a value that can change after the program renders. An ordinary statement names a component, a query, or an expression. For example:
+
+```text
+$quantity = 1
+root = Stack([TextContent("Example count: " + $quantity), button])
+button = Button("Add one", @Set($quantity, $quantity + 1), "primary")
+```
+
+`@Set` changes the reactive value. The text reads that value, so it updates without a model request. `@Reset($quantity)` restores the declared default. See [State and forms](/docs/ai/generative/state) for a live example and snapshot restoration.
+
+Only props marked as reactive bindings accept a variable for two-way field updates. The library signature identifies those slots; passing a variable to an arbitrary prop does not turn that prop into an editable field.
+
+## Connect actions to buttons
+
+Action steps have an `@` prefix. A button can accept one step or an `Action([...])` sequence.
+
+| Step | Effect |
+| --- | --- |
+| `@Set($variable, value)` | Updates a reactive value locally |
+| `@Reset($variable)` | Restores its declared default |
+| `@ToAssistant("message")` | Emits a conversation continuation action |
+| `@OpenUrl("https://example.com")` | Emits a URL action for your handler |
+| `@Run(mutation)` | Runs a declared mutation through the tool provider |
+
+`@ToAssistant` and `@OpenUrl` reach your `onAction` callback. The chat shell provides default handling for those two actions; a standalone renderer needs your handler. `@Run` uses the registered tool implementation. See [Data and tools](/docs/ai/generative/tools) before adding reads or writes.
+
+## Store a response with state
+
+The renderer accepts a bare program or a stored message built by the local protocol helpers:
+
+```ts
+import { buildMessage } from "@/lib/generative"
+
+export const stored = buildMessage({
+  content: 'root = Stack([TextContent("Saved example")])',
+})
+```
+
+The stored-message protocol uses `]]>honestai:` markers around its sections. Use `buildMessage` and `parseMessage` rather than constructing marker boundaries by hand. A code fence uses the language name `honestai`; a bare program is enough for a direct `Renderer` response.
+
+## Read diagnostics before changing the model
+
+An unknown component usually means a name is wrong or the selected library does not register it. Missing arguments mean the call does not follow its signature. Unresolved references mean a named statement was used but never defined. An incomplete statement may be normal while tokens are still arriving; it is an error to resolve after generation ends.
+
+Try these failures in the [diagnostics demo](/docs/ai/generative/examples#inspect-and-correct-a-program). If the source parses but a data request fails, retry the request through the query runtime rather than rewriting the program.

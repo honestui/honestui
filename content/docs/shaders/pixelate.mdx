@@ -1,0 +1,75 @@
+---
+title: Pixelate
+description: Pixelate an image or procedural field, with optional glitch bursts, channel split, scanlines, and a sharp lens under the pointer.
+---
+
+<ComponentPreview name="pixelate-demo" playground />
+
+## Overview
+
+Pixelate samples its source once per block, so the picture reads as large pixels. On top of that sit independent layers you can mix:
+
+- **Glitch** fires short random bursts: bands of rows shift sideways, the red and blue channels split, and a few blocks invert. At 0 the effect is perfectly still.
+- **Color split** keeps a constant red and blue offset, like a misaligned print or a cheap lens.
+- **Scanlines** darken alternate lines for a display look.
+- **Color levels** posterizes each channel to a small palette.
+- **Reveal** sharpens a soft circle under the pointer, so people can look through the pixels.
+
+Without `src`, Pixelate works on a slow procedural field.
+
+The playground uses free Unsplash photographs by [Martin Péchy](https://unsplash.com/photos/blue-and-orange-building-faPvxns9O70) and [Marc Wieland](https://unsplash.com/photos/sunset-over-a-serene-mountain-lake-1Kcgpq1ap9E).
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+### Image with a reveal lens
+
+```tsx
+import { Pixelate } from "honestui/shaders"
+
+<Pixelate
+  alt="Blue and orange apartment buildings against a clear sky."
+  className="h-80 rounded-xl"
+  pixelSize={14}
+  reveal
+  src="https://images.unsplash.com/photo-1553933420-77617bac448e?auto=format&fit=crop&w=1600&q=85"
+/>
+```
+
+### Glitch
+
+```tsx
+<Pixelate className="h-80 rounded-xl" pixelSize={6} glitch={0.5} colorSplit={1.5} scanlines={0.3} />
+```
+
+Remote image hosts must allow cross-origin use so WebGL can read the pixels. Glitches need a render loop, so a Pixelate with `glitch` above 0 keeps drawing while it is visible.
+
+## Accessibility
+
+Glitch bursts flash and jump. Keep `glitch` low on large areas, never pair it with content people must read, and avoid it entirely near text or controls; rapid flashing can trigger seizures or migraines. When the user prefers reduced motion, glitches and the procedural field stop and one still frame shows. The pointer reveal is optional decoration and has no keyboard equivalent, so do not hide information behind it.
+
+In image mode, write `alt` text for the image's purpose, or an empty string when it is decorative. The original image shows until the canvas is ready and remains in the accessibility tree afterwards.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="src" type="string">Image to pixelate. Omit it to use the procedural field.</ApiRow>
+  <ApiRow name="alt" type="string">Alternative text for the image. Required with `src`; use an empty string for decorative images.</ApiRow>
+  <ApiRow name="pixelSize" type="number" default="10">Block size in CSS pixels. 1 leaves the source sharp.</ApiRow>
+  <ApiRow name="glitch" type="number" default="0">Glitch intensity from 0 to 1.</ApiRow>
+  <ApiRow name="glitchRate" type="number" default="1">How often bursts fire.</ApiRow>
+  <ApiRow name="colorSplit" type="number" default="0">Constant red and blue channel offset in CSS pixels.</ApiRow>
+  <ApiRow name="scanlines" type="number" default="0">Scanline darkness from 0 to 1.</ApiRow>
+  <ApiRow name="colorLevels" type="number" default="0">Levels per channel. 0 keeps full color.</ApiRow>
+  <ApiRow name="reveal" type="boolean" default="false">Sharpens the area around the pointer.</ApiRow>
+  <ApiRow name="revealRadius" type="number" default="120">Radius of the sharp area in CSS pixels.</ApiRow>
+  <ApiRow name="animated" type="boolean" default="true">Animates the procedural field. Images stay still apart from glitches.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.6">Speed of the procedural field.</ApiRow>
+  <ApiRow name="sourceColors" type="[string, string, string]">Three colors of the procedural field.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders one still frame without glitches.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content layered above the effect.</ApiRow>
+</ApiTable>

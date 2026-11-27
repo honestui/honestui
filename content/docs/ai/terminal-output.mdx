@@ -1,0 +1,137 @@
+---
+title: Terminal Output
+metaTitle: React Terminal Output with Streaming and Exit Status
+description: Show a command an agent ran and its output as it streams, with the exit status and a copy button.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="terminal-output-demo" previewClassName="h-auto min-h-[380px]" />
+
+## Overview
+
+Terminal Output shows a command an agent ran and what it printed. Append to `lines` as output arrives; the block follows the newest line, shows how long the command has been running, and reports the exit code when you pass it.
+
+Output is shown as plain text, with its spacing kept. Strip ANSI color codes before passing lines in. Error output is passed with `stream: "stderr"` and shows in the danger color.
+
+## Anatomy
+
+<Anatomy title="TerminalOutput">
+  <AnatomyItem name="Header" description="The working directory, the prompt sign, the command, the status, and Copy" />
+  <AnatomyItem name="Output" description="The lines, in a scrolling block that follows the newest one" />
+  <AnatomyItem name="Jump to latest" description="A button that appears when the reader scrolls up while output arrives" />
+</Anatomy>
+
+## Behavior
+
+### Running
+
+While `exitCode` is missing, the command counts as running. The header shows a spinner and a clock that counts whole seconds from `startedAt`, or from when the block first showed. Pass `running` for a command that finished without an exit code.
+
+### Exit status
+
+When the command finishes, the header shows "Exit 0" and the `duration`, in the secondary color. A nonzero exit turns the status the danger color. A finished command is announced once, as "Command finished" or with its exit code.
+
+### Following output
+
+The output scrolls itself to the newest line while the reader is at the end. Scrolling up stops it, and a Jump to latest button appears at the bottom; it scrolls back down and resumes following.
+
+### Long output
+
+Once the command finishes, output longer than `collapsedLines` shows only its last lines, under a row that says how many earlier lines are hidden. That row shows them all, and Show less folds them away again. While the command runs, every line stays.
+
+### Copy
+
+Copy puts the output on the clipboard, without the command, and the icon becomes a check for a moment. If the browser refuses clipboard access, the block says "Copy failed".
+
+## Accessibility
+
+The block is a figure captioned by the command. The output is a group named "Output"; when it scrolls, it takes focus so it can be scrolled from the keyboard. The prompt sign is hidden from assistive technology. Status changes are announced through a polite status, and error lines are marked by color and by their own text.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to Copy, Show earlier lines, the output, and Jump to latest |
+| Arrow keys | Scroll the focused output |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/terminal-output"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="terminal-output" title="components/ai/terminal-output.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { TerminalOutput } from "@/components/ai/terminal-output"
+
+<TerminalOutput command={run.command} lines={run.lines} startedAt={run.startedAt} />
+
+<TerminalOutput
+  command="npm test"
+  cwd="~/app"
+  lines={run.lines}
+  exitCode={run.exitCode}
+  duration={run.duration}
+/>
+```
+
+## Examples
+
+### Failure
+
+A test run that exited with 1. Its passing lines fold away, and the failure stays in view.
+
+<ComponentPreview name="terminal-output-failure" previewClassName="h-auto min-h-[340px]" />
+
+## API reference
+
+### TerminalOutput
+
+Accepts native figure props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `command` | string | Required | The command that ran. |
+| `lines` | `TerminalLine[]` | Required | The output, in order. |
+| `cwd` | string | None | The working directory, shown before the command. |
+| `exitCode` | number | None | The exit code. Missing means running. |
+| `running` | boolean | `exitCode === undefined` | Overrides the running state. |
+| `startedAt` | number | When it first showed | When the command started, in epoch milliseconds. |
+| `duration` | number | None | How long it took, in milliseconds. |
+| `collapsedLines` | number | `20` | How many last lines a finished command shows before it is expanded. |
+| `actions` | ReactNode | None | Controls for the header, placed before Copy. |
+| `onCopy` | `(text: string) => void` | None | Runs after the output reaches the clipboard. |
+| `labels` | `Partial<TerminalOutputLabels>` | English | States, counts, and the duration format. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `TerminalLine` | `text`, and optional `stream` of `"stdout"` or `"stderr"` |

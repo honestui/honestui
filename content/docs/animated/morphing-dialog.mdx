@@ -1,0 +1,66 @@
+---
+title: Morphing Dialog
+description: Expand a card into a dialog by morphing its shape, image, and title into place.
+---
+
+<ComponentPreview name="morphing-dialog-demo" />
+
+## Overview
+
+Morphing Dialog turns a card into a full dialog without cutting away. The card's container, image, title, and subtitle carry shared layout ids, so each one springs from its place in the card to its place in the dialog, and back again on close. Body text that only exists in the dialog fades in after the morph settles. Use it for galleries, product cards, and previews where keeping the reader's place matters more than speed.
+
+## Installation
+
+<CliBlock commands={["morphing-dialog"]} />
+
+## Usage
+
+```tsx
+import {
+  MorphingDialog,
+  MorphingDialogClose,
+  MorphingDialogContainer,
+  MorphingDialogContent,
+  MorphingDialogDescription,
+  MorphingDialogImage,
+  MorphingDialogSubtitle,
+  MorphingDialogTitle,
+  MorphingDialogTrigger,
+} from "@/components/animated/morphing-dialog"
+
+<MorphingDialog>
+  <MorphingDialogTrigger className="w-64">
+    <MorphingDialogImage src="/cover.jpg" alt="" className="h-40" />
+    <MorphingDialogTitle>Ohio Stadium</MorphingDialogTitle>
+    <MorphingDialogSubtitle>Columbus, Ohio</MorphingDialogSubtitle>
+  </MorphingDialogTrigger>
+  <MorphingDialogContainer>
+    <MorphingDialogContent>
+      <MorphingDialogImage src="/cover.jpg" alt="" className="h-64" />
+      <MorphingDialogTitle>Ohio Stadium</MorphingDialogTitle>
+      <MorphingDialogSubtitle>Columbus, Ohio</MorphingDialogSubtitle>
+      <MorphingDialogDescription>Opened in 1922…</MorphingDialogDescription>
+      <MorphingDialogClose />
+    </MorphingDialogContent>
+  </MorphingDialogContainer>
+</MorphingDialog>
+```
+
+Render the shared parts (`Image`, `Title`, `Subtitle`) once in the trigger and once in the content. Matching parts morph between the two; their sizes and positions can differ freely.
+
+## Accessibility
+
+The trigger is a button that announces it opens a dialog. The open content is a modal dialog named by its `MorphingDialogTitle` and described by `MorphingDialogDescription`. Focus moves into the dialog when it opens, Tab and Shift+Tab stay inside it, and focus returns to the card when it closes. Escape, a click on the backdrop, and the close button all close it, and page scrolling is locked while it is open. With reduced motion enabled, the dialog fades in place instead of morphing from the card.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="open" type="boolean">Controlled open state of `MorphingDialog`.</ApiRow>
+  <ApiRow name="defaultOpen" type="boolean" default="false">Initial open state when uncontrolled.</ApiRow>
+  <ApiRow name="onOpenChange" type="(open: boolean) => void">Called when the dialog opens or closes.</ApiRow>
+  <ApiRow name="transition" type="Transition" default="SPRING_LAYOUT">Transition for the shared-element morph.</ApiRow>
+  <ApiRow name="backdropClassName" type="string">Classes for the backdrop, on `MorphingDialogContainer`.</ApiRow>
+  <ApiRow name="src / alt" type="string" required>Image source and alternative text, on `MorphingDialogImage`.</ApiRow>
+  <ApiRow name="label" type="string" default='"Close"'>Accessible name of `MorphingDialogClose` when it has no text.</ApiRow>
+  <ApiRow name="style.borderRadius" type="number" default="12 / 16">Corner radius of the trigger and content. Set it through `style` so the radius stays correct during the morph.</ApiRow>
+</ApiTable>

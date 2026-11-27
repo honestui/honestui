@@ -1,0 +1,94 @@
+---
+title: Sample Size
+description: Show how many observations stand behind each point or bar, and mark values that rest on too few.
+image: /og/og-image.png
+---
+
+<ComponentPreview title='sampleSizeKey="responses"' name="ex-sample-size-echarts-line-chart" />
+
+## Overview
+
+An average from eight survey responses and an average from eight hundred look the same on a chart. The first can swing by twenty points from one week to the next for no reason at all. Readers who cannot see the difference chase noise.
+
+`sampleSizeKey` puts the count beside each value as "n=42". Add `minSampleSize`, and values below it get a dashed ring and a "Fewer than 30" entry in the key, so a thin week reads as thin.
+
+## Usage
+
+Put the count in the same row as the value, then name the field on the series:
+
+```tsx
+import { LineChart } from "honestui/charts";
+
+const data = [
+  { week: "W1", score: 72, responses: 184 },
+  { week: "W2", score: 81, responses: 12 },
+  // ...
+];
+
+<LineChart data={data} config={chartConfig} xDataKey="week">
+  <LineChart.XAxis dataKey="week" />
+  <LineChart.YAxis />
+  <LineChart.Tooltip />
+  <LineChart.Line dataKey="score" sampleSizeKey="responses" minSampleSize={30} />
+</LineChart>
+```
+
+With several series, give each its own count field. A scatter chart has one value per point, so it takes `sampleSizeKey` and `minSampleSize` on the root.
+
+## Behavior to know about
+
+- **Labels or tooltip.** `sampleSizeDisplay="label"` writes "n=…" on the plot, which is the default for line, area, bar, and combo charts. `"tooltip"` keeps the plot clean and shows the count only on hover, which is the default for scatter charts.
+- **Thinned labels.** When labels would overlap, the chart shows every second or third one. The tooltip always has the count.
+- **Bars.** The label sits above each bar, or past its end in a horizontal layout. A bar below the minimum gets a dashed outline.
+- **The threshold is yours.** The chart does not decide what a small sample is. Without `minSampleSize`, counts are shown and nothing is flagged.
+- **Missing counts.** A row without a count shows no label and is never flagged.
+
+## Accessibility
+
+The count is part of each tooltip row, and values below the minimum add a note. The key explains the count and the low-sample mark, and when any value falls below the minimum, the default `ariaLabel` ends with the low-sample label, such as "Fewer than 30."
+
+## Changing the text
+
+| Field | Default |
+| --- | --- |
+| `sampleSize` | `(n) => "n=42"` |
+| `sampleSizeLabel` | "Sample size" |
+| `sampleSizeDescription` | "The number of observations behind each value." |
+| `lowSampleLabel` | `(min) => "Fewer than 30"` |
+| `lowSampleDescription` | "Few observations stand behind this value. Treat it with caution." |
+
+See [Honest Charts](/docs/charts/honesty) for the full `honestyText` object.
+
+## Examples
+
+### Area chart
+
+<ComponentPreview title='<AreaChart.Area sampleSizeKey="trials" />' name="ex-sample-size-echarts-area-chart" />
+
+### Bar chart
+
+<ComponentPreview title='<BarChart.Bar sampleSizeKey="responses" />' name="ex-sample-size-echarts-bar-chart" />
+
+### Combo chart
+
+<ComponentPreview title="sampleSizeKey on a combo chart" name="ex-sample-size-echarts-combo-chart" />
+
+### Scatter chart
+
+<ComponentPreview title='<ScatterChart sampleSizeKey="reviews" />' name="ex-sample-size-echarts-scatter-chart" />
+
+## API Reference
+
+<ApiHeading>Line, Area, and Bar parts; Combo series; ScatterChart root</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="sampleSizeKey" type="string">
+    The row field that holds the number of observations behind the value.
+  </ApiRow>
+  <ApiRow name="minSampleSize" type="number">
+    Values with fewer observations than this get a dashed ring or outline and a low-sample entry in the key and tooltip.
+  </ApiRow>
+  <ApiRow name="sampleSizeDisplay" type='"label" | "tooltip"' default='"label", or "tooltip" on ScatterChart'>
+    Where the count appears: on the plot beside each value, or only in the tooltip.
+  </ApiRow>
+</ApiTable>

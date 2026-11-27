@@ -1,0 +1,217 @@
+---
+title: Chat Thread
+metaTitle: React Chat Thread Layout with Composer
+description: Lay out a conversation that scrolls, with a place for the composer under it.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="chat-thread-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+Chat Thread is the frame of a chat: a scrolling list of messages and a slot under it for the composer. Put a [Prompt Bar](/docs/ai/prompt-bar) in the footer and render one `ChatMessage` for each message you hold.
+
+A message can also show the files sent with it, an editor for changing and resending it, and arrows for moving between its versions. Each appears only when you pass the props for it.
+
+It stores no messages and sends nothing. Your application owns the conversation.
+
+Chat Thread replaces the Chat panel from Beautiful UI, which played a scripted reply.
+
+## Anatomy
+
+<Anatomy title="ChatThread">
+  <AnatomyItem name="ChatThread" description="The frame, the scrolling log, and the footer" />
+  <AnatomyItem name="ChatMessage" description="One message, with its author">
+    <AnatomyItem name="Attachments" description="The files sent with the message" />
+    <AnatomyItem name="Editor" description="A text area with Cancel and Send, in place of the message while it is edited" />
+    <AnatomyItem name="Versions" description="Arrows and a position, such as 2 of 3" />
+    <AnatomyItem name="Edit" description="Opens the editor" />
+  </AnatomyItem>
+  <AnatomyItem name="Footer" description="Your composer" />
+</Anatomy>
+
+Installing `chat-thread` brings [Button](/docs/components/button) and [Textarea](/docs/components/textarea) along as registry dependencies.
+
+## Behavior
+
+### Scrolling
+
+When a message is added, the thread scrolls to it. If the person has scrolled up to read, the thread leaves their position alone until they return to the end.
+
+### Messages
+
+A `user` message sits in a bubble on the trailing side. An `assistant` message is plain text with its author above it. Message content is yours: text, [Streaming Text](/docs/ai/streaming-text), [Tool Chips](/docs/ai/tool-chips), or any other component. Set `announce` to `false` on a Streaming Text inside the thread, because the log already announces new text.
+
+### Attachments
+
+`attachments` lists the files that were sent with a message, above it. Each has a name and can have a short note, such as its size. Passing `href` makes the name a link. Chat Thread does not read, upload, or preview the files.
+
+### Editing
+
+Passing `editText` and `onEdit` adds an Edit button under the message. `editText` is the message as plain text, because the message's children may be elements. Edit swaps the message for a text area holding that text, with Cancel and Send.
+
+Send calls `onEdit` with the trimmed text and waits for it. If the promise you return rejects, or the handler throws, the editor stays open with the person's changes and an error line. When it resolves, the editor closes. Send is disabled while the text is empty.
+
+What an edit does to the conversation is your application's decision. Most products send the edited text as a new version of the message and discard the replies that followed the old one. If yours does, say so near the editor, since `onEdit` gives no warning of it.
+
+With a mouse, Edit appears when the person hovers over or focuses the message. On touch screens it stays visible.
+
+### Versions
+
+Editing a message, or asking for a reply again, leaves more than one version of it. Pass `version`, counting from 1, and `versionCount`. When there is more than one version, the message shows arrows and its position, such as "2 of 3". The arrows call `onVersionChange` with the version to show. Rendering that version's content is your application's work.
+
+### Empty
+
+With no messages, `emptyMessage` is centered in the thread.
+
+### Height
+
+The thread fills its parent's height. Give the parent a height, or the thread will grow with its content and never scroll.
+
+## Accessibility
+
+The message list is a log named by `label`, so screen readers announce messages as they are added, in order. It can take focus, so it can be scrolled from the keyboard.
+
+Every message has an author. On user messages the author is read but not shown. Set `hideAuthor` to do the same for an assistant message.
+
+Attachments are a list named "Attachments". Edit and the two version arrows are buttons with names, and an arrow that has nowhere to go is marked disabled but keeps focus. The editor is a text area named "Message". Opening it moves focus into it, and closing it returns focus to Edit. A failed send is an alert.
+
+Every string in a message comes from its `labels`.
+
+The previews have been checked with a keyboard and with axe. They have not been checked with a screen reader yet. The editor opens inside the log, and screen readers differ in how they announce a change there.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to the message list, then into the composer |
+| Arrow keys | Scroll the focused message list |
+| <kbd>Enter</kbd> | Send the edit, from the editor |
+| <kbd>Shift</kbd> + <kbd>Enter</kbd> | Add a line in the editor |
+| <kbd>Escape</kbd> | Close the editor and discard the changes |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/chat-thread"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the component it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="chat-thread" title="components/ai/chat-thread.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { ChatMessage, ChatThread } from "@/components/ai/chat-thread"
+import { PromptBar } from "@/components/ai/prompt-bar"
+
+<div className="h-[32rem]">
+  <ChatThread
+    label="Conversation with the billing agent"
+    footer={<PromptBar disabled={chat.isStreaming} onSubmit={({ text }) => chat.send(text)} />}
+  >
+    {chat.messages.map((message) => (
+      <ChatMessage key={message.id} role={message.role} author={message.author}>
+        {message.text}
+      </ChatMessage>
+    ))}
+  </ChatThread>
+</div>
+```
+
+A message with its files, an editor, and its versions:
+
+```tsx
+<ChatMessage
+  role="user"
+  author="You"
+  attachments={message.files.map((file) => ({ name: file.name, meta: formatSize(file.size) }))}
+  editText={message.text}
+  onEdit={(text) => chat.editAndResend(message.id, text)}
+  version={message.version}
+  versionCount={message.versionCount}
+  onVersionChange={(version) => chat.showVersion(message.id, version)}
+>
+  {message.text}
+</ChatMessage>
+```
+
+## Examples
+
+### Attachments, editing, and versions
+
+A question with two files and two versions. Sending an edit adds a third version. No model replies.
+
+<ComponentPreview name="chat-thread-editing" previewClassName="h-auto min-h-[360px]" />
+
+### An edit that fails to send
+
+The first Send is rejected, as a failed request would be. The editor stays open with the changes. The second Send goes through.
+
+<ComponentPreview name="chat-thread-edit-failure" previewClassName="h-auto min-h-[300px]" />
+
+### Empty thread
+
+A new conversation, with a line that says what to ask.
+
+<ComponentPreview name="chat-thread-empty" previewClassName="h-auto min-h-[280px]" />
+
+## API reference
+
+### ChatThread
+
+Accepts native div props beyond those listed. Its children are the messages.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | Names the conversation. |
+| `emptyMessage` | ReactNode | None | Shown while there are no messages. |
+| `footer` | ReactNode | None | Fixed under the messages. |
+
+### ChatMessage
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `role` | `"user" \| "assistant"` | Required | Sets the message's layout. |
+| `author` | string | Required | Who is speaking. |
+| `hideAuthor` | boolean | `false` | Hides the author and `meta` from view. Both are still read aloud. |
+| `meta` | string | None | A short note beside the author. |
+| `attachments` | `ChatAttachment[]` | None | The files sent with the message. |
+| `editText` | string | None | The message as plain text. With `onEdit`, it shows Edit. |
+| `onEdit` | `(text: string) => void \| Promise<void>` | None | Receives the edited text. Reject to report that it was not sent. |
+| `version` | number | None | Which version is shown, counting from 1. |
+| `versionCount` | number | `1` | How many versions exist. |
+| `onVersionChange` | `(version: number) => void` | None | Runs when the person presses an arrow. |
+| `labels` | `Partial<ChatMessageLabels>` | English | Control names, the editor's name, the error, and the position. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ChatAttachment` | `name`, and optional `href`, `meta` |
+| `ChatMessageLabels` | `attachments`, `edit`, `editField`, `cancel`, `resend`, `editError`, `previousVersion`, `nextVersion`, `version` |

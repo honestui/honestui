@@ -1,0 +1,208 @@
+---
+title: CSV Column Mapper
+description: Match the columns of a CSV file to your fields, with detected value types, sample values, and warnings before anything is imported.
+---
+
+<ComponentPreview name="csv-column-mapper-demo" previewClassName="h-auto min-h-[520px]" />
+
+## Overview
+
+CsvColumnMapper is the step between reading a file and importing it. A CSV from another system rarely uses your field names, so each source column is listed with the type its values look like and a few sample values, next to a select for the field it imports as. Columns whose names match a field are mapped when the mapper opens, and people correct the rest.
+
+The mapper only decides where each column goes. It does not read files, parse values, or save rows. Read the file yourself, pass its header row and data rows, and handle the result in `onConfirm`, which receives the mapping, one object per row keyed by field, and a table ready for [Paste Table](/docs/product/paste-table).
+
+Use it on its own when the rows go straight to a server that validates them. Pair it with Paste Table when people should see and fix invalid cells before they import: the mapper settles the columns, then Paste Table checks every cell. The second example on this page wires the two together.
+
+## Anatomy
+
+<Anatomy title="CsvColumnMapper">
+  <AnatomyItem name="Header" description="Title, and a status line with mapped columns and row count" />
+  <AnatomyItem name="Problems" description="Required fields that no column is mapped to" />
+  <AnatomyItem name="Column table" description="One row per source column">
+    <AnatomyItem name="Column" description="Source name, detected type, and blank cells" />
+    <AnatomyItem name="Samples" description="The first non-empty values from the column" />
+    <AnatomyItem name="Field select" description="Chooses the field the column imports as, or Don't import" />
+    <AnatomyItem name="Hint" description="How the column was matched, that it is skipped, or a type warning" />
+  </AnatomyItem>
+  <AnatomyItem name="Actions" description="Cancel and Continue, shown when their callbacks are passed" />
+</Anatomy>
+
+Installing `csv-column-mapper` brings `Button`, `Select`, and `Table` along as registry dependencies.
+
+## Behavior
+
+### Matching on open
+
+Each header is compared with every field's `label`, `key`, and `aliases`, ignoring case, spaces, and punctuation. An exact match or a listed alias always maps. Otherwise the closest names map when their similarity reaches `matchThreshold`, which defaults to 0.72: "E-mail address" finds Email, and "Organisation" finds a field with the alias "Organization". A similar name is passed over when the column's values plainly disagree with the field's type, so a text column called "Start" does not land in a date field.
+
+Each field takes one column. The hint under a mapped field says how it was matched, so people know which choices the mapper made for them.
+
+### Detected types
+
+Up to 500 rows are scanned per column. Each non-empty cell is read as a whole number, number, currency, percent, date, yes/no, email, link, or text. The column takes the type at least 80% of its cells share, and a column whose cells disagree is text. Numbers widen sensibly: whole numbers and decimals together are a number, and amounts with a currency sign absorb plain numbers.
+
+When a field declares a `type` and the column does not fit it, the hint warns with both types, such as "Values look like text; Seats expects whole number." The warning does not block anything. Text fields, and fields without a type, accept every column.
+
+### Changing the mapping
+
+Choosing a field that another column already uses moves it, and the select lists which column holds each field and which fields are required. "Don't import" skips a column; skipped columns stay listed in a muted color.
+
+### Confirming
+
+Continue names the number of rows it will pass on. While a required field has no column, pressing it sends nothing, lists the missing fields, and moves focus to that list. When `onConfirm` returns a promise, the controls are disabled until it settles.
+
+## Accessibility
+
+The columns are a native table with column headings. Each field select is named for its source column, such as "Field for E-mail address", and its hint is the select's description, so type warnings and match reasons are announced with it.
+
+The summary is a polite status region and is announced as columns are mapped. The missing-fields list is an alert, and it receives focus when Continue is pressed too early. Warnings use an icon and words, not color alone.
+
+Give the root an `aria-label` that names the file, or keep the visible title, which labels it by default.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move between field selects and actions |
+| <kbd>Enter</kbd>, <kbd>Space</kbd>, or <kbd>↓</kbd> | Open the focused field select |
+| <kbd>↑</kbd> <kbd>↓</kbd> | Move between fields in an open select |
+| <kbd>Escape</kbd> | Close the select without changing the field |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["csv-column-mapper"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="csv-column-mapper" title="components/ui/csv-column-mapper/csv-column-mapper-types.ts" file="csv-column-mapper-types.ts" />
+
+<ComponentSource name="csv-column-mapper" title="components/ui/csv-column-mapper/csv-column-mapper-utils.ts" file="csv-column-mapper-utils.ts" />
+
+<ComponentSource name="csv-column-mapper" title="components/ui/csv-column-mapper/csv-column-mapper.tsx" file="csv-column-mapper.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Describe the fields once, split the file into a header row and data rows, then handle the result:
+
+```tsx
+import {
+  CsvColumnMapper,
+  type CsvMapperField,
+} from "@/components/ui/csv-column-mapper/csv-column-mapper"
+import { parseClipboardTable } from "@/components/ui/paste-table/paste-table"
+
+const fields: CsvMapperField[] = [
+  { key: "name", label: "Name", aliases: ["Full name"], required: true },
+  { key: "email", label: "Email", type: "email", required: true },
+  { key: "seats", label: "Seats", type: "integer" },
+]
+
+const [headers, ...rows] = parseClipboardTable(await file.text(), ",")
+
+<CsvColumnMapper
+  headers={headers}
+  rows={rows}
+  fields={fields}
+  onCancel={closeImport}
+  onConfirm={({ rows }) => api.importContacts(rows)}
+/>
+```
+
+Rows in the result hold the source text, trimmed but not parsed. Parse and validate them on the server, or hand `result.table` to Paste Table to do it in the browser first.
+
+### Followed by Paste Table
+
+The mapper's fields are a subset of Paste Table's columns, so one array describes both steps. `result.table` puts each field's label in the first row, and Paste Table's `defaultRows` opens its review step with it, mapping every column without guessing:
+
+```tsx
+<PasteTable columns={columns} defaultRows={result.table} onImport={save} />
+```
+
+### Controlled mapping
+
+Pass `mapping` and `onMappingChange` to store choices, for example to remember a mapping per source system. `suggestMapping(headers, fields)` returns what the mapper would choose on its own.
+
+## Examples
+
+### A complete import
+
+Choose a CSV file or use the sample, map its columns, then review cells in Paste Table and import. "Contact" matches no field, so Name has to be chosen by hand.
+
+<ComponentPreview name="csv-column-mapper-import-flow" previewClassName="h-auto min-h-[520px]" />
+
+## API reference
+
+### CsvColumnMapper
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `headers` | `string[]` | Required | Column names from the file's first row. |
+| `rows` | `string[][]` | Required | Data rows, without the header row. |
+| `fields` | `CsvMapperField[]` | Required | The fields a column can map to. |
+| `mapping` | `CsvColumnMapping` | — | Controlled mapping, one field key or `null` per column. |
+| `defaultMapping` | `CsvColumnMapping` | Suggested | Initial mapping when uncontrolled. |
+| `onMappingChange` | `(mapping) => void` | — | Called with the whole mapping after each change. |
+| `onConfirm` | `(result) => void \| Promise<void>` | — | Shows Continue. Receives the mapping and mapped rows. |
+| `onCancel` | `() => void` | — | Shows Cancel. |
+| `sampleCount` | number | `3` | Non-empty values shown per column. |
+| `matchThreshold` | number | `0.72` | Similarity from 0 to 1 a name needs to map on open. |
+| `disabled` | boolean | `false` | Keeps every control visible but inactive. |
+| `labels` | `Partial<CsvColumnMapperLabels>` | English | Replacement text, type names, and count wording. |
+
+### Fields
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `key` | string | Property name of the field in each mapped row. |
+| `label` | string | Name shown in the select and matched against headers. |
+| `type` | `CsvValueType` | The kind of value expected. Defaults to `"text"`, which accepts any column. |
+| `aliases` | `string[]` | Other header names that map to this field. |
+| `required` | boolean | A column must be mapped before Continue works. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `profileColumns` | `(headers, rows, options?) => CsvColumnProfile[]` | Detected type, blanks, and samples per column. |
+| `detectColumnType` | `(values, threshold?) => { type; confidence }` | The type most cells share. |
+| `detectValueType` | `(raw) => CsvValueType \| null` | The type one cell looks like. |
+| `suggestMapping` | `(headers, fields, options?) => { mapping; suggestions }` | The matching the mapper runs on open. |
+| `headerSimilarity` | `(a, b) => number` | How alike two names are, from 0 to 1. |
+| `isTypeCompatible` | `(fieldType, detected) => boolean` | Whether a field accepts a column without a warning. |
+| `getMissingRequiredFields` | `(mapping, fields) => CsvMapperField[]` | Required fields with no column. |
+| `applyMapping` | `(rows, mapping) => Record<string, string>[]` | Rows keyed by field. |
+| `toMappedTable` | `(rows, mapping, fields) => string[][]` | Mapped columns with field labels in the first row. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `CsvValueType` | `"text" \| "number" \| "integer" \| "currency" \| "percent" \| "date" \| "boolean" \| "email" \| "url"` |
+| `CsvColumnMapping` | `(string \| null)[]`, one field key per source column |
+| `CsvMappingResult` | `{ mapping; rows; table }` |
+| `CsvColumnProfile` | `{ index; header; type; confidence; samples; emptyCount }` |
+| `CsvColumnMapperLabels` | Every string, type name, and count function the component writes |

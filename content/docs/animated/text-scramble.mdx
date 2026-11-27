@@ -1,0 +1,58 @@
+---
+title: Text Scramble
+description: Scramble text through random characters and resolve it left to right, on mount, on view, on hover, or on demand.
+---
+
+<ComponentPreview name="text-scramble-demo" />
+
+## Overview
+
+Text Scramble cycles each character through random glyphs and settles them in reading order, the "decoding" effect used for status changes, build labels, and terminal-style navigation. Use it for short labels whose change is worth noticing. Avoid it on body text, where a reader would have to wait to read.
+
+Every scrambling glyph is drawn over an invisible copy of its final character, so a random wide glyph such as `W` never pushes the line wider. The only change during a scramble is a pixel or two of lost kerning between characters, and settled text keeps its normal kerning. For a perfectly fixed width, use a monospaced font, which has no kerning. Spaces stay in place by default, so words keep their shape and long text still wraps between them.
+
+## Installation
+
+<CliBlock commands={["text-scramble"]} />
+
+## Usage
+
+```tsx
+import { TextScramble } from "@/components/animated/text-scramble"
+
+<TextScramble>Deployment complete</TextScramble>
+```
+
+Play it on hover or keyboard focus, for navigation links:
+
+```tsx
+<a href="/settings">
+  <TextScramble trigger="hover" characters="01#/<>_=">
+    Settings
+  </TextScramble>
+</a>
+```
+
+Change `children` or `replayKey` to play it again, for example after a status update or a button press.
+
+## Accessibility
+
+Assistive technology reads the final text from a visually hidden copy, and the scrambling characters are hidden from it. Screen readers never hear the random characters. The server and the first client render both show the final text, so the content is readable before JavaScript runs.
+
+With reduced motion enabled, the text changes to its final value at once without scrambling.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="string" required>Final text. Changing it scrambles into the new value.</ApiRow>
+  <ApiRow name="as" type="ElementType" default='"span"'>Element to render.</ApiRow>
+  <ApiRow name="trigger" type='"mount" | "view" | "hover"' default='"mount"'>When the scramble plays. `hover` also plays on keyboard focus.</ApiRow>
+  <ApiRow name="replayKey" type="unknown">Plays the scramble again whenever this value changes.</ApiRow>
+  <ApiRow name="duration" type="number" default="0.8">Seconds until the last character resolves.</ApiRow>
+  <ApiRow name="speed" type="number" default="40">Milliseconds between random-character swaps.</ApiRow>
+  <ApiRow name="characters" type="string" default="A–Z, a–z, 0–9">Characters drawn while scrambling.</ApiRow>
+  <ApiRow name="scrambleSpaces" type="boolean" default="false">Scrambles spaces too, hiding word gaps during the effect.</ApiRow>
+  <ApiRow name="onComplete" type="() => void">Called once the text has resolved.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element.</ApiRow>
+  <ApiRow name="scrambleClassName" type="string">Class for characters that are still scrambling, such as a muted color.</ApiRow>
+</ApiTable>

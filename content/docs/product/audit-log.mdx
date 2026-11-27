@@ -1,0 +1,228 @@
+---
+title: Audit Log
+description: Show who did what and when as a feed grouped by day, with each field change written out and the event's details one click away.
+---
+
+<ComponentPreview name="audit-log-demo" previewClassName="h-auto max-h-none min-h-[640px]" />
+
+## Overview
+
+AuditLog lists events newest first, grouped under Today, Yesterday, and dated headings. Each event reads as a sentence, "Ana Ruiz changed the plan of Northwind Labs", with the time beside it. When an event changed fields, the change is written out under the sentence: "Plan: Team → Business". Facts about the event, such as the IP address or request id, sit behind a Details button.
+
+Use it for a workspace's security log, a record's history beside its form, or a team's activity feed. People and activity-type filters narrow the list, and "Load older activity" fetches the next page.
+
+AuditLog shows the entries you pass. It does not fetch or record anything, and it never decides what is worth logging.
+
+## Anatomy
+
+<Anatomy title="AuditLog">
+  <AnatomyItem name="Header" description="Title and event count, with the filters when they are on">
+    <AnatomyItem name="People filter" description="Everyone, or one actor" />
+    <AnatomyItem name="Activity filter" description="All activity, or one category" />
+  </AnatomyItem>
+  <AnatomyItem name="Day" description="A heading, then that day's events">
+    <AnatomyItem name="Event" description="Avatar, sentence, and time">
+      <AnatomyItem name="Changes" description="Each field's old and new value, or the items added and removed" />
+      <AnatomyItem name="Details" description="A disclosure with the exact time and any facts you pass" />
+    </AnatomyItem>
+  </AnatomyItem>
+  <AnatomyItem name="Load more" description="Fetches older events; shown while hasMore is true" />
+</Anatomy>
+
+Installing `audit-log` brings `Avatar`, `Button`, `Menu`, and `Tooltip` along as registry dependencies.
+
+## Behavior
+
+### Entries
+
+Each entry has an `actor`, an `action`, an optional `target`, and a `timestamp`. The sentence is the actor's name, the action, and the target, so write the action as the words between them: "changed the plan of", "invited", "rotated the signing key for". A target with an `href` is a link.
+
+Actors show their initials, or an image from `avatarUrl`. An actor with `kind: "system"` or `kind: "api"` shows an icon instead, so automated events are told apart from people at a glance.
+
+### Days and times
+
+Entries are sorted newest first and grouped by calendar day. Today's events show relative time, such as "12 min ago", which refreshes each minute. Older events show the clock time, since the heading already names the day. Hovering a time shows the full date and time, and screen readers hear it in full.
+
+Pass `timeZone` to group days in a fixed zone, such as `"UTC"` for a log that a whole company reads. Pass `now` when the times must not move, as in tests and screenshots. Without `now`, times appear once the log mounts in the browser, because a server does not know the reader's clock.
+
+### Changes
+
+`changes` lists what an event changed. A value change has a `label`, `before`, and `after`, and reads "Plan: Team → Business". An empty old value reads "Not set". A list change has `kind: "list"` with `added` and `removed` items, each with a plus or minus.
+
+The first three changes are shown. When there are more, a button shows the rest. Change the number with `maxInlineChanges`. A change's `render`, or `renderValue` on the log, formats values such as money.
+
+### Details
+
+`details` is a list of `{ label, value, mono? }`. They sit behind a Details button with the exact time, out of the way until someone investigates an event. Set `mono` for ids, addresses, and keys.
+
+### Filters
+
+`filterable` shows two menus in the header. The people menu lists each actor once. The activity menu lists each entry's `category`, and is hidden when no entry has one. Filtering is done for you on the entries you passed; to filter on a server, control `filter` and fetch new entries in `onFilterChange`.
+
+### Paging
+
+Pass `hasMore` and `onLoadMore` to show "Load older activity" at the bottom. When `onLoadMore` returns a promise, the button reads "Loading…" until it settles. Append the new entries to `entries`.
+
+## Accessibility
+
+The log is a region named by its title. Each day is a group named by its heading, and its events are an ordered list. The avatars are decorative, since each sentence starts with the actor's name.
+
+A change is read as "Plan, was Team, now Business": the words are in the markup, and the strikethrough and arrow are decorative. Added and removed list items are read as "Added" and "Removed" before the item. The Details and more-changes buttons report whether they are expanded.
+
+The event count in the header is a polite status region, so filtering announces how many events remain. Filter menus are named for what they filter and what is chosen, such as "People: Dee Park".
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move through filters, target links, and each event's buttons |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Open a filter menu, show more changes, or toggle details |
+| <kbd>↓</kbd> / <kbd>↑</kbd> | Move through a filter menu's choices |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["audit-log"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="audit-log" title="components/ui/audit-log/audit-log-types.ts" file="audit-log-types.ts" />
+
+<ComponentSource name="audit-log" title="components/ui/audit-log/audit-log-utils.ts" file="audit-log-utils.ts" />
+
+<ComponentSource name="audit-log" title="components/ui/audit-log/audit-log.tsx" file="audit-log.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Map your stored events to entries, and append each page as it loads:
+
+```tsx
+import { AuditLog, type AuditLogEntry } from "@/components/ui/audit-log/audit-log"
+
+const entries: AuditLogEntry[] = events.map((event) => ({
+  id: event.id,
+  actor: { id: event.userId, name: event.userName },
+  action: event.summary,
+  target: { label: event.objectName, href: `/accounts/${event.objectId}` },
+  timestamp: event.createdAt,
+  category: event.area,
+  changes: event.fields.map((field) => ({
+    label: field.label,
+    before: field.from,
+    after: field.to,
+  })),
+  details: [{ label: "IP address", value: event.ip, mono: true }],
+}))
+
+<AuditLog
+  entries={entries}
+  filterable
+  hasMore={page.hasMore}
+  onLoadMore={() => fetchNextPage()}
+/>
+```
+
+For one record's history, set the title and leave the filters off:
+
+```tsx
+<AuditLog entries={history} labels={{ title: "Invoice INV-2041 history" }} />
+```
+
+Pass `header={null}` to remove the header, or your own element to replace it.
+
+## Don't do this
+
+### Logging secrets in changes
+
+```tsx
+// Bad. Anyone who can read the log can read the old and new key.
+{ label: "API key", before: oldKey, after: newKey }
+```
+
+```tsx
+// Good. The event says the key changed without showing it.
+{ id, actor, action: "rotated the API key for", target: { label: "Production" }, timestamp }
+```
+
+### Writing actions as codes
+
+```tsx
+// Bad. "Ana Ruiz billing.plan.update Northwind Labs" is not a sentence.
+action: event.type
+```
+
+Map event types to phrases people read, such as "changed the plan of", and put the raw type in `details` for people who need it.
+
+## Examples
+
+### One record's history
+
+A narrower log beside a record, with an API actor, formatted money, and older days shown by date.
+
+<ComponentPreview name="audit-log-record" previewClassName="h-auto max-h-none min-h-[420px]" />
+
+## API reference
+
+### AuditLog
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entries` | `AuditLogEntry[]` | Required | Events in any order; they are sorted newest first. |
+| `now` | `Date \| number` | Mount time, each minute | The time relative times count from. |
+| `locale` | string | The browser's | Formats dates and times. |
+| `timeZone` | string | The viewer's | Groups days and formats times in this zone. |
+| `filterable` | boolean | `false` | Shows the people and activity filters. |
+| `filter` | `AuditLogFilter` | None | Controlled filter, `{ actor?, category? }`. |
+| `defaultFilter` | `AuditLogFilter` | `{}` | Initial filter when uncontrolled. |
+| `onFilterChange` | `(filter) => void` | None | Runs when a filter changes. |
+| `hasMore` | boolean | `false` | Shows Load older activity. |
+| `onLoadMore` | `() => void \| Promise<void>` | None | Fetches the next page. |
+| `maxInlineChanges` | number | `3` | Changes shown before the rest fold. |
+| `header` | `ReactNode` | Built-in header | Replaces the header; `null` removes it. |
+| `renderValue` | `(value, change) => ReactNode` | None | Display for change values without their own `render`. |
+| `labels` | `Partial<AuditLogLabels>` | English | Replacement text, including the relative-time phrases. |
+
+### AuditLogEntry
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `id` | string | Stable key. |
+| `actor` | `{ id?; name; avatarUrl?; kind? }` | Who did it. `kind` is `"person"`, `"system"`, or `"api"`. |
+| `action` | string | The words between the actor and the target. |
+| `target` | `{ label; href? }` | What it was done to. |
+| `timestamp` | `Date \| string \| number` | When it happened. |
+| `category` | string | Groups entries for the activity filter. |
+| `changes` | `AuditLogChange[]` | `{ label; before?; after?; render? }` or `{ kind: "list"; label; added?; removed?; itemLabel? }` |
+| `details` | `AuditLogDetail[]` | `{ label; value; mono? }` behind the Details button. |
+| `tone` | `"default" \| "danger"` | Tints a system or API actor's icon for destructive events. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `groupEntriesByDay` | `(entries, timeZone?) => AuditLogDay[]` | The sorting and grouping the log uses. |
+| `filterEntries` | `(entries, filter) => AuditLogEntry[]` | The built-in filter. |
+| `formatEntryTime` | `(date, now, labels, options?) => string` | The short time beside an event. |

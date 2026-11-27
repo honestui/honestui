@@ -1,0 +1,125 @@
+---
+title: File Tree
+metaTitle: React File Tree with Change Markers and Keyboard Navigation
+description: Show a project's folders and files, with the files an agent added, changed, or deleted marked.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="file-tree-demo" previewClassName="h-auto min-h-[380px]" />
+
+## Overview
+
+File Tree shows the files an agent is working in. Folders open and close, one node can be chosen, and each file the agent touched carries a letter: A for added, M for modified, D for deleted. Use `onSelect` to show the chosen file in a [Code View](/docs/ai/code-view).
+
+Pass the tree as nested nodes. A node with `children`, even an empty list, is a folder. Each node's id is its path from the root, such as `app/invoices/page.tsx`, unless you pass `id`.
+
+## Anatomy
+
+<Anatomy title="FileTree">
+  <AnatomyItem name="Header" description="An optional title, such as the project name" />
+  <AnatomyItem name="Folder" description="A chevron, a folder icon, and the name" />
+  <AnatomyItem name="File" description="A file icon, the name, and a change letter" />
+</Anatomy>
+
+## Behavior
+
+### Folders
+
+Clicking a folder chooses it and opens or closes it. A closed folder that holds changes shows a dot, so a change is never hidden inside it. Open folders are controlled with `expanded` and `onExpandedChange`, or start from `defaultExpanded`.
+
+### Choosing
+
+Clicking a node, or pressing Enter or Space on it, chooses it and calls `onSelect`. The chosen node keeps a neutral fill. Control it with `selected`, or start from `defaultSelected`.
+
+### Changes
+
+Added files show a green A, modified files an amber M, and deleted files a red D with the name struck through. Files the agent did not touch show nothing.
+
+## Accessibility
+
+File Tree follows the tree view pattern. The tree is named by its title, or by "Files". Each node reports its level, its place among its siblings, whether it is chosen, and, for a folder, whether it is open. Only one node is a tab stop; arrow keys move between nodes. Change letters are read as "Added", "Modified", and "Deleted", and a closed folder's dot as "Contains changes".
+
+| Key | Action |
+| --- | --- |
+| <kbd>ArrowDown</kbd> and <kbd>ArrowUp</kbd> | Move to the next or previous visible node |
+| <kbd>ArrowRight</kbd> | Open a closed folder, or move into an open one |
+| <kbd>ArrowLeft</kbd> | Close an open folder, or move to the parent |
+| <kbd>Home</kbd> and <kbd>End</kbd> | Move to the first or last visible node |
+| <kbd>Enter</kbd> | Choose the node, and open or close a folder |
+| <kbd>Space</kbd> | Choose the node |
+| <kbd>*</kbd> | Open every folder beside the focused node |
+| Letters | Move to the next node whose name starts with them |
+
+In right-to-left layouts, the left and right arrows swap.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/file-tree"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="file-tree" title="components/ai/file-tree.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { FileTree } from "@/components/ai/file-tree"
+
+<FileTree nodes={workspace.files} onSelect={(id) => openFile(id)} />
+
+<FileTree
+  title={project.name}
+  nodes={workspace.files}
+  expanded={openFolders}
+  onExpandedChange={setOpenFolders}
+  selected={activeFile}
+  onSelect={setActiveFile}
+/>
+```
+
+## API reference
+
+### FileTree
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `nodes` | `FileTreeNode[]` | Required | The top-level folders and files. |
+| `title` | ReactNode | None | A heading that also names the tree. |
+| `expanded` | `string[]` | None | The ids of open folders, controlled. |
+| `defaultExpanded` | `string[]` | `[]` | The folders open at first. |
+| `onExpandedChange` | `(expanded: string[]) => void` | None | Runs when a folder opens or closes. |
+| `selected` | `string \| null` | None | The chosen node's id, controlled. |
+| `defaultSelected` | `string \| null` | `null` | The node chosen at first. |
+| `onSelect` | `(id: string, node: FileTreeNode) => void` | None | Runs when a node is chosen. |
+| `labels` | `Partial<FileTreeLabels>` | English | The tree's name and the change names. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `FileTreeNode` | `name`, and optional `id`, `children`, and `change` |
+| `FileTreeChange` | `"added"`, `"modified"`, or `"deleted"` |

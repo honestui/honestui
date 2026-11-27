@@ -97,9 +97,10 @@ body {
 }
 
 /* Heading defaults. The size, weight, and line height skip component parts
-   (anything with a data-slot, such as a dialog title rendered as an h2) and
-   everything inside a docs preview, so components and examples render at the
-   size their own classes ask for. */
+   (anything with a data-slot, such as a dialog title rendered as an h2),
+   everything inside a docs preview, and rendered prose outside a `not-prose`
+   block, so components, examples, and Markdown render at the size their own
+   styles ask for. */
 h1,
 h2,
 h3,
@@ -107,22 +108,22 @@ h4 {
   font-family: var(--hui-font-title);
   text-wrap: balance;
 }
-h1:not([data-slot], [data-slot="preview"] *) {
+h1:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t4);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t4);
 }
-h2:not([data-slot], [data-slot="preview"] *) {
+h2:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t3);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t3);
 }
-h3:not([data-slot], [data-slot="preview"] *) {
+h3:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t2);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t2);
 }
-h4:not([data-slot], [data-slot="preview"] *) {
+h4:not([data-slot], [data-slot="preview"] *, .honest-prose :not(:where(.not-prose, .not-prose *))) {
   font-size: var(--hui-font-size-t1);
   font-weight: var(--hui-font-weight-medium);
   line-height: var(--hui-line-height-t1);

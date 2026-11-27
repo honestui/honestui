@@ -14,10 +14,15 @@ function Slider({
   max = 100,
   showValue = false,
   size = "large",
+  getAriaLabel,
+  getAriaValueText,
   ...props
 }: SliderPrimitive.Root.Props & {
   showValue?: boolean
   size?: "small" | "large"
+  /** Names each thumb's input; screen readers announce the thumb, not the root. */
+  getAriaLabel?: SliderPrimitive.Thumb.Props["getAriaLabel"]
+  getAriaValueText?: SliderPrimitive.Thumb.Props["getAriaValueText"]
 }) {
   const _values = React.useMemo(() => {
     if (value !== undefined) {
@@ -66,6 +71,8 @@ function Slider({
               data-size={size}
               index={index}
               key={index}
+              getAriaLabel={getAriaLabel}
+              getAriaValueText={getAriaValueText}
               className="group/slider-thumb absolute flex cursor-grab items-center justify-center outline-none active:cursor-grabbing active:outline-none has-focus-visible:[&_[data-slot=slider-thumb-visual]]:[outline:var(--hui-focus-ring)] hover:[&_[data-slot=slider-thumb-visual]]:bg-[oklch(0.97_0_0)] motion-safe:active:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] motion-safe:data-dragging:[&_[data-slot=slider-thumb-visual]]:scale-[1.08] [&_input:focus-visible]:outline-none"
             >
               <span

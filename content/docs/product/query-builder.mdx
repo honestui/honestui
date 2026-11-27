@@ -1,0 +1,196 @@
+---
+title: Query Builder
+description: Build nested AND and OR conditions over your fields, as the advanced mode of Filter Bar.
+---
+
+<ComponentPreview name="query-builder-demo" previewClassName="h-auto min-h-[360px]" />
+
+## Overview
+
+QueryBuilder edits a tree of conditions. Each condition picks a field, an operator, and a value, and each group joins its conditions with "and" or "or". Groups can hold groups, so people can say "active or pending, and either over $1,000 or design work", which a row of filter chips cannot.
+
+It is the advanced mode of [Filter Bar](/docs/product/filter-bar), not a replacement for it. Most filtering is a few fields joined by "and", and Filter Bar handles that with less effort. Offer QueryBuilder behind an "Advanced" control for the cases that need "or" or nesting. Both read the same field definitions, and `filtersToQuery` and `queryToFilters` move between them without losing conditions.
+
+The builder owns no data. It reports a JSON-serializable tree through `onValueChange`. Send the tree to your server, or filter rows in the browser with `matchesQuery`.
+
+## Anatomy
+
+<Anatomy title="QueryBuilder">
+  <AnatomyItem name="Root group" description="Labelled group holding the top-level conditions">
+    <AnatomyItem name="Joiner" description="Where, then the and/or select, then the chosen word repeated" />
+    <AnatomyItem name="Condition" description="One rule in a labelled group">
+      <AnatomyItem name="Field select" description="The field the condition tests" />
+      <AnatomyItem name="Operator select" description="The comparison, chosen from the field's operators" />
+      <AnatomyItem name="Value editor" description="Text, number, range, date, choice, or yes/no input" />
+      <AnatomyItem name="Remove" description="Icon button that removes the condition" />
+    </AnatomyItem>
+    <AnatomyItem name="Nested group" description="Inset panel with its own joiner, conditions, and Remove group" />
+    <AnatomyItem name="Add buttons" description="Add condition, and Add group while nesting is allowed" />
+  </AnatomyItem>
+</Anatomy>
+
+Installing `query-builder` brings `Button`, `Input`, `Select`, and the `filter-bar` types and utilities along as registry dependencies.
+
+## Behavior
+
+### Conditions and operators
+
+Fields are Filter Bar's `FilterDefinition` objects. A field's `type` chooses the value editor and its default operators, and `operators` narrows them the same way it does in Filter Bar. Text takes a text input, number a number input or a from–to pair for "Between", select and multi-select their options, date a date input, date-range a pair of dates, and boolean a yes/no select. "Is empty" and "Is not empty" hide the value editor.
+
+Changing the field resets the operator and value, because the old value may not fit the new field. Changing the operator keeps the value unless it switches between one value and a range.
+
+### Groups
+
+The second row of every group holds the select that switches the group between "and" and "or". Later rows repeat the word, so the whole group reads as a sentence. A new group starts with the opposite word from its parent, which is almost always the reason for adding it.
+
+`maxDepth`, which defaults to 2, is how many levels of groups may sit inside the root. Add group is hidden at the deepest level, and `0` turns grouping off.
+
+### Values in the tree
+
+Values follow Filter Bar's shapes, except that dates are `YYYY-MM-DD` strings, so the tree survives `JSON.stringify` and a round trip through a URL. `filtersToQuery` converts Filter Bar's `Date` values on the way in, and `queryToFilters` converts them back.
+
+`queryToFilters` returns `null` when the query uses "or", nesting, or two conditions on one field, since Filter Bar cannot show those. Keep the advanced view open in that case rather than dropping conditions.
+
+### Incomplete conditions
+
+A condition without a value is kept in the tree while people edit, but `matchesQuery`, `formatQuery`, and `pruneQuery` skip it, so a half-written condition never empties a table. Call `pruneQuery` before sending a tree to a server.
+
+## Accessibility
+
+Every group is a labelled group that states how it joins, such as "Group 2, match any", and every condition is a group named by its position, such as "Condition 2.1". Each control is named for the condition it belongs to, so "Operator for condition 2.1" makes sense without seeing the layout.
+
+Adding a condition or group moves focus to the new field select. Removing one moves focus to its neighbor, or to the group's Add condition button when it was the last. A visually hidden status line announces how many conditions and groups remain.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move through joiners, fields, operators, values, and buttons in reading order |
+| <kbd>Enter</kbd>, <kbd>Space</kbd>, or <kbd>↓</kbd> | Open the focused select |
+| <kbd>↑</kbd> <kbd>↓</kbd> | Move between options in an open select |
+| <kbd>Escape</kbd> | Close the select without changing it |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["query-builder"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Install [Filter Bar](/docs/product/filter-bar) first. Query Builder reuses its field types and operator helpers.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="query-builder" title="components/ui/query-builder/query-builder-types.ts" file="query-builder-types.ts" />
+
+<ComponentSource name="query-builder" title="components/ui/query-builder/query-builder-utils.ts" file="query-builder-utils.ts" />
+
+<ComponentSource name="query-builder" title="components/ui/query-builder/query-builder.tsx" file="query-builder.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import {
+  QueryBuilder,
+  matchesQuery,
+  type QueryField,
+  type QueryGroup,
+} from "@/components/ui/query-builder/query-builder"
+
+const fields: QueryField[] = [
+  { key: "status", label: "Status", type: "multi-select", options: statusOptions },
+  { key: "amount", label: "Amount", type: "number", meta: { prefix: "$" } },
+  { key: "createdAt", label: "Created", type: "date" },
+]
+
+const [query, setQuery] = React.useState<QueryGroup>()
+
+<QueryBuilder fields={fields} value={query} onValueChange={setQuery} />
+
+const visible = rows.filter((row) => matchesQuery(row, query, fields))
+```
+
+### As Filter Bar's advanced mode
+
+```tsx
+function openAdvanced() {
+  setQuery(filtersToQuery(filters, fields))
+}
+
+function closeAdvanced() {
+  const simple = queryToFilters(query, fields)
+  if (simple) {
+    setFilters(simple)
+    setQuery(null)
+  }
+}
+```
+
+### Reading the query aloud
+
+`formatQuery(query, fields)` returns one line, such as `Status is any of Active, Pending and (Amount greater than $1000 or Category is any of Design)`. Use it for a summary, a saved view's description, or a confirmation.
+
+## Examples
+
+### Advanced mode for Filter Bar
+
+The same fields drive both views. Turning on Advanced carries the filters into the builder. Turning it off is offered only while the query still fits Filter Bar.
+
+<ComponentPreview name="query-builder-filter-bar" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### QueryBuilder
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `fields` | `QueryField[]` | Required | Filter Bar definitions the conditions can test. |
+| `value` | `QueryGroup` | — | Controlled query tree. |
+| `defaultValue` | `QueryGroup` | Empty "and" group | Initial tree when uncontrolled. |
+| `onValueChange` | `(value) => void` | — | Called with the whole tree after each change. |
+| `maxDepth` | number | `2` | Levels of groups allowed inside the root. |
+| `disabled` | boolean | `false` | Keeps every control visible but inactive. |
+| `labels` | `Partial<QueryBuilderLabels>` | English | Replacement text, including operator names. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `matchesQuery` | `(record, query, fields) => boolean` | Whether a record passes. Incomplete conditions are skipped. |
+| `formatQuery` | `(query, fields, labels?) => string` | A one-line reading of the query. |
+| `filtersToQuery` | `(values, fields) => QueryGroup` | Filter Bar values as one "and" group. |
+| `queryToFilters` | `(query, fields) => FilterValue[] \| null` | Filter Bar values, or `null` when the query cannot be written that way. |
+| `pruneQuery` | `(query, fields) => QueryGroup` | Drops incomplete conditions and empty groups. |
+| `createQueryGroup` | `(combinator?, children?, id?) => QueryGroup` | A new group. |
+| `createQueryCondition` | `(field, id?) => QueryCondition` | A new condition with the field's default operator. |
+| `updateQueryNode`, `insertQueryNode`, `removeQueryNode` | Tree, id, … | Immutable edits by node id. |
+| `countQuery` | `(query) => { conditions; groups }` | Totals below the root. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `QueryGroup` | `{ id; kind: "group"; combinator: "and" \| "or"; children: QueryNode[] }` |
+| `QueryCondition` | `{ id; kind: "condition"; field; operator; value }` |
+| `QueryNode` | `QueryGroup \| QueryCondition` |
+| `QueryField` | Filter Bar's `FilterDefinition` |
+| `QueryBuilderLabels` | Every string the component writes |

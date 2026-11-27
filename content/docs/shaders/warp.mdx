@@ -1,0 +1,60 @@
+---
+title: Warp
+description: Domain-warped fractal noise mapped to a color palette, as soft clouds, ridges, or marble.
+---
+
+<ComponentPreview name="warp-demo" playground />
+
+## Overview
+
+Warp layers fractal noise and then feeds the noise back into its own input, twice. The result folds into flowing, smoke-like shapes that move slowly over time. Each value maps onto `colors`, from the first color at the lowest value to the last at the highest.
+
+Three patterns change the character of the field:
+
+- **fbm** gives soft, cloud-like gradients.
+- **Ridged** folds each noise layer into sharp creases, like terrain or veins.
+- **Marble** bends diagonal bands through the warped field.
+
+Use it for textured backgrounds, artwork panels, and loading surfaces. Ordered palettes, dark to light, give the clearest depth.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Warp } from "honestui/shaders"
+
+<div className="h-80 bg-[#2c3552]">
+  <Warp
+    className="size-full"
+    colors={["#14161f", "#2c3552", "#6f7fa8", "#d9c8b4", "#f6efe6"]}
+    pattern="fbm"
+    warp={1}
+  />
+</div>
+```
+
+Each octave adds a layer of noise per warp pass, so lower `octaves` on large surfaces or low-power devices.
+
+## Accessibility
+
+Warp is decorative and its canvas is hidden from assistive technology. Keep content in normal HTML; the field spans the full palette, so place text on a solid panel or check contrast against both ends of it.
+
+The effect pauses while it is offscreen or the tab is hidden, and shows a still frame when the user prefers reduced motion. Without WebGL2 the container shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colors" type="string[]" default='["#14161f", "#2c3552", "#6f7fa8", "#d9c8b4", "#f6efe6"]'>Two to six hex colors from the lowest to the highest value.</ApiRow>
+  <ApiRow name="pattern" type='"fbm" | "ridged" | "marble"' default='"fbm"'>Character of the noise.</ApiRow>
+  <ApiRow name="scale" type="number" default="1">Feature size. Higher values zoom out.</ApiRow>
+  <ApiRow name="octaves" type="number" default="5">Layers of detail, from 1 to 8.</ApiRow>
+  <ApiRow name="warp" type="number" default="1">How strongly the noise folds back on itself, from 0 to 2.</ApiRow>
+  <ApiRow name="swirl" type="number" default="0.3">Rotation between warp passes, from 0 to 1.</ApiRow>
+  <ApiRow name="contrast" type="number" default="1.2">Separation between the darkest and lightest colors.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.4">Animation speed.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

@@ -1,0 +1,248 @@
+---
+title: Saved Views
+description: Let people name and return to a table's filters, sort, and columns, and tell them when what they see no longer matches the view they picked.
+---
+
+<ComponentPreview name="saved-views-demo" previewClassName="h-auto min-h-[560px]" />
+
+## Overview
+
+SavedViews is the switcher that sits above a table. Each view is a name and a snapshot of the table's state: the filters, the sort, and which columns are visible. Picking a view puts that state back. Changing a filter or a sort afterwards marks the view as changed, with a dot on the name and a line that says what changed, so people know the table no longer matches the view they chose.
+
+From there they can save the change into the view, keep it as a new view, or discard it. The menu also renames, deletes, and sets the default view.
+
+SavedViews holds no table state of its own. You pass the views and what the table shows now, and it compares the two. It works with [Filter Bar](/docs/product/filter-bar) and [Data Grid](/docs/product/data-grid) without mapping, because a view's filters use Filter Bar's value shape and its sort and columns use the grid's. It saves nothing either: each action calls a handler, and your application stores the views.
+
+## Anatomy
+
+<Anatomy title="SavedViews">
+  <AnatomyItem name="Trigger" description="The active view's name, a dot when it has unsaved changes, and a chevron">
+    <AnatomyItem name="Menu" description="The views as a radio list, then Save as new, Rename, Set as default, and Delete" />
+  </AnatomyItem>
+  <AnatomyItem name="Status" description="Unsaved changes, and which parts changed; a polite live region" />
+  <AnatomyItem name="Actions" description="Discard, Save as new, and Save; shown only while the view has unsaved changes" />
+  <AnatomyItem name="Name form" description="Replaces the strip while naming a new view or renaming one" />
+  <AnatomyItem name="Delete confirmation" description="Replaces the strip until the deletion is confirmed or cancelled" />
+</Anatomy>
+
+Installing `saved-views` brings `Button`, `Input`, and `Menu` along as registry dependencies. It does not install Filter Bar or Data Grid; the demo above uses both to show the full pattern.
+
+## Behavior
+
+### Views and current state
+
+A view is `{ id, name, state }`. `state` can hold `filters`, `sorting`, `columnVisibility`, and `search`, plus any keys of your own. Pass the same shape as `currentState`, built from whatever your table holds now.
+
+When someone picks a view, `onActiveViewChange(id, view)` runs. Apply `view.state` to your table there, and set the active id.
+
+### Unsaved changes
+
+The view is compared with `currentState` on every render. The comparison is deliberately forgiving, so a view does not look changed when nothing a person would notice has changed:
+
+- Filters compare as a set. Adding chips in a different order, or a filter left empty, does not count. Multi-select values compare in any order.
+- A column missing from `columnVisibility` is visible, so `{}` and `{ email: true }` match.
+- Search compares without surrounding spaces.
+- Any other key compares by content.
+
+When something differs, the trigger gains a dot, the status line reads "Unsaved changes · Filters and sort changed", and the actions appear. Pass `getChanges` to replace the comparison.
+
+### Saving
+
+Save calls `onSave(id, state)` with the current state. Save as new opens a name field, suggests "Active admins copy" (or "copy 2" when that is taken), and calls `onSaveAsNew(name, state)`. Names are trimmed, and a name already in use, in any case, is refused with a message.
+
+Each handler may return a promise. The strip shows "Saving…" until it settles, and an error message if it rejects.
+
+### Built-in views
+
+A view with `locked: true` cannot be renamed, deleted, or overwritten. When it has changes, the only way to keep them is Save as new, which becomes the primary button. Use it for views your product ships, such as "All people" or "Inbox".
+
+### Discarding
+
+Discard calls `onDiscard(view)`. Without that handler it calls `onActiveViewChange` with the active view again, which restores its state in the usual way.
+
+### Shared and default views
+
+`shared: true` adds a people icon to the view in the menu. `defaultViewId` labels one view "Default"; pass `onDefaultViewChange` to let people change it. Deciding which view loads first is up to your application.
+
+## Accessibility
+
+The trigger is a menu button named "View: Active admins", followed by "unsaved changes" when the view has them, so the dot's meaning is in the name. The views are a radio group inside the menu, with the active one checked. Shared and built-in markers have text for screen readers.
+
+The status line is a polite live region, so "Unsaved changes · Filters changed" is announced when it appears. The name field is labelled "View name", gets focus when it opens with its text selected, and reports a duplicate name through an alert. Deleting asks first, with focus on Cancel. Escape cancels naming and deleting, and focus returns to the trigger afterwards.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> / <kbd>Space</kbd> | Open the views menu from the trigger |
+| <kbd>↓</kbd> / <kbd>↑</kbd> | Move through the views and actions in the menu |
+| <kbd>Enter</kbd> | Pick the focused view, or save the name being typed |
+| <kbd>Escape</kbd> | Close the menu, or cancel naming or deleting |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["saved-views"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>No extra packages are needed beyond the base setup.</Step>
+
+<Step>Copy and paste these files into your project.</Step>
+
+<ComponentSource name="saved-views" title="components/ui/saved-views/saved-views-types.ts" file="saved-views-types.ts" />
+
+<ComponentSource name="saved-views" title="components/ui/saved-views/saved-views-utils.ts" file="saved-views-utils.ts" />
+
+<ComponentSource name="saved-views" title="components/ui/saved-views/saved-views.tsx" file="saved-views.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+Keep the table's state where it already lives, build `currentState` from it, and apply a view's state when one is picked:
+
+```tsx
+import { SavedViews, type SavedView } from "@/components/ui/saved-views/saved-views"
+
+const [filters, setFilters] = React.useState<FilterValue[]>([])
+const [sorting, setSorting] = React.useState<SortingState>([])
+const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+const currentState = React.useMemo(
+  () => ({ filters, sorting, columnVisibility }),
+  [filters, sorting, columnVisibility]
+)
+
+function apply(view: SavedView) {
+  setActiveViewId(view.id)
+  setFilters(view.state.filters ?? [])
+  setSorting(view.state.sorting ?? [])
+  setColumnVisibility(view.state.columnVisibility ?? {})
+}
+
+<SavedViews
+  views={views}
+  activeViewId={activeViewId}
+  onActiveViewChange={(_, view) => apply(view)}
+  currentState={currentState}
+  onSave={(id, state) => api.updateView(id, { state })}
+  onSaveAsNew={async (name, state) => {
+    const view = await api.createView({ name, state })
+    setActiveViewId(view.id)
+  }}
+  onRename={(id, name) => api.updateView(id, { name })}
+  onDelete={(id) => api.deleteView(id)}
+/>
+<FilterBar filters={definitions} value={filters} onValueChange={setFilters} />
+<DataGrid
+  columns={columns}
+  data={rows}
+  sorting={sorting}
+  onSortingChange={setSorting}
+  columnVisibility={columnVisibility}
+  onColumnVisibilityChange={setColumnVisibility}
+/>
+```
+
+Leave out a handler to leave out its action. Without `onRename` the menu has no Rename item; without `onSave` changes can only be kept as a new view.
+
+### Other languages
+
+Every word comes from `labels`. `changedParts` receives the changed parts, such as `["filters", "sorting"]`, and returns the sentence, so each language can build its own list.
+
+```tsx
+<SavedViews
+  labels={{
+    unsaved: "Ungespeicherte Änderungen",
+    changedParts: (parts) => `${parts.length} Bereiche geändert`,
+    copyName: (name) => `${name} (Kopie)`,
+  }}
+  {...props}
+/>
+```
+
+## Don't do this
+
+### Saving on every change
+
+```tsx
+// Bad. The view changes under everyone who shares it as soon as one person sorts a column.
+onSortingChange={(sorting) => api.updateView(activeViewId, { state: { ...state, sorting } })}
+```
+
+Let the change sit as unsaved until the person chooses Save. A shared view is a team's agreement about what a table shows.
+
+### Storing table data in a view
+
+```tsx
+// Bad. The view now holds a copy of the rows, which goes stale.
+onSaveAsNew={(name, state) => api.createView({ name, state: { ...state, rows } })}
+```
+
+A view stores how to look at data, not the data. Keep it to filters, sort, columns, and similar settings.
+
+## Examples
+
+### A changed built-in view
+
+The built-in Inbox view has a filter added. It is locked, so Save as new is the primary action and there is no Save.
+
+<ComponentPreview name="saved-views-states" previewClassName="h-auto min-h-[200px]" />
+
+## API reference
+
+### SavedViews
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `views` | `SavedView[]` | Required | The views, in menu order. |
+| `activeViewId` | string | Required | The view the table was last loaded from. |
+| `onActiveViewChange` | `(id, view) => void` | Required | Runs when a view is picked. Apply its state here. |
+| `currentState` | `SavedViewState` | Required | What the table shows now. |
+| `getChanges` | `(saved, current) => SavedViewChangedPart[]` | `getChangedParts` | Replaces the comparison. |
+| `defaultViewId` | string | None | Labels one view "Default". |
+| `onDefaultViewChange` | `(id) => void` | None | Offers Set as default. |
+| `onSave` | `(id, state) => void \| Promise<void>` | None | Overwrites the active view. Shows Save. |
+| `onSaveAsNew` | `(name, state) => void \| Promise<void>` | None | Creates a view. Shows Save as new. |
+| `onRename` | `(id, name) => void \| Promise<void>` | None | Offers Rename. |
+| `onDelete` | `(id) => void \| Promise<void>` | None | Offers Delete view, with a confirmation. |
+| `onDiscard` | `(view) => void` | Re-picks the view | Puts the table back to the active view. |
+| `disabled` | boolean | `false` | Disables the trigger and actions. |
+| `labels` | `Partial<SavedViewsLabels>` | English | Replacement text. |
+
+### Functions
+
+| Export | Signature | Description |
+| --- | --- | --- |
+| `getChangedParts` | `(saved, current) => SavedViewChangedPart[]` | The parts that differ: `"filters"`, `"sorting"`, `"columns"`, `"search"`, `"other"`. |
+| `isViewStateEqual` | `(saved, current) => boolean` | True when nothing differs. |
+| `areFiltersEqual` | `(a, b) => boolean` | The filter comparison on its own. |
+| `validateViewName` | `(name, views, exceptId?) => "empty" \| "duplicate" \| null` | The name check the form runs. |
+| `getUniqueViewName` | `(base, views, copyName?) => string` | The first free "Name copy" name. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `SavedView` | `{ id; name; state; shared?; locked? }` |
+| `SavedViewState` | `{ filters?; sorting?; columnVisibility?; search?; [key]: unknown }` |
+| `SavedViewFilter` | `{ key; operator?; value }`, the same as Filter Bar's `FilterValue` |
+| `SavedViewSort` | `{ id; desc }`, the same as a TanStack `SortingState` entry |
+| `SavedViewsLabels` | Every string the component writes |

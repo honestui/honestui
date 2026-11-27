@@ -10,49 +10,17 @@ import {
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { flattenTree, type Root as PageTreeRoot } from "fumadocs-core/page-tree";
+import {
+  flattenTree,
+  type Root as PageTreeRoot,
+} from "fumadocs-core/page-tree";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Link from "next/link";
+import { isRecentlyReleased } from "./new-pages";
 
 type PageItem = ReturnType<typeof flattenTree>[number];
 
-
-/**
- * Pages currently carrying the "New" badge. Keep this list ADDITIVE ONLY:
- * each entry carries the date the page launched, and the badge disappears
- * by itself once the entry is older than two weeks. Expired rows can stay;
- * nothing ever needs manual pruning.
- */
-const NEW_PAGES: readonly { url: string; releasedOn: string }[] = [
-  { url: "/docs/components/command", releasedOn: "2026-08-18" },
-  { url: "/docs/components/context-menu", releasedOn: "2026-08-18" },
-  { url: "/docs/components/density", releasedOn: "2026-10-08" },
-  { url: "/docs/product/async-action", releasedOn: "2026-10-08" },
-  { url: "/docs/product/change-review", releasedOn: "2026-10-07" },
-  { url: "/docs/product/data-grid", releasedOn: "2026-08-26" },
-  { url: "/docs/product/data-table", releasedOn: "2026-08-25" },
-  { url: "/docs/product/date-range-picker", releasedOn: "2026-08-26" },
-  { url: "/docs/product/file-upload", releasedOn: "2026-08-26" },
-  { url: "/docs/product/filter-bar", releasedOn: "2026-08-26" },
-  { url: "/docs/product/overflow-toolbar", releasedOn: "2026-10-08" },
-  { url: "/docs/product/paste-table", releasedOn: "2026-10-08" },
-  { url: "/docs/product/quantity-field", releasedOn: "2026-10-08" },
-  { url: "/docs/shaders/chromatic-image", releasedOn: "2026-08-18" },
-  { url: "/docs/shaders/dither", releasedOn: "2026-08-18" },
-];
-
-const NEW_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
-
-const NEW_PAGE_DATES = new Map(NEW_PAGES.map((page) => [page.url, page.releasedOn]));
-
-function isRecentlyReleased(url: string): boolean {
-  const releasedOn = NEW_PAGE_DATES.get(url);
-  if (!releasedOn) {
-    return false;
-  }
-  return Date.now() - Date.parse(releasedOn) < NEW_WINDOW_MS;
-}
 
 function PageGroup({ label, pages }: { label: string; pages: PageItem[] }) {
   const pathname = usePathname();
@@ -115,6 +83,7 @@ export function DocsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
           page.url === "/docs/charts" ||
           page.url === "/docs/icons" ||
           page.url === "/docs/animated" ||
+          page.url === "/docs/ai" ||
           page.url === "/docs/product" ||
           page.url === "/docs/shaders" ||
           page.url === "/docs/examples"
@@ -122,7 +91,9 @@ export function DocsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
           return false;
         if (page.url.startsWith("/docs/chart-")) return false;
 
-        return page.url.startsWith("/docs/") && page.url.split("/").length === 3;
+        return (
+          page.url.startsWith("/docs/") && page.url.split("/").length === 3
+        );
       }),
     [pages],
   );
@@ -154,7 +125,8 @@ export function ChartsTreeNavigation({ tree }: { tree: PageTreeRoot }) {
       pages.filter(
         (page) =>
           page.url.startsWith("/docs/chart-") ||
-          (page.url.startsWith("/docs/charts/") && page.url.split("/").length === 4),
+          (page.url.startsWith("/docs/charts/") &&
+            page.url.split("/").length === 4),
       ),
     [pages],
   );
@@ -200,4 +172,144 @@ export function ShaderTreeNavigation({ tree }: { tree: PageTreeRoot }) {
   );
 
   return <PageGroup label="Shaders" pages={componentPages} />;
+}
+
+const AI_STARTED_PAGES = new Set(["/docs/ai", "/docs/ai/installation"]);
+
+/** Sidebar groups for AI pages, matching the tables on /docs/ai. Pages sort A–Z within each. */
+const AI_PAGE_GROUPS: readonly { label: string; pages: readonly string[] }[] = [
+  { label: "Styles", pages: ["prose", "prose-syntax"] },
+  {
+    label: "Conversation",
+    pages: [
+      "chat-thread",
+      "chat-welcome",
+      "context-meter",
+      "guardrail-notice",
+      "markdown",
+      "message-scroller",
+      "message-usage",
+      "prompt-bar",
+      "prompt-suggestions",
+      "prose-code-block",
+      "search-list",
+      "sidebar-nav",
+      "streaming-text",
+    ],
+  },
+  {
+    label: "Agent activity",
+    pages: [
+      "agent-handoff",
+      "agent-screen",
+      "checkpoint",
+      "flowchart",
+      "loading-state",
+      "memory-viewer",
+      "plan",
+      "queue",
+      "task-rows",
+      "thinking-state",
+      "tool-chips",
+      "trace-waterfall",
+    ],
+  },
+  {
+    label: "Decisions",
+    pages: [
+      "approval-card",
+      "diff-table",
+      "fine-tune-card",
+      "input-request",
+      "recommendation-card",
+      "selection-actions",
+    ],
+  },
+  {
+    label: "Results",
+    pages: [
+      "artifact-panel",
+      "code-view",
+      "context-cards",
+      "eval-compare",
+      "filter-table",
+      "insight-cards",
+      "records-table",
+    ],
+  },
+  {
+    label: "Developer",
+    pages: [
+      "file-tree",
+      "stack-trace",
+      "terminal-output",
+      "test-results",
+      "web-preview",
+    ],
+  },
+  {
+    label: "Voice",
+    pages: [
+      "audio-player",
+      "live-waveform",
+      "transcript-viewer",
+      "voice-input",
+      "voice-orb",
+    ],
+  },
+];
+
+const AI_GROUP_BY_URL = new Map<string, string>(
+  AI_PAGE_GROUPS.flatMap((group) =>
+    group.pages.map((name): [string, string] => [
+      `/docs/ai/${name}`,
+      group.label,
+    ]),
+  ),
+);
+
+function byTitle(a: PageItem, b: PageItem) {
+  return String(a.name).localeCompare(String(b.name));
+}
+
+export function AiTreeNavigation({ tree }: { tree: PageTreeRoot }) {
+  const pages = useMemo(() => flattenTree(tree.children), [tree.children]);
+  const groups = useMemo(() => {
+    const aiPages = pages.filter((page) => page.url.startsWith("/docs/ai/"));
+    const isGenerative = (page: PageItem) =>
+      page.url === "/docs/ai/generative" ||
+      page.url.startsWith("/docs/ai/generative/");
+
+    const grouped = AI_PAGE_GROUPS.map((group) => ({
+      label: group.label,
+      pages: aiPages
+        .filter((page) => AI_GROUP_BY_URL.get(page.url) === group.label)
+        .sort(byTitle),
+    }));
+    // A new page not yet assigned to a group still shows up rather than vanishing.
+    const ungrouped = aiPages
+      .filter(
+        (page) =>
+          !AI_GROUP_BY_URL.has(page.url) &&
+          !AI_STARTED_PAGES.has(page.url) &&
+          !isGenerative(page),
+      )
+      .sort(byTitle);
+
+    return {
+      grouped,
+      ungrouped,
+      generative: aiPages.filter(isGenerative),
+    };
+  }, [pages]);
+
+  return (
+    <>
+      {groups.grouped.map((group) => (
+        <PageGroup key={group.label} label={group.label} pages={group.pages} />
+      ))}
+      <PageGroup label="More" pages={groups.ungrouped} />
+      <PageGroup label="Generative UI" pages={groups.generative} />
+    </>
+  );
 }

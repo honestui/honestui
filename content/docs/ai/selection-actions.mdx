@@ -1,0 +1,131 @@
+---
+title: Selection Actions
+metaTitle: React Text Selection Actions for AI Edits
+description: Offer AI edits for a piece of selected text, then ask the person to keep or discard the result.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="selection-actions-demo" previewClassName="h-auto min-h-[220px]" />
+
+## Overview
+
+Selection Actions is a small bar of edits for selected text: Improve, Shorten, or an instruction the person types. While the edit runs it shows progress. When the edit returns, it asks the person to keep or discard it.
+
+The bar is the controls only. Tracking the selection, placing the bar near it, making the edit, and showing the rewritten text are your application's work. You tell the bar where things stand through `status`.
+
+## Anatomy
+
+<Anatomy title="SelectionActions">
+  <AnatomyItem name="Actions" description="One button for each edit you offer" />
+  <AnatomyItem name="Prompt" description="A field for a typed instruction, when you handle it" />
+  <AnatomyItem name="Status" description="Working, or an error" />
+  <AnatomyItem name="Decision" description="Keep, Discard, and Try again" />
+</Anatomy>
+
+Installing `selection-actions` brings [Button](/docs/components/button) and [Text Shimmer](/docs/animated/text-shimmer) along as registry dependencies.
+
+## Behavior
+
+### Status
+
+- `idle` shows the actions and the prompt field.
+- `working` shows a shimmering label and no controls.
+- `result` shows Keep and Discard.
+- `error` shows a message and Discard.
+
+Pass `onRetry` to add Try again to a result or an error. After an error, Try again comes first, because it is the recovery. While working or after an error, the bar keeps the width it had with its actions, so it does not jump.
+
+### Prompt
+
+Pass `onPrompt` to add the field. Send is disabled while it is empty, and the field clears after sending.
+
+## Accessibility
+
+The bar is a toolbar with a name. Working and the error are announced through a status that stays mounted. The prompt field has a name, and Send is a submit button.
+
+When the status changes, the buttons under focus are replaced. If focus was in the bar, the bar moves it for you: to the bar itself while working, to Keep on a result, and to Try again (or Discard) after an error. Focus elsewhere on the page is never moved.
+
+With reduced motion, the working label does not shimmer.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the actions, the prompt field, and the decision buttons |
+| <kbd>Enter</kbd> | Send the typed instruction, or activate the focused button |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/selection-actions"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "text-shimmer"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="selection-actions" title="components/ai/selection-actions.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { SelectionActions } from "@/components/ai/selection-actions"
+
+<SelectionActions
+  status={edit.status}
+  actions={[
+    { id: "improve", label: "Improve" },
+    { id: "shorten", label: "Shorten" },
+  ]}
+  onAction={(actionId) => edit.run(actionId, selection.text)}
+  onPrompt={(instruction) => edit.runCustom(instruction, selection.text)}
+  onKeep={edit.accept}
+  onDiscard={edit.reject}
+  onRetry={edit.retry}
+/>
+```
+
+## Examples
+
+### A failed edit
+
+The error state, with Try again.
+
+<ComponentPreview name="selection-actions-error" previewClassName="h-auto min-h-[140px]" />
+
+## API reference
+
+### SelectionActions
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `actions` | `SelectionAction[]` | Required | Each has `id`, `label`, and an optional `icon`. |
+| `status` | `"idle" \| "working" \| "result" \| "error"` | `"idle"` | Where the edit stands. |
+| `onAction` | `(actionId: string) => void` | Required | Runs when an action is pressed. |
+| `onPrompt` | `(instruction: string) => void` | None | Passing it adds the prompt field. |
+| `onKeep` | `() => void` | Required | Accepts the result. |
+| `onDiscard` | `() => void` | Required | Rejects the result, or dismisses an error. |
+| `onRetry` | `() => void` | None | Passing it adds Try again. |
+| `labels` | `Partial<SelectionActionsLabels>` | English | The toolbar name, field names, status messages, and button names. |

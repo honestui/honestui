@@ -121,6 +121,18 @@ Change `variant` and `strokeVariant` on an `<Area>`, or `curveType` and `stackTy
 <ComponentPreview className="mb-0" title="variant='lines'" name="ex-lines-area-variant-echarts-area-chart"  />
 <ComponentPreview title="variant='hatched'" name="ex-hatched-area-variant-echarts-area-chart"  />
 
+### Grainient Fill
+
+`variant="grainient"` fills the area with the warped, grainy color field from the <Link href="/docs/shaders/grainient">Grainient</Link> shader, built from the series color and faded toward the baseline. It is drawn once into a texture, so the chart stays as fast as a gradient fill, and it falls back to the gradient where WebGL2 is not available.
+
+<ComponentPreview className="mb-0" title="variant='grainient'" name="ex-grainient-echarts-area-chart" />
+
+Each area takes its own `grainient` options. With `animate`, the colors drift slowly; they hold still when the reader prefers reduced motion or the chart is off screen.
+
+<ComponentPreview title="grainient={{ animate: true }} on a stacked chart" name="ex-grainient-stacked-echarts-area-chart" />
+
+The fill is decoration, so keep it behind the data: the stroke, the axis, and the tooltip still carry the values. Honesty marks draw over it as usual, so an open period's fill is lighter and a gap leaves a hole.
+
 ### Reference Lines
 
 A healthy range as a band and an event as a vertical line. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link>.
@@ -190,6 +202,12 @@ The root container. It owns the data, shared selection state, loading skeleton, 
   <ApiRow name="dataStatusText" type="DataStatusText">
     Replacement text for data status labels and explanations. See <Link href="/docs/charts/data-status">Data Status</Link>.
   </ApiRow>
+  <ApiRow name="honestyText" type="ChartHonestyText">
+    Replacement text for the honesty marks: the partial period, bands, gaps, axis notice, and sample sizes. See <Link href="/docs/charts/honesty">Honest Charts</Link>.
+  </ApiRow>
+  <ApiRow name="gaps" type='boolean | { interval?: "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year"; label?: string }'>
+    Shades stretches where every series is empty. With `interval`, also inserts rows that are absent from a time series. See <Link href="/docs/charts/honesty/data-gaps">Data Gaps</Link>.
+  </ApiRow>
   <ApiRow name="syncId" type="string">
     Charts with the same id show their crosshair and tooltip at the same category together. See <Link href="/docs/charts/ui/sync">Synced Crosshair</Link>.
   </ApiRow>
@@ -206,8 +224,11 @@ A single area series. Each `<Area />` carries its own fill and stroke config, so
   <ApiRow name="dataKey" type="string" required>
     The series key. Must exist on both the data rows and the chart `config`.
   </ApiRow>
-  <ApiRow name="variant" type='"gradient" | "gradient-reverse" | "solid" | "dotted" | "lines" | "hatched"' default='"gradient"'>
-    Visual style of the area fill, for this area only. Multi-color configs render the full horizontal gradient faded vertically.
+  <ApiRow name="variant" type='"gradient" | "gradient-reverse" | "solid" | "dotted" | "lines" | "hatched" | "grainient"' default='"gradient"'>
+    Visual style of the area fill, for this area only. Multi-color configs render the full horizontal gradient faded vertically. `"grainient"` draws a shader texture from the series color; see `grainient`.
+  </ApiRow>
+  <ApiRow name="grainient" type="GrainientFillOptions">
+    Options for `variant="grainient"`: `colors` (up to three CSS colors; defaults to a ramp from the series color), `grain` (0–0.4, default `0.14`), `warp` (0–2, default `1`), `intensity` (opacity at the top, 0–1, default `0.55`), `fade` (default `true`), `seed`, `animate` (default `false`), and `speed` (default `1`).
   </ApiRow>
   <ApiRow name="strokeVariant" type='"solid" | "dashed" | "animated-dashed"' default='"dashed"'>
     The stroke style for this area.
@@ -222,7 +243,7 @@ A single area series. Each `<Area />` carries its own fill and stroke config, so
     The intro draw-in for this area (the first `<Area />`'s value drives the chart). Falls back to the chart's `animationType` when omitted.
   </ApiRow>
   <ApiRow name="connectNulls" type="boolean" default="false">
-    Whether to connect line segments across null or missing values.
+    Draws the area across empty values. Without it, an empty value is a gap, never a zero, and a stack never builds across it. Ignored when the series reads a status, or when the chart sets `gaps` or a partial period.
   </ApiRow>
   <ApiRow name="isClickable" type="boolean" default="false">
     Makes this area selectable on click. When any area is selected, the rest turn semi-transparent.
@@ -241,6 +262,15 @@ A single area series. Each `<Area />` carries its own fill and stroke config, so
   </ApiRow>
   <ApiRow name="compareDataKey" type="string">
     A data key holding the same measure for an earlier period. Draws it as a faded, finely dashed line and adds the earlier value and the change to the tooltip. Stacked and expanded charts compare in the tooltip only. See <Link href="/docs/charts/ui/comparison">Period Comparison</Link>.
+  </ApiRow>
+  <ApiRow name="sampleSizeKey" type="string">
+    The row field with the number of observations behind each value. Shows "n=…" above the points. See <Link href="/docs/charts/honesty/sample-size">Sample Size</Link>.
+  </ApiRow>
+  <ApiRow name="minSampleSize" type="number">
+    Values with fewer observations get a dashed ring and a low-sample entry in the key and tooltip.
+  </ApiRow>
+  <ApiRow name="sampleSizeDisplay" type='"label" | "tooltip"' default='"label"'>
+    Shows the count on the plot or only in the tooltip.
   </ApiRow>
   <ApiRow name="children" type="ReactNode">
     Optional `<Dot />` and `<ActiveDot />` config that adds point markers to this area.
@@ -270,6 +300,15 @@ The category and value axes. Include `<XAxis />` or `<YAxis />` to show each; om
   </ApiRow>
   <ApiRow name="hideDots" type="boolean" default="false">
     Hides the small tick dots that sit beside this axis's labels.
+  </ApiRow>
+  <ApiRow name="min" type='number | "auto"'>
+    YAxis only. Starts the value axis here instead of zero; `"auto"` fits it to the data. The chart then flags the truncated axis. Ignored when `stackType="expanded"`. See <Link href="/docs/charts/honesty/truncated-axis">Truncated Axis</Link>.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    YAxis only. Ends the value axis here. Ignored when `stackType="expanded"`.
+  </ApiRow>
+  <ApiRow name="truncationNotice" type='"auto" | "off"' default='"auto"'>
+    YAxis only. Shows a break mark and a key notice when the axis does not reach zero.
   </ApiRow>
 </ApiTable>
 
@@ -315,6 +354,10 @@ The series legend, rendered as HTML above the canvas. Include it to show the leg
 <ApiHeading>ReferenceLine, ReferenceArea, and ReferenceDot</ApiHeading>
 
 Targets, bands, and annotated points drawn on the plot, such as `<AreaChart.ReferenceLine y={200} label="Goal" />`. See <Link href="/docs/charts/ui/reference-lines">Reference Lines</Link> for every prop.
+
+<ApiHeading>PartialPeriod and Band</ApiHeading>
+
+An open period drawn as in progress, such as `<AreaChart.PartialPeriod x="Nov" label="Month to date" />`, and a shaded interval around a series, such as `<AreaChart.Band dataKey="users" lowerKey="low" upperKey="high" />`. In the open period the stroke is dashed and the fill is lighter. A band tied to a stacked series moves up with it, and an expanded chart draws no bands. See <Link href="/docs/charts/honesty/partial-period">Partial Period</Link> and <Link href="/docs/charts/honesty/confidence-bands">Confidence Bands</Link>.
 
 <ApiHeading>Zoom</ApiHeading>
 

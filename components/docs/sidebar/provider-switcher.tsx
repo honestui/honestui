@@ -19,6 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
+  AiAreaIcon,
   AnimatedAreaIcon,
   ChartsAreaIcon,
   ComponentsAreaIcon,
@@ -35,6 +36,7 @@ export type ProductArea =
   | "charts"
   | "icons"
   | "animated"
+  | "ai"
   | "shaders"
   | "examples";
 
@@ -86,6 +88,13 @@ const PRODUCT_AREA_GROUPS: ProductAreaGroup[] = [
         tagline: "Dock, marquee, text reveal",
         href: "/docs/animated",
         icon: AnimatedAreaIcon,
+      },
+      {
+        id: "ai",
+        name: "AI Components",
+        tagline: "Chat, agents, generative UI",
+        href: "/docs/ai",
+        icon: AiAreaIcon,
       },
     ],
   },

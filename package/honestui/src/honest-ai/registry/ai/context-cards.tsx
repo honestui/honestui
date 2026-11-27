@@ -65,28 +65,37 @@ function ContextCards({
       data-slot="context-cards"
       aria-labelledby={headingId}
       className={cn(
-        "flex w-full min-w-0 flex-col gap-[var(--hui-space-3)] text-[var(--hui-color-foreground-base-primary)]",
+        "flex w-full min-w-0 flex-col overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
         regularText,
         className
       )}
       {...props}
     >
-      <p className="m-0 flex items-baseline gap-[var(--hui-space-3)]">
+      <p className="m-0 flex items-center justify-between gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-4)]">
         <span id={headingId} className="[font-weight:var(--hui-font-weight-medium)]">
           {title}
         </span>
-        <span className="tabular-nums text-[var(--hui-color-foreground-base-secondary)]">{chunks.length}</span>
+        <span
+          className={cn(
+            "inline-flex min-w-5 items-center justify-center rounded-[var(--hui-radius-full)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-2)] tabular-nums text-[var(--hui-color-foreground-base-secondary)]",
+            smallText
+          )}
+        >
+          {chunks.length}
+        </span>
       </p>
 
       {chunks.length === 0 ? (
-        <p className="m-0 text-[var(--hui-color-foreground-base-secondary)]">{emptyMessage}</p>
+        <p className="m-0 px-[var(--hui-space-5)] py-[var(--hui-space-5)] text-[var(--hui-color-foreground-base-secondary)]">
+          {emptyMessage}
+        </p>
       ) : (
-        <ul role="list" className="m-0 flex list-none flex-col gap-[var(--hui-space-3)] p-0">
+        <ul role="list" className="m-0 flex list-none flex-col p-0">
           {chunks.map((chunk) => (
             <li
               key={chunk.id}
               data-slot="context-card"
-              className="flex min-w-0 flex-col gap-[var(--hui-space-2)] overflow-hidden rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] p-[var(--hui-space-5)] shadow-[var(--hui-shadow-feather)]"
+              className="flex min-w-0 flex-col gap-[var(--hui-space-2)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-5)] last:border-b-0"
             >
               {/* Long metadata wraps under the title rather than truncating. */}
               <div className="flex min-w-0 flex-wrap items-baseline gap-x-[var(--hui-space-3)] gap-y-[var(--hui-space-1)]">
@@ -102,7 +111,7 @@ function ContextCards({
               </div>
               <p className="m-0 break-words text-[var(--hui-color-foreground-base-secondary)]">{chunk.body}</p>
               {chunk.source && (
-                <div className="pt-[var(--hui-space-2)]">
+                <div className="pt-[var(--hui-space-1)]">
                   <ContextSource source={chunk.source} />
                 </div>
               )}
@@ -116,23 +125,19 @@ function ContextCards({
 
 function ContextSource({ source }: { source: NonNullable<ContextChunk["source"]> }) {
   const domain = source.href ? domainOf(source.href) : undefined
-  const layout = cn(
-    "inline-flex min-h-6 max-w-full items-center gap-x-[var(--hui-space-2)] rounded-[var(--hui-radius-2)] bg-[var(--hui-color-background-neutral-secondary)] px-[var(--hui-space-3)] py-[var(--hui-space-1)] text-[var(--hui-color-foreground-base-primary)]",
-    smallText
-  )
   // The label wraps rather than truncating, so a long document name stays readable.
   const label = <span className="min-w-0 break-words">{source.label}</span>
 
-  // Without a link there is nothing to press, so it reads as a plain note, not a chip.
+  // Without a link there is nothing to press, so it reads as a plain note.
   if (!source.href) {
     return (
       <span
         className={cn(
-          "inline-flex max-w-full items-start gap-x-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)]",
+          "inline-flex max-w-full items-center gap-x-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-secondary)]",
           smallText
         )}
       >
-        <FileTextIcon aria-hidden="true" className="mt-[var(--hui-space-1)] size-3 shrink-0" />
+        <FileTextIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)]" />
         {label}
       </span>
     )
@@ -142,15 +147,15 @@ function ContextSource({ source }: { source: NonNullable<ContextChunk["source"]>
     <a
       href={source.href}
       className={cn(
-        layout,
-        "no-underline outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-neutral-secondary-hover)] focus-visible:[outline:var(--hui-focus-ring)]"
+        "group/source -mx-[var(--hui-space-2)] inline-flex min-h-6 max-w-full items-center gap-x-[var(--hui-space-2)] rounded-[var(--hui-radius-1)] px-[var(--hui-space-2)] text-[var(--hui-color-foreground-base-primary)] no-underline outline-none motion-safe:[transition:var(--hui-transition-interactive)] hover:bg-[var(--hui-color-background-neutral-secondary)] focus-visible:[outline:var(--hui-focus-ring)]",
+        smallText
       )}
     >
+      <ArrowUpRightIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--hui-color-foreground-base-tertiary)] group-hover/source:text-[var(--hui-color-foreground-base-primary)]" />
       {label}
       {domain && domain !== source.label && (
         <span className="shrink-0 text-[var(--hui-color-foreground-base-secondary)]">{domain}</span>
       )}
-      <ArrowUpRightIcon aria-hidden="true" className="size-3 shrink-0 text-[var(--hui-color-foreground-base-secondary)]" />
     </a>
   )
 }

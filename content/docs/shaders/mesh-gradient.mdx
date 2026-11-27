@@ -1,0 +1,52 @@
+---
+title: Mesh Gradient
+description: Blend two to six colors as soft drifting points, with optional distortion, swirl, and grain.
+---
+
+<ComponentPreview name="mesh-gradient-demo" playground />
+
+## Overview
+
+Mesh Gradient treats each color as a soft point that drifts slowly across the surface on its own path. Every pixel blends the points by distance, in linear light, so neighboring colors mix cleanly instead of turning muddy. Noise distortion bends the boundaries into organic shapes, and swirl twists the field around the center.
+
+Use it for hero backgrounds, empty states, and cards that need a calm sense of motion. Two or three related colors read as a refined wash; four to six give a richer, more editorial field.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { MeshGradient } from "honestui/shaders"
+
+<div className="h-80 bg-[#9aa9cf]">
+  <MeshGradient
+    className="size-full"
+    colors={["#f3ebe2", "#e5b9a4", "#9aa9cf", "#3e4a70"]}
+    distortion={0.6}
+    swirl={0.25}
+  />
+</div>
+```
+
+Give the parent a background color close to the gradient's average. It shows while WebGL starts and stays as the fallback where WebGL2 is unavailable.
+
+## Accessibility
+
+Mesh Gradient is decorative: its canvas is hidden from assistive technology, so keep headings, text, and actions in normal HTML above it. Check text contrast against the lightest and darkest colors, since every color passes behind the foreground over time.
+
+The effect pauses while it is offscreen or the tab is hidden, and shows a still frame when the user prefers reduced motion. Use `paused` to stop it for application reasons; prop changes still redraw the still frame.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="colors" type="string[]" default='["#f3ebe2", "#e5b9a4", "#9aa9cf", "#3e4a70"]'>Two to six hex colors. Each one is a drifting point of color.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.5">Animation speed.</ApiRow>
+  <ApiRow name="distortion" type="number" default="0.6">Noise displacement of the color boundaries, from 0 to 1.</ApiRow>
+  <ApiRow name="swirl" type="number" default="0.25">Rotational twist around the center, from 0 to 1.</ApiRow>
+  <ApiRow name="sharpness" type="number" default="0.5">From 0 (colors blend widely) to 1 (each color keeps a distinct area).</ApiRow>
+  <ApiRow name="grain" type="number" default="0">Film grain strength, from 0 to 1.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+</ApiTable>

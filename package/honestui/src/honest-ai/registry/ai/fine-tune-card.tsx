@@ -93,13 +93,13 @@ function FineTuneCard({
       aria-labelledby={titleId}
       data-slot="fine-tune-card"
       className={cn(
-        "w-full min-w-0 rounded-[var(--hui-radius-4)] border-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
+        "w-full min-w-0 overflow-hidden rounded-[var(--hui-radius-4)] border-[0.5px] border-[var(--hui-color-border-base-primary)] bg-[var(--hui-color-background-base-primary)] text-[var(--hui-color-foreground-base-primary)] shadow-[var(--hui-shadow-feather)]",
         regularText,
         className
       )}
       {...props}
     >
-      <div className="flex min-h-[var(--hui-space-11)] min-w-0 items-center gap-[var(--hui-space-3)] border-b-[length:var(--hui-border-width-surface)] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-2)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]">
+      <div className="flex min-h-[var(--hui-space-11)] min-w-0 items-center gap-[var(--hui-space-3)] border-b-[0.5px] border-[var(--hui-color-border-base-primary)] py-[var(--hui-space-2)] ps-[var(--hui-space-5)] pe-[var(--hui-space-3)]">
         <p id={titleId} className="m-0 min-w-0 flex-1 truncate [font-weight:var(--hui-font-weight-medium)]">
           {title}
         </p>
@@ -121,14 +121,19 @@ function FineTuneCard({
         </Button>
       </div>
 
-      <div className="flex flex-col gap-[var(--hui-space-4)] p-[var(--hui-space-5)]">
+      {/* One row per control, split by hairlines, so labels and controls align in two columns. */}
+      <div className="flex flex-col">
         {controls.map((control) => (
-          <FineTuneField
+          <div
             key={control.id}
-            control={control}
-            value={values[control.id]}
-            onChange={(value) => setValue(control.id, value)}
-          />
+            className="flex min-h-[var(--hui-space-12)] min-w-0 items-center border-b-[0.5px] border-[var(--hui-color-border-base-primary)] px-[var(--hui-space-5)] py-[var(--hui-space-3)] last:border-b-0"
+          >
+            <FineTuneField
+              control={control}
+              value={values[control.id]}
+              onChange={(value) => setValue(control.id, value)}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -202,7 +207,7 @@ function FineTuneField({
 
   if (control.type === "segment") {
     return (
-      <div className="flex min-w-0 items-center justify-between gap-[var(--hui-space-4)]">
+      <div className="flex w-full min-w-0 items-center justify-between gap-[var(--hui-space-4)]">
         {label}
         <ToggleGroup
           size="sm"
@@ -226,7 +231,7 @@ function FineTuneField({
   }
 
   return (
-    <div className="flex min-w-0 items-center justify-between gap-[var(--hui-space-4)]">
+    <div className="flex w-full min-w-0 items-center justify-between gap-[var(--hui-space-4)]">
       {label}
       <Select
         items={control.options}

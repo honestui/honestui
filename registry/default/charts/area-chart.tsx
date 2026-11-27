@@ -29,6 +29,7 @@ import {
 import {
   buildChartCss,
   flattenColor,
+  normalizeColor,
   getColorsCount,
   resolveColors,
   seriesPaint,
@@ -66,10 +67,10 @@ import {
   runFocusPatch,
   resolveDataStatusText,
   runValues,
-  shareTotals,
   statusDetailText,
   statusNotesHtml,
   STROKE_DASH,
+  summarizeDataQuality,
   strokeRuns,
   type DataQualityKeys,
   type DataStatus,
@@ -96,6 +97,11 @@ import {
 } from "@/registry/default/ui/charts/comparison";
 import { joinChartSync } from "@/registry/default/ui/charts/sync";
 import {
+  renderGrainientTexture,
+  retainGrainientRenderer,
+  type GrainientFillOptions,
+} from "@/registry/default/ui/charts/grainient-fill";
+import {
   buildInsideZoom,
   collectZoom,
   isZoomed,
@@ -104,6 +110,40 @@ import {
   ZOOM_RESET_CLASS,
 } from "@/registry/default/ui/charts/zoom";
 import { LegendOverlay, type LegendVariant } from "@/registry/default/ui/charts/legend";
+import {
+  applyPartialPeriod,
+  axisBreakSeries,
+  axisTruncation,
+  Band,
+  bandRuns,
+  bandSeries,
+  bandSeriesId,
+  collectHonesty,
+  fillMissingRows,
+  fitDomain,
+  formatCount,
+  gapRegionSeries,
+  gapSpans,
+  HonestyKeyItems,
+  honestyNotesHtml,
+  isLowSample,
+  PartialPeriod,
+  partialPeriodSeries,
+  readBand,
+  readSampleSizes,
+  readValue,
+  resolveHonestyText,
+  resolvePartialPeriod,
+  sampleSizeSeries,
+  type BandRun,
+  type ChartHonestyText,
+  type GapSpan,
+  type GapsOption,
+  type HonestyKeyEntry,
+  type HonestyNote,
+  type ResolvedChartHonestyText,
+  type SampleSizeDisplay,
+} from "@/registry/default/ui/charts/honesty";
 import type { ComposeOption, ImagePatternObject } from "echarts/core";
 import { CustomChart, LineChart, type CustomSeriesOption, type LineSeriesOption } from "echarts/charts";
 import { motion, useReducedMotion } from "motion/react";
@@ -112,6 +152,9 @@ import * as echarts from "echarts/core";
 
 export type {
   ChartConfig,
+  ChartHonestyText,
+  GapsOption,
+  SampleSizeDisplay,
   DotVariant,
   LegendVariant,
   TooltipPosition,
@@ -157,6 +200,7 @@ export type AreaVariant =
   | "dotted"
   | "lines"
   | "hatched"
+  | "grainient"
   | "none"; 
 export type StrokeVariant = "solid" | "dashed" | "animated-dashed";
 export type StackType = "default" | "stacked" | "expanded";
@@ -194,6 +238,13 @@ export interface AreaChartProps<TData extends Record<string, unknown>> {
   loadingPoints?: number; 
   ariaLabel?: string;
   dataStatusText?: DataStatusText; 
+  /** Rewords the partial-period, interval, gap, axis, and sample-size text. */
+  honestyText?: ChartHonestyText;
+  /**
+   * Shade stretches where no series has a value. With an `interval`, rows
+   * absent from a time series are found and shown as gaps too.
+   */
+  gaps?: GapsOption;
   /** Charts with the same id show their crosshair and tooltip together. */
   syncId?: string;
   chartOptions?: Record<string, unknown>; 
@@ -203,6 +254,8 @@ export interface AreaChartProps<TData extends Record<string, unknown>> {
 export interface AreaProps {
   dataKey: string; 
   variant?: AreaVariant; 
+  /** Colors, grain, intensity, and drift for `variant="grainient"`. */
+  grainient?: GrainientFillOptions;
   strokeVariant?: StrokeVariant; 
   strokeWidth?: number; 
   curveType?: CurveType; 
@@ -218,6 +271,12 @@ export interface AreaProps {
    * ghost line. On stacked and expanded charts only the tooltip compares.
    */
   compareDataKey?: string;
+  /** The row field with the number of observations behind each value. */
+  sampleSizeKey?: string;
+  /** Values with fewer observations are ringed and named in the key. */
+  minSampleSize?: number;
+  /** `label` writes n above the points; `tooltip` keeps it in the tooltip. Defaults to `label`. */
+  sampleSizeDisplay?: SampleSizeDisplay;
   children?: ReactNode; 
 }
 
@@ -246,6 +305,12 @@ export interface YAxisProps {
   tickFormatter?: (value: number, index: number) => string; 
   label?: string; 
   hideDots?: boolean; 
+  /** The axis start. `"auto"` fits the data instead of starting at zero. Defaults to zero. */
+  min?: number | "auto";
+  /** The axis end. Defaults to a rounded value above the data. */
+  max?: number;
+  /** When the axis does not reach zero, mark the break and say where it starts. Defaults to `auto`. */
+  truncationNotice?: "auto" | "off";
 }
 
 const YAxis: FC<YAxisProps> = () => null;
@@ -273,6 +338,7 @@ const Legend: FC<LegendProps> = () => null;
 type AreaSeriesConfig = {
   dataKey: string;
   variant: AreaVariant;
+  grainient?: GrainientFillOptions;
   strokeVariant: StrokeVariant;
   strokeWidth: number;
   curveType?: CurveType;
@@ -284,6 +350,9 @@ type AreaSeriesConfig = {
   dotVariant: DotVariant; 
   activeDotVariant: DotVariant; 
   compareDataKey?: string;
+  sampleSizeKey?: string;
+  minSampleSize?: number;
+  sampleSizeDisplay: SampleSizeDisplay;
 };
 
 type XAxisSlot = {
@@ -299,6 +368,9 @@ type YAxisSlot = {
   tickFormatter?: (value: number, index: number) => string;
   label?: string;
   hideDots: boolean;
+  min?: number | "auto";
+  max?: number;
+  truncationNotice: "auto" | "off";
 };
 type TooltipSlot = {
   present: boolean;
@@ -334,7 +406,7 @@ type CollectedConfig = {
 function collectConfig(children: ReactNode): CollectedConfig {
   const areas: AreaSeriesConfig[] = [];
   let xAxis: XAxisSlot = { present: false, hideDots: false };
-  let yAxis: YAxisSlot = { present: false, hideDots: false };
+  let yAxis: YAxisSlot = { present: false, hideDots: false, truncationNotice: "auto" };
   let showGrid = false;
   let tooltip: TooltipSlot = {
     present: false,
@@ -371,6 +443,7 @@ function collectConfig(children: ReactNode): CollectedConfig {
       areas.push({
         dataKey: props.dataKey,
         variant: props.variant ?? "gradient",
+        grainient: props.grainient,
         strokeVariant: props.strokeVariant ?? "dashed",
         strokeWidth: props.strokeWidth ?? STROKE_WIDTH,
         curveType: props.curveType,
@@ -382,6 +455,9 @@ function collectConfig(children: ReactNode): CollectedConfig {
         dotVariant,
         activeDotVariant,
         compareDataKey: props.compareDataKey,
+        sampleSizeKey: props.sampleSizeKey,
+        minSampleSize: props.minSampleSize,
+        sampleSizeDisplay: props.sampleSizeDisplay ?? "label",
       });
     } else if (type === XAxis) {
       const props = child.props as XAxisProps;
@@ -400,6 +476,10 @@ function collectConfig(children: ReactNode): CollectedConfig {
         tickFormatter: props.tickFormatter,
         label: props.label,
         hideDots: props.hideDots ?? false,
+
+        min: props.min,
+        max: props.max,
+        truncationNotice: props.truncationNotice ?? "auto",
       };
     } else if (type === Grid) {
       showGrid = true;
@@ -560,11 +640,51 @@ function patternFadeTexture(
   return canvas;
 }
 
+type GrainSinkEntry = {
+  key: string;
+  options: GrainientFillOptions;
+  slots: string[];
+  surface?: string;
+};
+
+type GrainPaint = {
+  id: string;
+  key: string;
+  options?: GrainientFillOptions;
+  time: number;
+  sink: Map<string, GrainSinkEntry>;
+  surface: string;
+};
+
+function grainientPattern(
+  entry: GrainSinkEntry,
+  size: { width: number; height: number },
+  time: number | undefined,
+): ImagePatternObject | null {
+  const texture = renderGrainientTexture({
+    options: entry.options,
+    slots: entry.slots,
+    key: entry.key,
+    surface: entry.surface,
+    width: size.width,
+    height: size.height,
+    time,
+  });
+  if (!texture) return null;
+  return {
+    image: texture.image,
+    repeat: "no-repeat",
+    scaleX: 1 / texture.dpr,
+    scaleY: 1 / texture.dpr,
+  };
+}
+
 function fillPaint(
   variant: AreaVariant,
   showUnselected: boolean,
   slots: string[],
   size: { width: number; height: number },
+  grain?: GrainPaint,
 ): string | echarts.graphic.LinearGradient | ImagePatternObject {
   const base = slots[0] ?? "rgba(120, 120, 120, 1)";
   const multi = slots.length > 1;
@@ -573,6 +693,24 @@ function fillPaint(
 
   if (showUnselected) {
     return patternFill("stripe", base) ?? withAlpha(base, 0.1);
+  }
+
+  if (variant === "grainient") {
+    if (grain) {
+      const entry: GrainSinkEntry = {
+        key: grain.key,
+        options: grain.options ?? {},
+        slots,
+        surface: grain.surface,
+      };
+      const pattern = grainientPattern(entry, size, entry.options.animate ? grain.time : undefined);
+      if (pattern) {
+        grain.sink.set(grain.id, entry);
+        return pattern;
+      }
+    }
+    // No WebGL2: the default gradient stands in.
+    return fillPaint("gradient", false, slots, size);
   }
 
   switch (variant) {
@@ -678,6 +816,25 @@ const BUFFERFILL_PREFIX = "__bufferfill-";
 
 const REVEAL_PREFIX = "__reveal-";
 
+type ResolvedBand = {
+  index: number;
+  dataKey?: string;
+  label: string;
+  color?: string;
+  bounds: ({ lower: number; upper: number } | null)[];
+  runs: BandRun[];
+};
+
+type HonestyPlan = {
+  text: ResolvedChartHonestyText;
+  partial: { start: number; progress: number | null; label: string; note: string } | null;
+  bands: ResolvedBand[];
+  gaps: GapSpan[];
+  gapLabel: string;
+  axis: { min?: number; max?: number; truncatedAt: number | null; label: string; description: string };
+  sampleSizes: Record<string, (number | null)[]>;
+};
+
 type OptionBuildContext = {
   data: Record<string, unknown>[];
   config: ChartConfig;
@@ -703,8 +860,15 @@ type OptionBuildContext = {
   revealSink: Record<string, unknown[]>; 
   resolved: ResolvedColors;
   quality: Record<string, PointQuality[]>; 
+  /** Point quality before the partial period marked its tail provisional. */
+  claimedQuality: Record<string, PointQuality[]>;
   statusText: ResolvedDataStatusText;
+  honesty: HonestyPlan;
   rendererSize: { width: number; height: number }; 
+  /** Seconds of drift for animated grainient fills. */
+  grainTime: number;
+  /** Every series drawn with a grainient fill, by series id, so drift can repaint it. */
+  grainSink: Map<string, GrainSinkEntry>;
   categories: string[];
   brushRange: BrushRange; 
   getHoveredKey: () => string | null; 
@@ -776,7 +940,8 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
   const yAxis: YAxisOption = {
     type: "value",
     show: yAxisSlot.present || showGrid,
-    max: isExpanded ? 1 : undefined,
+    min: isLoading || isExpanded ? undefined : ctx.honesty.axis.min,
+    max: isExpanded ? 1 : isLoading ? undefined : ctx.honesty.axis.max,
 
     name: isLoading ? undefined : yAxisSlot.label,
     nameLocation: "middle",
@@ -812,7 +977,8 @@ function buildMainAxes(ctx: OptionBuildContext): { xAxis: XAxisOption; yAxis: YA
 }
 
 function createTooltipFormatter(ctx: OptionBuildContext) {
-  const { config, selectedDataKey, tooltipSlot, getHoveredKey, quality, statusText } = ctx;
+  const { config, selectedDataKey, tooltipSlot, getHoveredKey, quality, statusText, honesty } = ctx;
+  const areasByKey = new Map(ctx.areas.map((area) => [area.dataKey, area]));
   const compareKeys = new Map(
     ctx.areas.flatMap((area) => (area.compareDataKey ? [[area.dataKey, area.compareDataKey]] : [])),
   );
@@ -822,6 +988,11 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
     if (!rows.length) return "";
 
     const first = rows[0] as { axisValue?: string | number; name?: string };
+    const rowIndex = rows
+      .map((row) => (row as { dataIndex?: number }).dataIndex)
+      .find((index): index is number => typeof index === "number");
+    const inPartial = honesty.partial !== null && rowIndex !== undefined && rowIndex >= honesty.partial.start;
+    let lowSampleMin: number | null = null;
 
     const axisValue = first.axisValue ?? first.name ?? "";
     const label = String(axisValue);
@@ -846,11 +1017,26 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
         if (!key) return "";
 
         const point = typeof p.dataIndex === "number" ? quality[key]?.[p.dataIndex] : undefined;
+        // A value above a hole in the stack is not drawn, but it is still known.
+        if (
+          (p.value === null || p.value === undefined || p.value === "-") &&
+          ctx.isStacked &&
+          !ctx.isExpanded &&
+          typeof p.dataIndex === "number"
+        ) {
+          const own = point ? point.value : readValue(ctx.data[p.dataIndex]?.[key]);
+          if (own !== null) p.value = own;
+        }
         const hasValue = p.value !== null && p.value !== undefined && p.value !== "-";
         if (!hasValue && !point) return "";
         if (seen.has(key)) return "";
         seen.add(key);
-        if (point?.status) statuses.add(point.status);
+        // A tail marked provisional only by the partial period is explained by
+        // the period's own note, not again as "Provisional".
+        const claimed =
+          typeof p.dataIndex === "number" ? ctx.claimedQuality[key]?.[p.dataIndex] : undefined;
+        const periodMarked = inPartial && point?.status === "provisional" && claimed?.status !== "provisional";
+        if (point?.status && !periodMarked) statuses.add(point.status);
 
         const item = config[key];
         const colorsCount = item ? getColorsCount(item) : 1;
@@ -886,21 +1072,83 @@ function createTooltipFormatter(ctx: OptionBuildContext) {
             labelText,
             valueText: value,
             dimmed,
-            detailText: point
-              ? statusDetailText(point, statusText, (bound) => bound.toLocaleString())
-              : undefined,
+            detailText: honestyDetail({
+              base: point
+                ? statusDetailText(
+                    periodMarked ? { ...point, status: null } : point,
+                    statusText,
+                    (bound) => bound.toLocaleString(),
+                  )
+                : "",
+              periodLabel: periodMarked && honesty.partial ? honesty.partial.label : "",
+              bands: honesty.bands
+                .filter((band) => band.dataKey === key)
+                .flatMap((band) => {
+                  const range = typeof p.dataIndex === "number" ? band.bounds[p.dataIndex] : null;
+                  return range
+                    ? [`${band.label} ${range.lower.toLocaleString()} – ${range.upper.toLocaleString()}`]
+                    : [];
+                }),
+              sample: (() => {
+                const n =
+                  typeof p.dataIndex === "number" ? honesty.sampleSizes[key]?.[p.dataIndex] : undefined;
+                if (n === undefined || n === null) return "";
+                const area = areasByKey.get(key);
+                if (isLowSample(n, area?.minSampleSize)) {
+                  lowSampleMin = Math.max(lowSampleMin ?? 0, area?.minSampleSize ?? 0);
+                }
+                return honesty.text.sampleSize(formatCount(n));
+              })(),
+            }) || undefined,
           }) + comparison
         );
       })
       .join("");
 
+    const looseBands = honesty.bands
+      .filter((band) => !band.dataKey)
+      .map((band) => {
+        const range = rowIndex !== undefined ? band.bounds[rowIndex] : null;
+        if (!range) return "";
+        return tooltipRow({
+          indicatorHtml: `<div class="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-current opacity-20"></div>`,
+          labelText: band.label,
+          valueText: `${range.lower.toLocaleString()} – ${range.upper.toLocaleString()}`,
+          dimmed: "",
+        });
+      })
+      .join("");
+
+    const notes: HonestyNote[] = [];
+    if (inPartial && honesty.partial) {
+      notes.push({ label: honesty.partial.label, description: honesty.partial.note });
+    }
+    if (rowIndex !== undefined && honesty.gaps.some((gap) => rowIndex >= gap.start && rowIndex <= gap.end)) {
+      notes.push({ label: honesty.gapLabel, description: honesty.text.noDataDescription });
+    }
+    if (lowSampleMin !== null) {
+      notes.push({
+        label: honesty.text.lowSampleLabel(formatCount(lowSampleMin)),
+        description: honesty.text.lowSampleDescription,
+      });
+    }
+
     return tooltipShell({
       label,
-      body: body + statusNotesHtml(statuses, statusText),
+      body: body + looseBands + statusNotesHtml(statuses, statusText) + honestyNotesHtml(notes),
       roundness: tooltipSlot.roundness,
       variant: tooltipSlot.variant,
     });
   };
+}
+
+function honestyDetail(parts: {
+  base: string;
+  periodLabel: string;
+  bands: string[];
+  sample: string;
+}): string {
+  return [parts.periodLabel, parts.base, ...parts.bands, parts.sample].filter(Boolean).join(" · ");
 }
 
 function buildTooltipOption(ctx: OptionBuildContext): TooltipComponentOption {
@@ -1033,7 +1281,6 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
     data,
     config,
     areas,
-    seriesKeys,
     curveType,
     isStacked,
     isExpanded,
@@ -1047,16 +1294,29 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
     rendererSize,
   } = ctx;
 
-  const rowTotals = isExpanded ? shareTotals(data, seriesKeys, ctx.quality) : [];
+  // An absent value is a gap, never a zero, and a stack never builds across
+  // one: a value above a hole has no known height.
+  const ownValues = seriesValuesByKey(data, areas, ctx.quality, isStacked, isExpanded);
 
   // Status strokes are drawn unstacked, so a stacked chart places them at the
   // cumulative height its own stack reaches.
-  const plottedTops = isStacked ? computePlottedTops(ctx) : null;
+  const plottedTops = isStacked
+    ? plottedValuesByKey(data, areas, ctx.quality, isStacked, isExpanded)
+    : null;
+  const partialStart = ctx.honesty.partial?.start ?? null;
 
   return areas.flatMap((area): (LineSeriesOption | CustomSeriesOption)[] => {
     const key = area.dataKey;
     const slots = resolved.series[key] ?? ["rgba(120, 120, 120, 1)"];
     const paint = seriesPaint(slots);
+    const grainFor = (id: string): GrainPaint => ({
+      id,
+      key,
+      options: area.grainient,
+      time: ctx.grainTime,
+      sink: ctx.grainSink,
+      surface: resolved.tokens.background,
+    });
     const isSelected = selectedDataKey === key;
     const showUnselected = hasSelection && !isSelected;
     const opacity = getOpacity(selectedDataKey, key);
@@ -1066,13 +1326,7 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
     // variant, buffer segment, and null bridging are not applied.
     const points = ctx.quality[key];
     const tracked = points !== undefined;
-    const values: (number | null)[] = data.map((row, i) => {
-      const value = points ? points[i].value : Number(row[key]) || 0;
-      if (value === null || !isExpanded) return value;
-      const total = rowTotals[i];
-      if (total === null) return null;
-      return total ? value / total : 0;
-    });
+    const values: (number | null)[] = ownValues[key];
     const n = values.length;
 
     const reveal = enableHoverReveal;
@@ -1148,6 +1402,10 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
 
     const z = isSelected ? 3 : hasSelection ? 1 : 2;
 
+    // In the open period the stroke is dashed by its status, and the fill is
+    // drawn by two fill-only series so the unfinished tail reads lighter.
+    const splitFill = partialStart !== null && !reveal && !buffer && n > 0;
+
     const mainSeries: LineSeriesOption = {
       id: key,
       name: typeof config[key]?.label === "string" ? config[key]?.label : key,
@@ -1178,8 +1436,8 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
             opacity: dotOpacity,
           },
       areaStyle: {
-        color: fillPaint(area.variant, showUnselected, slots, rendererSize),
-        opacity: opacity.fill,
+        color: fillPaint(area.variant, showUnselected, slots, rendererSize, grainFor(key)),
+        opacity: splitFill ? 0 : opacity.fill,
       },
       emphasis: {
 
@@ -1191,12 +1449,54 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
 
       blur: {
         lineStyle: { opacity: tracked ? 0 : 0.3 },
-        areaStyle: { opacity: 0.1 },
+        areaStyle: { opacity: splitFill ? 0 : 0.1 },
         itemStyle: { opacity: 0.3 },
       },
     };
 
     const qualitySeries: (LineSeriesOption | CustomSeriesOption)[] = [];
+    if (splitFill) {
+      const edge = Math.max((partialStart as number) - 1, 0);
+      const fillOnly = (
+        id: string,
+        fillValues: (number | null)[],
+        stack: string,
+        fillOpacity: number,
+      ): LineSeriesOption => ({
+        id,
+        type: "line",
+        data: fillValues,
+        stack: isStacked ? stack : undefined,
+        smooth: curve.smooth,
+        step: curve.step,
+        connectNulls: false,
+        silent: true,
+        showSymbol: false,
+        z: z - 1,
+        lineStyle: { opacity: 0 },
+        areaStyle: {
+          color: fillPaint(area.variant, showUnselected, slots, rendererSize, grainFor(id)),
+          opacity: fillOpacity,
+        },
+        emphasis: { disabled: true },
+        blur: { areaStyle: { opacity: 0.1 * (fillOpacity / Math.max(opacity.fill, 0.01)) } },
+        tooltip: { show: false },
+      });
+      qualitySeries.push(
+        fillOnly(
+          `${CLOSED_FILL_PREFIX}${key}`,
+          values.map((v, i) => (i <= edge && partialStart !== 0 ? v : null)),
+          "__closedfill-total",
+          opacity.fill,
+        ),
+        fillOnly(
+          `${PARTIAL_FILL_PREFIX}${key}`,
+          values.map((v, i) => (i >= edge ? v : null)),
+          "__partialfill-total",
+          opacity.fill * PARTIAL_AREA_FILL_SCALE,
+        ),
+      );
+    }
     // The earlier period as a line only, faded and finely dashed, so it never
     // adds to a filled total. A stack has no single baseline for it, so
     // stacked and expanded charts compare in the tooltip alone.
@@ -1272,7 +1572,9 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
       const ranges = points.flatMap((point, index) => {
         if (!point.range) return [];
         // In a stack, the bounds move up with the series they belong to.
-        const lift = tops ? tops[index] - (point.value ?? 0) : 0;
+        const top = tops ? tops[index] : null;
+        if (tops && top === null) return [];
+        const lift = top !== null ? top - (point.value ?? 0) : 0;
         return [{ index, lower: point.range.lower + lift, upper: point.range.upper + lift }];
       });
       if (ranges.length) {
@@ -1293,9 +1595,28 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
         color: markColor,
         opacity: opacity.stroke,
         z,
-        anchors: isExpanded ? null : tops,
+        anchors: isExpanded || !plottedTops ? null : stackBelow(plottedTops, areas, key, n),
       });
       if (missingMarkers) qualitySeries.push(missingMarkers);
+    }
+
+    const sizes = ctx.honesty.sampleSizes[key];
+    if (sizes) {
+      const tops = plottedTops?.[key];
+      const sampleMarks = sampleSizeSeries({
+        dataKey: key,
+        values: tops ? values.map((value, i) => (value === null ? null : tops[i])) : values,
+        sizes,
+        minSampleSize: area.minSampleSize,
+        showLabels: area.sampleSizeDisplay === "label",
+        format: (count) => ctx.honesty.text.sampleSize(formatCount(count)),
+        labelColor: resolved.tokens.mutedForeground,
+        ringColor: multiColor ? resolved.tokens.foreground : slots[0],
+        background: resolved.tokens.background,
+        opacity: opacity.stroke,
+        z: z + 1,
+      });
+      if (sampleMarks) qualitySeries.push(sampleMarks);
     }
 
     if (reveal) {
@@ -1380,7 +1701,13 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
       z: z - 1,
       lineStyle: { opacity: 0 },
       areaStyle: {
-        color: fillPaint(area.variant, showUnselected, slots, rendererSize),
+        color: fillPaint(
+          area.variant,
+          showUnselected,
+          slots,
+          rendererSize,
+          grainFor(`${BUFFERFILL_PREFIX}${key}`),
+        ),
         opacity: opacity.fill,
       },
       emphasis: { disabled: true },
@@ -1392,6 +1719,110 @@ function buildAreaSeries(ctx: OptionBuildContext): (LineSeriesOption | CustomSer
   });
 }
 
+/** Where a missing value's ring sits in a stack: on top of the known stack below it. */
+function stackBelow(
+  tops: Record<string, (number | null)[]>,
+  areas: AreaSeriesConfig[],
+  key: string,
+  rowCount: number,
+): number[] {
+  return Array.from({ length: rowCount }, (_, i) => {
+    let anchor = 0;
+    for (const area of areas) {
+      if (area.dataKey === key) break;
+      const top = tops[area.dataKey]?.[i];
+      if (top === null || top === undefined) break;
+      anchor = top;
+    }
+    return anchor;
+  });
+}
+
+// Bands sit above the fill and under the strokes, and fade with the selection
+// like their series.
+function bandColor(ctx: OptionBuildContext, band: ResolvedBand): string {
+  const { resolved } = ctx;
+  if (band.color) return resolved.series[band.color]?.[0] ?? normalizeColor(band.color);
+  if (band.dataKey) return resolved.series[band.dataKey]?.[0] ?? resolved.tokens.foreground;
+  return resolved.tokens.foreground;
+}
+
+const BAND_FILL_OPACITY = 0.12;
+const BAND_EDGE_OPACITY = 0.35;
+const PARTIAL_FILL_OPACITY = 0.035;
+const GAP_HATCH_OPACITY = 0.11;
+/** The open period's fill, as a share of the closed periods' fill. */
+const PARTIAL_AREA_FILL_SCALE = 0.5;
+const CLOSED_FILL_PREFIX = "__closedfill-";
+const PARTIAL_FILL_PREFIX = "__partialfill-";
+
+function buildHonestySeries(ctx: OptionBuildContext): CustomSeriesOption[] {
+  const { honesty, resolved, curveType } = ctx;
+  const { tokens } = resolved;
+  const out: CustomSeriesOption[] = [];
+
+  // In a stack, a band tied to a series moves up with that series.
+  const tops = ctx.isStacked
+    ? plottedValuesByKey(ctx.data, ctx.areas, ctx.quality, ctx.isStacked, ctx.isExpanded)
+    : null;
+
+  for (const band of honesty.bands) {
+    const color = bandColor(ctx, band);
+    const area = band.dataKey ? ctx.areas.find((a) => a.dataKey === band.dataKey) : undefined;
+    const dim = band.dataKey ? getOpacity(ctx.selectedDataKey, band.dataKey).stroke : 1;
+    const curve = curveConfig(area?.curveType ?? curveType);
+    const seriesTops = band.dataKey ? tops?.[band.dataKey] : undefined;
+    const bounds =
+      tops && band.dataKey
+        ? band.bounds.map((range, i) => {
+            if (!range) return null;
+            const lift = bandLift(band.dataKey, i, seriesTops, ctx.data, ctx.quality);
+            return lift === null ? null : { lower: range.lower + lift, upper: range.upper + lift };
+          })
+        : band.bounds;
+    const series = bandSeries({
+      id: bandSeriesId(band.index, band.dataKey),
+      bounds,
+      runs: bounds === band.bounds ? band.runs : bandRuns(bounds),
+      fill: withAlpha(color, BAND_FILL_OPACITY * dim),
+      edge: withAlpha(color, BAND_EDGE_OPACITY * dim),
+      step: curve.step !== false,
+      smooth: curve.smooth,
+      // Above every fill (z up to 3) and under the strokes of the series in front.
+      z: 2.5,
+    });
+    if (series) out.push(series);
+  }
+
+  if (honesty.partial) {
+    out.push(
+      partialPeriodSeries({
+        start: honesty.partial.start,
+        label: honesty.partial.label,
+        fill: withAlpha(tokens.foreground, PARTIAL_FILL_OPACITY),
+        labelColor: tokens.mutedForeground,
+        z: 0,
+      }),
+    );
+  }
+
+  const gaps = gapRegionSeries({
+    spans: honesty.gaps,
+    rowCount: ctx.data.length,
+    label: honesty.gapLabel,
+    hatch: withAlpha(tokens.foreground, GAP_HATCH_OPACITY),
+    labelColor: tokens.mutedForeground,
+    z: 0,
+  });
+  if (gaps) out.push(gaps);
+
+  if (honesty.axis.truncatedAt !== null && ctx.yAxisSlot.truncationNotice !== "off") {
+    out.push(axisBreakSeries({ stroke: tokens.mutedForeground, background: tokens.background, z: 6 }));
+  }
+
+  return out;
+}
+
 function sliceToNull<T>(vals: readonly T[], idx: number): (T | null)[] {
   return vals.map((v, i) => (i > idx ? null : v));
 }
@@ -1400,21 +1831,94 @@ function sliceFrom<T>(vals: readonly T[], idx: number): (T | null)[] {
   return vals.map((v, i) => (i < idx ? null : v));
 }
 
-function computePlottedTops(ctx: OptionBuildContext): Record<string, number[]> {
-  const { data, areas, seriesKeys, isStacked, isExpanded } = ctx;
-  const rowTotals = isExpanded ? shareTotals(data, seriesKeys, ctx.quality) : [];
-  const running = new Array(data.length).fill(0);
-  const tops: Record<string, number[]> = {};
+/**
+ * Each series' own values as drawn: absent values stay null, and an expanded
+ * chart turns values into shares. In a stack, a value whose stack below has a
+ * hole is null too, because its height on the plot is unknown.
+ */
+function seriesValuesByKey(
+  data: Record<string, unknown>[],
+  areas: AreaSeriesConfig[],
+  quality: Record<string, PointQuality[]>,
+  isStacked: boolean,
+  isExpanded: boolean,
+): Record<string, (number | null)[]> {
+  const read = (key: string, i: number) => {
+    const points = quality[key];
+    return points ? points[i].value : readValue(data[i][key]);
+  };
+  const totals = isExpanded
+    ? data.map((_, i) => {
+        let total = 0;
+        for (const area of areas) {
+          const value = read(area.dataKey, i);
+          if (value === null) return null;
+          total += value;
+        }
+        return total;
+      })
+    : [];
+  const broken = new Array<boolean>(data.length).fill(false);
+  const out: Record<string, (number | null)[]> = {};
   for (const area of areas) {
-    const key = area.dataKey;
-    tops[key] = data.map((row, i) => {
-      const points = ctx.quality[key];
-      let value = points ? (points[i].value ?? 0) : Number(row[key]) || 0;
-      if (isExpanded) value = rowTotals[i] ? value / rowTotals[i] : 0;
-      return isStacked ? (running[i] += value) : value;
+    out[area.dataKey] = data.map((_, i) => {
+      let value = read(area.dataKey, i);
+      if (isExpanded) {
+        const total = totals[i];
+        value = value === null || total === null ? null : total ? value / total : 0;
+      }
+      if (!isStacked) return value;
+      const hidden = value === null || broken[i];
+      if (value === null) broken[i] = true;
+      return hidden ? null : value;
     });
   }
-  return tops;
+  return out;
+}
+
+/** The height each series reaches on the plot: its stacked top, or its own value. */
+function plottedValuesByKey(
+  data: Record<string, unknown>[],
+  areas: AreaSeriesConfig[],
+  quality: Record<string, PointQuality[]>,
+  isStacked: boolean,
+  isExpanded: boolean,
+): Record<string, (number | null)[]> {
+  const own = seriesValuesByKey(data, areas, quality, isStacked, isExpanded);
+  if (!isStacked) return own;
+  const running = new Array<number>(data.length).fill(0);
+  const out: Record<string, (number | null)[]> = {};
+  for (const area of areas) {
+    out[area.dataKey] = own[area.dataKey].map((value, i) => {
+      if (value === null) return null;
+      running[i] += value;
+      return running[i];
+    });
+  }
+  return out;
+}
+
+/** How far a band tied to a stacked series moves up: the stack below that series. */
+function bandLift(
+  dataKey: string | undefined,
+  index: number,
+  tops: (number | null)[] | undefined,
+  data: Record<string, unknown>[],
+  quality: Record<string, PointQuality[]>,
+): number | null {
+  if (!dataKey || !tops) return 0;
+  const top = tops[index];
+  if (top === null || top === undefined) return null;
+  const points = quality[dataKey];
+  const own = points ? points[index].value : readValue(data[index][dataKey]);
+  return own === null ? null : top - own;
+}
+
+function computePlottedTops(ctx: OptionBuildContext): Record<string, number[]> {
+  const tops = plottedValuesByKey(ctx.data, ctx.areas, ctx.quality, ctx.isStacked, ctx.isExpanded);
+  const out: Record<string, number[]> = {};
+  for (const [key, values] of Object.entries(tops)) out[key] = values.map((value) => value ?? NaN);
+  return out;
 }
 
 function resolveAreaAtPixel(
@@ -1435,7 +1939,7 @@ function resolveAreaAtPixel(
   let abovePixelY = -Infinity;
   for (const key of keys) {
     const value = tops[key]?.[index];
-    if (value === undefined) continue;
+    if (value === undefined || Number.isNaN(value)) continue;
     const pixelY = chart.convertToPixel({ gridIndex: 0 }, [index, value])[1];
     const dist = Math.abs(pixelY - y);
     if (dist < nearestDist) {
@@ -1481,10 +1985,14 @@ type LiveState = {
     onZoomChange?: (range: { startIndex: number; endIndex: number }) => void;
   };
   repush: () => void;
+  /** Seconds of drift for animated grainient fills. */
+  grainTime: number;
+  /** Series ids drawn with a grainient fill in the last option build. */
+  grainSink: Map<string, GrainSinkEntry>;
 };
 
 export function AreaChart<TData extends Record<string, unknown>>({
-  data,
+  data: inputData,
   config,
   xDataKey,
   className,
@@ -1501,6 +2009,8 @@ export function AreaChart<TData extends Record<string, unknown>>({
   loadingPoints = LOADING_DEFAULT_POINTS,
   ariaLabel,
   dataStatusText,
+  honestyText,
+  gaps,
   syncId,
   chartOptions,
   children,
@@ -1540,6 +2050,8 @@ export function AreaChart<TData extends Record<string, unknown>>({
       enableHoverReveal,
     },
     repush: () => {},
+    grainTime: 0,
+    grainSink: new Map(),
   });
 
   const loadingData = useCallback(
@@ -1574,23 +2086,38 @@ export function AreaChart<TData extends Record<string, unknown>>({
   const zoomSlot = useMemo(() => collectZoom(children), [children]);
   useZoomWheelGuard(containerRef, zoomSlot);
   const [zoomed, setZoomed] = useState(false);
+  const honestySlots = useMemo(() => collectHonesty(children), [children]);
   const colorKeys = useMemo(
-    () => [...seriesKeys, ...referenceColorKeys(references, config)],
-    [seriesKeys, references, config],
+    () => [
+      ...seriesKeys,
+      ...referenceColorKeys(references, config),
+      ...honestySlots.bands.flatMap((band) => (band.color && config[band.color] ? [band.color] : [])),
+    ],
+    [seriesKeys, references, config, honestySlots],
   );
-  const defaultAriaLabel = `Area chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.`;
 
   const xCategoryKey = useMemo(() => {
     if (xAxisSlot.dataKey) return xAxisSlot.dataKey;
     if (xDataKey) return xDataKey as string;
-    const firstRow = data[0];
+    const firstRow = inputData[0];
     if (firstRow) {
       const claimed = new Set(seriesKeys);
       const found = Object.keys(firstRow).find((key) => !claimed.has(key));
       if (found) return found;
     }
     return "";
-  }, [xAxisSlot.dataKey, xDataKey, data, seriesKeys]);
+  }, [xAxisSlot.dataKey, xDataKey, inputData, seriesKeys]);
+
+  // With a gap interval, rows absent from the time series are put back as
+  // empty rows, so the axis keeps time even and the hole shows.
+  const gapInterval = typeof gaps === "object" ? gaps.interval : undefined;
+  const data = useMemo(
+    () =>
+      gapInterval && xCategoryKey
+        ? fillMissingRows(inputData, xCategoryKey, gapInterval).data
+        : (inputData as Record<string, unknown>[]),
+    [inputData, xCategoryKey, gapInterval],
+  );
 
   const effectiveAnimation = areas[0]?.animationType ?? animationType;
 
@@ -1600,17 +2127,239 @@ export function AreaChart<TData extends Record<string, unknown>>({
   const isExpanded = stackType === "expanded";
   const isStacked = stackType === "stacked" || isExpanded;
 
+  // A partial period or gap shading reads every series' values as claims, so
+  // an absent value is never drawn as zero or bridged.
+  const trackAll = Boolean(honestySlots.partial || gaps);
+  const qualitySeries = useMemo(
+    () =>
+      areas.map((area) => ({
+        dataKey: area.dataKey,
+        quality: area.quality ?? (trackAll ? {} : null),
+      })),
+    [areas, trackAll],
+  );
   // Bounds on a value say nothing about bounds on its share of a total, so an
   // expanded chart keeps the status and drops the range.
-  const quality = useMemo(
-    () => collectDataQuality(data, areas, { dropRanges: isExpanded }),
-    [data, areas, isExpanded],
+  const claimed = useMemo(
+    () => collectDataQuality(data, qualitySeries, { dropRanges: isExpanded }),
+    [data, qualitySeries, isExpanded],
   );
+
+  const [renderedAt] = useState(() => Date.now());
+  const honestyTextResolved = useMemo(() => resolveHonestyText(honestyText), [honestyText]);
+  const partial = useMemo(() => {
+    if (!honestySlots.partial) return null;
+    const found = resolvePartialPeriod(
+      honestySlots.partial,
+      data.map((row) => row[xCategoryKey]),
+      renderedAt,
+    );
+    if (!found) return null;
+    const description = honestySlots.partial.note ?? [
+      honestyTextResolved.partialPeriodDescription,
+      found.progress !== null ? honestyTextResolved.partialProgress(found.progress) : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return {
+      start: found.start,
+      progress: found.progress,
+      label: honestySlots.partial.label ?? honestyTextResolved.partialPeriodLabel,
+      note: description,
+    };
+  }, [honestySlots, data, xCategoryKey, renderedAt, honestyTextResolved]);
+
+  const quality = useMemo(() => {
+    if (!partial) return claimed;
+    const points: Record<string, PointQuality[]> = {};
+    for (const [key, value] of Object.entries(claimed.points)) {
+      points[key] = applyPartialPeriod(value, partial.start);
+    }
+    return { ...claimed, points };
+  }, [claimed, partial]);
+
   const statusText = useMemo(() => resolveDataStatusText(dataStatusText), [dataStatusText]);
-  const qualityIssues = quality.issues.join("\n");
+
+  // A band is a range on a value, not on its share of a total, so an
+  // expanded chart draws none.
+  const bands = useMemo(
+    () =>
+      isExpanded
+        ? []
+        : honestySlots.bands.map((band, index) => {
+            const read = readBand(data, band);
+            return {
+              index,
+              dataKey: band.dataKey,
+              label: band.label ?? honestyTextResolved.intervalLabel,
+              color: band.color,
+              bounds: read.bounds,
+              runs: read.runs,
+              issues: read.issues,
+            };
+          }),
+    [honestySlots, data, honestyTextResolved, isExpanded],
+  );
+
+  const gapList = useMemo(() => {
+    if (!gaps) return [];
+    const series = Object.values(quality.points).map((points) => points.map((point) => point.value));
+    return series.length ? gapSpans(series, data.length) : [];
+  }, [gaps, quality, data.length]);
+
+  const sampleSizes = useMemo(() => {
+    const sizes: Record<string, (number | null)[]> = {};
+    for (const area of areas) {
+      if (area.sampleSizeKey) sizes[area.dataKey] = readSampleSizes(data, area.sampleSizeKey);
+    }
+    return sizes;
+  }, [areas, data]);
+
+  // An expanded chart's axis is always 0–100%, so it is never truncated.
+  const axis = useMemo(() => {
+    const { min: minProp, max: maxProp } = yAxisSlot;
+    let min: number | undefined = typeof minProp === "number" ? minProp : undefined;
+    let max: number | undefined = maxProp;
+    if (isExpanded) {
+      min = undefined;
+      max = undefined;
+    } else if (minProp === "auto") {
+      const values: number[] = [];
+      const plotted = plottedValuesByKey(data, areas, quality.points, isStacked, false);
+      for (const area of areas) {
+        const points = quality.points[area.dataKey];
+        const tops = plotted[area.dataKey];
+        for (let i = 0; i < data.length; i++) {
+          const value = tops[i];
+          if (value !== null) values.push(value);
+          const range = points?.[i].range;
+          const own = points?.[i].value ?? 0;
+          if (range && value !== null) values.push(range.lower + value - own, range.upper + value - own);
+        }
+      }
+      for (const band of bands) {
+        const tops = band.dataKey ? plotted[band.dataKey] : undefined;
+        band.bounds.forEach((range, i) => {
+          if (!range) return;
+          const lift = bandLift(band.dataKey, i, tops, data, quality.points);
+          if (lift !== null) values.push(range.lower + lift, range.upper + lift);
+        });
+      }
+      const domain = fitDomain(values);
+      if (domain) {
+        min = domain.min;
+        max = max ?? domain.max;
+      }
+    }
+    const truncatedAt = axisTruncation(min ?? null, max ?? null);
+    const formatted =
+      truncatedAt === null
+        ? ""
+        : (yAxisSlot.tickFormatter?.(truncatedAt, 0) ?? truncatedAt.toLocaleString());
+    const atTop = truncatedAt !== null && truncatedAt < 0;
+    return {
+      min,
+      max,
+      truncatedAt,
+      label: atTop
+        ? honestyTextResolved.axisEndsAt(formatted)
+        : honestyTextResolved.axisStartsAt(formatted),
+      description: honestyTextResolved.axisDescription(formatted),
+    };
+  }, [yAxisSlot, areas, quality, data, bands, honestyTextResolved, isExpanded, isStacked]);
+
+  const honesty = useMemo<HonestyPlan>(
+    () => ({
+      text: honestyTextResolved,
+      partial,
+      bands,
+      gaps: gapList,
+      gapLabel: (typeof gaps === "object" ? gaps.label : undefined) ?? honestyTextResolved.noDataLabel,
+      axis,
+      sampleSizes,
+    }),
+    [honestyTextResolved, partial, bands, gapList, gaps, axis, sampleSizes],
+  );
+
+  const qualityIssues = [...quality.issues, ...bands.flatMap((band) => band.issues)].join("\n");
   useEffect(() => {
     if (qualityIssues) reportDataQualityIssues("AreaChart", qualityIssues.split("\n"));
   }, [qualityIssues]);
+
+  // The key and summary name what the app claimed; the partial period has its own entry.
+  const keySummary = useMemo(
+    () => summarizeDataQuality(Object.values(claimed.points)),
+    [claimed],
+  );
+
+  const honestyEntries = useMemo((): HonestyKeyEntry[] => {
+    const text = honestyTextResolved;
+    const entries: HonestyKeyEntry[] = [];
+    if (partial) entries.push({ kind: "partial", label: partial.label, description: partial.note });
+    for (const band of bands) {
+      if (!band.runs.length) continue;
+      entries.push({
+        kind: "band",
+        label: band.label,
+        description: text.intervalDescription,
+        color: band.color
+          ? config[band.color]
+            ? `var(--color-${band.color}-0)`
+            : band.color
+          : band.dataKey
+            ? `var(--color-${band.dataKey}-0)`
+            : undefined,
+      });
+    }
+    if (gapList.length) {
+      entries.push({ kind: "gap", label: honesty.gapLabel, description: text.noDataDescription });
+    }
+    if (axis.truncatedAt !== null && yAxisSlot.truncationNotice !== "off") {
+      entries.push({ kind: "axis", label: axis.label, description: axis.description });
+    }
+    const labelled = areas.filter((area) => sampleSizes[area.dataKey]);
+    if (labelled.some((area) => area.sampleSizeDisplay === "label")) {
+      entries.push({
+        kind: "sample",
+        label: text.sampleSizeLabel,
+        description: text.sampleSizeDescription,
+      });
+    }
+    const lowMins = labelled.flatMap((area) =>
+      sampleSizes[area.dataKey].some((n) => isLowSample(n, area.minSampleSize))
+        ? [area.minSampleSize as number]
+        : [],
+    );
+    if (lowMins.length) {
+      entries.push({
+        kind: "low-sample",
+        label: text.lowSampleLabel(formatCount(Math.max(...lowMins))),
+        description: text.lowSampleDescription,
+      });
+    }
+    return entries;
+  }, [honestyTextResolved, partial, bands, config, gapList, honesty.gapLabel, axis, yAxisSlot, areas, sampleSizes]);
+
+  const honestyAria = honestyEntries
+    .filter((entry) => entry.kind !== "sample")
+    .map((entry) =>
+      entry.kind === "partial" && partial
+        ? ` ${entry.label} from ${String(data[partial.start]?.[xCategoryKey] ?? "")}.`
+        : entry.kind === "gap"
+          ? ` ${entry.label}: ${gapList
+              .map((gap) => {
+                const first = String(data[gap.start]?.[xCategoryKey] ?? "");
+                const last = String(data[gap.end]?.[xCategoryKey] ?? "");
+                return gap.start === gap.end ? first : `${first} to ${last}`;
+              })
+              .join(", ")}.`
+          : entry.kind === "axis"
+            ? ` ${entry.description}`
+            : ` ${entry.label}.`,
+    )
+    .join("");
+
+  const defaultAriaLabel = `Area chart with ${seriesKeys.join(", ") || "no series"} over ${String(xDataKey ?? "categories")}.${dataQualityAriaSummary(keySummary, statusText)}${honestyAria}`;
 
   const clickableKeys = useMemo(
     () => new Set(areas.filter((area) => area.isClickable).map((area) => area.dataKey)),
@@ -1720,11 +2469,15 @@ export function AreaChart<TData extends Record<string, unknown>>({
       revealIndex: liveRef.current.revealIndex,
       resolved,
       quality: quality.points,
+      claimedQuality: claimed.points,
       statusText,
+      honesty,
       rendererSize: {
         width: echartsRef.current?.getWidth() ?? mountRef.current?.clientWidth ?? 0,
         height: echartsRef.current?.getHeight() ?? mountRef.current?.clientHeight ?? 0,
       },
+      grainTime: liveRef.current.grainTime,
+      grainSink: (liveRef.current.grainSink = new Map()),
       categories,
       brushRange: liveRef.current.brushRange,
       getHoveredKey: () => liveRef.current.hoveredKey,
@@ -1749,6 +2502,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
 
     const series = [
       ...buildAreaSeries(ctx),
+      ...buildHonestySeries(ctx),
       ...(reference ? [reference] : []),
       ...(brush?.miniSeries ?? []),
     ];
@@ -1780,6 +2534,9 @@ export function AreaChart<TData extends Record<string, unknown>>({
         ids.push(`${BUFFER_PREFIX}${area.dataKey}`, `${BUFFERFILL_PREFIX}${area.dataKey}`);
       }
       if (enableHoverReveal) ids.push(`${REVEAL_PREFIX}${area.dataKey}`);
+      if (honesty.partial && !enableHoverReveal) {
+        ids.push(`${CLOSED_FILL_PREFIX}${area.dataKey}`, `${PARTIAL_FILL_PREFIX}${area.dataKey}`);
+      }
       for (const entry of series) {
         const id = String(entry.id ?? "");
         if (qualitySeriesOwner(id) === area.dataKey) ids.push(id);
@@ -1822,7 +2579,9 @@ export function AreaChart<TData extends Record<string, unknown>>({
     enableHoverHighlight,
     enableHoverReveal,
     quality,
+    claimed,
     statusText,
+    honesty,
   ]);
 
   useEffect(() => {
@@ -2139,6 +2898,58 @@ export function AreaChart<TData extends Record<string, unknown>>({
     syncBrushOverlayNow,
   ]);
 
+  // Grainient fills share one WebGL context, held while any area uses one.
+  const usesGrainient = areas.some((area) => area.variant === "grainient");
+  const grainDrifts =
+    !shouldReduceMotion &&
+    !isLoading &&
+    areas.some((area) => area.variant === "grainient" && area.grainient?.animate);
+
+  useEffect(() => {
+    if (!usesGrainient) return;
+    return retainGrainientRenderer();
+  }, [usesGrainient]);
+
+  useEffect(() => {
+    if (!grainDrifts) return;
+    const chart = echartsRef.current;
+    const mount = mountRef.current;
+    if (!chart || !mount) return;
+
+    let visible = true;
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry?.isIntersecting ?? true;
+    });
+    observer.observe(mount);
+
+    // About 20 repaints a second is plenty for a slow drift, and keeps the
+    // chart's own hover and tooltip work responsive.
+    const FRAME_MS = 50;
+    const startedAt = performance.now() - liveRef.current.grainTime * 1000;
+    let last = 0;
+    let frame = requestAnimationFrame(function tick(now) {
+      frame = requestAnimationFrame(tick);
+      if (!visible || document.hidden || now - last < FRAME_MS) return;
+      if (chart.isDisposed()) return;
+      last = now;
+      const time = (now - startedAt) / 1000;
+      liveRef.current.grainTime = time;
+      const size = { width: chart.getWidth(), height: chart.getHeight() };
+      const patch: { id: string; areaStyle: { color: ImagePatternObject } }[] = [];
+      for (const [id, entry] of liveRef.current.grainSink) {
+        if (!entry.options.animate) continue;
+        const color = grainientPattern(entry, size, time);
+        if (color) patch.push({ id, areaStyle: { color } });
+      }
+      if (patch.length) chart.setOption({ series: patch }, { silent: true, lazyUpdate: true });
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [grainDrifts, areas]);
+
   useEffect(() => {
     const chart = echartsRef.current;
     if (!chart || isLoading) return;
@@ -2242,7 +3053,12 @@ export function AreaChart<TData extends Record<string, unknown>>({
   // The status key takes the edge the series legend is not on, so the two never overlap.
   const statusKeyOnTop = legendSlot.present && legendSlot.verticalAlign === "bottom";
   const statusKey = !isLoading && (
-    <DataStatusKey summary={quality.summary} mark="line" text={statusText} />
+    <DataStatusKey
+      summary={keySummary}
+      mark="line"
+      text={statusText}
+      extra={honestyEntries.length ? <HonestyKeyItems entries={honestyEntries} /> : undefined}
+    />
   );
 
   return (
@@ -2259,9 +3075,7 @@ export function AreaChart<TData extends Record<string, unknown>>({
       <div
         className="relative min-h-0 w-full flex-1"
         role="img"
-        aria-label={
-          ariaLabel ?? `${defaultAriaLabel}${dataQualityAriaSummary(quality.summary, statusText)}`
-        }
+        aria-label={ariaLabel ?? defaultAriaLabel}
       >
         <div ref={mountRef} className="h-full min-h-0 w-full" />
       </div>
@@ -2329,3 +3143,5 @@ AreaChart.Zoom = Zoom;
 AreaChart.ReferenceLine = ReferenceLine;
 AreaChart.ReferenceArea = ReferenceArea;
 AreaChart.ReferenceDot = ReferenceDot;
+AreaChart.PartialPeriod = PartialPeriod;
+AreaChart.Band = Band;

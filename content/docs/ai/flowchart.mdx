@@ -1,0 +1,110 @@
+---
+title: Flowchart
+metaTitle: React Flowchart for Agent Workflows
+description: Lay out an agent workflow as a sequence of steps joined by connectors.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="flowchart-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+Flowchart shows a workflow from top to bottom: a trigger, a condition, an action. Each step is a card with a kind, a title, and a caption, and any controls you put inside it.
+
+It is a layout, not an editor. The steps are in the order you render them and cannot be dragged. The Beautiful UI original let cards be dragged around a canvas, which has no keyboard equivalent and stores nothing, so it is left out.
+
+## Anatomy
+
+<Anatomy title="Flowchart">
+  <AnatomyItem name="Flowchart" description="The canvas and the ordered list of steps" />
+  <AnatomyItem name="FlowStep" description="One step: a card that opens with its kind, and the connector above it" />
+  <AnatomyItem name="Children" description="Your controls for the step" />
+</Anatomy>
+
+`flowchart` has no registry dependencies.
+
+## Behavior
+
+### Order
+
+Steps are stacked in the order you render them, with a connector above every step but the first. Each connector ends in an arrowhead pointing at the step it leads to. Flowchart draws a single path; it does not draw branches, so name a condition step for what it checks, such as "If the amount is over 1,000".
+
+### Step content
+
+`title` and `caption` are optional. A step's children are placed in its card under them, for a condition's fields or a summary of what an action will do.
+
+## Accessibility
+
+The flow is an ordered list named by `label`, so the sequence is available without the connectors, which are decoration. Each step's kind is text.
+
+Flowchart has no keyboard interaction of its own. Controls you place in a step keep theirs.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/flowchart"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="flowchart" title="components/ai/flowchart.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { Flowchart, FlowStep } from "@/components/ai/flowchart"
+
+<Flowchart label="Invoice follow-up workflow">
+  {workflow.steps.map((step) => (
+    <FlowStep key={step.id} kind={step.kind} title={step.title} caption={step.summary} />
+  ))}
+</Flowchart>
+```
+
+## Examples
+
+### A step with controls
+
+The condition step holds a Select. Its value is yours to store.
+
+<ComponentPreview name="flowchart-controls" previewClassName="h-auto min-h-[320px]" />
+
+## API reference
+
+### Flowchart
+
+Accepts native ol props beyond those listed. Its children are the steps.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | string | Required | Names the workflow. |
+
+### FlowStep
+
+Accepts native li props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `kind` | string | Required | The step's role in the flow. |
+| `title` | ReactNode | None | What the step does. |
+| `caption` | ReactNode | None | One line under the title. |

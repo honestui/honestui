@@ -1,0 +1,132 @@
+---
+title: Sidebar Nav
+metaTitle: React Chat Sidebar with Conversation Search
+description: Navigate a chat product with primary destinations, a searchable list of past conversations, and a collapse to an icon rail.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="sidebar-nav-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+Sidebar Nav is the side navigation of a chat product. It has a short list of destinations, a New chat button, and the person's past conversations with a search field over them. It collapses to a rail of icons.
+
+It renders the items and threads you pass and reports what was pressed. Routing and loading conversations are your application's work.
+
+## Anatomy
+
+<Anatomy title="SidebarNav">
+  <AnatomyItem name="Header" description="Your workspace name or switcher, and the collapse button" />
+  <AnatomyItem name="Destinations" description="New chat, then one row for each item" />
+  <AnatomyItem name="Chats" description="A search field and the list of past conversations" />
+  <AnatomyItem name="Footer" description="Your own content, such as an account menu" />
+</Anatomy>
+
+Installing `sidebar-nav` brings [Button](/docs/components/button) along as a registry dependency.
+
+## Behavior
+
+### Collapsing
+
+Collapsed, the nav keeps the collapse button and the destination icons. The header, the chat list, and the footer are left out, because the rail has no room for their text. Control it with `collapsed` and `onCollapsedChange`, or let it manage itself.
+
+### Searching chats
+
+Typing filters the chats by title. When nothing matches, the list is replaced by a message that names the search. With no chats at all, the search field is left out and the list says so.
+
+## Accessibility
+
+The component is a navigation landmark with a name. Every row is a button. The current destination is marked with `aria-current="page"`, and the open conversation with `aria-current`.
+
+The collapse button reports whether the nav is expanded. Collapsed, each destination keeps its label as its accessible name, and shows it in a tooltip on hover or focus. The current destination is filled and the open conversation is raised, so the two never look alike. The empty and no-match messages are statuses. With reduced motion, the width changes at once.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move across the rows and the search field |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open the focused destination or chat, or collapse the nav |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/sidebar-nav"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="sidebar-nav" title="components/ai/sidebar-nav.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { SidebarNav } from "@/components/ai/sidebar-nav"
+
+<SidebarNav
+  header={<WorkspaceName />}
+  items={[
+    { id: "home", label: "Home", icon: <HomeIcon /> },
+    { id: "files", label: "Files", icon: <FileIcon /> },
+  ]}
+  activeItemId={route.section}
+  onNavigate={(itemId) => router.push(`/${itemId}`)}
+  threads={chats}
+  activeThreadId={route.chatId}
+  onThreadSelect={(threadId) => router.push(`/chat/${threadId}`)}
+  onNewChat={() => router.push("/chat/new")}
+/>
+```
+
+The nav fills its parent's height, so place it in a full-height layout.
+
+## Examples
+
+### Collapsed, with no chats
+
+The icon rail. Expand it to see the empty chat list.
+
+<ComponentPreview name="sidebar-nav-collapsed" previewClassName="h-auto min-h-[300px]" />
+
+## API reference
+
+### SidebarNav
+
+Accepts native nav props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `SidebarNavItem[]` | Required | Each has `id`, `label`, `icon`, and an optional `badge`. |
+| `activeItemId` | string | None | The item for the current page. |
+| `onNavigate` | `(itemId: string) => void` | Required | Runs when a destination is pressed. |
+| `threads` | `SidebarNavThread[]` | Required | Each has `id` and `title`. |
+| `activeThreadId` | string | None | The open conversation. |
+| `onThreadSelect` | `(threadId: string) => void` | Required | Runs when a chat is pressed. |
+| `onNewChat` | `() => void` | None | Passing it adds the New chat button. |
+| `header` | ReactNode | None | Shown at the top while expanded. |
+| `footer` | ReactNode | None | Shown at the bottom while expanded. |
+| `collapsed` | boolean | None | The collapsed state, when you control it. |
+| `defaultCollapsed` | boolean | `false` | The initial collapsed state. |
+| `onCollapsedChange` | `(collapsed: boolean) => void` | None | Runs when the collapse button is pressed. |
+| `labels` | `Partial<SidebarNavLabels>` | English | Landmark, button, and field names, and the empty messages. |

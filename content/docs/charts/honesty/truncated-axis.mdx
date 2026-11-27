@@ -1,0 +1,83 @@
+---
+title: Truncated Axis
+description: Flag a value axis that does not start at zero, so readers know a small difference is drawn large.
+image: /og/og-image.png
+---
+
+<ComponentPreview title='<LineChart.YAxis min="auto" />' name="ex-truncated-axis-echarts-line-chart" />
+
+## Overview
+
+Availability moves between 99.6% and 99.95%. On an axis from zero, that is a flat line. On an axis from 99.6%, it fills the plot, and a 0.3 point dip looks like an outage. Both are valid charts, but only the first one looks like what it is.
+
+When the value axis stops short of zero, the chart says so. A break mark sits at the foot of the axis, and the key reads "Axis starts at 99.6%". The axis keeps the range you asked for; the notice only makes the choice visible.
+
+## Usage
+
+Set `min` on the value axis. Pass a number, or `"auto"` to fit the axis to the data.
+
+```tsx
+import { LineChart } from "honestui/charts";
+
+<LineChart data={data} config={chartConfig} xDataKey="month">
+  <LineChart.XAxis dataKey="month" />
+  <LineChart.YAxis min="auto" tickFormatter={(value) => `${value}%`} />
+  <LineChart.Tooltip />
+  <LineChart.Line dataKey="availability" />
+</LineChart>
+```
+
+`"auto"` rounds to a whole tick below the lowest value, bounds included. Set `max` the same way to cap the top. To keep the range without the notice, for example on a chart where everyone knows the scale, set `truncationNotice="off"`.
+
+## Behavior to know about
+
+- **Only when you change the axis.** The default value axis includes zero, so the notice appears only when you set `min` or `max`.
+- **Negative values.** When every value is below zero and `max` stops short of it, the notice reads "Axis ends at …".
+- **Bars keep zero.** A bar's length is its value, so a truncated bar axis misstates every bar. A bar chart ignores `min="auto"`. If you set a number above zero, the chart keeps it, shows the break mark and the notice, and logs a development warning. A combo chart with a bar series follows the same rule.
+- **Scatter charts.** Both axes are value axes. Each axis takes `min`, `max`, and `truncationNotice`, and the notice names the axis, such as "X axis starts at 1,200". Scatter plots often should not start at zero, so the notice stays in the key.
+
+## Accessibility
+
+The default `ariaLabel` includes the full explanation, "The value axis stops at 99.6% instead of zero, so differences look larger than they are." The same sentence is the notice's title in the key.
+
+## Changing the text
+
+| Field | Default |
+| --- | --- |
+| `axisStartsAt` | `(value) => "Axis starts at 99.6%"` |
+| `axisEndsAt` | `(value) => "Axis ends at -40"` |
+| `axisDescription` | `(value) => "The value axis stops at … instead of zero, so differences look larger than they are."` |
+
+The value is formatted with the axis' `tickFormatter`. See [Honest Charts](/docs/charts/honesty) for the full `honestyText` object.
+
+## Examples
+
+### Area chart
+
+<ComponentPreview title='<AreaChart.YAxis min="auto" />' name="ex-truncated-axis-echarts-area-chart" />
+
+### Bar chart
+
+A bar axis set above zero keeps the range you asked for and flags it.
+
+<ComponentPreview title="<BarChart.YAxis min={80} />" name="ex-truncated-axis-echarts-bar-chart" />
+
+### Scatter chart
+
+<ComponentPreview title="<ScatterChart.XAxis min={…} />" name="ex-truncated-axis-echarts-scatter-chart" />
+
+## API Reference
+
+<ApiHeading>YAxis on Line, Area, Bar, and Combo charts; XAxis and YAxis on Scatter charts</ApiHeading>
+
+<ApiTable>
+  <ApiRow name="min" type='number | "auto"'>
+    The start of the value axis. `"auto"` fits it to the data. Bar charts ignore `"auto"` and keep zero.
+  </ApiRow>
+  <ApiRow name="max" type="number">
+    The end of the value axis.
+  </ApiRow>
+  <ApiRow name="truncationNotice" type='"auto" | "off"' default='"auto"'>
+    Shows the break mark and the key notice when the axis does not reach zero. `"off"` keeps the range and hides both.
+  </ApiRow>
+</ApiTable>

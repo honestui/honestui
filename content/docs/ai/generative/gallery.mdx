@@ -1,0 +1,98 @@
+---
+title: Gallery
+metaTitle: Honest AI Generative UI Gallery
+description: Live samples of every component a generative chat reply can render, from text and tables to charts, forms, quizzes, maps, artifacts and sandboxed visuals.
+lastModified: "2026-11-05"
+---
+
+Every sample below is a fixed chat reply rendered by the same code that renders a model's reply in `GenerativeChat`. Open **Code** to see the Markdown and `honestai` block the model writes. No model is called. Figures are sample data unless a sample says otherwise; the planet table uses rounded real values.
+
+Buttons, follow-ups and form submits show what they would send instead of starting a conversation. To see a model choose these components itself, open the [playground](/docs/ai/generative/playground). [Reply features](/docs/ai/generative/replies) explains the controls on tables, charts, artifacts and visuals.
+
+## Text and content
+
+<GenerativeSample id="text" title="Headings, text and Markdown" />
+
+<GenerativeSample id="callouts" title="Callouts" />
+
+<GenerativeSample id="code" title="Code" />
+
+<GenerativeSample id="images" title="Images" />
+
+## Tables
+
+`Table` is for reading: sort, filter, select rows to ask about, and export. `EditableTable` is for changing values.
+
+<GenerativeSample id="table" title="Table with follow-ups" />
+
+<GenerativeSample id="editable-table" title="Editable table" />
+
+## Charts
+
+<GenerativeSample id="bar-line" title="Bar and line" />
+
+<GenerativeSample id="area-horizontal" title="Area and horizontal bar" />
+
+<GenerativeSample id="radar" title="Radar" />
+
+<GenerativeSample id="parts-of-whole" title="Pie, radial and stacked bar" />
+
+<GenerativeSample id="scatter" title="Scatter" />
+
+## Forms
+
+Fields validate before a submit sends anything. Each input sits in a labelled `FormControl`.
+
+<GenerativeSample id="form" title="Inputs, dates, select, option cards, slider and chips" />
+
+<GenerativeSample id="choices" title="Radio, checkbox and switch groups" />
+
+## Actions and lists
+
+<GenerativeSample id="buttons" title="Buttons" />
+
+<GenerativeSample id="lists" title="Lists and follow-ups" />
+
+## Layout
+
+<GenerativeSample id="tabs-accordion" title="Tabs and accordion" />
+
+<GenerativeSample id="sections" title="Sections" />
+
+<GenerativeSample id="steps-carousel-modal" title="Steps, carousel and modal" />
+
+## Data and cards
+
+Card blocks hold two or more items of the same shape.
+
+<GenerativeSample id="data-display" title="Tags and entity list" />
+
+<GenerativeSample id="metric-cards" title="Metric cards" />
+
+<GenerativeSample id="content-cards" title="Context, product and visual cards" />
+
+## Interactive explanations
+
+The runtime does the arithmetic and the marking in the browser, so results are the same every time and nothing is sent to a model.
+
+<GenerativeSample id="calculator" title="Calculator" />
+
+<GenerativeSample id="simulation" title="Simulation" />
+
+<GenerativeSample id="quiz" title="Quiz" />
+
+<GenerativeSample id="diagrams" title="Diagrams and parts diagrams (row, stack, nested)" />
+
+## Maps
+
+Your app supplies the place lookup and map tiles. On this site, lookups use OpenStreetMap's Nominatim through this site's server, and tiles come from OpenFreeMap. See [Maps](/docs/ai/generative/library#maps) for the services a map needs.
+
+<GenerativeSample id="map" title="Route map" />
+
+## Artifacts and visuals
+
+<GenerativeSample id="artifact" title="Artifact" />
+
+<GenerativeSample id="html-visual" title="Sandboxed HTML visual" />
+
+<GenerativeSample id="canvas-visual" title="Canvas simulation" />

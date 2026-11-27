@@ -1,0 +1,168 @@
+---
+title: Input Request
+metaTitle: React Human-in-the-Loop Form for Agents
+description: Pause an agent mid-run to ask for structured input, say why it needs it and what it does next, and send nothing until the person chooses to.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="input-request-demo" previewClassName="h-auto max-h-none min-h-[640px]" />
+
+## Overview
+
+Input Request is the form an agent shows when it stops mid-run and needs values it cannot decide on its own. It says what the agent is asking for, why, and what it will do next, then collects typed fields: text, longer text, numbers, a choice, several choices, a date, and yes or no.
+
+Take a migration agent with a finished plan. It cannot choose between staging and production, or pick a maintenance date. It pauses and shows a request. The person fills it in and presses Send, and your `onSubmit` receives the values and resumes the run.
+
+It extends [Approval Card](/docs/ai/approval-card) and shares its look. Use Approval Card for one or more multiple-choice questions asked in turn. Use Input Request when the agent needs typed values in one form.
+
+Input Request does not talk to your agent. It collects the values and passes them to `onSubmit`.
+
+## Anatomy
+
+<Anatomy title="InputRequest">
+  <AnatomyItem name="Header" description="Who is asking, the request, and why the agent needs it" />
+  <AnatomyItem name="Fields" description="Each field with its label, Required or Optional, help, and error" />
+  <AnatomyItem name="Next step" description="What the agent does with the answers" />
+  <AnatomyItem name="Footer" description="The deadline, then Cancel run, Skip, and Send" />
+  <AnatomyItem name="Summary" description="What was sent, once the request is answered" />
+</Anatomy>
+
+Installing `input-request` brings [Approval Card](/docs/ai/approval-card), [Button](/docs/components/button), [Checkbox](/docs/components/checkbox), [Input](/docs/components/input), [Select](/docs/components/select), [Switch](/docs/components/switch), and [Textarea](/docs/components/textarea) along as registry dependencies.
+
+## Behavior
+
+### Fields
+
+Each field comes from a plain object with an `id`, a `type`, and a `label`. `required` marks it as Required; others read Optional. `help` adds a line under the label, and `defaultValue` fills it in. Text fields take `minLength`, `maxLength`, and a `pattern` with its own message. Numbers take `min`, `max`, `step`, and a `unit`. Dates take `min` and `max` as `YYYY-MM-DD`.
+
+### Sending
+
+Send checks every field with `validateInputRequest`. If any fail, each shows its message, a line above the fields counts them, and focus moves to the first one. Fixing a field clears its message.
+
+`onSubmit` receives a value for every field, keyed by `id`. Text is trimmed, and empty text, numbers, dates, and choices are `null`. Several choices are an array, and yes or no is a boolean.
+
+If `onSubmit` returns a promise, the form shows "Sending…" and locks its controls until it settles. When it resolves, the form becomes a summary of what was sent. When it rejects, the form keeps every value and offers Send again.
+
+### Skip and cancel
+
+Pass `onSkip` to let the run continue without the input, and `onCancelRun` to stop the run. Each button appears only when you handle it, and each replaces the form with a line saying what happened.
+
+### Finished requests
+
+Pass `status` to show a request that has already finished, such as when a conversation is reloaded: `"submitted"` with `submittedValues` shows the summary, and `"skipped"`, `"cancelled"`, and `"expired"` show their line. `deadline` adds a line to the footer, such as when the run stops waiting.
+
+## Accessibility
+
+The form is a group named by the request and described by the reason. Every field has a visible label tied to its control. Help and error lines are attached with `aria-describedby`, and an invalid field is marked with `aria-invalid`. Several choices are a group of checkboxes named by the field's label, and yes or no is a switch.
+
+The count of fields that need attention is an alert. The line that replaces a finished form is a status, and focus moves to the card so it is not lost.
+
+The pulsing dot beside "needs your input" stops with reduced motion.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/input-request"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the items it is built from.</Step>
+
+<CliBlock commands={["button", "checkbox", "input", "select", "switch", "textarea", "@honestai/approval-card"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="input-request" title="components/ai/input-request.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { InputRequest } from "@/components/ai/input-request"
+
+<InputRequest
+  agent="Migration agent"
+  title="Where and when should I run the orders migration?"
+  reason="I can't pick the environment or a maintenance date on my own."
+  nextStep="Back up the orders table, then migrate in batches."
+  fields={[
+    {
+      id: "environment",
+      type: "select",
+      label: "Target environment",
+      required: true,
+      options: [
+        { value: "staging", label: "Staging" },
+        { value: "production", label: "Production" },
+      ],
+    },
+    { id: "window", type: "date", label: "Maintenance date", required: true },
+  ]}
+  onSubmit={(values) => resumeRun(run.id, values)}
+  onSkip={() => resumeRun(run.id, null)}
+  onCancelRun={() => cancelRun(run.id)}
+/>
+```
+
+## Examples
+
+### Finished requests
+
+A request that was answered, as shown after a reload, and one that expired.
+
+<ComponentPreview name="input-request-states" previewClassName="h-auto max-h-none min-h-[420px]" />
+
+## API reference
+
+### InputRequest
+
+Accepts native div props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | string | Required | What the agent asks for. |
+| `fields` | `InputRequestField[]` | Required | The fields to fill in. |
+| `onSubmit` | `(values) => void \| Promise<void>` | Required | Receives the values when the person presses Send. |
+| `reason` | ReactNode | None | Why the agent needs the input. |
+| `nextStep` | ReactNode | None | What the agent does with the answers. |
+| `agent` | string | None | The agent's name, shown above the request. |
+| `onSkip` | `() => void` | None | Lets the run continue without the input. |
+| `onCancelRun` | `() => void` | None | Stops the run. |
+| `status` | `InputRequestStatus` | `"pending"` | Shows a finished request. |
+| `submittedValues` | `InputRequestValues` | None | What was sent, for `status="submitted"`. |
+| `deadline` | ReactNode | None | A line about when the run stops waiting. |
+| `labels` | `Partial<InputRequestLabels>` | English | Every string and validation message. |
+
+### Helpers
+
+| Export | Description |
+| --- | --- |
+| `validateInputRequest(fields, values, messages?)` | Returns a message for each field that fails, keyed by `id`. |
+| `getInitialInputValues(fields)` | The values a form starts with. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `InputRequestField` | `id`, `type`, `label`, and optional `help`, `required`, `defaultValue`, plus the options of its type |
+| `InputRequestValues` | A value for each field, keyed by `id` |
+| `InputRequestStatus` | `"pending"`, `"submitted"`, `"skipped"`, `"cancelled"`, or `"expired"` |
+| `InputRequestOption` | `value` and `label` |

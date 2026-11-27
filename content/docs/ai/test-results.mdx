@@ -1,0 +1,149 @@
+---
+title: Test Results
+metaTitle: React Test Results Panel with Suites, Failures, and Rerun
+description: Show a test run with pass, fail, and skip counts, suites that open to their tests, and the error for each failure.
+lastModified: "2026-11-26"
+---
+
+<ComponentPreview name="test-results-demo" previewClassName="h-auto min-h-[420px]" />
+
+## Overview
+
+Test Results shows what a test run found: how many tests passed, failed, and were skipped, how long it took, and each suite with its tests. A failed test shows its assertion message, the expected and received values, and a few lines of stack.
+
+It shows the results you pass. Map your runner's report into suites and tests, and update them as the run progresses.
+
+Use it when an agent runs your test suite and the person needs to see what broke. For a single command's raw output, use [Tool Chips](/docs/ai/tool-chips).
+
+## Anatomy
+
+<Anatomy title="TestResults">
+  <AnatomyItem name="Summary" description="The run's title, its counts in words, the duration, and a slim bar of the proportions" />
+  <AnatomyItem name="Rerun failed" description="A button in the summary, when you handle it and a test has failed" />
+  <AnatomyItem name="Suite" description="A row with the suite's name, file, and counts, which opens to its tests" />
+  <AnatomyItem name="Test" description="A line with its status icon, name, and duration" />
+  <AnatomyItem name="Error" description="Under a failed test: the message, expected and received values, and stack" />
+</Anatomy>
+
+Installing `test-results` brings [Button](/docs/components/button) and [Collapsible](/docs/components/collapsible) along as registry dependencies.
+
+## Behavior
+
+### Counts and bar
+
+The counts are written out, such as "1 failed · 9 passed · 1 skipped · 1.24 s", and the bar beneath them shows the same proportions. Passing tests are drawn in a quiet neutral, so only failures carry color.
+
+Pass `duration` for the run's wall time. Without it, the component adds up the durations of the tests.
+
+### Suites
+
+A suite with a failure opens on its own, including when a test fails after the first render. Other suites stay closed until the person opens them. Set `defaultExpanded` to `"all"` to start with every suite open, or `"none"` to keep them all closed.
+
+### Rerun failed
+
+Pass `onRerunFailed` to show Rerun failed whenever a test has failed. It is called with the ids of the failed tests. Set `running` while your runner works: the button shows Rerunning and is disabled. Updating the tests' statuses is your application's work.
+
+### Statuses
+
+A test is `passed`, `failed`, `skipped`, `running`, or `queued`, so the same component shows a run in progress.
+
+## Accessibility
+
+The results are a labelled region. Each suite is a button that reports whether it is open. Every test's status is in words for screen readers as well as an icon, and the counts line is a polite live region, so a finished rerun is announced. The proportion bar is decorative, since the counts carry the numbers. With reduced motion, running icons do not rotate.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Tab</kbd> | Move to Rerun failed and across suites |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the focused suite, or rerun |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/test-results"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add the components it is built from.</Step>
+
+<CliBlock commands={["button", "collapsible"]} />
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="test-results" title="components/ai/test-results.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { TestResults } from "@/components/ai/test-results"
+
+<TestResults
+  title="vitest run"
+  duration={report.duration}
+  running={rerun.isPending}
+  suites={report.files.map((file) => ({
+    id: file.path,
+    name: file.name,
+    file: file.path,
+    tests: file.tests.map((test) => ({
+      id: test.id,
+      name: test.name,
+      status: test.state,
+      duration: test.duration,
+      error: test.error && { message: test.error.message, expected: test.error.expected, received: test.error.actual },
+    })),
+  }))}
+  onRerunFailed={(ids) => rerun.mutate(ids)}
+/>
+```
+
+## Examples
+
+### Run in progress
+
+Tests move from queued to running to their result. The counts and bar follow.
+
+<ComponentPreview name="test-results-live" previewClassName="h-auto min-h-[300px]" />
+
+## API reference
+
+### TestResults
+
+Accepts native section props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `suites` | `TestSuite[]` | Required | The suites, in order. |
+| `title` | `ReactNode` | `"Test results"` | A heading for the run, such as the command. |
+| `duration` | `number` | Sum of the tests | The run's wall time in milliseconds. |
+| `running` | `boolean` | `false` | True while a rerun is in progress. |
+| `onRerunFailed` | `(failedTestIds: string[]) => void` | None | Passing it shows Rerun failed when a test has failed. |
+| `defaultExpanded` | `"failed" \| "all" \| "none"` | `"failed"` | Which suites start open. |
+| `labels` | `Partial<TestResultsLabels>` | English | Status words, button text, diff terms, and `formatDuration`. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `TestSuite` | `id`, `name`, `tests`, and an optional `file` |
+| `TestCase` | `id`, `name`, `status`, and optional `duration` (ms) and `error` |
+| `TestError` | `message`, and optional `expected`, `received`, `stack` |
+| `TestStatus` | `"passed"`, `"failed"`, `"skipped"`, `"running"`, or `"queued"` |

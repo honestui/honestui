@@ -1,0 +1,192 @@
+---
+title: Context Meter
+metaTitle: React Context Window Token Meter
+description: Show how full the model's context window is, with the exact token counts one press away.
+lastModified: "2026-10-13"
+---
+
+<ComponentPreview name="context-meter-demo" previewClassName="h-auto min-h-[320px]" />
+
+## Overview
+
+A long conversation fills the model's context window, and what happens next, whether a reply fails or older messages are dropped, usually comes as a surprise. Context Meter shows the limit before it is reached: a small ring and a percentage, which open the exact numbers.
+
+It counts nothing. `used` and `limit` are figures your model or tokenizer reported, and the meter does the division. It does not know your prices either, so `cost` is a string you have already formatted.
+
+## Anatomy
+
+<Anatomy title="ContextMeter">
+  <AnatomyItem name="Trigger" description="A ring, the percentage when it is shown, and a warning mark near the limit" />
+  <AnatomyItem name="Details" description="The popover the trigger opens">
+    <AnatomyItem name="Bar" description="The share of the window in use" />
+    <AnatomyItem name="Counts" description="Tokens used, the limit, and tokens left" />
+    <AnatomyItem name="Status" description="Near the limit, or at it" />
+    <AnatomyItem name="Parts" description="What the tokens are made of, and the cost, when you pass them" />
+    <AnatomyItem name="Note" description="Your own line of explanation" />
+  </AnatomyItem>
+</Anatomy>
+
+`ContextMeter` is one component. Installing `context-meter` brings [Popover](/docs/components/popover) and the shared easing constants in `lib/ease` along as registry dependencies, and installs `motion`.
+
+## Behavior
+
+### Percentage
+
+The percentage is `used` divided by `limit`, rounded down, so 99.6% reads as 99% and "100%" appears only when the window is full. Past the limit the real figure is shown, such as 104%, and the ring and the bar stay full.
+
+A `limit` of zero or less shows 0%. Do not render the meter until you know the limit.
+
+### Motion
+
+When `used` or `limit` changes, the ring, the percentage, and the bar glide from the old figure to the new one over 0.6 seconds, and the percentage counts through the values between. The status, and the name read by assistive technology, change at once. The meter does not animate when it first appears.
+
+### Ring only
+
+Set `showPercent` to `false` to show the ring without the number, for a row with little room. The figure is still in the button's name and in the details.
+
+### Status
+
+The meter has three states, reported as `data-status` on the trigger.
+
+| Status | When | What changes |
+| --- | --- | --- |
+| `ok` | Below `nearAt` | Nothing |
+| `near` | At or above `nearAt`, which defaults to 0.8 | A warning mark on the trigger, and "Near the limit" in the details |
+| `full` | At or above the limit | The same, in the danger color, with "At the limit" |
+
+The meter reports the state. It does not say what your product does at the limit, because it cannot know. Use `note` to say it: that older messages will be summarized, or that the person should start a new conversation.
+
+### Parts and cost
+
+`parts` lists what the tokens are made of. The meter shows the numbers you pass and does not check that they add up to `used`. `cost` adds one more row.
+
+### Placement
+
+The trigger is sized to sit in a row of controls. In a [Prompt Bar](/docs/ai/prompt-bar), pass it to `actions`.
+
+### Per message
+
+Context Meter shows how full the window is now. To show what one reply used, its tokens, cost, and latency, use [Message Usage](/docs/ai/message-usage). It shares the same token formatting.
+
+## Accessibility
+
+The trigger is a button. Its name is the summary, such as "42% of context used", followed by the status when there is one. The ring and the visible percentage are hidden from assistive technology, so the figure is read once.
+
+The warning is a mark and a phrase as well as a color, and the ring is drawn with the text color, so it holds up in forced colors.
+
+With reduced motion, the ring, the percentage, and the bar change with no glide.
+
+The details open in a popover that takes focus and closes on <kbd>Escape</kbd>, returning focus to the trigger. The bar has the `meter` role and is read as the token counts, not as a bare percentage.
+
+The trigger is not a live region, so a change in the percentage is not announced. If crossing a threshold matters in your product, announce it yourself, once, when it happens.
+
+Every string comes from `labels`, and `labels.number` formats every token count. The default formats numbers for English.
+
+The preview has been checked with a keyboard and with axe. It has not been checked with a screen reader yet, and support for the `meter` role varies across them.
+
+| Key | Action |
+| --- | --- |
+| <kbd>Enter</kbd> or <kbd>Space</kbd> | Open or close the details |
+| <kbd>Escape</kbd> | Close the details |
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTab value="cli">CLI</TabsTab>
+  <TabsTab value="manual">Manual</TabsTab>
+</TabsList>
+<TabsPanel value="cli">
+
+<CliBlock commands={["@honestai/context-meter"]} />
+
+</TabsPanel>
+
+<TabsPanel value="manual">
+
+<Steps>
+
+<Step>Add what it is built from.</Step>
+
+<CliBlock commands={["popover", "ease"]} />
+
+<Step>Install Motion.</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste this file into your project.</Step>
+
+<ComponentSource name="context-meter" title="components/ai/context-meter.tsx" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsPanel>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { ContextMeter } from "@/components/ai/context-meter"
+
+<ContextMeter used={usage.inputTokens} limit={model.contextWindow} />
+```
+
+With the details filled in:
+
+```tsx
+<ContextMeter
+  used={usage.inputTokens}
+  limit={model.contextWindow}
+  parts={[
+    { label: "Messages", tokens: usage.messageTokens },
+    { label: "Files", tokens: usage.fileTokens },
+  ]}
+  cost={formatCurrency(usage.cost)}
+  note="When the window fills, the oldest messages are summarized."
+/>
+```
+
+## Examples
+
+### In a Prompt Bar
+
+The meter in the bar's `actions`, starting near the limit. Sending a prompt adds a sample count to it.
+
+<ComponentPreview name="context-meter-prompt-bar" previewClassName="h-auto min-h-[200px]" />
+
+### Ring only
+
+The meter with `showPercent` set to `false`. The button adds sample tokens, so the ring can be seen moving.
+
+<ComponentPreview name="context-meter-ring" previewClassName="h-auto min-h-[160px]" />
+
+## API reference
+
+### ContextMeter
+
+Accepts native button props beyond those listed.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `used` | number | Required | Tokens in the context now. |
+| `limit` | number | Required | The size of the context window, in tokens. |
+| `parts` | `ContextMeterPart[]` | None | What the tokens are made of. |
+| `cost` | string | None | A cost you have already formatted. |
+| `nearAt` | number | `0.8` | The share of the limit at which the meter says it is near the limit. |
+| `showPercent` | boolean | `true` | Shows the percentage beside the ring. |
+| `note` | ReactNode | None | A line under the numbers. |
+| `labels` | `Partial<ContextMeterLabels>` | English | The title, the summary, the counts, the statuses, and the number format. |
+
+### Types
+
+| Export | Shape |
+| --- | --- |
+| `ContextMeterPart` | `label` and `tokens` |
+| `ContextMeterStatus` | `"ok"`, `"near"`, or `"full"` |
+| `ContextMeterLabels` | `title`, `summary`, `tokens`, `remaining`, `near`, `full`, `cost`, `number` |
