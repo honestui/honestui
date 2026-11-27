@@ -1,0 +1,59 @@
+---
+title: Iridescent Foil
+description: A holographic sheen for cards and badges that shifts as the pointer moves, as if the surface were tilted toward the light.
+---
+
+<ComponentPreview name="iridescent-foil-demo" playground />
+
+## Overview
+
+Iridescent Foil gives a surface the look of thin-film foil. Soft bands of cyan, lilac, rose, and pale gold slide across it, with most of the color held in one glint that follows the light. A few fine sparkles catch the light inside the glint.
+
+With the pointer over the surface, the light follows the pointer and the whole surface tilts slightly toward it. At rest, the light drifts slowly. Use it on one special surface, such as a membership card, a plan badge, an achievement, or a pricing tier, rather than on every card.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+Iridescent Foil is the surface itself: give it the card's size, background, border, and radius, and put the content inside it.
+
+```tsx
+import { IridescentFoil } from "honestui/shaders"
+
+<IridescentFoil className="aspect-[1.586] w-full max-w-sm rounded-2xl border bg-card">
+  <div className="flex size-full flex-col justify-between p-6">
+    <span className="text-sm font-medium">Honest Pro</span>
+    <span className="text-lg font-medium">March 2024</span>
+  </div>
+</IridescentFoil>
+```
+
+## Under or over the content
+
+By default the sheen is drawn under the children, like a foil background printed beneath the text. Set `layer="over"` to draw it over the children as well, like a laminate. The sheen never receives pointer events in either layer, so links and buttons inside keep working.
+
+Prefer `under` for anything people need to read. Over the content, the sheen lowers the contrast of text at its brightest point; if you use `over`, keep `intensity` low and check contrast where the glint passes over text.
+
+## Accessibility
+
+The sheen is decorative and its canvas is hidden from assistive technology. The children stay normal HTML.
+
+The tilt follows a mouse or pen, not touch, so scrolling on a phone does not tip the card. The drift stops while the surface is offscreen or the tab is hidden. When the user prefers reduced motion, the drift stops and the surface does not tilt; the sheen still moves with the pointer, since the person is moving it. Without WebGL2 the surface shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="intensity" type="number" default="0.55">Opacity of the sheen at its brightest, from 0 to 1.</ApiRow>
+  <ApiRow name="scale" type="number" default="1">Size of the color bands. Higher values make more, finer bands.</ApiRow>
+  <ApiRow name="hue" type="number" default="0">Rotates the film colors around the hue wheel, from 0 to 1.</ApiRow>
+  <ApiRow name="sparkle" type="number" default="0.35">Amount of fine glints, from 0 to 1.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.6">Speed of the drift at rest. 0 holds it still.</ApiRow>
+  <ApiRow name="interactive" type="boolean" default="true">Lets the pointer move the light and tilt the surface.</ApiRow>
+  <ApiRow name="tilt" type="number" default="6">Maximum tilt toward the pointer, in degrees. 0 keeps the surface flat.</ApiRow>
+  <ApiRow name="layer" type='"under" | "over"' default='"under"'>Draws the sheen under the children or over them.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for the surface: size, background, border, and radius.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content of the surface.</ApiRow>
+</ApiTable>

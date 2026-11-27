@@ -1,0 +1,55 @@
+---
+title: Circular Text
+description: Text set around a circle that turns slowly, for badges and stamps.
+---
+
+<ComponentPreview name="circular-text-demo" />
+
+## Overview
+
+Circular Text sets a short phrase around a circle and turns it slowly. The spacing stretches so the text closes into an even ring with no gap, and anything you pass as children sits in the middle, such as an arrow, a logo, or a version number.
+
+Use it for one expressive badge on a marketing page: "Now hiring", "Scroll to explore", or a release stamp. Keep the phrase short. The text is hard to read while it turns, so never put information people need only in the ring.
+
+## Installation
+
+<CliBlock commands={["circular-text"]} />
+
+## Usage
+
+```tsx
+import { CircularText } from "@/components/animated/circular-text"
+
+<a href="/careers">
+  <CircularText text="Now hiring" repeat={3}>
+    <ArrowUpRight className="size-5" />
+  </CircularText>
+</a>
+```
+
+`repeat` sets how many times the phrase goes around, and `separator` is placed after each repeat. Use `textClassName` for weight, case, or color, and `className` on the root for the text color through `currentColor`.
+
+Hovering speeds the ring up by default. Set `onHover` to `"slowDown"`, `"pause"`, or `"none"` to change that.
+
+## Accessibility
+
+Screen readers hear the phrase once, from visually hidden text; the rotating SVG is hidden from them. Inside a link or button, that text becomes its accessible name, so the phrase should describe where the link goes.
+
+The ring only turns while it is on screen. With reduced motion it stays still, and `paused` stops it for everyone.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="text" type="string">The phrase to set around the circle. Screen readers hear it once.</ApiRow>
+  <ApiRow name="separator" type="string" default='" • "'>Placed after each repeat so the end of the phrase meets the start.</ApiRow>
+  <ApiRow name="repeat" type="number" default="1">How many times the phrase goes around the circle.</ApiRow>
+  <ApiRow name="size" type="number" default="160">Diameter in pixels.</ApiRow>
+  <ApiRow name="fontSize" type="number" default="13">Font size in pixels.</ApiRow>
+  <ApiRow name="duration" type="number" default="18">Seconds for one full turn.</ApiRow>
+  <ApiRow name="direction" type='"clockwise" | "counterclockwise"' default='"clockwise"'>Which way the text turns.</ApiRow>
+  <ApiRow name="onHover" type='"speedUp" | "slowDown" | "pause" | "none"' default='"speedUp"'>What hovering does to the rotation.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Stops the rotation.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content in the middle of the circle.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element.</ApiRow>
+  <ApiRow name="textClassName" type="string">Class for the SVG text.</ApiRow>
+</ApiTable>

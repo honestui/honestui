@@ -1,0 +1,77 @@
+---
+title: Card Stack
+description: A deck of cards that fans on hover and moves through one card at a time.
+---
+
+<ComponentPreview name="card-stack-demo" />
+
+## Overview
+
+Card Stack shows one card on top of a short deck, with the next cards peeking out behind it. Moving forward lifts the top card off to the side and tucks it in at the back, and moving back brings the last card forward the same way. Hovering the deck fans the cards apart a little, which hints that there is more to see.
+
+Use it for a handful of testimonials, feature highlights, or steps that people read one at a time. For a long list, or content people need to compare side by side, use a list or a grid instead.
+
+People move through the cards by swiping or dragging the top card sideways, with the previous and next buttons, or with the left and right arrow keys while the deck has focus.
+
+## Installation
+
+<CliBlock commands={["card-stack"]} />
+
+## Usage
+
+```tsx
+import { CardStack } from "@/components/animated/card-stack"
+
+<CardStack
+  label="Customer stories"
+  items={stories}
+  className="max-w-sm"
+  renderItem={(story) => (
+    <figure>
+      <blockquote>{story.quote}</blockquote>
+      <figcaption>{story.name}</figcaption>
+    </figure>
+  )}
+/>
+```
+
+Children work as well, one per card:
+
+```tsx
+<CardStack label="Release highlights" loop={false}>
+  <div>Faster search</div>
+  <div>Saved views</div>
+  <div>Audit log</div>
+</CardStack>
+```
+
+Control the top card with `index` and `onIndexChange`, for example to keep it in sync with a URL. Set `autoplay` to a number of milliseconds to move on its own.
+
+## Accessibility
+
+The deck is a region with the role description "carousel" and the name from `label`. Each card is a group named by its position, such as "2 of 4". Only the top card is exposed to assistive technology and can receive focus; the cards behind it are inert.
+
+The deck itself takes focus and explains that the arrow keys move through the cards. The previous and next buttons have names and are disabled at the ends when `loop` is off. A polite live region announces the new position after a move someone makes; automatic moves stay silent.
+
+Autoplay pauses while the pointer is over the stack, while anything in it has focus, while the tab is hidden, and when the user prefers reduced motion. If the cards carry important content, leave `autoplay` off.
+
+With reduced motion, cards crossfade in place: there is no fan, tilt, slide, or drag.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="items" type="T[]">Data for each card, rendered with `renderItem`. Children are used when omitted.</ApiRow>
+  <ApiRow name="renderItem" type="(item: T, index: number) => ReactNode">Renders one card's content.</ApiRow>
+  <ApiRow name="children" type="ReactNode">One child per card, when `items` is not used.</ApiRow>
+  <ApiRow name="label" type="string" default='"Cards"'>Accessible name for the stack.</ApiRow>
+  <ApiRow name="index" type="number">The card on top, for a controlled stack.</ApiRow>
+  <ApiRow name="defaultIndex" type="number" default="0">The card on top at first.</ApiRow>
+  <ApiRow name="onIndexChange" type="(index: number) => void">Called with the new top card's index.</ApiRow>
+  <ApiRow name="loop" type="boolean" default="true">Goes from the last card back to the first.</ApiRow>
+  <ApiRow name="autoplay" type="number" default="0">Milliseconds between automatic moves. 0 turns it off.</ApiRow>
+  <ApiRow name="fan" type="boolean" default="true">Fans the cards apart while the pointer is over the stack.</ApiRow>
+  <ApiRow name="depth" type="number" default="2">How many cards peek out behind the top one.</ApiRow>
+  <ApiRow name="controls" type="boolean" default="true">Shows previous and next buttons and the position.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element. Set a max width here.</ApiRow>
+  <ApiRow name="cardClassName" type="string">Class for every card.</ApiRow>
+</ApiTable>

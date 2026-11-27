@@ -1,0 +1,68 @@
+---
+title: Hold to Confirm
+description: A button that fills while held, for actions that deserve a moment's thought.
+---
+
+<ComponentPreview name="hold-to-confirm-demo" />
+
+## Overview
+
+Hold to Confirm replaces a confirmation dialog for destructive or costly actions. People press and hold the button, a fill sweeps across it at a steady pace, and the action runs only when the fill reaches the end. Letting go early rewinds the fill, so nothing happens by accident and there is no extra dialog to dismiss.
+
+The fill is a second copy of the label on a solid surface, revealed from the left, so the text changes color exactly where the fill passes it. The fill is linear on purpose: it is a timer, and an eased fill would misreport how much time is left. All labels share one grid cell, so the button keeps the width of the longest label and never resizes under the pointer.
+
+## Installation
+
+<CliBlock commands={["hold-to-confirm"]} />
+
+## Usage
+
+```tsx
+import { HoldToConfirm } from "@/components/animated/hold-to-confirm"
+
+<HoldToConfirm
+  variant="destructive"
+  holdLabel="Keep holding…"
+  confirmedLabel="Deleted"
+  onConfirm={deleteProject}
+>
+  Delete project
+</HoldToConfirm>
+```
+
+Set `resetAfter={false}` to keep the confirmed state, for example while the request is in flight and the button is about to unmount:
+
+```tsx
+<HoldToConfirm resetAfter={false} confirmedLabel="Publishing" onConfirm={publish}>
+  Publish to production
+</HoldToConfirm>
+```
+
+## Accessibility
+
+The control is a native `button`. A visually hidden hint, "Press and hold to confirm" by default, is attached with `aria-describedby`, so screen readers explain the interaction when the button is focused. Change it with `hint` when your label needs a different instruction.
+
+Holding Space or Enter works the same as holding the pointer. A quick click or key press does nothing, and keyboard auto-repeat does not restart the hold. Moving the pointer off the button, losing focus, or disabling the button mid-hold lets go. When the hold completes, the confirmed label is announced through a polite live region; pass `confirmedMessage` when the label is not plain text or needs more detail.
+
+With reduced motion enabled, the fill still runs for the full duration, since it shows how long is left, but it snaps back instead of rewinding and labels change with a short fade instead of a blur. Devices that support vibration give a light tap on confirm.
+
+Use the button for actions that are serious but routine. For actions that cannot be undone and affect other people, a dialog that names what will be lost is still the clearer choice.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode">The action label, such as "Delete project".</ApiRow>
+  <ApiRow name="holdLabel" type="ReactNode">Label shown while the button is held. Defaults to the action label.</ApiRow>
+  <ApiRow name="confirmedLabel" type="ReactNode" default='"Done"'>Label shown, with a check, once the hold completes.</ApiRow>
+  <ApiRow name="duration" type="number" default="1200">Milliseconds the button must be held.</ApiRow>
+  <ApiRow name="onConfirm" type="() => void">Called once when the hold completes.</ApiRow>
+  <ApiRow name="variant" type='"default" | "destructive"' default='"default"'>Visual style. Use `destructive` for actions that remove or cancel something.</ApiRow>
+  <ApiRow name="size" type='"sm" | "md" | "lg"' default='"md"'>Button height and padding.</ApiRow>
+  <ApiRow name="resetAfter" type="number | false" default="1600">Milliseconds the confirmed state stays before the button resets. `false` keeps it confirmed.</ApiRow>
+  <ApiRow name="hint" type="string" default='"Press and hold to confirm"'>Hidden instruction read with the button.</ApiRow>
+  <ApiRow name="confirmedMessage" type="string">Announced on confirm. Defaults to the confirmed label when it is text.</ApiRow>
+  <ApiRow name="disabled" type="boolean" default="false">Disables the button and lets go of a hold in progress.</ApiRow>
+  <ApiRow name="className" type="string">Class for the button.</ApiRow>
+</ApiTable>
+
+Other `button` attributes, such as `aria-label` or `form`, are passed through.

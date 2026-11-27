@@ -1,0 +1,53 @@
+---
+title: Contour Lines
+description: Topographic contour lines drifting over a slowly changing field.
+---
+
+<ComponentPreview name="contour-lines-demo" playground />
+
+## Overview
+
+Contour Lines draws the level lines of a slowly shifting terrain, like a topographic map. Every `majorEvery`th line is an index contour, drawn thicker and brighter. The hills reshape gently over time rather than sliding across the surface.
+
+The background is transparent and the lines use `currentColor` at low opacity by default, so the effect follows the text color in light and dark themes. Use it behind a section heading, an empty state, or a data product's landing page.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { ContourLines } from "honestui/shaders"
+
+<div className="relative h-96 bg-background text-foreground">
+  <ContourLines className="absolute inset-0" fade="radial" />
+  <div className="relative grid h-full place-items-center">
+    <h2 className="text-3xl font-medium">Know the terrain.</h2>
+  </div>
+</div>
+```
+
+Lines are antialiased at their CSS width on any screen density. Lower `levels` or raise `scale` for a calmer map, and use `fade` to keep the lines away from the edges.
+
+## Accessibility
+
+Contour Lines is decorative and its canvas is hidden from assistive technology. Keep text and actions in normal HTML; at the default opacity the lines stay well below body text in contrast.
+
+The effect pauses while it is offscreen or the tab is hidden, and shows a still frame when the user prefers reduced motion. Without WebGL the container shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="color" type="string" default='"currentColor"'>Line color. Any CSS color; `currentColor` follows the text color and theme.</ApiRow>
+  <ApiRow name="opacity" type="number" default="0.35">Line opacity, from 0 to 1.</ApiRow>
+  <ApiRow name="lineWidth" type="number" default="1">Line width in CSS pixels.</ApiRow>
+  <ApiRow name="levels" type="number" default="14">Number of contour levels across the field.</ApiRow>
+  <ApiRow name="majorEvery" type="number" default="5">Draw every Nth line thicker and brighter. 0 turns index contours off.</ApiRow>
+  <ApiRow name="scale" type="number" default="1">Size of the terrain. Larger values draw more, smaller hills.</ApiRow>
+  <ApiRow name="fade" type='"none" | "radial" | "edges" | "top" | "bottom"' default='"none"'>Fade the lines out toward the edges.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed. 0 holds the terrain still.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content rendered above the lines.</ApiRow>
+</ApiTable>

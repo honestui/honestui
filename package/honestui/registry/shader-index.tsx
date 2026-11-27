@@ -8,25 +8,36 @@ import shaderExample3 from "./default/examples/shaders/audio-orb-microphone";
 import shaderExample4 from "./default/examples/shaders/aurora-demo";
 import shaderExample5 from "./default/examples/shaders/blinds-demo";
 import shaderExample6 from "./default/examples/shaders/chromatic-image-demo";
-import shaderExample7 from "./default/examples/shaders/dither-demo";
-import shaderExample8 from "./default/examples/shaders/dot-grid-demo";
-import shaderExample9 from "./default/examples/shaders/fluid-demo";
-import shaderExample10 from "./default/examples/shaders/fluted-glass-demo";
-import shaderExample11 from "./default/examples/shaders/grainient-demo";
-import shaderExample12 from "./default/examples/shaders/halftone-demo";
-import shaderExample13 from "./default/examples/shaders/light-rays-demo";
-import shaderExample14 from "./default/examples/shaders/liquid-glass-demo";
-import shaderExample15 from "./default/examples/shaders/liquid-glass-draggable";
-import shaderExample16 from "./default/examples/shaders/liquid-metal-demo";
-import shaderExample17 from "./default/examples/shaders/mesh-gradient-demo";
-import shaderExample18 from "./default/examples/shaders/metaballs-demo";
-import shaderExample19 from "./default/examples/shaders/pixelate-demo";
-import shaderExample20 from "./default/examples/shaders/pulsing-border-ai-input";
-import { PulsingBorderDemo as shaderExample21 } from "./default/examples/shaders/pulsing-border-demo";
-import shaderExample22 from "./default/examples/shaders/smoke-ring-demo";
-import shaderExample23 from "./default/examples/shaders/voronoi-demo";
-import shaderExample24 from "./default/examples/shaders/warp-demo";
-import shaderExample25 from "./default/examples/shaders/water-demo";
+import shaderExample7 from "./default/examples/shaders/contour-lines-demo";
+import shaderExample8 from "./default/examples/shaders/dissolve-demo";
+import shaderExample9 from "./default/examples/shaders/dither-demo";
+import shaderExample10 from "./default/examples/shaders/dot-grid-demo";
+import shaderExample11 from "./default/examples/shaders/dotted-globe-demo";
+import shaderExample12 from "./default/examples/shaders/dotted-globe-markers";
+import shaderExample13 from "./default/examples/shaders/fluid-demo";
+import shaderExample14 from "./default/examples/shaders/fluted-glass-demo";
+import shaderExample15 from "./default/examples/shaders/grainient-demo";
+import shaderExample16 from "./default/examples/shaders/halftone-demo";
+import shaderExample17 from "./default/examples/shaders/iridescent-foil-demo";
+import shaderExample18 from "./default/examples/shaders/light-rays-demo";
+import shaderExample19 from "./default/examples/shaders/line-waves-demo";
+import shaderExample20 from "./default/examples/shaders/liquid-glass-demo";
+import shaderExample21 from "./default/examples/shaders/liquid-glass-draggable";
+import shaderExample22 from "./default/examples/shaders/liquid-metal-demo";
+import shaderExample23 from "./default/examples/shaders/mesh-gradient-demo";
+import shaderExample24 from "./default/examples/shaders/metaballs-demo";
+import shaderExample25 from "./default/examples/shaders/perspective-grid-demo";
+import shaderExample26 from "./default/examples/shaders/pixelate-demo";
+import shaderExample27 from "./default/examples/shaders/pulsing-border-ai-input";
+import { PulsingBorderDemo as shaderExample28 } from "./default/examples/shaders/pulsing-border-demo";
+import shaderExample29 from "./default/examples/shaders/reaction-diffusion-demo";
+import shaderExample30 from "./default/examples/shaders/ripple-demo";
+import shaderExample31 from "./default/examples/shaders/shimmer-text-demo";
+import shaderExample32 from "./default/examples/shaders/silk-demo";
+import shaderExample33 from "./default/examples/shaders/smoke-ring-demo";
+import shaderExample34 from "./default/examples/shaders/voronoi-demo";
+import shaderExample35 from "./default/examples/shaders/warp-demo";
+import shaderExample36 from "./default/examples/shaders/water-demo";
 
 export const ShaderIndex: Record<string, { component: ComponentType }> = {
   "ai-glow-border-demo": { component: shaderExample0 },
@@ -36,23 +47,34 @@ export const ShaderIndex: Record<string, { component: ComponentType }> = {
   "aurora-demo": { component: shaderExample4 },
   "blinds-demo": { component: shaderExample5 },
   "chromatic-image-demo": { component: shaderExample6 },
-  "dither-demo": { component: shaderExample7 },
-  "dot-grid-demo": { component: shaderExample8 },
-  "fluid-demo": { component: shaderExample9 },
-  "fluted-glass-demo": { component: shaderExample10 },
-  "grainient-demo": { component: shaderExample11 },
-  "halftone-demo": { component: shaderExample12 },
-  "light-rays-demo": { component: shaderExample13 },
-  "liquid-glass-demo": { component: shaderExample14 },
-  "liquid-glass-draggable": { component: shaderExample15 },
-  "liquid-metal-demo": { component: shaderExample16 },
-  "mesh-gradient-demo": { component: shaderExample17 },
-  "metaballs-demo": { component: shaderExample18 },
-  "pixelate-demo": { component: shaderExample19 },
-  "pulsing-border-ai-input": { component: shaderExample20 },
-  "pulsing-border-demo": { component: shaderExample21 },
-  "smoke-ring-demo": { component: shaderExample22 },
-  "voronoi-demo": { component: shaderExample23 },
-  "warp-demo": { component: shaderExample24 },
-  "water-demo": { component: shaderExample25 },
+  "contour-lines-demo": { component: shaderExample7 },
+  "dissolve-demo": { component: shaderExample8 },
+  "dither-demo": { component: shaderExample9 },
+  "dot-grid-demo": { component: shaderExample10 },
+  "dotted-globe-demo": { component: shaderExample11 },
+  "dotted-globe-markers": { component: shaderExample12 },
+  "fluid-demo": { component: shaderExample13 },
+  "fluted-glass-demo": { component: shaderExample14 },
+  "grainient-demo": { component: shaderExample15 },
+  "halftone-demo": { component: shaderExample16 },
+  "iridescent-foil-demo": { component: shaderExample17 },
+  "light-rays-demo": { component: shaderExample18 },
+  "line-waves-demo": { component: shaderExample19 },
+  "liquid-glass-demo": { component: shaderExample20 },
+  "liquid-glass-draggable": { component: shaderExample21 },
+  "liquid-metal-demo": { component: shaderExample22 },
+  "mesh-gradient-demo": { component: shaderExample23 },
+  "metaballs-demo": { component: shaderExample24 },
+  "perspective-grid-demo": { component: shaderExample25 },
+  "pixelate-demo": { component: shaderExample26 },
+  "pulsing-border-ai-input": { component: shaderExample27 },
+  "pulsing-border-demo": { component: shaderExample28 },
+  "reaction-diffusion-demo": { component: shaderExample29 },
+  "ripple-demo": { component: shaderExample30 },
+  "shimmer-text-demo": { component: shaderExample31 },
+  "silk-demo": { component: shaderExample32 },
+  "smoke-ring-demo": { component: shaderExample33 },
+  "voronoi-demo": { component: shaderExample34 },
+  "warp-demo": { component: shaderExample35 },
+  "water-demo": { component: shaderExample36 },
 };

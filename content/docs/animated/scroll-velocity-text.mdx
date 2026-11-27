@@ -1,0 +1,55 @@
+---
+title: Scroll Velocity Text
+description: A marquee line that speeds up and leans with how fast the page scrolls.
+---
+
+<ComponentPreview name="scroll-velocity-text-demo" />
+
+## Overview
+
+Scroll Velocity Text drifts one or more rows of large text sideways, alternating direction from row to row. When the page scrolls the rows speed up and lean into the scroll, then ease back to their resting pace. Use it as a section divider or a closing line on a marketing page, where the words are a flourish rather than information.
+
+Each row repeats as many times as it needs to fill its width, so the loop never shows a gap at any size.
+
+## Installation
+
+<CliBlock commands={["scroll-velocity-text"]} />
+
+## Usage
+
+```tsx
+import { ScrollVelocityText } from "@/components/animated/scroll-velocity-text"
+
+<ScrollVelocityText rows={["Design with intent", "Ship with care"]} />
+```
+
+The rows follow the nearest scrolling ancestor, or the page when there is none. Pass `scrollContainer` to choose the element yourself:
+
+```tsx
+const panelRef = useRef<HTMLDivElement>(null)
+
+<div ref={panelRef} className="h-96 overflow-y-auto">
+  <ScrollVelocityText scrollContainer={panelRef} rows={["Now showing"]} />
+  …
+</div>
+```
+
+## Accessibility
+
+Screen readers get each row once, in order, from a visually hidden copy. The moving copies are hidden from them, so the repeats are never read out.
+
+The rows stop while they are offscreen. With reduced motion enabled they stay still and upright, one copy per row; scrolling has no effect. Set `pauseOnHover` to hold the rows while the pointer is over them.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="rows" type="ReactNode[]">Rows of text. Children are used, one row each, when omitted.</ApiRow>
+  <ApiRow name="velocity" type="number" default="60">Resting speed in CSS pixels per second.</ApiRow>
+  <ApiRow name="scrollFactor" type="number" default="4">How much scrolling speeds the rows up. 0 ignores scrolling.</ApiRow>
+  <ApiRow name="skew" type="number" default="8">Largest lean in degrees while scrolling fast. 0 keeps the text upright.</ApiRow>
+  <ApiRow name="separator" type="ReactNode" default="a small dot">Placed between repeats of a row.</ApiRow>
+  <ApiRow name="scrollContainer" type="RefObject<HTMLElement | null>">Element whose scrolling drives the effect. Defaults to the nearest scrolling ancestor, or the page.</ApiRow>
+  <ApiRow name="pauseOnHover" type="boolean" default="false">Holds the rows still while the pointer is over them.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element.</ApiRow>
+  <ApiRow name="rowClassName" type="string">Class for the text of every row, such as a different size.</ApiRow>
+</ApiTable>

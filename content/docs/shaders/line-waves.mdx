@@ -1,0 +1,52 @@
+---
+title: Line Waves
+description: Thin parallel lines rippling like a stacked ridgeline.
+---
+
+<ComponentPreview name="line-waves-demo" playground />
+
+## Overview
+
+Line Waves stacks thin horizontal lines and lifts them into slow, drifting peaks that gather toward the middle and flatten at the sides. With `occlude`, each line hides the parts of the lines behind it, so the stack reads as a ridgeline rather than a tangle.
+
+The background is transparent and the lines use `currentColor`, so the effect works in light and dark themes. With `interactive`, the lines swell softly under the pointer. Use it in a launch hero, an audio or signal product, or a section break.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { LineWaves } from "honestui/shaders"
+
+<div className="relative h-96 bg-background text-foreground">
+  <LineWaves className="absolute inset-0" lineCount={48} fade="edges" />
+</div>
+```
+
+Fewer lines with a larger `amplitude` read as a bold ridgeline; more lines with a small amplitude give a quiet, textile-like texture.
+
+## Accessibility
+
+Line Waves is decorative and its canvas is hidden from assistive technology. Keep text and actions in normal HTML, and place text where the peaks are low or lower `opacity` behind it.
+
+The effect pauses while it is offscreen or the tab is hidden, and shows a still frame when the user prefers reduced motion. The pointer swell is a visual extra; nothing depends on it. Without WebGL the container shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="lineCount" type="number" default="48">Number of lines, from 4 to 120.</ApiRow>
+  <ApiRow name="lineWidth" type="number" default="1">Line width in CSS pixels.</ApiRow>
+  <ApiRow name="amplitude" type="number" default="1">Height of the peaks, from 0 (flat) to 8.</ApiRow>
+  <ApiRow name="frequency" type="number" default="1">How many peaks fit across the width.</ApiRow>
+  <ApiRow name="color" type="string" default='"currentColor"'>Line color. Any CSS color.</ApiRow>
+  <ApiRow name="opacity" type="number" default="0.7">Line opacity, from 0 to 1.</ApiRow>
+  <ApiRow name="occlude" type="boolean" default="true">Hide the parts of each line behind the line in front, like a ridgeline.</ApiRow>
+  <ApiRow name="interactive" type="boolean" default="true">Raise the lines near the pointer.</ApiRow>
+  <ApiRow name="fade" type='"none" | "radial" | "edges" | "top" | "bottom"' default='"edges"'>Fade the lines out toward the edges.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed. 0 holds the lines still.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content rendered above the lines.</ApiRow>
+</ApiTable>

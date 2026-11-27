@@ -1,0 +1,74 @@
+---
+title: Shimmer Text
+description: A band of light that sweeps across real, selectable text.
+---
+
+<ComponentPreview name="shimmer-text-demo" playground />
+
+## Overview
+
+Shimmer Text sweeps a band of light across its text. While it sweeps, the text dims slightly so the band reads clearly, then the band leaves and pauses before the next pass.
+
+The text stays real HTML text drawn with CSS, not a canvas: it is selectable, crisp at any size, translated by the browser, and read by assistive technology. Colors default to `currentColor`, so it follows the surrounding text color in light and dark themes.
+
+Use it on a launch heading, or on a status line while an assistant is thinking. Set `active` to `false` when the work is done and the text returns to full color.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { ShimmerText } from "honestui/shaders"
+
+<h1 className="text-5xl font-semibold tracking-tight">
+  <ShimmerText>Ideas, made real.</ShimmerText>
+</h1>
+```
+
+### Signaling work in progress
+
+```tsx
+<p role="status" className="text-sm text-muted-foreground">
+  <ShimmerText active={isThinking}>
+    {isThinking ? "Thinking…" : "Done"}
+  </ShimmerText>
+</p>
+```
+
+The sweep is a visual cue only. Put the state in the words themselves, as above, and use a live region such as `role="status"` when the change should be announced.
+
+### Colors
+
+`color` is the text color and `shimmerColor` the band. Both accept any CSS color, including custom properties.
+
+```tsx
+<ShimmerText color="var(--muted-foreground)" shimmerColor="var(--foreground)" dim={0}>
+  Generating summary
+</ShimmerText>
+```
+
+Wrap the text inside a heading rather than rendering the heading itself with `as` when the heading is wider than its text, such as a centered heading. The band crosses the element's whole box, so a wide box spends more of each pass on empty space.
+
+## Accessibility
+
+The text is ordinary text in the document, so its accessible name, language, and selection behave normally. While sweeping, the text is drawn at reduced strength set by `dim`; check its contrast at that strength against the background, and lower `dim` for body-size text.
+
+When the user prefers reduced motion, the band does not move and the text is shown at full color.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="children" type="ReactNode">The text.</ApiRow>
+  <ApiRow name="as" type="ElementType" default='"span"'>Element to render.</ApiRow>
+  <ApiRow name="color" type="string" default='"currentColor"'>Text color. Any CSS color.</ApiRow>
+  <ApiRow name="shimmerColor" type="string">Color of the band. Defaults to `color`.</ApiRow>
+  <ApiRow name="dim" type="number" default="0.5">How much the text fades while the band sweeps, from 0 to 0.9.</ApiRow>
+  <ApiRow name="width" type="number | string" default='"4em"'>Width of the band: a number in CSS pixels or any CSS length.</ApiRow>
+  <ApiRow name="duration" type="number" default="1800">Milliseconds the band takes to cross the text.</ApiRow>
+  <ApiRow name="delay" type="number" default="700">Milliseconds between one sweep leaving and the next entering.</ApiRow>
+  <ApiRow name="angle" type="number" default="105">Direction of the band in degrees. 90 is upright; larger values lean it.</ApiRow>
+  <ApiRow name="active" type="boolean" default="true">Sweeps while true. When false the text is plain, at full color.</ApiRow>
+  <ApiRow name="className" type="string">Additional classes. Other HTML attributes are passed to the element.</ApiRow>
+</ApiTable>

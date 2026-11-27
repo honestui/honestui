@@ -1,0 +1,53 @@
+---
+title: Perspective Grid
+description: A grid floor that recedes to a horizon, with lines that thin and fade with distance and an optional slow scroll.
+---
+
+<ComponentPreview name="perspective-grid-demo" playground />
+
+## Overview
+
+Perspective Grid draws a flat floor of square cells seen from above, receding toward a horizon. Lines are crisp at the front and thin with distance, and each direction fades out before its cells get too small to draw cleanly, so the far floor never shimmers. Nothing is drawn above the horizon.
+
+The background is transparent and the lines use `currentColor` by default, so the grid follows the text color in light and dark themes. An optional glow lights the horizon. Use it under a launch headline, an event page, or an empty state.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { PerspectiveGrid } from "honestui/shaders"
+
+<div className="relative h-96 bg-background text-foreground">
+  <PerspectiveGrid className="absolute inset-0" glow={0.3} glowColor="#3b82f6" />
+  <h1 className="relative pt-16 text-center text-3xl font-medium">Launch week</h1>
+</div>
+```
+
+Put headings above the horizon, where the canvas is empty, so the lines never cross the text.
+
+## Accessibility
+
+Perspective Grid is decorative and its canvas is hidden from assistive technology. Keep text and actions in normal HTML.
+
+The floor scrolls only while `speed` is not 0. Scrolling stops while the grid is offscreen or the tab is hidden, and a still frame shows when the user prefers reduced motion. Without WebGL2 the container shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="color" type="string" default='"currentColor"'>Line color. Any CSS color.</ApiRow>
+  <ApiRow name="opacity" type="number" default="0.3">Line opacity at the front of the floor, from 0 to 1.</ApiRow>
+  <ApiRow name="cellSize" type="number" default="64">Width of one cell at the bottom edge, in CSS pixels.</ApiRow>
+  <ApiRow name="lineWidth" type="number" default="1">Line width at the bottom edge, in CSS pixels.</ApiRow>
+  <ApiRow name="horizon" type="number" default="0.55">Height of the horizon, from 0 (bottom) to 1 (top).</ApiRow>
+  <ApiRow name="tilt" type="number" default="0.5">Camera angle, from 0 (looking down, square cells) to 1 (grazing, flat cells).</ApiRow>
+  <ApiRow name="fade" type="number" default="0.6">How far the floor fades before the horizon, from 0 (sharp) to 1 (long fade).</ApiRow>
+  <ApiRow name="glow" type="number" default="0">Soft band of light along the horizon, from 0 to 1.</ApiRow>
+  <ApiRow name="glowColor" type="string">Color of the horizon glow. Defaults to `color`.</ApiRow>
+  <ApiRow name="speed" type="number" default="0.35">Cells per second the floor moves toward the viewer. 0 keeps it still.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content drawn above the grid.</ApiRow>
+</ApiTable>

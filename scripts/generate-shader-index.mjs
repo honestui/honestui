@@ -14,10 +14,10 @@ const entries = await Promise.all(
     const name = file.slice(0, -4);
     const source = await readFile(path.join(examplesDirectory, file), "utf8");
     const namedExport = source.match(
-      /\bexport\s+(?:async\s+)?(?:function|const|class)\s+([A-Za-z_$][\w$]*)/,
+      /^export\s+(?:async\s+)?(?:function|const|class)\s+([A-Za-z_$][\w$]*)/m,
     )?.[1];
 
-    if (!namedExport && !/\bexport\s+default\b/.test(source)) {
+    if (!namedExport && !/^export\s+default\b/m.test(source)) {
       throw new Error(`No component export found in ${file}`);
     }
 

@@ -1,0 +1,67 @@
+---
+title: Sticky Scroll Reveal
+description: Sections of text scroll past while a pinned visual changes to match.
+---
+
+<ComponentPreview name="sticky-scroll-reveal-demo" previewClassName="max-h-none" />
+
+## Overview
+
+Sticky Scroll Reveal pairs a column of short sections with a visual that stays pinned beside them. As each section reaches the middle of the scroll area, the visual crossfades to that section's image or illustration, the section's text comes forward, and a thin rail beside it lights up.
+
+Use it on a feature or product page to walk through three to six ideas, each with one visual. The text carries the content; the pinned visual supports it.
+
+When the component is narrower than about 32rem, it switches to a single column and each section shows its own visual inline under the text, so nothing depends on scrolling past a pinned panel.
+
+## Installation
+
+<CliBlock commands={["sticky-scroll-reveal"]} />
+
+## Usage
+
+```tsx
+import { StickyScrollReveal } from "@/components/animated/sticky-scroll-reveal"
+
+const sections = [
+  { title: "Filters people can read", body: "…", visual: <FilterPreview /> },
+  { title: "Charts that admit gaps", body: "…", visual: <ChartPreview /> },
+  { title: "Keyboard first", body: "…", visual: <ShortcutPreview /> },
+]
+
+<StickyScrollReveal sections={sections} />
+```
+
+By default it follows the page scroll. When it sits inside a box that scrolls on its own, pass that box as `scrollContainer`:
+
+```tsx
+const scrollRef = useRef<HTMLDivElement>(null)
+
+<div ref={scrollRef} className="h-[480px] overflow-y-auto">
+  <StickyScrollReveal sections={sections} scrollContainer={scrollRef} />
+</div>
+```
+
+Set `side="left"` to pin the visual on the left, and `stickyTop` to clear a fixed header.
+
+## Accessibility
+
+Sections stay in reading order, and each section's text is always in the document; only its visual emphasis changes. The active section has `aria-current="step"`.
+
+Visuals are decorative by default and hidden from assistive technology. When a visual carries information, give the section a `visualLabel` and it is exposed as an image with that name. Only the visible copy of each visual is exposed: the pinned panel on wide layouts, the inline one on narrow layouts.
+
+With reduced motion, the visual swaps instantly, with no fade, scale, or blur.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="sections" type="StickyScrollSection[]">Each section's `title`, `body`, `visual`, and optional `id` and `visualLabel`.</ApiRow>
+  <ApiRow name="scrollContainer" type="RefObject<HTMLElement | null>">The element that scrolls, when it is not the page.</ApiRow>
+  <ApiRow name="side" type='"left" | "right"' default='"right"'>Which side the pinned visual sits on.</ApiRow>
+  <ApiRow name="stickyTop" type="number | string" default='"1.5rem"'>Distance from the top of the scroll area where the visual pins.</ApiRow>
+  <ApiRow name="headingAs" type='"h2" | "h3" | "h4"' default='"h3"'>Heading element for each section title, to fit the page outline.</ApiRow>
+  <ApiRow name="rail" type="boolean" default="true">Shows a rail beside each section that lights up while it is active.</ApiRow>
+  <ApiRow name="onActiveChange" type="(index: number) => void">Called with the index of the section that becomes active.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element.</ApiRow>
+  <ApiRow name="sectionClassName" type="string">Class for each section's text block.</ApiRow>
+  <ApiRow name="visualClassName" type="string">Class for the visual panel.</ApiRow>
+</ApiTable>

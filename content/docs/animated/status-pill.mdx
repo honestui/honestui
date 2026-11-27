@@ -1,0 +1,65 @@
+---
+title: Status Pill
+description: A small pill that morphs between live states, such as recording, saving, and saved.
+---
+
+<ComponentPreview name="status-pill-demo" />
+
+## Overview
+
+Status Pill shows one live status in a compact surface. When the status changes, the outgoing content blurs away, the new content blurs in, and the pill glides to its new width, so a sequence like Recording, Saving, and Saved reads as one object changing rather than three badges swapping.
+
+Each state has a tone that sets its color and default icon. `recording` adds a pulsing red dot, `busy` shows a spinner, and `live` shows a pulsing dot in the tone's color. A `detail`, such as a timer, updates in place without replaying the transition.
+
+## Installation
+
+<CliBlock commands={["status-pill"]} />
+
+## Usage
+
+```tsx
+import { StatusPill } from "@/components/animated/status-pill"
+
+<StatusPill
+  status="recording"
+  tone="recording"
+  appearance="solid"
+  label="Recording"
+  detail={elapsed}
+/>
+```
+
+Render a new state by changing `status` and the props that describe it:
+
+```tsx
+{saving ? (
+  <StatusPill status="saving" busy label="Saving clip…" />
+) : (
+  <StatusPill status="saved" tone="success" label="Saved to library" />
+)}
+```
+
+`status` identifies the state and defaults to the label when the label is plain text. Changing only `detail` keeps the same state.
+
+## Accessibility
+
+Each new label is announced once through a polite live region. Timer ticks and other `detail` changes are not announced, so a running clock does not interrupt the reader; the current detail is still read when someone reaches the pill. Pass `announcement` when the label is not plain text, and `announce={false}` for a static pill that never changes.
+
+Color is never the only signal: every tone carries a label, and the success, warning, and danger tones add an icon. With reduced motion enabled, the content changes with a short fade, the width changes instantly, and the pulsing dot and spinner hold still.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="label" type="ReactNode">What is happening, such as "Recording" or "Saved".</ApiRow>
+  <ApiRow name="status" type="string">Identifies the state. A change morphs the content and announces the label. Defaults to the label when it is text.</ApiRow>
+  <ApiRow name="detail" type="ReactNode">Secondary text after the label, such as a timer. Updates in place and is not announced.</ApiRow>
+  <ApiRow name="tone" type='"neutral" | "info" | "success" | "warning" | "danger" | "recording"' default='"neutral"'>Color and default icon.</ApiRow>
+  <ApiRow name="appearance" type='"soft" | "solid"' default='"soft"'>Tinted or filled surface.</ApiRow>
+  <ApiRow name="icon" type="ReactNode">Leading icon. Overrides the tone's default; `null` removes it.</ApiRow>
+  <ApiRow name="busy" type="boolean" default="false">Shows a spinner in place of the icon.</ApiRow>
+  <ApiRow name="live" type="boolean">Shows a pulsing dot in place of the icon. On by default for `recording`.</ApiRow>
+  <ApiRow name="size" type='"sm" | "md"' default='"md"'>Pill height and text size.</ApiRow>
+  <ApiRow name="announce" type="boolean" default="true">Announces label changes through a polite live region.</ApiRow>
+  <ApiRow name="announcement" type="string">Text announced for this state when the label is not plain text.</ApiRow>
+  <ApiRow name="className" type="string">Class for the pill surface.</ApiRow>
+</ApiTable>

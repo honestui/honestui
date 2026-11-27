@@ -2,6 +2,11 @@
 
 Changes to the `honestui` npm package. Entries marked unreleased describe work prepared for the next publication.
 
+## 0.7.0 - 2026-11-27
+
+- Shaders: `Silk`, `ContourLines`, `LineWaves`, `PerspectiveGrid`, and `ReactionDiffusion` for backgrounds; `DottedGlobe`, `IridescentFoil`, and `Ripple` for surfaces that respond to the pointer; `Dissolve` for a noise reveal between two images; and `ShimmerText`, a band of light across real, selectable text, drawn with CSS.
+- Animated components, from the registry: Hold to Confirm, Status Pill, Success Check, Compare Slider, Reorder List, Card Stack, Sticky Scroll Reveal, Image Trail, Circular Text, and Scroll Velocity Text.
+
 ## 0.6.0 - 2026-11-26
 
 - Honest AI, conversation: Prompt Suggestions, Chat Welcome, Message Usage (tokens and cost for each message), Guardrail Notice (redacted or blocked content), and Input Request (a form the agent asks a person to fill in before it continues).

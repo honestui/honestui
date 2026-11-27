@@ -7,30 +7,41 @@ import animatedExample2 from "./default/examples/animated/animated-list-demo";
 import animatedExample3 from "./default/examples/animated/animated-tabs-demo";
 import animatedExample4 from "./default/examples/animated/border-beam-demo";
 import animatedExample5 from "./default/examples/animated/bouncy-accordion-demo";
-import animatedExample6 from "./default/examples/animated/chromatic-text-reveal-demo";
-import animatedExample7 from "./default/examples/animated/confetti-demo";
-import animatedExample8 from "./default/examples/animated/dock-demo";
-import animatedExample9 from "./default/examples/animated/grid-pattern-demo";
-import animatedExample10 from "./default/examples/animated/in-view-demo";
-import animatedExample11 from "./default/examples/animated/magnetic-demo";
-import animatedExample12 from "./default/examples/animated/marquee-demo";
-import animatedExample13 from "./default/examples/animated/meteors-demo";
-import animatedExample14 from "./default/examples/animated/morphing-dialog-demo";
-import animatedExample15 from "./default/examples/animated/number-ticker-demo";
-import animatedExample16 from "./default/examples/animated/number-ticker-sliding-demo";
-import animatedExample17 from "./default/examples/animated/orbiting-circles-demo";
-import animatedExample18 from "./default/examples/animated/progressive-blur-demo";
-import animatedExample19 from "./default/examples/animated/scroll-progress-demo";
-import animatedExample20 from "./default/examples/animated/shared-layout-bg-demo";
-import animatedExample21 from "./default/examples/animated/shine-border-demo";
-import animatedExample22 from "./default/examples/animated/spotlight-demo";
-import animatedExample23 from "./default/examples/animated/text-reveal-demo";
-import animatedExample24 from "./default/examples/animated/text-scramble-demo";
-import animatedExample25 from "./default/examples/animated/text-shimmer-demo";
-import animatedExample26 from "./default/examples/animated/tilt-card-demo";
-import animatedExample27 from "./default/examples/animated/transition-panel-demo";
-import animatedExample28 from "./default/examples/animated/typewriter-demo";
-import animatedExample29 from "./default/examples/animated/word-rotate-demo";
+import animatedExample6 from "./default/examples/animated/card-stack-demo";
+import animatedExample7 from "./default/examples/animated/chromatic-text-reveal-demo";
+import animatedExample8 from "./default/examples/animated/circular-text-demo";
+import animatedExample9 from "./default/examples/animated/compare-slider-demo";
+import animatedExample10 from "./default/examples/animated/compare-slider-interface";
+import animatedExample11 from "./default/examples/animated/confetti-demo";
+import animatedExample12 from "./default/examples/animated/dock-demo";
+import animatedExample13 from "./default/examples/animated/grid-pattern-demo";
+import animatedExample14 from "./default/examples/animated/hold-to-confirm-demo";
+import animatedExample15 from "./default/examples/animated/image-trail-demo";
+import animatedExample16 from "./default/examples/animated/in-view-demo";
+import animatedExample17 from "./default/examples/animated/magnetic-demo";
+import animatedExample18 from "./default/examples/animated/marquee-demo";
+import animatedExample19 from "./default/examples/animated/meteors-demo";
+import animatedExample20 from "./default/examples/animated/morphing-dialog-demo";
+import animatedExample21 from "./default/examples/animated/number-ticker-demo";
+import animatedExample22 from "./default/examples/animated/number-ticker-sliding-demo";
+import animatedExample23 from "./default/examples/animated/orbiting-circles-demo";
+import animatedExample24 from "./default/examples/animated/progressive-blur-demo";
+import animatedExample25 from "./default/examples/animated/reorder-list-demo";
+import animatedExample26 from "./default/examples/animated/scroll-progress-demo";
+import animatedExample27 from "./default/examples/animated/scroll-velocity-text-demo";
+import animatedExample28 from "./default/examples/animated/shared-layout-bg-demo";
+import animatedExample29 from "./default/examples/animated/shine-border-demo";
+import animatedExample30 from "./default/examples/animated/spotlight-demo";
+import animatedExample31 from "./default/examples/animated/status-pill-demo";
+import animatedExample32 from "./default/examples/animated/sticky-scroll-reveal-demo";
+import animatedExample33 from "./default/examples/animated/success-check-demo";
+import animatedExample34 from "./default/examples/animated/text-reveal-demo";
+import animatedExample35 from "./default/examples/animated/text-scramble-demo";
+import animatedExample36 from "./default/examples/animated/text-shimmer-demo";
+import animatedExample37 from "./default/examples/animated/tilt-card-demo";
+import animatedExample38 from "./default/examples/animated/transition-panel-demo";
+import animatedExample39 from "./default/examples/animated/typewriter-demo";
+import animatedExample40 from "./default/examples/animated/word-rotate-demo";
 
 export const AnimatedIndex: Record<string, { component: ComponentType }> = {
   "action-swap-demo": { component: animatedExample0 },
@@ -39,28 +50,39 @@ export const AnimatedIndex: Record<string, { component: ComponentType }> = {
   "animated-tabs-demo": { component: animatedExample3 },
   "border-beam-demo": { component: animatedExample4 },
   "bouncy-accordion-demo": { component: animatedExample5 },
-  "chromatic-text-reveal-demo": { component: animatedExample6 },
-  "confetti-demo": { component: animatedExample7 },
-  "dock-demo": { component: animatedExample8 },
-  "grid-pattern-demo": { component: animatedExample9 },
-  "in-view-demo": { component: animatedExample10 },
-  "magnetic-demo": { component: animatedExample11 },
-  "marquee-demo": { component: animatedExample12 },
-  "meteors-demo": { component: animatedExample13 },
-  "morphing-dialog-demo": { component: animatedExample14 },
-  "number-ticker-demo": { component: animatedExample15 },
-  "number-ticker-sliding-demo": { component: animatedExample16 },
-  "orbiting-circles-demo": { component: animatedExample17 },
-  "progressive-blur-demo": { component: animatedExample18 },
-  "scroll-progress-demo": { component: animatedExample19 },
-  "shared-layout-bg-demo": { component: animatedExample20 },
-  "shine-border-demo": { component: animatedExample21 },
-  "spotlight-demo": { component: animatedExample22 },
-  "text-reveal-demo": { component: animatedExample23 },
-  "text-scramble-demo": { component: animatedExample24 },
-  "text-shimmer-demo": { component: animatedExample25 },
-  "tilt-card-demo": { component: animatedExample26 },
-  "transition-panel-demo": { component: animatedExample27 },
-  "typewriter-demo": { component: animatedExample28 },
-  "word-rotate-demo": { component: animatedExample29 },
+  "card-stack-demo": { component: animatedExample6 },
+  "chromatic-text-reveal-demo": { component: animatedExample7 },
+  "circular-text-demo": { component: animatedExample8 },
+  "compare-slider-demo": { component: animatedExample9 },
+  "compare-slider-interface": { component: animatedExample10 },
+  "confetti-demo": { component: animatedExample11 },
+  "dock-demo": { component: animatedExample12 },
+  "grid-pattern-demo": { component: animatedExample13 },
+  "hold-to-confirm-demo": { component: animatedExample14 },
+  "image-trail-demo": { component: animatedExample15 },
+  "in-view-demo": { component: animatedExample16 },
+  "magnetic-demo": { component: animatedExample17 },
+  "marquee-demo": { component: animatedExample18 },
+  "meteors-demo": { component: animatedExample19 },
+  "morphing-dialog-demo": { component: animatedExample20 },
+  "number-ticker-demo": { component: animatedExample21 },
+  "number-ticker-sliding-demo": { component: animatedExample22 },
+  "orbiting-circles-demo": { component: animatedExample23 },
+  "progressive-blur-demo": { component: animatedExample24 },
+  "reorder-list-demo": { component: animatedExample25 },
+  "scroll-progress-demo": { component: animatedExample26 },
+  "scroll-velocity-text-demo": { component: animatedExample27 },
+  "shared-layout-bg-demo": { component: animatedExample28 },
+  "shine-border-demo": { component: animatedExample29 },
+  "spotlight-demo": { component: animatedExample30 },
+  "status-pill-demo": { component: animatedExample31 },
+  "sticky-scroll-reveal-demo": { component: animatedExample32 },
+  "success-check-demo": { component: animatedExample33 },
+  "text-reveal-demo": { component: animatedExample34 },
+  "text-scramble-demo": { component: animatedExample35 },
+  "text-shimmer-demo": { component: animatedExample36 },
+  "tilt-card-demo": { component: animatedExample37 },
+  "transition-panel-demo": { component: animatedExample38 },
+  "typewriter-demo": { component: animatedExample39 },
+  "word-rotate-demo": { component: animatedExample40 },
 };

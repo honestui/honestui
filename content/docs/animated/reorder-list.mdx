@@ -1,0 +1,72 @@
+---
+title: Reorder List
+description: A list people can reorder by dragging or from the keyboard, with springy movement.
+---
+
+<ComponentPreview name="reorder-list-demo" />
+
+## Overview
+
+Reorder List lets people put a short list in their own order: priorities, steps, playlist tracks, or navigation items. Rows lift as they are picked up, and the others slide aside with a spring. Every row has a handle, which works with a pointer and with the keyboard, and each move is announced to screen readers.
+
+The list is controlled. Pass the items in their current order and update them in `onReorder`.
+
+## Installation
+
+<CliBlock commands={["reorder-list"]} />
+
+## Usage
+
+```tsx
+import { ReorderList } from "@/components/animated/reorder-list"
+
+const [tasks, setTasks] = useState(initialTasks)
+
+<ReorderList
+  label="Priorities"
+  items={tasks}
+  onReorder={setTasks}
+  getKey={(task) => task.id}
+  getLabel={(task) => task.title}
+  renderItem={(task) => <span>{task.title}</span>}
+/>
+```
+
+`renderItem` draws the content of each row after the handle. It receives the item and `{ active, index }`, so a row can change while it is being moved or show its position.
+
+### Drag the whole row
+
+By default only the handle starts a pointer drag, which keeps links and buttons inside a row usable. Set `handle={false}` to let the whole row drag. Keyboard reordering always uses the handle.
+
+## Accessibility
+
+Each handle is a button named "Reorder" followed by the item's label, and it describes the keys to use.
+
+| Key | Action |
+| --- | --- |
+| Space, Enter | Pick up the focused item, or drop it. |
+| Arrow Up, Arrow Down | Move the picked-up item one place. |
+| Home, End | Move the picked-up item to the start or end. |
+| Escape | Cancel and return the item to where it was picked up. |
+
+Focus stays on the handle while its row moves. Moving focus away drops the item where it is. Picking up, moving, dropping, and cancelling are announced in a polite live region, such as "Picked up Review billing changes. Position 2 of 5." Pass `announcements` and `instructions` to translate or reword them.
+
+With reduced motion enabled, rows move straight to their new place and the picked-up row does not grow; its shadow still marks it.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="items" type="T[]">Items in their current order.</ApiRow>
+  <ApiRow name="onReorder" type="(items: T[]) => void">Called with the items in their new order.</ApiRow>
+  <ApiRow name="getKey" type="(item: T) => string">A stable key for each item.</ApiRow>
+  <ApiRow name="getLabel" type="(item: T) => string">Plain-text name of each item, used for the handle and announcements.</ApiRow>
+  <ApiRow name="renderItem" type="(item: T, state: { active: boolean; index: number }) => ReactNode">Content of each row, drawn after the handle.</ApiRow>
+  <ApiRow name="handle" type="boolean" default="true">Start pointer drags only from the handle. When false, the whole row drags.</ApiRow>
+  <ApiRow name="disabled" type="boolean" default="false">Turns off dragging and keyboard moves.</ApiRow>
+  <ApiRow name="label" type="string">Accessible name of the list.</ApiRow>
+  <ApiRow name="instructions" type="string">Key instructions read with each handle.</ApiRow>
+  <ApiRow name="announcements" type="Partial<ReorderListAnnouncements>">Replace the `pickedUp`, `moved`, `dropped`, or `cancelled` messages. Each receives the label, the one-based position, and the total.</ApiRow>
+  <ApiRow name="getHandleLabel" type="(label: string) => string" default='"Reorder {label}"'>Accessible name of each handle.</ApiRow>
+  <ApiRow name="className" type="string">Class for the list.</ApiRow>
+  <ApiRow name="itemClassName" type="string">Class for each row.</ApiRow>
+</ApiTable>

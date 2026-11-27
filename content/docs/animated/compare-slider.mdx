@@ -1,0 +1,93 @@
+---
+title: Compare Slider
+description: Drag a divider across two images or panels to compare before and after.
+---
+
+<ComponentPreview name="compare-slider-demo" />
+
+## Overview
+
+Compare Slider stacks two versions of the same view and reveals the first up to a divider. Drag the divider, press anywhere to glide it there, or focus the handle and use the keyboard. Use it for photo edits, redesigns, light and dark themes, or any change that is easier to see than to describe.
+
+`before` sits on the start side of the divider, left or top, and `after` on the end side. Both layers fill the slider, so give it a size or an aspect ratio. Images placed directly inside a layer cover it like `object-fit: cover`.
+
+## Installation
+
+<CliBlock commands={["compare-slider"]} />
+
+## Usage
+
+```tsx
+import { CompareSlider } from "@/components/animated/compare-slider"
+
+<CompareSlider
+  className="aspect-video w-full"
+  beforeLabel="Original"
+  afterLabel="Graded"
+  before={<img src="/photo-raw.jpg" alt="The photo before editing" />}
+  after={<img src="/photo-graded.jpg" alt="The photo after color grading" />}
+/>
+```
+
+### Any content
+
+Each side can be any element, such as the same card in two themes. With `hover`, the divider follows a mouse without pressing; touch and pen still drag.
+
+<ComponentPreview name="compare-slider-interface" />
+
+```tsx
+<CompareSlider
+  hover
+  label="Theme divider"
+  beforeLabel="Light"
+  afterLabel="Dark"
+  className="h-80 w-full"
+  before={<InvoiceCard tone="light" />}
+  after={<InvoiceCard tone="dark" />}
+/>
+```
+
+### Controlled
+
+Pass `position` and `onPositionChange` to drive the divider from your own state, for example to link it to a separate control.
+
+```tsx
+const [position, setPosition] = useState(50)
+
+<CompareSlider position={position} onPositionChange={setPosition} before={before} after={after} />
+```
+
+## Accessibility
+
+The handle is a slider. It is named "Comparison divider" by default (change it with `label`), and its value is read as how much of each side shows, such as "60% Original, 40% Graded", using the labels when they are strings. Pass `getValueText` to word it differently.
+
+| Key | Action |
+| --- | --- |
+| Arrow keys | Move the divider 1%. Right and Up move toward the end side; when vertical, Down and Right do. |
+| Shift + Arrow keys, Page Up, Page Down | Move the divider 10%. |
+| Home, End | Show only `after`, or only `before`. |
+
+Both layers stay in the page for assistive technology, so describe each one: give images alt text that says which version they are. For panels that repeat the same text, consider hiding one copy from screen readers and describing the difference in nearby text.
+
+The corner labels are hidden from screen readers because the slider's value already names both sides. On touch screens, the page still scrolls across the slider in the direction it does not split.
+
+With reduced motion enabled, the divider moves straight to a pressed point or key step instead of gliding.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="before" type="ReactNode">Content on the start side: left, or top when vertical.</ApiRow>
+  <ApiRow name="after" type="ReactNode">Content on the end side: right, or bottom when vertical.</ApiRow>
+  <ApiRow name="position" type="number">Divider position from 0 to 100, measured from the start side. Makes the slider controlled.</ApiRow>
+  <ApiRow name="defaultPosition" type="number" default="50">Starting position when uncontrolled.</ApiRow>
+  <ApiRow name="onPositionChange" type="(position: number) => void">Called with the new position while the divider moves.</ApiRow>
+  <ApiRow name="orientation" type='"horizontal" | "vertical"' default='"horizontal"'>Split side by side or top and bottom.</ApiRow>
+  <ApiRow name="beforeLabel" type="ReactNode">Chip in the start corner. Fades out as the divider covers it.</ApiRow>
+  <ApiRow name="afterLabel" type="ReactNode">Chip in the end corner.</ApiRow>
+  <ApiRow name="hover" type="boolean" default="false">Follows a mouse without pressing. Touch and pen still drag.</ApiRow>
+  <ApiRow name="label" type="string" default='"Comparison divider"'>Accessible name of the handle.</ApiRow>
+  <ApiRow name="getValueText" type="(position: number) => string">Text read for the handle's value.</ApiRow>
+  <ApiRow name="disabled" type="boolean" default="false">Stops dragging and key presses.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root. Set its size here.</ApiRow>
+  <ApiRow name="handleClassName" type="string">Class for the round handle.</ApiRow>
+</ApiTable>

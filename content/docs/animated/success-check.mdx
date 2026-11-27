@@ -1,0 +1,53 @@
+---
+title: Success Check
+description: A checkmark that draws itself with a soft burst to confirm an action finished.
+---
+
+<ComponentPreview name="success-check-demo" />
+
+## Overview
+
+Success Check marks the end of an action, such as a payment, a submitted form, or a finished upload. A soft circle grows in, its outline draws around, the check strokes from left to right, and a faint ring and particles push outward once it lands. The whole sequence takes under a second.
+
+It uses the theme's success color by default and accepts any CSS color, so it can match a brand or sit on a colored surface.
+
+## Installation
+
+<CliBlock commands={["success-check"]} />
+
+## Usage
+
+```tsx
+import { SuccessCheck } from "@/components/animated/success-check"
+
+<SuccessCheck label="Payment sent" size={60} />
+```
+
+The check draws when it mounts or when `show` becomes true. Change `playKey` to draw it again:
+
+```tsx
+const [attempt, setAttempt] = useState(0)
+
+<SuccessCheck playKey={attempt} onComplete={() => focusNextStep()} />
+<button onClick={() => setAttempt((n) => n + 1)}>Replay</button>
+```
+
+## Accessibility
+
+Without `label`, the check is decorative and hidden from assistive technology. Pair it with visible text that says what happened, and announce that text with a status region when the result arrives. With `label`, the check is exposed as an image with that name; use this only when no nearby text already says the same thing.
+
+With reduced motion enabled, the check appears fully drawn with a short fade and no burst, and `onComplete` still fires.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="show" type="boolean" default="true">Draws the check when true and clears it when false.</ApiRow>
+  <ApiRow name="playKey" type="string | number">Change to play the animation again.</ApiRow>
+  <ApiRow name="size" type="number" default="56">Diameter in pixels.</ApiRow>
+  <ApiRow name="color" type="string" default="success color">Stroke and burst color. Any CSS color.</ApiRow>
+  <ApiRow name="background" type="string" default="success tint">Soft fill behind the check. Any CSS color.</ApiRow>
+  <ApiRow name="burst" type="boolean" default="true">Plays the ring and particles behind the circle.</ApiRow>
+  <ApiRow name="label" type="string">Accessible name. Without it the check is decorative.</ApiRow>
+  <ApiRow name="onComplete" type="() => void">Called once the check has finished drawing.</ApiRow>
+  <ApiRow name="className" type="string">Class for the root element.</ApiRow>
+</ApiTable>

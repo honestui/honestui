@@ -1,0 +1,55 @@
+---
+title: Image Trail
+description: Images that appear and fade along the pointer's path.
+---
+
+<ComponentPreview name="image-trail-demo" />
+
+## Overview
+
+Image Trail drops images along the pointer's path as it moves across a section. Each image pops in where the pointer is, holds for a moment, and fades out, so a quick sweep leaves a short trail of work behind it. Use it in a portfolio or studio hero, behind a headline that stays readable on its own.
+
+Three variants are available: `scatter` tilts and offsets each image a little, `stack` tilts them alternately and lets each one drift in the direction of travel, and `fade` keeps them upright and simply fades them.
+
+The component reuses a small pool of images and animates them directly, so moving the pointer does not re-render your React tree.
+
+## Installation
+
+<CliBlock commands={["image-trail"]} />
+
+## Usage
+
+```tsx
+import { ImageTrail } from "@/components/animated/image-trail"
+
+<ImageTrail
+  images={["/work/01.jpg", "/work/02.jpg", "/work/03.jpg"]}
+  className="h-[28rem]"
+>
+  <h1>Move your cursor</h1>
+</ImageTrail>
+```
+
+Images are used in order and repeated. Give the container a height; the trail is clipped to it.
+
+## Accessibility
+
+Trail images are decorative. They have empty alt text and sit in a layer hidden from assistive technology, so screen readers only meet the children. Put anything people need, such as links to the work itself, in normal content.
+
+With reduced motion enabled the trail is off and only the children show. Touch drags are ignored by default so touch scrolling keeps working; set `touch` to follow drags as well, which also stops the section from scrolling under a finger.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="images" type="(string | { src: string; alt?: string })[]">Images dropped along the path, in order and repeated.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content shown above the trail.</ApiRow>
+  <ApiRow name="variant" type='"scatter" | "stack" | "fade"' default='"scatter"'>How each image enters and leaves.</ApiRow>
+  <ApiRow name="threshold" type="number" default="80">Pointer travel in CSS pixels between two images.</ApiRow>
+  <ApiRow name="duration" type="number" default="1000">Milliseconds an image stays, from appearing to gone.</ApiRow>
+  <ApiRow name="maxVisible" type="number" default="8">Most images on screen at once.</ApiRow>
+  <ApiRow name="imageSize" type="number" default="160">Image width in CSS pixels.</ApiRow>
+  <ApiRow name="aspectRatio" type="number" default="0.8">Image width over height.</ApiRow>
+  <ApiRow name="touch" type="boolean" default="false">Also follows touch drags.</ApiRow>
+  <ApiRow name="className" type="string">Class for the container. Set its height here.</ApiRow>
+  <ApiRow name="imageClassName" type="string">Class for each image, such as a different radius.</ApiRow>
+</ApiTable>

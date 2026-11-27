@@ -62,6 +62,20 @@ const server = setupServer(
       },
     ])
   }),
+  // Bare component names resolve here. Mocked so the suite never reaches the live site.
+  http.get(`${REGISTRY_URL}/button.json`, () => {
+    return HttpResponse.json({
+      name: "button",
+      type: "registry:ui",
+      files: [
+        {
+          path: "registry/default/ui/button.tsx",
+          content: "// button component content",
+          type: "registry:ui",
+        },
+      ],
+    })
+  }),
   http.get(`${REGISTRY_URL}/styles/new-york/button.json`, () => {
     return HttpResponse.json({
       name: "button",

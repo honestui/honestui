@@ -1,0 +1,73 @@
+---
+title: Dotted Globe
+description: A rotating sphere of evenly spaced dots, with optional markers and arcs.
+---
+
+<ComponentPreview name="dotted-globe-demo" playground />
+
+## Overview
+
+Dotted Globe draws a sphere covered in a lattice of evenly spaced dots. Each row of dots holds as many as fit its circumference, so the spacing stays even from the equator to the poles. Dots dim toward the edge and away from the light, and the far side shows faintly through.
+
+The background is transparent and the dots use `currentColor` by default, so the globe follows the text color in light and dark themes. Use it beside copy about regions, a global network, or where people use your product.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { DottedGlobe } from "honestui/shaders"
+
+<DottedGlobe className="aspect-square w-full max-w-md" />
+```
+
+The globe fills the shorter side of its container, so give the container a square aspect ratio or a fixed size.
+
+## Markers and arcs
+
+Pass places as `markers` to draw them as accent dots with a soft pulse, and pairs of places as `arcs` to connect them with a raised great-circle arc. A short light travels along each arc from `from` to `to`. Up to 16 markers and 8 arcs are drawn; extra entries are ignored.
+
+<ComponentPreview name="dotted-globe-markers" />
+
+```tsx
+const london = { lat: 51.51, lng: -0.13 }
+const newYork = { lat: 40.71, lng: -74.0 }
+
+<DottedGlobe
+  className="aspect-square w-full max-w-md"
+  markers={[london, newYork]}
+  arcs={[{ from: newYork, to: london }]}
+  rotation={-30}
+/>
+```
+
+The globe has no map data: the dots cover the whole sphere, and markers are placed by latitude and longitude only. If the places matter to a decision, list them in text as well, as the example does.
+
+## Accessibility
+
+Dotted Globe is decorative and its canvas is hidden from assistive technology. Put anything people need to know, such as the names of the regions, in normal HTML.
+
+Dragging to turn the globe is a pointer-only enhancement; set `interactive={false}` to turn it off. Vertical touch scrolling still works over the globe. Rotation, pulses, and traveling lights stop while the globe is offscreen or the tab is hidden, and a still frame shows when the user prefers reduced motion. Without WebGL2 the container shows only its own background.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="color" type="string" default='"currentColor"'>Dot color. Any CSS color.</ApiRow>
+  <ApiRow name="accentColor" type="string" default='"#3b82f6"'>Color of markers and arcs.</ApiRow>
+  <ApiRow name="opacity" type="number" default="0.75">Opacity of the brightest dots, from 0 to 1.</ApiRow>
+  <ApiRow name="dotSize" type="number" default="0.38">Dot diameter as a share of the space between dots, from 0.1 to 0.9.</ApiRow>
+  <ApiRow name="density" type="number" default="56">Number of dot rows from pole to pole.</ApiRow>
+  <ApiRow name="backOpacity" type="number" default="0.08">Opacity of the far-side dots seen through the globe. 0 hides them.</ApiRow>
+  <ApiRow name="tilt" type="number" default="18">How far the north pole leans toward the viewer, in degrees.</ApiRow>
+  <ApiRow name="rotation" type="number" default="0">Longitude facing the viewer at the start, in degrees.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Rotation speed. 0 holds the globe still; negative values spin the other way.</ApiRow>
+  <ApiRow name="markers" type="{ lat: number; lng: number }[]">Up to 16 places, in degrees, drawn as accent dots with a pulse.</ApiRow>
+  <ApiRow name="arcs" type="{ from: { lat: number; lng: number }; to: { lat: number; lng: number } }[]">Up to 8 raised great-circle arcs, each with a light traveling from `from` to `to`.</ApiRow>
+  <ApiRow name="arcHeight" type="number" default="1">Height of the arcs, from 0 (on the surface) to 2.</ApiRow>
+  <ApiRow name="interactive" type="boolean" default="true">Lets people drag horizontally to turn the globe.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content drawn above the globe.</ApiRow>
+</ApiTable>

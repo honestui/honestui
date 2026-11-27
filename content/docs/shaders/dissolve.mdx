@@ -1,0 +1,95 @@
+---
+title: Dissolve
+description: A noise-based reveal between two images, with a thin line of light along the front.
+---
+
+<ComponentPreview name="dissolve-demo" playground />
+
+## Overview
+
+Dissolve turns one image into another through a noise pattern. The second image appears in islands that grow and merge, with a thin line of light riding the boundary. Both images are cropped to fill the container, like `object-fit: cover`.
+
+Use it for before and after comparisons, a product shown in two finishes, or a slide change in a gallery. Pick the start with `direction`: everywhere at once, from one side, or from the center.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+Set `show` to the side you want on screen. Changing it plays the dissolve over `duration` milliseconds; changing it again partway reverses from where it is.
+
+```tsx
+"use client"
+
+import { useState } from "react"
+import { Dissolve } from "honestui/shaders"
+
+export function BeforeAfter() {
+  const [show, setShow] = useState<"from" | "to">("from")
+
+  return (
+    <div className="grid gap-3">
+      <div className="h-80 overflow-hidden rounded-xl">
+        <Dissolve
+          className="size-full"
+          from="/kitchen-before.jpg"
+          fromAlt="The kitchen before the renovation, with dark oak cabinets."
+          to="/kitchen-after.jpg"
+          toAlt="The kitchen after the renovation, with white cabinets and brass handles."
+          show={show}
+        />
+      </div>
+      <button onClick={() => setShow(show === "from" ? "to" : "from")}>
+        {show === "from" ? "Show after" : "Show before"}
+      </button>
+    </div>
+  )
+}
+```
+
+### Driving progress yourself
+
+Pass `progress` from 0 to 1 to place the dissolve exactly, for example from a slider or the scroll position. While `progress` is set, `show` and `duration` are ignored.
+
+```tsx
+<Dissolve
+  className="size-full"
+  from="/day.jpg"
+  fromAlt="The harbor at midday."
+  to="/night.jpg"
+  toAlt="The harbor at night, lit by the boats."
+  progress={scrollProgress}
+  direction="left"
+/>
+```
+
+Images must be served with CORS headers that allow cross-origin use, because WebGL reads their pixels. Images on your own domain work without extra setup.
+
+## Accessibility
+
+The images are real `<img>` elements with your `alt` text. Only the image that is mostly on screen is exposed to assistive technology, so its description changes halfway through the dissolve. Pass an empty string for an image that is purely decorative.
+
+The control that changes `show` is yours to render. Give it a label that names what it shows next, and keep it outside the canvas.
+
+When the user prefers reduced motion, changing `show` switches images at once instead of dissolving. `progress` is always followed exactly, since you control it. Until both images have loaded, and without WebGL2, the images crossfade instead.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="from" type="string" required>First image. It must allow cross-origin use.</ApiRow>
+  <ApiRow name="fromAlt" type="string" required>Alternative text for `from`; an empty string when it is decorative.</ApiRow>
+  <ApiRow name="to" type="string" required>Second image. It must allow cross-origin use.</ApiRow>
+  <ApiRow name="toAlt" type="string" required>Alternative text for `to`; an empty string when it is decorative.</ApiRow>
+  <ApiRow name="show" type='"from" | "to"' default='"from"'>Which image to show. Changing it plays the dissolve.</ApiRow>
+  <ApiRow name="progress" type="number">Controlled position from 0 (`from`) to 1 (`to`). Overrides `show`.</ApiRow>
+  <ApiRow name="duration" type="number" default="1400">Milliseconds a full dissolve takes when `show` changes.</ApiRow>
+  <ApiRow name="onShowComplete" type='(side: "from" | "to") => void'>Called when a dissolve started by `show` finishes.</ApiRow>
+  <ApiRow name="direction" type='"none" | "left" | "right" | "up" | "down" | "radial"' default='"none"'>Where the dissolve starts. `up` starts at the bottom; `radial` starts at the center.</ApiRow>
+  <ApiRow name="scale" type="number" default="3">Size of the noise pattern. Larger values give finer grain.</ApiRow>
+  <ApiRow name="softness" type="number" default="0.2">Feathering of the boundary, from 0 (crisp) to 1 (soft).</ApiRow>
+  <ApiRow name="edgeColor" type="string" default='"#ffd29a"'>Color of the line along the front. Any CSS color.</ApiRow>
+  <ApiRow name="edgeWidth" type="number" default="0.02">Width of the line, from 0 (none) to 0.2.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content drawn above the images.</ApiRow>
+</ApiTable>

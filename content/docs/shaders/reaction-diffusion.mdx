@@ -1,0 +1,67 @@
+---
+title: Reaction Diffusion
+description: Organic patterns that grow and settle from a live reaction-diffusion simulation.
+---
+
+<ComponentPreview name="reaction-diffusion-demo" playground />
+
+## Overview
+
+Reaction Diffusion runs a Gray-Scott simulation on the GPU. Two chemicals spread across a grid at different rates, one feeding on the other, and stable shapes emerge on their own: branching coral, separate spots that split, a winding maze, or a drifting pattern that never settles.
+
+The pattern is drawn in one color with soft, antialiased edges on a transparent background, so it works on light and dark pages. With the default `currentColor` it follows the text color and theme. Use it behind a section heading, on an empty state, or as a quiet texture on a 404 page.
+
+The simulation starts from scattered drops and grows for a moment before the first frame. Moving the pointer across it seeds new growth along the pointer's path.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { ReactionDiffusion } from "honestui/shaders"
+
+<div className="relative h-96 text-foreground">
+  <ReactionDiffusion className="absolute inset-0" pattern="coral" opacity={0.35} fade="radial" />
+  <h2 className="relative">Grown, not drawn.</h2>
+</div>
+```
+
+Each pattern grows from fresh drops, so changing `pattern` starts the simulation again. A new `seed` gives a different starting layout of the same pattern.
+
+### Patterns
+
+| Pattern | What grows |
+| --- | --- |
+| `coral` | Branching lines that fill the area and then hold still |
+| `spots` | Round spots that split and spread until they are evenly spaced |
+| `maze` | Narrow winding channels, like a fingerprint |
+| `drift` | Arcs and blobs that keep moving and never settle |
+
+## Accessibility
+
+Reaction Diffusion is decorative and its canvas is hidden from assistive technology. Put text and actions in normal HTML. Keep `opacity` low behind text, or use `fade` so the pattern stays away from it, and check contrast where the pattern is densest.
+
+When the user prefers reduced motion, or `paused` is set, the simulation runs ahead to a settled pattern and shows it as a still frame. It also stops while it is offscreen or the tab is hidden. The simulation needs WebGL2 with floating-point render targets; without them, the container shows only its `background`.
+
+## Performance
+
+The simulation runs on a grid coarser than the screen: one cell is `scale` CSS pixels. A larger `scale` gives larger shapes and costs less. Changing `scale` or `seed` restarts the simulation.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="pattern" type='"coral" | "spots" | "maze" | "drift"' default='"coral"'>The pattern the simulation grows.</ApiRow>
+  <ApiRow name="color" type="string" default='"currentColor"'>Pattern color. Any CSS color.</ApiRow>
+  <ApiRow name="background" type="string" default='"transparent"'>Color between the shapes.</ApiRow>
+  <ApiRow name="opacity" type="number" default="0.35">Opacity of the pattern, from 0 to 1.</ApiRow>
+  <ApiRow name="fade" type='"none" | "radial" | "edges" | "top" | "bottom"' default='"none"'>Fades the pattern out toward the edges.</ApiRow>
+  <ApiRow name="scale" type="number" default="2">Size of one simulation cell in CSS pixels.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">How fast the pattern grows, up to 4. 0 holds it still.</ApiRow>
+  <ApiRow name="interactive" type="boolean" default="true">Seeds new growth along the pointer's path.</ApiRow>
+  <ApiRow name="seed" type="number" default="1">Starting layout. A new value restarts the simulation.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Shows a settled pattern as a still frame.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content drawn above the pattern.</ApiRow>
+</ApiTable>

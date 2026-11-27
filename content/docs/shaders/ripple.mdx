@@ -1,0 +1,72 @@
+---
+title: Ripple
+description: Soft ripples that spread from the pointer across a surface or an image.
+---
+
+<ComponentPreview name="ripple-demo" playground />
+
+## Overview
+
+Ripple drops rings of waves where the pointer moves or taps. Each ripple spreads outward, bends whatever is under it, and fades as it travels.
+
+With an image, the waves refract the photo like water over it, with a faint sheen on the crests. Without one, the waves are drawn as light and shade in `color` on a transparent background, so they sit on any page color. With the default `currentColor` they follow the text color and theme.
+
+The effect only animates while a ripple is still moving. When the surface is calm, nothing is drawn again until the next ripple.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Ripple } from "honestui/shaders"
+
+<div className="relative h-96 text-foreground">
+  <Ripple className="absolute inset-0" />
+</div>
+```
+
+Ripple an image with `src`. The image fills the container like `object-fit: cover`.
+
+```tsx
+<Ripple
+  className="h-96"
+  src="/images/lake.jpg"
+  alt="A mountain lake at sunset."
+  trigger="click"
+/>
+```
+
+### Triggers
+
+With `trigger="pointer"`, moving the pointer drops small ripples spaced along its path, and a click or tap drops a larger one. With `trigger="click"`, only clicks and taps start ripples.
+
+Set `autoplay` to drop a ripple in a random spot every few milliseconds, so the surface shows some motion before anyone points at it. It is off by default.
+
+## Accessibility
+
+Ripple is decorative. Its canvas is hidden from assistive technology, and keyboard users get the same content without the effect. Ripples start only from pointer input, so do not use them as the only feedback for an action.
+
+With `src`, a normal `<img>` stays in the page as the accessible content and shows until the image is on the GPU, or permanently if WebGL2 is unavailable. Give it `alt` text, or leave `alt` empty when the image is decorative.
+
+When the user prefers reduced motion, or `paused` is set, no new ripples start and `autoplay` stops; the image or surface is shown still. The effect also stops while it is offscreen or the tab is hidden.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="src" type="string">Image to ripple, fitted like object-fit: cover.</ApiRow>
+  <ApiRow name="alt" type="string" default='""'>Alternative text for the image.</ApiRow>
+  <ApiRow name="color" type="string" default='"currentColor"'>Color of the light and shade when there is no image.</ApiRow>
+  <ApiRow name="background" type="string" default='"transparent"'>Fill behind the ripples when there is no image.</ApiRow>
+  <ApiRow name="trigger" type='"pointer" | "click"' default='"pointer"'>What starts a ripple.</ApiRow>
+  <ApiRow name="strength" type="number" default="12">How far the waves bend the image, in CSS pixels. Also sets how strong the light and shade are.</ApiRow>
+  <ApiRow name="wavelength" type="number" default="26">Distance between crests in CSS pixels.</ApiRow>
+  <ApiRow name="rippleSpeed" type="number" default="220">How fast a ripple spreads, in CSS pixels per second.</ApiRow>
+  <ApiRow name="decay" type="number" default="1.1">How quickly a ripple fades. Higher values fade sooner.</ApiRow>
+  <ApiRow name="autoplay" type="number" default="0">Drops a ripple in a random spot every this many milliseconds. 0 turns it off.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Overall animation speed.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Freezes the ripples and stops new ones.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content drawn above the effect.</ApiRow>
+</ApiTable>

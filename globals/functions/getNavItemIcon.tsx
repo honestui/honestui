@@ -107,6 +107,16 @@ import {
   SpotlightIcon,
   TypeCursorIcon,
   ViewIcon,
+  CardsIcon,
+  CheckmarkCircle02Icon,
+  DragDropVerticalIcon,
+  FastWindIcon,
+  Image01Icon,
+  LiveStreaming01Icon,
+  PinIcon,
+  RotateClockwiseIcon,
+  SplitIcon,
+  Touch01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
@@ -201,6 +211,16 @@ const ANIMATED_COMPONENT_ICONS = {
   "transition-panel": ArrowLeftRightIcon,
   typewriter: TypeCursorIcon,
   "word-rotate": RepeatIcon,
+  "hold-to-confirm": Touch01Icon,
+  "status-pill": LiveStreaming01Icon,
+  "compare-slider": SplitIcon,
+  "reorder-list": DragDropVerticalIcon,
+  "success-check": CheckmarkCircle02Icon,
+  "card-stack": CardsIcon,
+  "sticky-scroll-reveal": PinIcon,
+  "image-trail": Image01Icon,
+  "circular-text": RotateClockwiseIcon,
+  "scroll-velocity-text": FastWindIcon,
 } as const;
 
 // Custom icons for each item in the sidebar of MDX files.

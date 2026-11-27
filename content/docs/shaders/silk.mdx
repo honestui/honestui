@@ -1,0 +1,53 @@
+---
+title: Silk
+description: Slow folds of satin with a soft sheen, in one or two colors.
+---
+
+<ComponentPreview name="silk-demo" playground />
+
+## Overview
+
+Silk draws a sheet of satin that folds and gathers slowly. Long folds run across the surface on `angle`, a soft sheen catches their crests, and the hollows fall into shade. With `secondaryColor`, the cloth shifts from one color to the other across the folds.
+
+The shading stays low in contrast, so a heading or a short line of copy reads well on top. Use it as the background of a hero, a pricing card, or a sign-in panel. Unlike the line and dot backgrounds, Silk paints the whole surface.
+
+## Installation
+
+<CommandBlock commands={["honestui"]} />
+
+## Usage
+
+```tsx
+import { Silk } from "honestui/shaders"
+
+<Silk className="h-96" color="#2b3350" secondaryColor="#3b2f4d">
+  <div className="grid size-full place-items-center">
+    <h2 className="text-3xl font-medium text-white">Made to be touched.</h2>
+  </div>
+</Silk>
+```
+
+Children render above the cloth. Deep colors with a white sheen give the classic satin look; for a light page, use pale colors and a lower `sheen` so the highlight does not wash out.
+
+## Accessibility
+
+Silk is decorative and its canvas is hidden from assistive technology. Put text and actions in normal HTML, and check text contrast against both the shaded folds and the brightest sheen.
+
+The effect pauses while it is offscreen or the tab is hidden, and shows a still frame when the user prefers reduced motion. Without WebGL the container shows only its own background, so give it a CSS background color close to `color`.
+
+## API Reference
+
+<ApiTable>
+  <ApiRow name="color" type="string" default='"#2b3350"'>Main color of the cloth. Any CSS color.</ApiRow>
+  <ApiRow name="secondaryColor" type="string">Second color blended across the cloth on the fold angle. Defaults to `color`.</ApiRow>
+  <ApiRow name="sheenColor" type="string" default='"#ffffff"'>Color of the sheen along the fold crests.</ApiRow>
+  <ApiRow name="sheen" type="number" default="0.45">Strength of the sheen, from 0 (matte) to 1 (glossy).</ApiRow>
+  <ApiRow name="scale" type="number" default="1">Size of the folds. Larger values draw more, smaller folds.</ApiRow>
+  <ApiRow name="depth" type="number" default="0.5">How deep the folds look, from 0 (flat) to 1 (deep).</ApiRow>
+  <ApiRow name="softness" type="number" default="0.6">How soft the sheen is, from 0 (tight highlight) to 1 (broad glow).</ApiRow>
+  <ApiRow name="angle" type="number" default="-18">Direction the folds run, in degrees.</ApiRow>
+  <ApiRow name="speed" type="number" default="1">Animation speed. 0 holds the cloth still.</ApiRow>
+  <ApiRow name="paused" type="boolean" default="false">Renders a still frame instead of animating.</ApiRow>
+  <ApiRow name="className" type="string">Class for sizing and positioning the container.</ApiRow>
+  <ApiRow name="children" type="ReactNode">Content rendered above the cloth.</ApiRow>
+</ApiTable>
